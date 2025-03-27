@@ -56,50 +56,51 @@
     <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
 <style>
-  html,
-  body {
-      height: 100%;
-  }
+    html,
+    body {
+        height: 100%;
+    }
 
-  .center-container {
-      display: flex;
-      justify-content: center;
-      /* Centre horizontalement */
-      align-items: center;
-      /* Centre verticalement */
-      height: 100vh;
-      /* Prend toute la hauteur de l'écran */
-  }
+    .center-container {
+        display: flex;
+        justify-content: center;
+        /* Centre horizontalement */
+        align-items: center;
+        /* Centre verticalement */
+        height: 100vh;
+        /* Prend toute la hauteur de l'écran */
+    }
 
-  .btn-gradient {
-      background: linear-gradient(135deg, #3f81b3d8, #d0d7db);
-      border: none;
-      border-radius: 10px;
-      padding: 10px 24px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      transition: all 0.3s ease-in-out;
-      /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.4); Grand shadow blanc */
-  }
+    .btn-gradient {
+        background: linear-gradient(135deg, #3f81b3d8, #d0d7db);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+        /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.4); Grand shadow blanc */
+    }
 
-  .btn-gradient1 {
-      background: linear-gradient(135deg, #7a785ad8, #d0d6db);
-      border: none;
-      border-radius: 10px;
-      padding: 10px 24px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      transition: all 0.3s ease-in-out;
-      /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.26);  */
-  }
+    .btn-gradient1 {
+        background: linear-gradient(135deg, #7a785ad8, #d0d6db);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+        /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.26);  */
+    }
 
-  .btn-gradient:hover {
-      opacity: 0.8;
-      transform: scale(1.05);
-  }
+    .btn-gradient:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
 </style>
+
 <body
     style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
 url('{{ asset('src/images/login.webp') }}') no-repeat center center;
@@ -112,8 +113,13 @@ color: #fff;">
     <!-- Login Register area Start-->
     <div class="center-container">
         <div class="container px-5">
+
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-2 text-left">
+                    <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
+                        style="max-width: 150px;">
+                </div>
+                <div class="col-md-8">
                     <div class="text-center my-1">
                         <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 60px; color: #f7f7f7;"></h1>
                     </div>
@@ -121,7 +127,6 @@ color: #fff;">
                         <h4>Bienvenue ! Vous pointez pour : <span id="currentDateTime" style="font-size: 25px"></span>
                         </h4>
                     </div>
-
                     <script>
                         function updateDateTime() {
                             let now = new Date();

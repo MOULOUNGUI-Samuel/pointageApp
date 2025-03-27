@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,4 @@ Route::get('/login', function () {
 });
 Route::get('/sotier', [pointeController::class, 'index'])->name('sortie');
 Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
+Route::get('/LoginAdmin', [AdminController::class, 'index'])->name('entrer');

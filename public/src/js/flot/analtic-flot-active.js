@@ -1,6 +1,6 @@
 (function ($) {
- "use strict";
- 
+    "use strict";
+
     var data = [
             [1, 60],
             [2, 30],
@@ -25,19 +25,21 @@
             [21, 98],
             [22, 60],
             [23, 51],
-            [24, 30]
+            [24, 30],
         ],
-        dataset = [{
-            data: data,
-            label: "Visits",
-            bars: {
-                show: !0,
-                barWidth: .4,
-                order: 1,
-                lineWidth: 0,
-                fillColor: "#00c292"
-            }
-        }],
+        dataset = [
+            {
+                data: data,
+                label: "Visits",
+                bars: {
+                    show: !0,
+                    barWidth: 0.4,
+                    order: 1,
+                    lineWidth: 0,
+                    fillColor: "#0384ca",
+                },
+            },
+        ],
         options = {
             grid: {
                 borderWidth: 1,
@@ -45,7 +47,7 @@
                 show: !0,
                 hoverable: !0,
                 clickable: !0,
-                labelMargin: 10
+                labelMargin: 10,
             },
             yaxis: {
                 tickColor: "#f3f3f3",
@@ -53,51 +55,65 @@
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
+                    color: "#9f9f9f",
                 },
-                shadowSize: 0
+                shadowSize: 0,
             },
             xaxis: {
-                tickFormatter: function(value, axis) {
-                    return value + "h"
+                tickFormatter: function (value, axis) {
+                    return value + "h";
                 },
                 tickColor: "#fff",
                 tickDecimals: 0,
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
+                    color: "#9f9f9f",
                 },
-                shadowSize: 0
+                shadowSize: 0,
             },
             legend: {
-                show: !1
-            }
+                show: !1,
+            },
         };
-    $("#visit-server-time")[0] && $.plot($("#visit-server-time"), dataset, options),$(".flot-chart")[0] && ($(".flot-chart").bind("plothover", function(event, pos, item) {
-        if (item) {
-            var x = item.datapoint[0].toFixed(2),
-                y = item.datapoint[1].toFixed(2);
-            $(".flot-tooltip").html(item.series.label + " of " + x + " = " + y).css({
-                top: item.pageY + 5,
-                left: item.pageX + 5
-            }).show()
-        } else $(".flot-tooltip").hide()
-    }), $("<div class='flot-tooltip' class='chart-tooltip'></div>").appendTo("body"))
-	
-	
+    $("#visit-server-time")[0] &&
+        $.plot($("#visit-server-time"), dataset, options),
+        $(".flot-chart")[0] &&
+            ($(".flot-chart").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    var x = item.datapoint[0].toFixed(2),
+                        y = item.datapoint[1].toFixed(2);
+                    $(".flot-tooltip")
+                        .html(item.series.label + " of " + x + " = " + y)
+                        .css({
+                            top: item.pageY + 5,
+                            left: item.pageX + 5,
+                        })
+                        .show();
+                } else $(".flot-tooltip").hide();
+            }),
+            $(
+                "<div class='flot-tooltip' class='chart-tooltip'></div>"
+            ).appendTo("body"));
+
     function getRandomData() {
-        for (data.length > 0 && (data = data.slice(1)); data.length < totalPoints;) {
+        for (
+            data.length > 0 && (data = data.slice(1));
+            data.length < totalPoints;
+
+        ) {
             var prev = data.length > 0 ? data[data.length - 1] : 50,
                 y = prev + 10 * Math.random() - 5;
-            0 > y ? y = 0 : y > 90 && (y = 90), data.push(y)
+            0 > y ? (y = 0) : y > 90 && (y = 90), data.push(y);
         }
         for (var res = [], i = 0; i < data.length; ++i) res.push([i, data[i]]);
-        return res
+        return res;
     }
 
     function update() {
-        plot.setData([getRandomData()]), plot.draw(), setTimeout(update, updateInterval)
+        plot.setData([getRandomData()]),
+            plot.draw(),
+            setTimeout(update, updateInterval);
     }
     var data = [],
         totalPoints = 300,
@@ -108,11 +124,11 @@
                 label: "Server Process Data",
                 lines: {
                     show: !0,
-                    lineWidth: .2,
-                    fill: .6
+                    lineWidth: 0.2,
+                    fill: 0.6,
                 },
-                color: "#00c292",
-                shadowSize: 0
+                color: "#0384ca",
+                shadowSize: 0,
             },
             yaxis: {
                 min: 0,
@@ -121,9 +137,9 @@
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
+                    color: "#9f9f9f",
                 },
-                shadowSize: 0
+                shadowSize: 0,
             },
             xaxis: {
                 tickColor: "#eee",
@@ -131,11 +147,11 @@
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
+                    color: "#9f9f9f",
                 },
                 shadowSize: 0,
                 min: 0,
-                max: 250
+                max: 250,
             },
             grid: {
                 borderWidth: 1,
@@ -143,19 +159,17 @@
                 labelMargin: 10,
                 hoverable: !0,
                 clickable: !0,
-                mouseActiveRadius: 6
+                mouseActiveRadius: 6,
             },
             legend: {
-                show: !1
-            }
+                show: !1,
+            },
         });
-        update()
+        update();
     }
 
-
-	
     function gd(year, month, day) {
-        return new Date(year, month - 1, day).getTime()
+        return new Date(year, month - 1, day).getTime();
     }
     var data1 = [
             [gd(2013, 1, 2), 1690.25],
@@ -179,7 +193,7 @@
             [gd(2013, 1, 28), 1668.65],
             [gd(2013, 1, 29), 1671.2],
             [gd(2013, 1, 30), 1675.7],
-            [gd(2013, 1, 31), 1684.25]
+            [gd(2013, 1, 31), 1684.25],
         ],
         data2 = [
             [gd(2013, 1, 2), 1674.15],
@@ -203,40 +217,43 @@
             [gd(2013, 1, 28), 1652.75],
             [gd(2013, 1, 29), 1655.25],
             [gd(2013, 1, 30), 1659.7],
-            [gd(2013, 1, 31), 1668.2]
+            [gd(2013, 1, 31), 1668.2],
         ],
-        dataset = [{
-            label: "Visits",
-            data: data1,
-            color: "#00c292",
-            points: {
-                fillColor: "#00c292",
-                show: !0,
-                radius: 2
+        dataset = [
+            {
+                label: "Visits",
+                data: data1,
+                color: "#0384ca",
+                points: {
+                    fillColor: "#0384ca",
+                    show: !0,
+                    radius: 2,
+                },
+                lines: {
+                    show: !0,
+                    lineWidth: 1,
+                },
             },
-            lines: {
-                show: !0,
-                lineWidth: 1
-            }
-        }, {
-            label: "Unique Visitors",
-            data: data2,
-            xaxis: 2,
-            color: "#03A9F4",
-            points: {
-                fillColor: "#03A9F4",
-                show: !0,
-                radius: 2
+            {
+                label: "Unique Visitors",
+                data: data2,
+                xaxis: 2,
+                color: "#03A9F4",
+                points: {
+                    fillColor: "#03A9F4",
+                    show: !0,
+                    radius: 2,
+                },
+                lines: {
+                    show: !0,
+                    lineWidth: 1,
+                },
             },
-            lines: {
-                show: !0,
-                lineWidth: 1
-            }
-        }],
+        ],
         dayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"],
         options = {
             series: {
-                shadowSize: 0
+                shadowSize: 0,
             },
             grid: {
                 borderWidth: 1,
@@ -245,30 +262,33 @@
                 clickable: !0,
                 hoverable: !0,
                 mouseActiveRadius: 20,
-                labelMargin: 10
+                labelMargin: 10,
             },
-            xaxes: [{
-                color: "#f3f3f3",
-                mode: "time",
-                tickFormatter: function(val, axis) {
-                    return dayOfWeek[new Date(val).getDay()]
+            xaxes: [
+                {
+                    color: "#f3f3f3",
+                    mode: "time",
+                    tickFormatter: function (val, axis) {
+                        return dayOfWeek[new Date(val).getDay()];
+                    },
+                    position: "top",
+                    font: {
+                        lineHeight: 13,
+                        style: "normal",
+                        color: "#9f9f9f",
+                    },
                 },
-                position: "top",
-                font: {
-                    lineHeight: 13,
-                    style: "normal",
-                    color: "#9f9f9f"
-                }
-            }, {
-                color: "#f3f3f3",
-                mode: "time",
-                timeformat: "%m/%d",
-                font: {
-                    lineHeight: 13,
-                    style: "normal",
-                    color: "#9f9f9f"
-                }
-            }],
+                {
+                    color: "#f3f3f3",
+                    mode: "time",
+                    timeformat: "%m/%d",
+                    font: {
+                        lineHeight: 13,
+                        style: "normal",
+                        color: "#9f9f9f",
+                    },
+                },
+            ],
             yaxis: {
                 ticks: 2,
                 color: "#f3f3f3",
@@ -276,21 +296,19 @@
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
-                }
+                    color: "#9f9f9f",
+                },
             },
             legend: {
                 container: ".flc-visits",
-                backgroundOpacity: .5,
+                backgroundOpacity: 0.5,
                 noColumns: 0,
                 font: {
                     lineHeight: 13,
                     style: "normal",
-                    color: "#9f9f9f"
-                }
-            }
+                    color: "#9f9f9f",
+                },
+            },
         };
-    $("#visit-over-time")[0] && $.plot($("#visit-over-time"), dataset, options)
-
-
-})(jQuery); 
+    $("#visit-over-time")[0] && $.plot($("#visit-over-time"), dataset, options);
+})(jQuery);

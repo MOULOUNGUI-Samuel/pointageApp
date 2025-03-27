@@ -103,7 +103,7 @@
 
 <body
     style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
-url('{{ asset('src/images/login.webp') }}') no-repeat center center;
+url('{{ asset('src/images/admin.jpg') }}') no-repeat center center;
 background-size: cover;
 background-attachment: fixed;
 color: #fff;">
@@ -113,57 +113,26 @@ color: #fff;">
     <!-- Login Register area Start-->
     <div class="center-container">
         <div class="container px-5">
+
             <div class="row">
-                <div class="col-md-2 text-left">
-                    <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
+                <div class="col-md-12">
+                    <div class="text-center my-1">
+                        <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                         style="max-width: 150px;">
-                </div>
-                <div class="col-md-8">
-                    <div class="text-center my-1  mt-3">
-                        <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;"></h1>
-                    </div>
-                    <div class="text-center">
-                        <h4>N’oubliez pas de pointer votre retour si vous revenez. Bonne sortie !
+                        <h4>Bienvenue ! Veuillez vous connecter pour continuer.
                         </h4>
                     </div>
-
-                    <script>
-                        function updateDateTime() {
-                            let now = new Date();
-                            let dateTimeString = now.toLocaleString("fr-FR", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric"
-                            });
-                            document.getElementById("currentDateTime").innerText = dateTimeString;
-                        }
-                        setInterval(updateDateTime, 1000); // Met à jour chaque seconde
-                        updateDateTime();
-                    </script>
-                    <script>
-                        function updateTime() {
-                            let now = new Date();
-                            let hours = now.getHours().toString().padStart(2, '0');
-                            let minutes = now.getMinutes().toString().padStart(2, '0');
-                            let seconds = now.getSeconds().toString().padStart(2, '0');
-                            document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                        }
-
-                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                        updateTime(); // Exécute immédiatement au chargement
-                    </script>
 
                 </div>
                 <div class="col-md-12">
                     <div class="row p-3">
                         <div class="col"></div>
-                        <div class="col-md-8 col-sm-12">
-                            <div class="input-group shadow-sm rounded"
+                        <div class="col-md-6 col-sm-12">
+                            <div class="input-group shadow-sm rounded mt-4"
                                 style="background: none;border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-list-numbered"
+                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-email"
                                         style="font-size: 25px"></i></span>
-                                <input type="number" class="form-control text-white" placeholder="Matricule"
+                                <input type="email" class="form-control text-white" placeholder="Adresse email"
                                     style="border:none;padding: 20px;background: transparent">
                             </div>
 
@@ -183,95 +152,16 @@ color: #fff;">
                                 </span>
                             </div>
 
+                            <div class="text-center mt-5">
+                                <a href="{{ url("/") }}" class="btn btn-gradient w-50">
+                                    Se Connecter
+                                </a>
+                            </div>
                         </div>
                         <div class="col"></div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
-                    </div>
-                </div>
 
-                <div class="col-md-12">
-                    <div class="px-5 pb-4">
-                        <div class="row">
-                            <div class="col"> </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
-                                                <input id="ts3" type="checkbox" hidden="hidden">
-                                                <label for="ts3" class="ts-helper"></label>
-                                                <label for="ts3" class="ts-label">Visite médicale</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
-                                                <input id="ts4" type="checkbox" hidden="hidden">
-                                                <label for="ts4" class="ts-helper"></label>
-                                                <label for="ts4" class="ts-label">Courses essentielles</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
-                                                <input id="ts5" type="checkbox" hidden="hidden">
-                                                <label for="ts5" class="ts-helper"></label>
-                                                <label for="ts5" class="ts-label">Prospection</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
-                                                <input id="ts6" type="checkbox" hidden="hidden">
-                                                <label for="ts6" class="ts-helper"></label>
-                                                <label for="ts6" class="ts-label">Pause</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
-                                                <input id="ts7" type="checkbox" hidden="hidden"
-                                                    onclick="showDescription()">
-                                                <label for="ts7" class="ts-helper"></label>
-                                                <label for="ts7" class="ts-label">Autre</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12" style="display: none" id="description">
-                                        <div class="form-group  mg-t-30">
-                                            <div class="floating-label">
-                                                <div class="input-group custom shadow">
-                                                    <textarea class="form-control shadow rounded" name="description" rows="1" cols=""
-                                                        style="height: 80px;overflow: auto;" placeholder="Veuillez renseigner la cause">{{ old('description') }}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mt-3">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="{{ url('/login') }}" class="btn btn-gradient1 ">
-                                            <i class="icon-close-solid"></i> Annuler
-                                        </a>
-                                        <button class="btn btn-gradient">
-                                            <i class="icon-save-disk"></i> Enrégristrer
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col"> </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -289,18 +179,6 @@ color: #fff;">
                 passwordField.type = "password"; // Masque le mot de passe
                 toggleIcon.classList.remove("icon-eye-blocked");
                 toggleIcon.classList.add("icon-eye");
-            }
-        }
-    </script>
-    <script>
-        function showDescription() {
-            let checkbox = document.getElementById("ts7");
-            let descriptionDiv = document.getElementById("description");
-
-            if (checkbox.checked) {
-                descriptionDiv.style.display = "block"; // Affiche le textarea
-            } else {
-                descriptionDiv.style.display = "none"; // Cache le textarea
             }
         }
     </script>
