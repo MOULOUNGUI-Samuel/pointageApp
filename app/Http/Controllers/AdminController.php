@@ -14,6 +14,11 @@ class AdminController extends Controller
         //
         return view("auth.loginAdmin");
     }
+    public function index_dashboard()
+    {
+        //
+        return view("dashboard");
+    }
 
     /**
      * Show the form for creating a new resource.

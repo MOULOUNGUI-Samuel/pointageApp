@@ -118,53 +118,93 @@ color: #fff;">
                 <div class="col-md-12">
                     <div class="text-center my-1">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
-                        style="max-width: 150px;">
+                            style="max-width: 150px;">
                         <h4>Bienvenue ! Veuillez vous connecter pour continuer.
                         </h4>
                     </div>
 
                 </div>
                 <div class="col-md-12">
-                    <div class="row p-3">
+                    <div class="row">
                         <div class="col"></div>
-                        <div class="col-md-6 col-sm-12">
-                            <div class="input-group shadow-sm rounded mt-4"
-                                style="background: none;border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-email"
-                                        style="font-size: 25px"></i></span>
-                                <input type="email" class="form-control text-white" placeholder="Adresse email"
-                                    style="border:none;padding: 20px;background: transparent">
-                            </div>
-
-                            <div class="input-group mt-3 shadow-sm rounded"
-                                style="background: none; border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro">
-                                    <i class="icon-key" style="font-size: 25px"></i>
-                                </span>
-                                <div class="nk-int-st">
-                                    <input type="password" id="passwordField" class="form-control text-white"
-                                        placeholder="Mot de passe"
-                                        style="border: none; padding: 20px; background: transparent">
+                        <div class="col-md-6">
+                            @if ($errors->any())
+                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li style="display: flex; justify-content: space-between;">
+                                                <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                    {{ $error }}</span>
+                                                 <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
-                                <!-- Icône pour afficher/masquer -->
-                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                    <i id="toggleIcon" class="icon-eye" style="font-size: 25px; cursor: pointer;"></i>
-                                </span>
-                            </div>
-
-                            <div class="text-center mt-5">
-                                <a href="{{ url("/") }}" class="btn btn-gradient w-50">
-                                    Se Connecter
-                                </a>
-                            </div>
+                            @endif
                         </div>
                         <div class="col"></div>
                     </div>
+                    <form action="{{ route('login') }}" method="post">
+                        @csrf
+                        <div class="row p-3">
+                            <div class="col"></div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="input-group shadow-sm rounded mt-4"
+                                    style="background: none;border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-list-numbered"
+                                            style="font-size: 25px"></i></span>
+                                    <input type="number" class="form-control text-white" name="matricule"
+                                        value="{{ old('matricule') }}" placeholder="Votre matricule"
+                                        style="border:none;padding: 20px;background: transparent" required>
+                                </div>
+
+                                <div class="input-group mt-3 shadow-sm rounded"
+                                    style="background: none; border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro">
+                                        <i class="icon-key" style="font-size: 25px"></i>
+                                    </span>
+                                    <div class="nk-int-st">
+                                        <input type="password" id="passwordField" name="password"
+                                            class="form-control text-white" placeholder="Mot de passe"
+                                            style="border: none; padding: 20px; background: transparent" required>
+                                    </div>
+                                    <!-- Icône pour afficher/masquer -->
+                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                        <i id="toggleIcon" class="icon-eye"
+                                            style="font-size: 25px; cursor: pointer;"></i>
+                                    </span>
+                                </div>
+
+                                @if (session('error'))
+                                    <div class="alert alert-danger text-center mt-3">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                                <div class="text-center mt-5">
+                                    <button type="submit" class="btn btn-gradient w-50">
+                                        Se Connecter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </form>
                 </div>
 
             </div>
         </div>
-
+        <div class="footer-copyright-area" style="position: fixed; bottom: 0; width: 100%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="footer-copy-right">
+                            <p>Copyright © 2025. Tous droits réservés. YodIngenierie Gabon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         function togglePassword() {

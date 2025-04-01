@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?8ns1up');
-  src:  url('fonts/icomoon.eot?8ns1up#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?8ns1up') format('truetype'),
-    url('fonts/icomoon.woff?8ns1up') format('woff'),
-    url('fonts/icomoon.svg?8ns1up#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?rnzltr');
+  src:  url('fonts/icomoon.eot?rnzltr#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?rnzltr') format('truetype'),
+    url('fonts/icomoon.woff?rnzltr') format('woff'),
+    url('fonts/icomoon.svg?rnzltr#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,26 +25,71 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-email:before {
-  content: "\e903";
+.icon-play-alt:before {
+  content: "\e908";
 }
-.icon-close-solid:before {
-  content: "\e902";
+.icon-library:before {
+  content: "\e921";
 }
-.icon-save-disk:before {
-  content: "\e901";
+.icon-profile:before {
+  content: "\e923";
 }
-.icon-app_registration:before {
-  content: "\e900";
+.icon-folder-open:before {
+  content: "\e930";
+}
+.icon-folder-plus:before {
+  content: "\e931";
+}
+.icon-clock:before {
+  content: "\e94e";
+}
+.icon-clock2:before {
+  content: "\e94f";
+}
+.icon-calendar:before {
+  content: "\e953";
+}
+.icon-printer:before {
+  content: "\e954";
 }
 .icon-database:before {
   content: "\e964";
 }
+.icon-forward:before {
+  content: "\e969";
+}
+.icon-user:before {
+  content: "\e971";
+}
+.icon-users:before {
+  content: "\e972";
+}
+.icon-user-plus:before {
+  content: "\e973";
+}
+.icon-user-minus:before {
+  content: "\e974";
+}
+.icon-user-check:before {
+  content: "\e975";
+}
+.icon-hour-glass:before {
+  content: "\e979";
+}
 .icon-key:before {
   content: "\e98d";
 }
+.icon-bin2:before {
+  content: "\e9ad";
+}
+.icon-clipboard:before {
+  content: "\e9b8";
+}
 .icon-list-numbered:before {
   content: "\e9b9";
+}
+.icon-list:before {
+  content: "\e9ba";
 }
 .icon-cloud-download:before {
   content: "\e9c2";
@@ -58,9 +103,59 @@
 .icon-eye-blocked:before {
   content: "\e9d1";
 }
+.icon-warning:before {
+  content: "\ea07";
+}
+.icon-plus:before {
+  content: "\ea0a";
+}
+.icon-blocked:before {
+  content: "\ea0e";
+}
 .icon-enter:before {
   content: "\ea13";
 }
 .icon-exit:before {
   content: "\ea14";
+}
+.icon-file-pdf:before {
+  content: "\eadf";
+}
+.icon-sign-out:before {
+  content: "\e90b";
+}
+.icon-edit:before {
+  content: "\e90a";
+}
+.icon-pencil-square-o:before {
+  content: "\e90a";
+}
+.icon-cogs:before {
+  content: "\e904";
+}
+.icon-email:before {
+  content: "\e903";
+}
+.icon-subdirectory-right:before {
+  content: "\e909";
+}
+.icon-music-playlist:before {
+  content: "\e907";
+}
+.icon-close-solid:before {
+  content: "\e902";
+}
+.icon-save-disk:before {
+  content: "\e901";
+}
+.icon-app_registration:before {
+  content: "\e900";
+}
+.icon-microsoftexcel:before {
+  content: "\e905";
+  color: #217346;
+}
+.icon-microsoftword:before {
+  content: "\e906";
+  color: #2b579a;
 }

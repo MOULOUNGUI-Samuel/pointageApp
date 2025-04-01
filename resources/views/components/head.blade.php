@@ -57,7 +57,19 @@
     <!-- responsive CSS
         ============================================ -->
     <link rel="stylesheet" href="{{ asset('src/css/responsive.css') }}">
+    <!-- Data Table JS
+		============================================ -->
+        <link rel="stylesheet" href="{{ asset('src/css/jquery.dataTables.min.css') }}">
     <!-- modernizr JS
         ============================================ -->
     <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('src/css/bootstrap-select/bootstrap-select.css') }}">
+    <!-- datapicker CSS
+		============================================ -->
+    <link rel="stylesheet" href="{{ asset('src/css/datapicker/datepicker3.css') }}">
+    <!-- Color Picker CSS
+		============================================ -->
+    <link rel="stylesheet" href="{{ asset('css/color-picker/farbtastic.css') }}">
+    <!-- bootstrap select CSS
+		============================================ -->
 </head>

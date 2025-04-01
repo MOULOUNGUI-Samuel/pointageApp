@@ -73,7 +73,7 @@
         <![endif]-->
     <!-- Login Register area Start-->
     <div class="login-content"
-    style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
+        style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
     url('{{ asset('src/images/login.webp') }}') no-repeat center center;
     background-size: cover;
     background-attachment: fixed;
@@ -88,7 +88,7 @@
                 <!-- Bloc Entrée -->
                 <div class="col-lg-6 col-sm-12 mb-4">
                     <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2 border-success border-start border-1">
+                        <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
                                 <i class="icon-enter text-success" style="font-size: 45px"></i>
                                 <h3 class="text-success fw-bold">Entrée</h3>
@@ -101,7 +101,7 @@
                 <!-- Bloc Sortie -->
                 <div class="col-lg-6 col-sm-12 mb-4">
                     <a href="{{ route('sortie') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2 border-danger border-start border-1">
+                        <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
                                 <i class="icon-exit text-danger" style="font-size: 45px"></i>
                                 <h3 class="text-danger fw-bold">Sortie</h3>

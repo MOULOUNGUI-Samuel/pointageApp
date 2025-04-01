@@ -201,7 +201,7 @@ color: #fff;">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts3" type="checkbox" hidden="hidden">
                                                 <label for="ts3" class="ts-helper"></label>
                                                 <label for="ts3" class="ts-label">Visite médicale</label>
@@ -210,7 +210,7 @@ color: #fff;">
                                     </div>
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts4" type="checkbox" hidden="hidden">
                                                 <label for="ts4" class="ts-helper"></label>
                                                 <label for="ts4" class="ts-label">Courses essentielles</label>
@@ -219,7 +219,7 @@ color: #fff;">
                                     </div>
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts5" type="checkbox" hidden="hidden">
                                                 <label for="ts5" class="ts-helper"></label>
                                                 <label for="ts5" class="ts-label">Prospection</label>
@@ -228,7 +228,7 @@ color: #fff;">
                                     </div>
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts6" type="checkbox" hidden="hidden">
                                                 <label for="ts6" class="ts-helper"></label>
                                                 <label for="ts6" class="ts-label">Pause</label>
@@ -237,7 +237,7 @@ color: #fff;">
                                     </div>
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts7" type="checkbox" hidden="hidden"
                                                     onclick="showDescription()">
                                                 <label for="ts7" class="ts-helper"></label>
@@ -258,7 +258,7 @@ color: #fff;">
                                 </div>
                                 <div class="col-md-12 mt-3">
                                     <div class="d-flex justify-content-between">
-                                        <a href="{{ url('/login') }}" class="btn btn-gradient1 ">
+                                        <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
                                             <i class="icon-close-solid"></i> Annuler
                                         </a>
                                         <button class="btn btn-gradient">

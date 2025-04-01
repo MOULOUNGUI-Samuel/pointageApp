@@ -1,3 +1,29 @@
+<script>
+    function updateDateTime() {
+        let now = new Date();
+        let dateTimeString = now.toLocaleString("fr-FR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+        document.getElementById("currentDateTime").innerText = dateTimeString;
+    }
+    setInterval(updateDateTime, 1000); // Met à jour chaque seconde
+    updateDateTime();
+</script>
+<script>
+    function updateTime() {
+        let now = new Date();
+        let hours = now.getHours().toString().padStart(2, '0');
+        let minutes = now.getMinutes().toString().padStart(2, '0');
+        let seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
+    }
+
+    setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+    updateTime(); // Exécute immédiatement au chargement
+</script>
 <!-- jquery
     ============================================ -->
 <script src="{{ asset('src/js/vendor/jquery-1.12.4.min.js') }}"></script>
@@ -63,7 +89,23 @@
 <script src="{{ asset('src/js/chat/jquery.chat.js') }}"></script>
 <!-- main JS
     ============================================ -->
+<script src="{{ asset('src/js/data-table/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('src/js/data-table/data-table-act.js') }}"></script>
+<!-- main JS
+    ============================================ -->
 <script src="{{ asset('src/js/main.js') }}"></script>
+
+<!-- datapicker JS
+  ============================================ -->
+<script src="{{ asset('src/js/datapicker/bootstrap-datepicker.js') }}"></script>
+<script src="{{ asset('src/js/datapicker/datepicker-active.js') }}"></script>
+<!-- Input Mask JS
+  ============================================ -->
+<script src="{{ asset('src/js/jasny-bootstrap.min.js') }}"></script>
+<!-- bootstrap select JS
+            ============================================ -->
+<script src="{{ asset('src/js/bootstrap-select/bootstrap-select.js') }}"></script>
+
 <!-- tawk chat JS
     ============================================ -->
 {{-- <script src="{{ asset('src/js/tawk-chat.js') }}"></script> --}}

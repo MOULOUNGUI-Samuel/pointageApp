@@ -2,19 +2,30 @@
 <div class="header-top-area">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                 <div>
                     <a href="#"><img src="{{ asset('src/images/YODIPOINTE1.png') }}" alt="" width="96"
                             class="rounded" /></a>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div style="margin-top: 17px; text-align: left;color:aliceblue">
+                    <h4 style="font-size: 25px"> <span id="currentDateTime" class="text-capitalize"> </span> : <span
+                            id="currentTime"></span>
+                    </h4>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="header-top-menu">
                     <ul class="nav navbar-nav notika-top-nav">
-                        <li class="nav-item nc-al"><a href="#" data-toggle="dropdown" role="button"
-                                aria-expanded="false" class="nav-link dropdown-toggle"><span><i
-                                        class="notika-icon notika-alarm"></i></span>
+                        <li class="nav-item nc-al">
+                            <a href="#" data-toggle="dropdown" role="button"
+                            aria-expanded="false" class="nav-link dropdown-toggle"><span><i
+                                class="notika-icon notika-alarm"></i></span>
                             </a>
+
                             <div role="menu" class="dropdown-menu message-dd notification-dd animated zoomIn">
                                 <div class="hd-mg-tt">
                                     <h2>Notification</h2>
@@ -82,11 +93,23 @@
                             </div>
                         </li>
                         <li>
-                            <a href="#" data-toggle="dropdown" role="button"
-                                aria-expanded="false" class="nav-link dropdown-toggle">
-                                <div class="spinner4 spinner-4"></div>
-                                <div class="ntd-ctn"><span>2</span></div>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false"
+                                class="nav-link dropdown-toggle">
+                                <div class="spinner-4">{{ Auth::user()->nom ?? 'Utilisateur' }}<span
+                                    class="caret" style="margin-left: 5px"></span></div>
                             </a>
+                            <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
+                                <li><a href="#"><i class="icon-user" style="font-size: 17px;margin-right:6px"></i><span style="font-size: 15px">Profil</span></a></li>
+                                <li>
+                                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="icon-sign-out" style="font-size: 17px;margin-right:6px"></i>
+                                        <span style="font-size: 15px">Déconnexion</span>
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -205,21 +228,45 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro">
-                    <li class="active"><a data-toggle="tab" href="#Home"><i class="notika-icon notika-house"></i> Home</a>
+
+                    <li class="active" style="cursor: pointer;">
+                        <a href="{{ route('dashboard') }}">
+                            <i class="icon-library" style="font-size: 19px;cursor: pointer;"></i> Accueil
+                        </a>
                     </li>
-                    <li><a data-toggle="tab" href="#mailbox"><i class="notika-icon notika-mail"></i> Email</a>
+
+                    <li class="dropdown-trig-sgn">
+                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
+                            role="button" aria-expanded="false">
+                            <i class="icon-clock2" style="font-size: 19px"></i> Suivi des présences <span
+                                class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
+                            <li><a href="{{ route('liste_presence') }}"><i class="icon-list"
+                                        style="font-size: 13px;margin-right:6px"></i>Liste des présences</a></li>
+                            <li><a href="#"><i class="icon-clock2"
+                                        style="font-size: 15px;margin-right:6px"></i>Heures supplémentaires</a></li>
+                        </ul>
                     </li>
-                    <li><a data-toggle="tab" href="#Interface"><i class="notika-icon notika-edit"></i> Interface</a>
+
+                    <li>
+                        <a href="{{ route('sortie_intermediaire') }}">
+                            <i class="icon-hour-glass" style="font-size: 19px;cursor: pointer;"></i> Sorties
+                            intermédiaires
+                        </a>
                     </li>
-                    <li><a data-toggle="tab" href="#Charts"><i class="notika-icon notika-bar-chart"></i> Charts</a>
-                    </li>
-                    <li><a data-toggle="tab" href="#Tables"><i class="notika-icon notika-windows"></i> Tables</a>
-                    </li>
-                    <li><a data-toggle="tab" href="#Forms"><i class="notika-icon notika-form"></i> Forms</a>
-                    </li>
-                    <li><a data-toggle="tab" href="#Appviews"><i class="notika-icon notika-app"></i> App views</a>
-                    </li>
-                    <li><a data-toggle="tab" href="#Page"><i class="notika-icon notika-support"></i> Pages</a>
+                    <li class="dropdown-trig-sgn">
+                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
+                            role="button" aria-expanded="false">
+                            <i class="icon-cogs" style="font-size: 19px;cursor: pointer;"></i> Paramètres <span
+                                class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
+                            <li><a href="{{ route('liste_entreprise') }}"><i class="icon-database"
+                                        style="font-size: 13px;margin-right:6px"></i>Gestion des entréprises</a></li>
+                            <li><a href="{{ route('liste_employer') }}"><i class="icon-users"
+                                        style="font-size: 15px;margin-right:6px"></i>Gestion des employers</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

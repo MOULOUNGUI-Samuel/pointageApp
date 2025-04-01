@@ -184,7 +184,7 @@ color: #fff;">
                             </div>
 
                             <div class="d-flex justify-content-between mt-5">
-                                <a href="{{ url('/login') }}" class="btn btn-gradient1 ">
+                                <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
                                     <i class="icon-close-solid"></i> Annuler
                                 </a>
                                 <button class="btn btn-gradient">

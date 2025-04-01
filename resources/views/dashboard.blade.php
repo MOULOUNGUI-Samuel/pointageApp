@@ -10,44 +10,44 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">50,000</span></h2>
-                            <p>Total Website Traffics</p>
+                            <h2><span class="counter">10</span></h2>
+                            <p>Nombre d'employés</p>
                         </div>
-                        <div class="sparkline-bar-stats1">9,4,8,6,5,6,4,8,3,5,9,5</div>
+                        <i class="icon-users" style="font-size: 40px; margin-left: auto;"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">90,000</span>k</h2>
-                            <p>Website Impressions</p>
+                            <h2><span class="counter">7</span></h2>
+                            <p>Employés présents</p>
                         </div>
-                        <div class="sparkline-bar-stats2">1,4,8,3,5,6,4,8,3,3,9,5</div>
+                        <i class="icon-user-check" style="font-size: 40px; margin-left: auto;"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2>$<span class="counter">40,000</span></h2>
-                            <p>Total Online Sales</p>
+                            <h2><span class="counter">1</span></h2>
+                            <p>Sorties intermediaires</p>
                         </div>
-                        <div class="sparkline-bar-stats3">4,2,8,2,5,6,3,8,3,5,9,5</div>
+                        <i class="icon-hour-glass" style="font-size: 35px; margin-left: auto;"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">1,000</span></h2>
-                            <p>Total Support Tickets</p>
+                            <h2><span class="counter">2</span></h2>
+                            <p>Employés absences</p>
                         </div>
-                        <div class="sparkline-bar-stats4">2,4,8,4,5,7,4,7,3,5,7,5</div>
+                        <i class="icon-user-minus" style="font-size: 40px; margin-left: auto;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- End Status area-->
-   
+
     <!-- Start Email Statistic area-->
     <div class="notika-email-post-area mg-t-30">
         <div class="container">
@@ -56,16 +56,16 @@
                     <div class="email-statis-inner notika-shadow">
                         <div class="email-ctn-round">
                             <div class="email-rdn-hd">
-                                <h2>Email Statistics</h2>
+                                <h2>Évolution des pointages</h2>
                             </div>
                             <div class="email-statis-wrap">
                                 <div class="email-round-nock">
                                     <input type="text" class="knob" value="0" data-rel="55" data-linecap="round"
-                                        data-width="130" data-bgcolor="#E4E4E4" data-fgcolor="#0384ca" data-thickness=".10"
+                                        data-width="110" data-bgcolor="#E4E4E4" data-fgcolor="#0384ca" data-thickness=".10"
                                         data-readonly="true">
                                 </div>
                                 <div class="email-ctn-nock">
-                                    <p>Total Emails Sent</p>
+                                    <p>Taux d'absence <strong>de la semaine</strong></p>
                                 </div>
                             </div>
                             <div class="email-round-gp">
@@ -76,7 +76,7 @@
                                             data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                     <div class="email-ctn-nock">
-                                        <p>Bounce Rate</p>
+                                        <p>Taux d'absence <strong>du mois</strong></p>
                                     </div>
                                 </div>
                                 <div class="email-round-pro">
@@ -86,7 +86,7 @@
                                             data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                     <div class="email-ctn-nock">
-                                        <p>Total Opened</p>
+                                        <p>Taux de congé <strong>de la semaine</strong></p>
                                     </div>
                                 </div>
                                 <div class="email-round-pro sm-res-ds-n lg-res-mg-bl">
@@ -96,94 +96,9 @@
                                             data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                     <div class="email-ctn-nock">
-                                        <p>Total Ignored</p>
+                                        <p>Taux de congé <strong>du mois</strong></p>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                    <div class="recent-post-wrapper notika-shadow sm-res-mg-t-30 tb-res-ds-n dk-res-ds">
-                        <div class="recent-post-ctn">
-                            <div class="recent-post-title">
-                                <h2>Recent Posts</h2>
-                            </div>
-                        </div>
-                        <div class="recent-post-items">
-                            <div class="recent-post-signle rct-pt-mg-wp">
-                                <a href="#">
-                                    <div class="recent-post-flex">
-                                        <div class="recent-post-img">
-                                            <img src="img/post/2.jpg" alt="" />
-                                        </div>
-                                        <div class="recent-post-it-ctn">
-                                            <h2>Smith</h2>
-                                            <p>Nunc quis diam diamurabitur at dolor elementum, dictum turpis vel</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="recent-post-signle">
-                                <a href="#">
-                                    <div class="recent-post-flex rct-pt-mg">
-                                        <div class="recent-post-img">
-                                            <img src="img/post/1.jpg" alt="" />
-                                        </div>
-                                        <div class="recent-post-it-ctn">
-                                            <h2>John Deo</h2>
-                                            <p>Nunc quis diam diamurabitur at dolor elementum, dictum turpis vel</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="recent-post-signle">
-                                <a href="#">
-                                    <div class="recent-post-flex rct-pt-mg">
-                                        <div class="recent-post-img">
-                                            <img src="img/post/4.jpg" alt="" />
-                                        </div>
-                                        <div class="recent-post-it-ctn">
-                                            <h2>Malika</h2>
-                                            <p>Nunc quis diam diamurabitur at dolor elementum, dictum turpis vel</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="recent-post-signle">
-                                <a href="#">
-                                    <div class="recent-post-flex rct-pt-mg">
-                                        <div class="recent-post-img">
-                                            <img src="img/post/2.jpg" alt="" />
-                                        </div>
-                                        <div class="recent-post-it-ctn">
-                                            <h2>Smith</h2>
-                                            <p>Nunc quis diam diamurabitur at dolor elementum, dictum turpis vel</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="recent-post-signle">
-                                <a href="#">
-                                    <div class="recent-post-flex rct-pt-mg">
-                                        <div class="recent-post-img">
-                                            <img src="img/post/1.jpg" alt="" />
-                                        </div>
-                                        <div class="recent-post-it-ctn">
-                                            <h2>John Deo</h2>
-                                            <p>Nunc quis diam diamurabitur at dolor elementum, dictum turpis vel</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="recent-post-signle">
-                                <a href="#">
-                                    <div class="recent-post-flex rc-ps-vw">
-                                        <div class="recent-post-line rct-pt-mg">
-                                            <p>View All</p>
-                                        </div>
-                                    </div>
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -193,7 +108,7 @@
                         <div class="rc-it-ltd">
                             <div class="recent-items-ctn">
                                 <div class="recent-items-title">
-                                    <h2>Recent Items</h2>
+                                    <h2 style="color:rgba(196, 12, 12, 0.877)">Employés sans trace de présence</h2>
                                 </div>
                             </div>
                             <div class="recent-items-inn">
@@ -201,38 +116,83 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
-                                            <th style="width: 60px">Price</th>
+                                            <th>Nom(s) et prenoms(s)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td class="f-500 c-cyan">4555</td>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px"/></td>
                                             <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">$921</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan">4556</td>
-                                            <td>Huawei Ascend P6</td>
-                                            <td class="f-500 c-cyan">$240</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan">8778</td>
-                                            <td>HTC One M8</td>
-                                            <td class="f-500 c-cyan">$400</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan">5667</td>
-                                            <td>Samsung Galaxy Alpha</td>
-                                            <td class="f-500 c-cyan">$870</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan">7886</td>
-                                            <td>LG G3</td>
-                                            <td class="f-500 c-cyan">$790</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div class="recent-post-signle">
+                                    <a href="#">
+                                        <div class="recent-post-flex rc-ps-vw">
+                                            <div class="recent-post-line rct-pt-mg">
+                                                <p  style="color:rgba(196, 12, 12, 0.877)">Voir plus</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                    <div class="recent-items-wp notika-shadow sm-res-mg-t-30">
+                        <div class="rc-it-ltd">
+                            <div class="recent-items-ctn">
+                                <div class="recent-items-title">
+                                    <h2  style="color:green">Employés déjà presents</h2>
+                                </div>
+                            </div>
+                            <div class="recent-items-inn">
+                                <table class="table table-inner table-vmiddle">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nom(s) et prenoms(s)</th>
+                                            <th style="width: 60px">Heure</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
+                                            <td>Samsung Galaxy Mega</td>
+                                            <td class="f-500 c-cyan">07H30</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
+                                            <td>Samsung Galaxy Mega</td>
+                                            <td class="f-500 c-cyan">07H30</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
+                                            <td>Samsung Galaxy Mega</td>
+                                            <td class="f-500 c-cyan">07H30</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
+                                            <td>Samsung Galaxy Mega</td>
+                                            <td class="f-500 c-cyan">07H30</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
+                                            <td>Samsung Galaxy Mega</td>
+                                            <td class="f-500 c-cyan">07H30</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="recent-post-signle">
+                                    <a href="#">
+                                        <div class="recent-post-flex rc-ps-vw">
+                                            <div class="recent-post-line rct-pt-mg">
+                                                <p style="color:green">Voir plus</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -241,4 +201,5 @@
         </div>
     </div>
     <!-- End Email Statistic area-->
+   
 @endsection
