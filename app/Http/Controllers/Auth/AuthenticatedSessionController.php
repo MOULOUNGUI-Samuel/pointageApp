@@ -106,12 +106,12 @@ class AuthenticatedSessionController extends Controller
                     $PointagesIntermediaires = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
                         ->orderBy('id', 'desc')
                         ->first();
-                        $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
-                        if ($le_pointageIntermediaire) {
-                            $le_pointageIntermediaire->statut = 1;
-                            $le_pointageIntermediaire->heure_entrer = now()->format('H:i:s');
-                            $le_pointageIntermediaire->save();
-                        }
+                    $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
+                    if ($le_pointageIntermediaire) {
+                        $le_pointageIntermediaire->statut = 1;
+                        $le_pointageIntermediaire->heure_entrer = now()->format('H:i:s');
+                        $le_pointageIntermediaire->save();
+                    }
                     // Vérifier s’il a déjà pointé sa sortie aujourd’hui
                     if ($PointagesIntermediaires) {
                         $ladescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $PointagesIntermediaires->id)
@@ -233,6 +233,13 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
                 return redirect()->route('loginPointe')->with('success', 'Le pointage de sortie a été effectué avec succès.');
             } else {
+                if ($user->role_user !== 'RH' && $user->role_user !== 'Admin') {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return redirect()->back()
+                        ->withInput($request->only('matricule'))
+                        ->withErrors(['login' => 'Informations de connexion incorrectes, merci de réessayer.']);
+                }
                 // Redirection pour les rôles autres que Employer
                 return redirect()->intended(route('dashboard', absolute: false));
             }

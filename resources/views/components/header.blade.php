@@ -255,6 +255,7 @@
                             intermédiaires
                         </a>
                     </li>
+                    @if(Auth::user()->role == 'Admin')
                     <li class="dropdown-trig-sgn">
                         <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
                             role="button" aria-expanded="false">
@@ -268,6 +269,12 @@
                                         style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a></li>
                         </ul>
                     </li>
+                    @else
+                    <li>
+                        <a href="{{ route('liste_employer') }}"><i class="icon-users"
+                            style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </div>
