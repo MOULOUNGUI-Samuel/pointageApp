@@ -20,9 +20,7 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 
 // Route::get('/LoginAdmin', [AdminController::class, 'index'])->name('loginAdmin');
 
-Route::get('/loginPointe', function () {
-    return view('auth.login');
-});
+Route::get('/loginPointe', [pointeController::class, 'loginPointe'])->name('loginPointe');
 Route::get('/sotier', [pointeController::class, 'index'])->name('sortie');
 Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
 
@@ -39,8 +37,9 @@ Route::middleware('auth')->group(
 
         Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
         Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
+        Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
 
-        Route::get('/liste_employer', [pointeController::class, 'liste_employer'])->name('liste_employer');
+        Route::get('/liste_employer', [AdminController::class, 'liste_employer'])->name('liste_employer');
     }
 );
 require __DIR__ . '/auth.php';

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?rnzltr');
-  src:  url('fonts/icomoon.eot?rnzltr#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?rnzltr') format('truetype'),
-    url('fonts/icomoon.woff?rnzltr') format('woff'),
-    url('fonts/icomoon.svg?rnzltr#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?e87oqx');
+  src:  url('fonts/icomoon.eot?e87oqx#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?e87oqx') format('truetype'),
+    url('fonts/icomoon.woff?e87oqx') format('woff'),
+    url('fonts/icomoon.svg?e87oqx#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,8 +25,44 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-box:before {
+  content: "\e90c";
+}
+.icon-app_registration:before {
+  content: "\e900";
+}
+.icon-save-disk:before {
+  content: "\e901";
+}
+.icon-close:before {
+  content: "\e902";
+}
+.icon-email:before {
+  content: "\e903";
+}
+.icon-cogs:before {
+  content: "\e904";
+}
+.icon-microsoftexcel:before {
+  content: "\e905";
+}
+.icon-microsoftword:before {
+  content: "\e906";
+}
+.icon-music-playlist:before {
+  content: "\e907";
+}
 .icon-play-alt:before {
   content: "\e908";
+}
+.icon-subdirectory-right:before {
+  content: "\e909";
+}
+.icon-edit:before {
+  content: "\e90a";
+}
+.icon-sign-out:before {
+  content: "\e90b";
 }
 .icon-library:before {
   content: "\e921";
@@ -121,41 +157,6 @@
 .icon-file-pdf:before {
   content: "\eadf";
 }
-.icon-sign-out:before {
-  content: "\e90b";
-}
-.icon-edit:before {
-  content: "\e90a";
-}
-.icon-pencil-square-o:before {
-  content: "\e90a";
-}
-.icon-cogs:before {
-  content: "\e904";
-}
-.icon-email:before {
-  content: "\e903";
-}
-.icon-subdirectory-right:before {
-  content: "\e909";
-}
-.icon-music-playlist:before {
-  content: "\e907";
-}
-.icon-close-solid:before {
-  content: "\e902";
-}
-.icon-save-disk:before {
-  content: "\e901";
-}
-.icon-app_registration:before {
-  content: "\e900";
-}
-.icon-microsoftexcel:before {
-  content: "\e905";
-  color: #217346;
-}
-.icon-microsoftword:before {
-  content: "\e906";
-  color: #2b579a;
+.icon-lock:before {
+  content: "\e98f";
 }

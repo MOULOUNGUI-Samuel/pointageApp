@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pointages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('users_id')->nullable();
+            $table->uuid('user_id')->nullable();
             $table->date('date_arriver')->nullable();
             $table->date('date_fin')->nullable();
             $table->time('heure_arriver')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('autorisation_absence')->nullable();
             $table->timestamps();
 
-            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

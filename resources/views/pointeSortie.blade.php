@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Login Register | Notika - Notika Admin Template</title>
+    <title>Yodipointe</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -113,169 +113,250 @@ color: #fff;">
     <!-- Login Register area Start-->
     <div class="center-container">
         <div class="container px-5">
-            <div class="row">
-                <div class="col-md-2 text-left">
-                    <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
-                        style="max-width: 150px;">
-                </div>
-                <div class="col-md-8">
-                    <div class="text-center my-1  mt-3">
-                        <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;"></h1>
+            <form action="{{ route('login') }}" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-2 text-left">
+                        <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
+                            style="max-width: 150px;">
                     </div>
-                    <div class="text-center">
-                        <h4>N’oubliez pas de pointer votre retour si vous revenez. Bonne sortie !
-                        </h4>
-                    </div>
-
-                    <script>
-                        function updateDateTime() {
-                            let now = new Date();
-                            let dateTimeString = now.toLocaleString("fr-FR", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric"
-                            });
-                            document.getElementById("currentDateTime").innerText = dateTimeString;
-                        }
-                        setInterval(updateDateTime, 1000); // Met à jour chaque seconde
-                        updateDateTime();
-                    </script>
-                    <script>
-                        function updateTime() {
-                            let now = new Date();
-                            let hours = now.getHours().toString().padStart(2, '0');
-                            let minutes = now.getMinutes().toString().padStart(2, '0');
-                            let seconds = now.getSeconds().toString().padStart(2, '0');
-                            document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                        }
-
-                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                        updateTime(); // Exécute immédiatement au chargement
-                    </script>
-
-                </div>
-                <div class="col-md-12">
-                    <div class="row p-3">
-                        <div class="col"></div>
-                        <div class="col-md-8 col-sm-12">
-                            <div class="input-group shadow-sm rounded"
-                                style="background: none;border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-list-numbered"
-                                        style="font-size: 25px"></i></span>
-                                <input type="number" class="form-control text-white" placeholder="Matricule"
-                                    style="border:none;padding: 20px;background: transparent">
-                            </div>
-
-                            <div class="input-group mt-3 shadow-sm rounded"
-                                style="background: none; border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro">
-                                    <i class="icon-key" style="font-size: 25px"></i>
-                                </span>
-                                <div class="nk-int-st">
-                                    <input type="password" id="passwordField" class="form-control text-white"
-                                        placeholder="Mot de passe"
-                                        style="border: none; padding: 20px; background: transparent">
-                                </div>
-                                <!-- Icône pour afficher/masquer -->
-                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                    <i id="toggleIcon" class="icon-eye" style="font-size: 25px; cursor: pointer;"></i>
-                                </span>
-                            </div>
-
+                    <div class="col-md-8">
+                        <div class="text-center my-1  mt-3">
+                            <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;">
+                            </h1>
                         </div>
-                        <div class="col"></div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
-                    </div>
-                </div>
+                        <div class="text-center">
+                            <h4>N’oubliez pas de pointer votre retour si vous revenez. Bonne sortie !
+                            </h4>
+                        </div>
 
-                <div class="col-md-12">
-                    <div class="px-5 pb-4">
+                        <script>
+                            function updateDateTime() {
+                                let now = new Date();
+                                let dateTimeString = now.toLocaleString("fr-FR", {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric"
+                                });
+                                document.getElementById("currentDateTime").innerText = dateTimeString;
+                            }
+                            setInterval(updateDateTime, 1000); // Met à jour chaque seconde
+                            updateDateTime();
+                        </script>
+                        <script>
+                            function updateTime() {
+                                let now = new Date();
+                                let hours = now.getHours().toString().padStart(2, '0');
+                                let minutes = now.getMinutes().toString().padStart(2, '0');
+                                let seconds = now.getSeconds().toString().padStart(2, '0');
+                                document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
+                            }
+
+                            setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+                            updateTime(); // Exécute immédiatement au chargement
+                        </script>
+
+                    </div>
+
+                    <div class="col-md-12">
                         <div class="row">
-                            <div class="col"> </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts3" type="checkbox" hidden="hidden">
-                                                <label for="ts3" class="ts-helper"></label>
-                                                <label for="ts3" class="ts-label">Visite médicale</label>
+                            <div class="col"></div>
+                            <div class="col-md-6 col-sm-12">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li style="display: flex; justify-content: space-between;">
+                                                    <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                        {{ $error }}</span>
+                                                    <button type="button" class="btn-close" data-dismiss="alert"
+                                                        aria-label="Close"></button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                        <div class="row p-3">
+                            @if (session('error'))
+                                <div class="col-md-12" style="text-align: left">
+                                    <div class="row">
+                                        <div class="col"></div>
+                                        <div class="col-md-6">
+                                            <div class="alert alert-danger" role="alert">
+                                                <i class="icon-warning"
+                                                    style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                                                    !</strong> {{ session('error') }}
+                                                <button type="button" class="close" data-dismiss="alert"
+                                                    aria-label="Fermer">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
                                             </div>
                                         </div>
+                                        <div class="col"></div>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts4" type="checkbox" hidden="hidden">
-                                                <label for="ts4" class="ts-helper"></label>
-                                                <label for="ts4" class="ts-label">Courses essentielles</label>
+                                </div>
+                            @endif
+                            <input type="hidden" name="pointagesortie" value="1">
+                            <div class="col"></div>
+                            <div class="col-md-8 col-sm-12">
+                                <div class="input-group shadow-sm rounded"
+                                    style="background: none;border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                            style="font-size: 25px"></i></span>
+                                    <input type="text" class="form-control text-white"
+                                        placeholder="Identifiant de connexion"
+                                        style="border:none;padding: 20px;background: transparent" name="matricule"
+                                        required autocomplete="off">
+                                </div>
+
+                                <div class="input-group mt-3 shadow-sm rounded"
+                                    style="background: none; border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro">
+                                        <i class="icon-key" style="font-size: 25px"></i>
+                                    </span>
+                                    <div class="nk-int-st">
+                                        <input type="password" id="passwordField" class="form-control text-white"
+                                            placeholder="Mot de passe" name="password" required
+                                            style="border: none; padding: 20px; background: transparent">
+                                    </div>
+                                    <!-- Icône pour afficher/masquer -->
+                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                        <i id="toggleIcon" class="icon-eye"
+                                            style="font-size: 25px; cursor: pointer;"></i>
+                                    </span>
+                                </div>
+
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center my-1">
+                            <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="px-5 pb-4">
+
+                            <div class="row">
+                                <div class="col"> </div>
+                                <div class="col-md-8">
+                                    <input type="hidden" id="latitude" name="latitude"
+                                        value="{{ old('latitude') }}" style="color:black">
+                                    <input type="hidden" id="longitude" name="longitude"
+                                        value="{{ old('longitude') }}" style="color:black">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts3" type="checkbox" name="description[]"
+                                                        hidden="hidden" value="Visite médicale">
+                                                    <label for="ts3" class="ts-helper"></label>
+                                                    <label for="ts3" class="ts-label">Visite médicale</label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts5" type="checkbox" hidden="hidden">
-                                                <label for="ts5" class="ts-helper"></label>
-                                                <label for="ts5" class="ts-label">Prospection</label>
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts4" type="checkbox" name="description[]"
+                                                        hidden="hidden" value="Courses essentielles">
+                                                    <label for="ts4" class="ts-helper"></label>
+                                                    <label for="ts4" class="ts-label">Courses
+                                                        essentielles</label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts6" type="checkbox" hidden="hidden">
-                                                <label for="ts6" class="ts-helper"></label>
-                                                <label for="ts6" class="ts-label">Pause</label>
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts5" type="checkbox" name="description[]"
+                                                        hidden="hidden" value="Prospection">
+                                                    <label for="ts5" class="ts-helper"></label>
+                                                    <label for="ts5" class="ts-label">Prospection</label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts7" type="checkbox" hidden="hidden"
-                                                    onclick="showDescription()">
-                                                <label for="ts7" class="ts-helper"></label>
-                                                <label for="ts7" class="ts-label">Autre</label>
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts6" type="checkbox" name="description[]"
+                                                        hidden="hidden" value="Pause">
+                                                    <label for="ts6" class="ts-helper"></label>
+                                                    <label for="ts6" class="ts-label">Pause</label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12" style="display: none" id="description">
-                                        <div class="form-group  mg-t-30">
-                                            <div class="floating-label">
-                                                <div class="input-group custom shadow">
-                                                    <textarea class="form-control shadow rounded" name="description" rows="1" cols=""
-                                                        style="height: 80px;overflow: auto;" placeholder="Veuillez renseigner la cause">{{ old('description') }}</textarea>
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts7" type="checkbox" hidden="hidden"
+                                                        onclick="showDescription()">
+                                                    <label for="ts7" class="ts-helper"></label>
+                                                    <label for="ts7" class="ts-label">Autre</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12" style="display: none" id="description">
+                                            <div class="form-group  mg-t-30">
+                                                <div class="floating-label">
+                                                    <div class="input-group custom shadow">
+                                                        <textarea class="form-control shadow rounded" name="description[]" rows="1" cols=""
+                                                            style="height: 80px;overflow: auto;" placeholder="Veuillez renseigner la cause"></textarea>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12 mt-3">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
-                                            <i class="icon-close-solid"></i> Annuler
-                                        </a>
-                                        <button class="btn btn-gradient">
-                                            <i class="icon-save-disk"></i> Enrégristrer
-                                        </button>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1">
+                                                <i class="icon-close-solid"></i> Annuler
+                                            </a>
+                                            <button type="submit" class="btn btn-gradient">
+                                                <i class="icon-save-disk"></i> Enrégristrer
+                                            </button>
 
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="col"> </div>
                             </div>
-                            <div class="col"> </div>
+
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
     </div>
+    <script>
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    console.log("Latitude:", latitude);
+                    console.log("Longitude:", longitude);
+
+                    // Tu peux ensuite les envoyer à Laravel par AJAX ou les insérer dans un formulaire :
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+                },
+                function(error) {
+                    console.error("Erreur de géolocalisation :", error.message);
+                }
+            );
+        } else {
+            alert("La géolocalisation n’est pas prise en charge par ce navigateur.");
+        }
+    </script>
     <script>
         function togglePassword() {
             let passwordField = document.getElementById("passwordField");

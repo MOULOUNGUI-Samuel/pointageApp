@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Login Register | Notika - Notika Admin Template</title>
+    <title>Yodipointe</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -153,54 +153,127 @@ color: #fff;">
                         setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
                         updateTime(); // Exécute immédiatement au chargement
                     </script>
+                    @if (session('success'))
+                        <div class="alert alert-success " role="alert">
+                            <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
+                                !</strong> {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
 
-                </div>
-                <div class="col-md-12">
-                    <div class="row p-3">
+                    @if (session('error'))
+                        <div class="alert alert-danger" role="alert">
+                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                                !</strong> {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    <div class="row">
                         <div class="col"></div>
-                        <div class="col-md-8 col-sm-12">
-                            <div class="input-group shadow-sm rounded mt-4"
-                                style="background: none;border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-list-numbered"
-                                        style="font-size: 25px"></i></span>
-                                <input type="number" class="form-control text-white" placeholder="Matricule"
-                                    style="border:none;padding: 20px;background: transparent">
-                            </div>
-
-                            <div class="input-group mt-3 shadow-sm rounded"
-                                style="background: none; border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro">
-                                    <i class="icon-key" style="font-size: 25px"></i>
-                                </span>
-                                <div class="nk-int-st">
-                                    <input type="password" id="passwordField" class="form-control text-white"
-                                        placeholder="Mot de passe"
-                                        style="border: none; padding: 20px; background: transparent">
+                        <div class="col-md-10 col-sm-12">
+                            @if ($errors->any())
+                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li style="display: flex; justify-content: space-between;">
+                                                <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                    {{ $error }}</span>
+                                                <button type="button" class="btn-close" data-dismiss="alert"
+                                                    aria-label="Close"></button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
-                                <!-- Icône pour afficher/masquer -->
-                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                    <i id="toggleIcon" class="icon-eye" style="font-size: 25px; cursor: pointer;"></i>
-                                </span>
-                            </div>
-
-                            <div class="d-flex justify-content-between mt-5">
-                                <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
-                                    <i class="icon-close-solid"></i> Annuler
-                                </a>
-                                <button class="btn btn-gradient">
-                                    <i class="icon-save-disk"></i> Enrégristrer
-                                </button>
-
-                            </div>
+                            @endif
                         </div>
                         <div class="col"></div>
                     </div>
+                </div>
+                <div class="col-md-12">
+                    <form action="{{ route('login') }}" method="post">
+                        @csrf
+                        <div class="row p-3">
+                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
+                                style="color:black">
+                                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
+                                style="color:black">
+                                <input type="hidden" name="pointage_entrer" value="1">
+                            <div class="col"></div>
+                            <div class="col-md-8 col-sm-12">
+                                <div class="input-group shadow-sm rounded mt-4"
+                                    style="background: none;border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                            style="font-size: 25px"></i></span>
+                                    <input type="text" class="form-control text-white"
+                                        placeholder="Identifiant de connexion"
+                                        style="border:none;padding: 20px;background: transparent" name="matricule"
+                                        autocomplete="off">
+                                </div>
+
+                                <div class="input-group mt-3 shadow-sm rounded"
+                                    style="background: none; border-bottom: 1px solid #fff">
+                                    <span class="input-group-addon nk-ic-st-pro">
+                                        <i class="icon-key" style="font-size: 25px"></i>
+                                    </span>
+                                    <div class="nk-int-st">
+                                        <input type="password" id="passwordField" class="form-control text-white"
+                                            placeholder="Mot de passe" name="password"
+                                            style="border: none; padding: 20px; background: transparent"
+                                            autocomplete="off">
+                                    </div>
+                                    <!-- Icône pour afficher/masquer -->
+                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                        <i id="toggleIcon" class="icon-eye"
+                                            style="font-size: 25px; cursor: pointer;"></i>
+                                    </span>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-5">
+                                    <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
+                                        <i class="icon-close-solid"></i> Annuler
+                                    </a>
+                                    <button type="submit" class="btn btn-gradient">
+                                        <i class="icon-save-disk"></i> Enrégristrer
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </form>
                 </div>
 
             </div>
         </div>
 
     </div>
+    <script>
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    console.log("Latitude:", latitude);
+                    console.log("Longitude:", longitude);
+
+                    // Tu peux ensuite les envoyer à Laravel par AJAX ou les insérer dans un formulaire :
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+                },
+                function(error) {
+                    console.error("Erreur de géolocalisation :", error.message);
+                }
+            );
+        } else {
+            alert("La géolocalisation n’est pas prise en charge par ce navigateur.");
+        }
+    </script>
     <script>
         function togglePassword() {
             let passwordField = document.getElementById("passwordField");

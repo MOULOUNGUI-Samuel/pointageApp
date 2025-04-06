@@ -1,4 +1,9 @@
 <script>
+    $(document).ready(function() {
+        $('.selectpicker').selectpicker();
+    });
+</script>
+<script>
     function updateDateTime() {
         let now = new Date();
         let dateTimeString = now.toLocaleString("fr-FR", {
@@ -91,20 +96,44 @@
     ============================================ -->
 <script src="{{ asset('src/js/data-table/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('src/js/data-table/data-table-act.js') }}"></script>
-<!-- main JS
-    ============================================ -->
 <script src="{{ asset('src/js/main.js') }}"></script>
-
 <!-- datapicker JS
-  ============================================ -->
+    ============================================ -->
 <script src="{{ asset('src/js/datapicker/bootstrap-datepicker.js') }}"></script>
 <script src="{{ asset('src/js/datapicker/datepicker-active.js') }}"></script>
 <!-- Input Mask JS
-  ============================================ -->
+    ============================================ -->
 <script src="{{ asset('src/js/jasny-bootstrap.min.js') }}"></script>
 <!-- bootstrap select JS
-            ============================================ -->
+    ============================================ -->
 <script src="{{ asset('src/js/bootstrap-select/bootstrap-select.js') }}"></script>
+<!-- icheck JS
+    ============================================ -->
+<script src="{{ asset('src/js/icheck/icheck.min.js') }}"></script>
+<script src="{{ asset('src/js/icheck/icheck-active.js') }}"></script>
+<!-- rangle-slider JS
+    ============================================ -->
+<script src="{{ asset('src/js/rangle-slider/jquery-ui-1.10.4.custom.min.js') }}"></script>
+<script src="{{ asset('src/js/rangle-slider/jquery-ui-touch-punch.min.js') }}"></script>
+<script src="{{ asset('src/js/rangle-slider/rangle-active.js') }}"></script>
+<!-- color-picker JS
+    ============================================ -->
+<script src="{{ asset('src/js/color-picker/farbtastic.min.js') }}"></script>
+<script src="{{ asset('src/js/color-picker/color-picker.js') }}"></script>
+<!-- notification JS
+    ============================================ -->
+<script src="{{ asset('src/js/notification/bootstrap-growl.min.js') }}"></script>
+<script src="{{ asset('src/js/notification/notification-active.js') }}"></script>
+<!-- summernote JS
+    ============================================ -->
+<script src="{{ asset('src/js/summernote/summernote-updated.min.js') }}"></script>
+<script src="{{ asset('src/js/summernote/summernote-active.js') }}"></script>
+<!-- dropzone JS
+    ============================================ -->
+<script src="{{ asset('src/js/dropzone/dropzone.js') }}"></script>
+<!-- chosen JS
+    ============================================ -->
+<script src="{{ asset('src/js/chosen/chosen.jquery.js') }}"></script>
 
 <!-- tawk chat JS
     ============================================ -->

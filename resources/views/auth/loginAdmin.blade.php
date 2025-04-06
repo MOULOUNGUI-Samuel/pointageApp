@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Login Register | Notika - Notika Admin Template</title>
+    <title>Yodipointe</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
   ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="{{asset('src/img/')}}">
     <!-- Google Fonts
   ============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -151,10 +151,10 @@ color: #fff;">
                             <div class="col-md-6 col-sm-12">
                                 <div class="input-group shadow-sm rounded mt-4"
                                     style="background: none;border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-list-numbered"
+                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
                                             style="font-size: 25px"></i></span>
-                                    <input type="number" class="form-control text-white" name="matricule"
-                                        value="{{ old('matricule') }}" placeholder="Votre matricule"
+                                    <input type="text" class="form-control text-white" name="matricule"
+                                        value="{{ old('matricule') }}" placeholder="Votre identifiant"
                                         style="border:none;padding: 20px;background: transparent" required>
                                 </div>
 

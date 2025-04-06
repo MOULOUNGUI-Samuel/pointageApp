@@ -12,7 +12,7 @@ return new class extends Migration
 
     public function up()
     {
-        Schema::create('pointages_intermediaire', function (Blueprint $table) {
+        Schema::create('pointages_intermediaires', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('pointage_id')->nullable();
             $table->time('heure_sortie')->nullable();

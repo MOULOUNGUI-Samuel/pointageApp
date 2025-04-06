@@ -311,21 +311,21 @@
 
   // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
   Selectpicker.DEFAULTS = {
-    noneSelectedText: 'Nothing selected',
-    noneResultsText: 'No results matched {0}',
+    noneSelectedText: 'Rien sélectionné',
+    noneResultsText: 'Aucun résultat correspondant à {0}',
     countSelectedText: function (numSelected, numTotal) {
-      return (numSelected == 1) ? "{0} item selected" : "{0} items selected";
+      return (numSelected == 1) ? "{0} élément sélectionné" : "{0} éléments sélectionnés";
     },
     maxOptionsText: function (numAll, numGroup) {
       return [
-        (numAll == 1) ? 'Limit reached ({n} item max)' : 'Limit reached ({n} items max)',
-        (numGroup == 1) ? 'Group limit reached ({n} item max)' : 'Group limit reached ({n} items max)'
+        (numAll == 1) ? 'Limite atteinte ({n} élément max)' : 'Limite atteinte ({n} éléments max)',
+        (numGroup == 1) ? 'Limite de groupe atteinte ({n} élément max)' : 'Limite de groupe atteinte ({n} éléments max)'
       ];
     },
-    selectAllText: 'Select All',
-    deselectAllText: 'Deselect All',
+    selectAllText: 'Tout sélectionner',
+    deselectAllText: 'Tout désélectionner',
     doneButton: false,
-    doneButtonText: 'Close',
+    doneButtonText: 'Fermer',
     multipleSeparator: ', ',
     styleBase: 'btn',
     style: 'btn-default',

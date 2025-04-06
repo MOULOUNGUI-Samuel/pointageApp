@@ -11,7 +11,7 @@ class Pointage extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'users_id',
+        'user_id',
         'date_arriver',
         'date_fin',
         'heure_arriver',
@@ -31,11 +31,7 @@ class Pointage extends Model
     // Relations
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_users');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function pointages_intermediaires()
-    {
-        return $this->hasMany(PointagesIntermediaire::class, 'id_pointage');
-    }
 }

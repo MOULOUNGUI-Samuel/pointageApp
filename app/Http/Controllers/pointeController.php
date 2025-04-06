@@ -11,6 +11,11 @@ class pointeController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function loginPointe()
+    {
+        //
+        return view('auth.login');
+    }
     public function index()
     {
         //
@@ -37,23 +42,7 @@ class pointeController extends Controller
         return view('components.pointages.liste_entreprise', compact('entreprises'));
     }
 
-    // private function calculateDistance($lat1, $lon1, $lat2, $lon2)
-    // {
-    //     $earthRadius = 6371000; // en mètres
-
-    //     $dLat = deg2rad($lat2 - $lat1);
-    //     $dLon = deg2rad($lon2 - $lon1);
-
-    //     $a = sin($dLat / 2) * sin($dLat / 2) +
-    //         cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-    //         sin($dLon / 2) * sin($dLon / 2);
-
-    //     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-    //     $distance = $earthRadius * $c;
-
-    //     return $distance; // en mètres
-    // }
+    
     public function ajoute_entreprise(Request $request)
     {
 
@@ -106,11 +95,7 @@ class pointeController extends Controller
         return redirect()->back()->with('success', 'Entreprise ajoutée avec succès');
     }
 
-    public function liste_employer()
-    {
-        //
-        return view('components.pointages.liste_employer');
-    }
+   
 
     /**
      * Show the form for creating a new resource.

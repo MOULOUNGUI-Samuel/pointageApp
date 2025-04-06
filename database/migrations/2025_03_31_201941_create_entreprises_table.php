@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->time('heure_debut_pose')->nullable();
             $table->time('heure_fin_pose')->nullable();
-            $table->decimal('latitude', 10, 6);
-            $table->decimal('longitude', 10, 6);
-            $table->integer('rayon_autorise')->default(100); // en mètres
+            $table->double('latitude');
+            $table->double('longitude');
+            $table->integer('rayon_autorise')->default(150); // en mètres
             $table->boolean('statut')->default(1);
             $table->timestamps();
         });

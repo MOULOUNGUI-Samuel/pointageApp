@@ -11,65 +11,45 @@
     <!-- favicon
         ============================================ -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
-    <!-- Google Fonts
-        ============================================ -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
-    <!-- Bootstrap CSS
-        ============================================ -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}">
-    <!-- Font Awesome CSS
-        ============================================ -->
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/font-awesome.min.css') }}">
-    <!-- owl.carousel CSS
-        ============================================ -->
+    <!-- owl.carousel CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/owl.carousel.css') }}">
     <link rel="stylesheet" href="{{ asset('src/css/owl.theme.css') }}">
     <link rel="stylesheet" href="{{ asset('src/css/owl.transitions.css') }}">
-    <!-- meanmenu CSS
-        ============================================ -->
+    <!-- meanmenu CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/meanmenu/meanmenu.min.css') }}">
-    <!-- animate CSS
-        ============================================ -->
+    <!-- animate CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/animate.css') }}">
-    <!-- normalize CSS
-        ============================================ -->
+    <!-- normalize CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/normalize.css') }}">
-    <!-- mCustomScrollbar CSS
-        ============================================ -->
+    <!-- mCustomScrollbar CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/scrollbar/jquery.mCustomScrollbar.min.css') }}">
-    <!-- jvectormap CSS
-        ============================================ -->
+    <!-- jvectormap CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/jvectormap/jquery-jvectormap-2.0.3.css') }}">
-    <!-- notika icon CSS
-        ============================================ -->
+    <!-- notika icon CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/notika-custom-icon.css') }}">
-    <!-- wave CSS
-        ============================================ -->
+    <!-- wave CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/wave/waves.min.css') }}">
-    <!-- main CSS
-        ============================================ -->
+    <!-- main CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/main.css') }}">
-    <!-- style CSS
-        ============================================ -->
+    <!-- style CSS -->
+    <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}">
     <link rel="stylesheet" href="{{ asset('src/style.css') }}">
-    <!-- responsive CSS
-        ============================================ -->
+    <!-- responsive CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/responsive.css') }}">
-    <!-- Data Table JS
-		============================================ -->
-        <link rel="stylesheet" href="{{ asset('src/css/jquery.dataTables.min.css') }}">
-    <!-- modernizr JS
-        ============================================ -->
-    <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+    <!-- Data Table CSS -->
+    <link rel="stylesheet" href="{{ asset('src/css/jquery.dataTables.min.css') }}">
+    <!-- bootstrap select CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/bootstrap-select/bootstrap-select.css') }}">
-    <!-- datapicker CSS
-		============================================ -->
+    <!-- datapicker CSS -->
     <link rel="stylesheet" href="{{ asset('src/css/datapicker/datepicker3.css') }}">
-    <!-- Color Picker CSS
-		============================================ -->
+    <!-- Color Picker CSS -->
     <link rel="stylesheet" href="{{ asset('css/color-picker/farbtastic.css') }}">
-    <!-- bootstrap select CSS
-		============================================ -->
+    <!-- modernizr JS -->
+    <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>

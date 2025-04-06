@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class PointagesIntermediaire extends Model
+class DescriptionPointage extends Model
 {
-    protected $table = 'pointages_intermediaires';
+    protected $table = 'description_pointages';
 
     protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'pointage_id',
-        'heure_sortie',
-        'heure_entrer',
+        'pointage_intermediaire_id',
+        'description',
         'statut',
     ];
 
@@ -24,17 +23,15 @@ class PointagesIntermediaire extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            // Génère un UUID seulement si non déjà défini
             if (!$model->getKey()) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
     }
 
-    // Relations
-    public function pointage()
+    // Relation inverse
+    public function pointageIntermediaire()
     {
-        return $this->belongsTo(Pointage::class, 'pointage_id');
+        return $this->belongsTo(PointagesIntermediaire::class, 'pointage_intermediaire_id');
     }
-
 }

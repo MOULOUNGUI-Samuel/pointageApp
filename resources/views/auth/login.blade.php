@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Login Register | Notika - Notika Admin Template</title>
+    <title>Yodipointe</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
@@ -85,6 +85,30 @@
                     style="max-width: 200px;">
             </div>
             <div class="row text-center mt-4">
+                @if (session('success'))
+                    <div class="col-md-12" style="text-align: left">
+                        <div class="alert alert-success " role="alert">
+                            <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
+                                !</strong> {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="col-md-12" style="text-align: left">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                                !</strong> {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Bloc Entrée -->
                 <div class="col-lg-6 col-sm-12 mb-4">
                     <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">

@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div style="margin-top: 17px; text-align: left;color:aliceblue">
                     <h4 style="font-size: 25px"> <span id="currentDateTime" class="text-capitalize"> </span> : <span
                             id="currentTime"></span>
@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <div class="header-top-menu">
                     <ul class="nav navbar-nav notika-top-nav">
                         <li class="nav-item nc-al">
@@ -265,7 +265,7 @@
                             <li><a href="{{ route('liste_entreprise') }}"><i class="icon-database"
                                         style="font-size: 13px;margin-right:6px"></i>Gestion des entréprises</a></li>
                             <li><a href="{{ route('liste_employer') }}"><i class="icon-users"
-                                        style="font-size: 15px;margin-right:6px"></i>Gestion des employers</a></li>
+                                        style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a></li>
                         </ul>
                     </li>
                 </ul>
