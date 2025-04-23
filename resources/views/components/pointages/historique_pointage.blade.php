@@ -123,35 +123,33 @@ color: #fff;">
                 <h2>Mon Profil</h2>
             </div>
         </div>
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-12" style="text-align: center">
                 <div class="text-center">
                     <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-2"
                         style="max-width: 200px;">
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="row text-center mt-4">
+
+            <div class="col-6 text-left">
+                <label for="filtre-date">DU :</label>
+                <input type="date" id="filtre-date" name="date_debut" class="form-control mb-3">
+            </div>
+            <div class="col-6 text-left">
+                <label for="filtre-date1">AU :</label>
+                <input type="date" id="filtre-date1" name="date_fin" class="form-control mb-3">
+            </div>
+
             <div class="container-custom">
                 <!-- Champ visible (sélecteur de date) -->
-                <div class="row">
-                    <div class="col-5">
-                        <label for="filtre-date">DU :</label>
-                        <input type="date" id="filtre-date" name="date_debut" class="form-control mb-3">
-                    </div>
-                    <div class="col-5">
-                        <label for="filtre-date1">AU :</label>
-                        <input type="date" id="filtre-date1" name="date_fin" class="form-control mb-3">
-                    </div>
-                    <div class="col-2">
-                        <p></p>
-                        <button type="button" onclick="filtrerParPeriode()" style="background-color: transparent;border:none"><i class="icon-checkbox-checked" style="font-size: 45px;cursor: pointer;"></i></button>
-                        
-                    </div>
-                </div>
+
+
+
 
                 @foreach ($Pointages as $Pointage)
-                    <div class="pointage-item" data-status="{{ $Pointage->date_arriver }}">
+                    <div class="pointage-item{{ $Pointage->id }}" data-status="{{ $Pointage->date_arriver }}">
                         <div class="date-header shadow-sm text-capitalize">
                             {{ \App\Helpers\DateHelper::convertirDateEnTexte(App\Helpers\DateHelper::convertirDateFormat($Pointage->date_arriver)) }}
                         </div>
@@ -163,7 +161,9 @@ color: #fff;">
                                         <i class="icon-enter text-success me-2"></i>Entrée :
                                         {{ $Pointage->heure_arriver }}
                                     </span>
-                                    <span class="text-danger" style="font-size: 20px">(en retard)</span>
+                                    @if ($Pointage->heure_arriver > $Pointage->user->entreprise->heure_ouverture)
+                                        <span class="text-danger" style="font-size: 20px">(en retard)</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="mb-2" style="font-size: 20px">
@@ -213,40 +213,49 @@ color: #fff;">
                             @endforeach
                         @endif
                     </div>
-                    <div id="aucun-resultat" class="alert alert-warning text-center" style="display: none;">
-                        Aucun résultat trouvé pour cette date.
-                    </div>
+                    <script>
+                        function filtrerParPeriode() {
+                            const dateDebut = document.getElementById('filtre-date').value;
+                            const dateFin = document.getElementById('filtre-date1').value;
+                            const items = document.querySelectorAll('.pointage-item{{ $Pointage->id }}');
+                            let matchCount = 0;
+
+                            items.forEach(item => {
+                                const itemDate = item.getAttribute('data-status'); // format YYYY-MM-DD
+
+                                if (
+                                    (!dateDebut || itemDate >= dateDebut) &&
+                                    (!dateFin || itemDate <= dateFin)
+                                ) {
+                                    item.style.display = 'block';
+                                    matchCount++;
+                                } else {
+                                    item.style.display = 'none';
+                                }
+                            });
+
+                            const message = document.getElementById('aucun-resultat');
+                            message.style.display = matchCount === 0 ? 'block' : 'none';
+                        }
+
+                        // ⚡ Déclenchement automatique du filtrage
+                        document.getElementById('filtre-date').addEventListener('change', filtrerParPeriode);
+                        document.getElementById('filtre-date1').addEventListener('change', filtrerParPeriode);
+                    </script>
                 @endforeach
+
+                <div id="aucun-resultat" class="alert alert-warning text-center" style="display: none;">
+                    Aucun résultat trouvé pour cette date.
+                </div>
 
             </div>
         </div>
 
     </div>
-    <script>
-        function filtrerParPeriode() {
-            const dateDebut = document.getElementById('filtre-date').value;
-            const dateFin = document.getElementById('filtre-date1').value;
-            const items = document.querySelectorAll('.pointage-item');
-            let matchCount = 0;
 
-            items.forEach(item => {
-                const itemDate = item.getAttribute('data-status'); // format YYYY-MM-DD
 
-                if (
-                    (!dateDebut || itemDate >= dateDebut) &&
-                    (!dateFin || itemDate <= dateFin)
-                ) {
-                    item.style.display = 'block';
-                    matchCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
 
-            const message = document.getElementById('aucun-resultat');
-            message.style.display = matchCount === 0 ? 'block' : 'none';
-        }
-    </script>
+
 
 
 

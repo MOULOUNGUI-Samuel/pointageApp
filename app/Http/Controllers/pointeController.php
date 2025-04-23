@@ -77,11 +77,14 @@ class pointeController extends Controller
     public function historique_pointage()
 {
     $user = Auth::user();
-    $Pointages = Pointage::where('user_id', $user->id)->get();
+    $Pointages = Pointage::with('user.entreprise')->where('user_id', $user->id)
+    ->get();
     $cause_sorties = [];
 
     foreach ($Pointages as $Pointage) {
-        $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)->get();
+        $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
+        ->orderBy('heure_sortie', 'desc')
+        ->get();
 
         foreach ($pointage_intermediaires as $pointage_intermediaire) {
             $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();

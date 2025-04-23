@@ -174,7 +174,7 @@ class AdminController extends Controller
 
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 10371000; // en mètres
+        $earthRadius = 90371000; // en mètres
 
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
@@ -191,10 +191,10 @@ class AdminController extends Controller
     public function pointage_connecter(Request $request)
     {
         $user = Auth::user();
-        
+
         if ($request->pointage_entrer) {
             $entreprise = Entreprise::find($user->entreprise_id);
-            
+
 
             if (!$entreprise) {
                 return redirect()->back()->with('error', 'Entreprise non trouvée.');
@@ -211,9 +211,9 @@ class AdminController extends Controller
             // dd($distance);
             // Vérifier si la distance est supérieure à 200 mètres
             if ($distance > 700) {
-                return redirect()->back()->with('error', 'Vous êtes trop loin du lieu de pointage.');
+                return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
             }
-            
+
             // Vérifier si le compte est actif
             if ($user->statut == 0) {
                 return redirect()->back()->with('error', 'Votre compte est désactivé.');
@@ -234,19 +234,20 @@ class AdminController extends Controller
                 $le_pointage->statut = 1;
                 $le_pointage->save();
 
-
-                $PointagesIntermediaires = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
-                    ->orderBy('id', 'desc')
-                    ->first();
-                $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
+                $le_pointageIntermediaire = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
+                ->orderBy('heure_sortie', 'desc')
+                ->first();
+                
+               
                 if ($le_pointageIntermediaire) {
                     $le_pointageIntermediaire->statut = 1;
                     $le_pointageIntermediaire->heure_entrer = now()->format('H:i:s');
                     $le_pointageIntermediaire->save();
                 }
+
                 // Vérifier s’il a déjà pointé sa sortie aujourd’hui
-                if ($PointagesIntermediaires) {
-                    $ladescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $PointagesIntermediaires->id)
+                if ($le_pointageIntermediaire) {
+                    $ladescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $le_pointageIntermediaire->id)
                         ->get();
 
                     foreach ($ladescriptionPointages as $ladescriptionPointage) {
@@ -299,7 +300,7 @@ class AdminController extends Controller
 
             // Vérifier si la distance est supérieure à 200 mètres
             if ($distance > 700) {
-                return redirect()->back()->with('error', 'Vous êtes trop loin du lieu de pointage.');
+                return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
             }
 
             // Vérifier si le compte est actif

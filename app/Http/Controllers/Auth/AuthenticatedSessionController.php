@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
      */
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 10371000; // en mètres
+        $earthRadius = 90371000; // en mètres
 
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
@@ -77,7 +77,7 @@ class AuthenticatedSessionController extends Controller
                 if ($distance > 700) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
-                    return redirect()->back()->with('error', 'Vous êtes trop loin du lieu de pointage.');
+                    return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
                 }
 
                 // Vérifier si le compte est actif
@@ -106,7 +106,7 @@ class AuthenticatedSessionController extends Controller
 
 
                     $PointagesIntermediaires = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
-                        ->orderBy('id', 'desc')
+                    ->orderBy('heure_sortie', 'desc')
                         ->first();
                     $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
                     if ($le_pointageIntermediaire) {
@@ -179,7 +179,7 @@ class AuthenticatedSessionController extends Controller
                 if ($distance > 700) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
-                    return redirect()->back()->with('error', 'Vous êtes trop loin du lieu de pointage.');
+                    return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
                 }
 
                 // Vérifier si le compte est actif

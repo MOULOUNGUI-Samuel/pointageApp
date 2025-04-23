@@ -124,14 +124,14 @@ color: #fff;">
                     <h2>Mon Profil</h2>
                 </div>
             </div>
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-12" style="text-align: center">
                     <div class="text-center">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-2"
                             style="max-width: 200px;">
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="row text-center mt-4">
                 @if (session('success'))
                     <div class="col-md-12" style="text-align: left">
