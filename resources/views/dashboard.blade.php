@@ -10,7 +10,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">10</span></h2>
+                            <h2><span class="counter">{{ count($employes) }}</span></h2>
                             <p>Nombre d'employés</p>
                         </div>
                         <i class="icon-users" style="font-size: 40px; margin-left: auto;"></i>
@@ -19,7 +19,8 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">7</span></h2>
+
+                            <h2><span class="counter">{{ count($pointages_oui) }}</span></h2>
                             <p>Employés présents</p>
                         </div>
                         <i class="icon-user-check" style="font-size: 40px; margin-left: auto;"></i>
@@ -28,7 +29,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">1</span></h2>
+                            <h2><span class="counter">{{ count($pointage_intermediaires) }}</span></h2>
                             <p>Sorties intermediaires</p>
                         </div>
                         <i class="icon-hour-glass" style="font-size: 35px; margin-left: auto;"></i>
@@ -37,7 +38,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
                         <div class="website-traffic-ctn">
-                            <h2><span class="counter">2</span></h2>
+                            <h2><span class="counter">{{ count($users_non_existants) }}</span></h2>
                             <p>Employés absences</p>
                         </div>
                         <i class="icon-user-minus" style="font-size: 40px; margin-left: auto;"></i>
@@ -120,17 +121,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                        </tr>
+                                        @foreach ($users_non_existants as $absent)
+                                            <tr>
+                                                <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
+                                                        alt="" width="30"
+                                                        style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px" />
+                                                </td>
+                                                <td>{{ $absent->user->nom }} {{ $absent->user->prenom }}</td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                                 <div class="recent-post-signle">
                                     <a href="#">
                                         <div class="recent-post-flex rc-ps-vw">
                                             <div class="recent-post-line rct-pt-mg">
-                                                <p  style="color:rgba(196, 12, 12, 0.877)">Voir plus</p>
+                                                <p style="color:rgba(196, 12, 12, 0.877)">Voir plus</p>
                                             </div>
                                         </div>
                                     </a>
@@ -144,7 +150,7 @@
                         <div class="rc-it-ltd">
                             <div class="recent-items-ctn">
                                 <div class="recent-items-title">
-                                    <h2  style="color:green">Employés déjà presents</h2>
+                                    <h2 style="color:green">Employés déjà presents</h2>
                                 </div>
                             </div>
                             <div class="recent-items-inn">
@@ -157,31 +163,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">07H30</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">07H30</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">07H30</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">07H30</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}" alt="" width="30" style="border: 1px solid green;border-radius:50px"/></td>
-                                            <td>Samsung Galaxy Mega</td>
-                                            <td class="f-500 c-cyan">07H30</td>
-                                        </tr>
+                                        @foreach ($pointages_oui as $present)
+                                            <tr>
+                                                <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
+                                                        alt="" width="30"
+                                                        style="border: 1px solid green;border-radius:50px" /></td>
+                                                <td>{{ $present->user->nom }} {{ $present->user->prenom }}</td>
+                                                <td class="f-500 c-cyan">{{ $present->heure_arriver }}</td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                                 <div class="recent-post-signle">
@@ -201,5 +191,4 @@
         </div>
     </div>
     <!-- End Email Statistic area-->
-   
 @endsection

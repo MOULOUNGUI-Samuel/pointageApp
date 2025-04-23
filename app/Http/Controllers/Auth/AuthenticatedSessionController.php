@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
      */
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 6371000; // en mètres
+        $earthRadius = 10371000; // en mètres
 
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
@@ -44,10 +44,12 @@ class AuthenticatedSessionController extends Controller
         return $earthRadius * $c;
     }
 
+   
 
     public function store(LoginRequest $request): RedirectResponse
     {
         try {
+
             $request->authenticate();
             $request->session()->regenerate();
 
@@ -233,15 +235,12 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
                 return redirect()->route('loginPointe')->with('success', 'Le pointage de sortie a été effectué avec succès.');
             } else {
-                if ($user->role_user !== 'RH' && $user->role_user !== 'Admin') {
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    return redirect()->back()
-                        ->withInput($request->only('matricule'))
-                        ->withErrors(['login' => 'Informations de connexion incorrectes, merci de réessayer.']);
+                if ($user->role_user == 'RH' || $user->role_user == 'Admin') {
+                    // Redirection pour les rôles autres que Employer
+                    return redirect()->intended(route('dashboard', absolute: false));
+                } else {
+                    return redirect()->intended(route('index_employer', absolute: false));
                 }
-                // Redirection pour les rôles autres que Employer
-                return redirect()->intended(route('dashboard', absolute: false));
             }
         } catch (\Exception $e) {
             return redirect()->back()

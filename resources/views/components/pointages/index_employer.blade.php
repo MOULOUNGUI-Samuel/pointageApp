@@ -90,14 +90,15 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Login Register area Start-->
-    <div class="login-content"
-        style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
+    <div class="login-content" style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
     url('{{ asset('src/images/login.webp') }}') no-repeat center center;
     background-size: cover;
     background-attachment: fixed;
     color: #fff;">
         <!-- Login -->
+        
         <div class="nk-block toggled" id="l-login">
+           
             <div class="text-center">
                 <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                     style="max-width: 200px;">
@@ -129,25 +130,44 @@
 
                 <!-- Bloc Entrée -->
                 <div class="col-lg-6 col-sm-12 mb-4">
-                    <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-enter text-success" style="font-size: 45px"></i>
-                                <h3 class="text-success fw-bold">Entrée</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre arrivée.</p>
-                            </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="{{ route('profil_employe') }}" class="text-decoration-none shadow-sm">
+                                <div class="card card-hover-zoom shadow-lg px-2">
+                                    <div class="card-body">
+                                        <i class="icon-profile" style="font-size: 43px"></i>
+                                        <h4 class="fw-bold" style="font-size: 20px">Profil</h4>
+                                        <p class="text-muted">Voir votre profil</p>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
-                    </a>
+                        <div class="col-6">
+                            <a href="{{ route('pointage_compte') }}" class="text-decoration-none shadow-sm">
+                                <div class="card card-hover-zoom shadow-lg px-2">
+                                    <div class="card-body">
+                                        <div class="d-flex text-center mb-1" style="margin-left: 15px">
+                                          <i class="icon-enter text-success me-2" style="font-size: 40px"></i>
+                                          <i class="icon-exit text-danger" style="font-size: 40px"></i>
+                                        </div>
+                                        <h4 class="fw-bold" style="font-size: 20px">Pointage</h4>
+                                        <p class="text-muted">Entrer/Sortie</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
                 </div>
 
                 <!-- Bloc Sortie -->
                 <div class="col-lg-6 col-sm-12 mb-4">
-                    <a href="{{ route('sortie') }}" class="text-decoration-none shadow-sm">
+                    <a href="{{ route('historique_pointage') }}" class="text-decoration-none shadow-sm">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
-                                <i class="icon-exit text-danger" style="font-size: 45px"></i>
-                                <h3 class="text-danger fw-bold">Sortie</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre départ.</p>
+                                <i class="icon-calendar" style="font-size: 45px"></i>
+                                <h4 class="fw-bold" style="font-size: 20px">Historique des pointages</h4>
+                                <p class="text-muted">Consultez vos entrées et sorties en temps réel.</p>
                             </div>
                         </div>
                     </a>

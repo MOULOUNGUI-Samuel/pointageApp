@@ -17,8 +17,6 @@
 
     <!-- Bootstrap CSS
   ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}">
     <!-- font awesome CSS
   ============================================ -->
     <link rel="stylesheet" href="{{ asset('src/css/font-awesome.min.css') }}">
@@ -56,15 +54,35 @@
     <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
 <style>
-    .card-hover-zoom {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+    .profile-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
 
-    .card-hover-zoom:hover {
-        transform: scale(1.05);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-        z-index: 2;
-    }
+        .form-control{
+            padding: 10px;
+            background:transparent;
+            border:1px solid white;
+            font-size: 20px;
+            color:white
+        }
+        .form-control::placeholder {
+            color: #ccc;
+
+        }
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+
 
     .btn-gradient {
         background: linear-gradient(135deg, #3f81b3d8, #d0d7db);
@@ -85,22 +103,34 @@
     }
 </style>
 
-<body>
+<body style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
+url('{{ asset('src/images/login.webp') }}') no-repeat center center;
+background-size: cover;
+background-attachment: fixed;
+color: #fff;">
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Login Register area Start-->
-    <div class="login-content"
-        style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
-    url('{{ asset('src/images/login.webp') }}') no-repeat center center;
-    background-size: cover;
-    background-attachment: fixed;
-    color: #fff;">
         <!-- Login -->
-        <div class="nk-block toggled" id="l-login">
-            <div class="text-center">
-                <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
-                    style="max-width: 200px;">
+        <div class="mx-4" id="l-login">
+            <div class="row" style="margin-top: 40px;">
+                <div class="col-6 text-left">
+                    <a href="{{ route('index_employer') }}">
+                        <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
+                    </a>
+                </div>
+                <div class="col-6 text-right" style="margin-top: 10px;">
+                    <h2>Mon Profil</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12" style="text-align: center">
+                    <div class="text-center">
+                        <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-2"
+                            style="max-width: 200px;">
+                    </div>
+                </div>
             </div>
             <div class="row text-center mt-4">
                 @if (session('success'))
@@ -108,9 +138,6 @@
                         <div class="alert alert-success " role="alert">
                             <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
                                 !</strong> {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
                         </div>
                     </div>
                 @endif
@@ -120,45 +147,53 @@
                         <div class="alert alert-danger" role="alert">
                             <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
                                 !</strong> {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        </div>
+                    </div>
+                @endif
+                @if ($errors->has('password'))
+                    <div class="col-md-12" style="text-align: left">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong></strong> {{ $errors->first('password') }}
                         </div>
                     </div>
                 @endif
 
-                <!-- Bloc Entrée -->
-                <div class="col-lg-6 col-sm-12 mb-4">
-                    <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-enter text-success" style="font-size: 45px"></i>
-                                <h3 class="text-success fw-bold">Entrée</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre arrivée.</p>
-                            </div>
+                <div class="profile-form">
+                    
+                    <form action="{{ route('modifier_employer', Auth::user()->id) }}"
+                        method="post" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Matricule" name="matricule" value="{{ Auth::user()->matricule }}">
                         </div>
-                    </a>
-                </div>
-
-                <!-- Bloc Sortie -->
-                <div class="col-lg-6 col-sm-12 mb-4">
-                    <a href="{{ route('sortie') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-exit text-danger" style="font-size: 45px"></i>
-                                <h3 class="text-danger fw-bold">Sortie</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre départ.</p>
-                            </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ Auth::user()->nom }}">
                         </div>
-                    </a>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Prénom" name="prenom" value="{{ Auth::user()->prenom }}">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Email" name="email" value="{{ Auth::user()->email }}">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" class="form-control" placeholder="date_naissance" name="date_naissance" value="{{ Auth::user()->date_naissance }}">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Fonction" name="fonction" value="{{ Auth::user()->fonction }}">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" name="password1" placeholder="Ancien mot de passe">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" name="password" placeholder="Nouveau mot de passe">
+                        </div>
+                        <button type="submit" class="btn btn-gradient w-100 mt-2">Enregistrer les modifications</button>
+                    </form>
                 </div>
             </div>
 
         </div>
-
-        <!-- Forgot Password -->
-
-    </div>
     <!-- Login Register area End-->
     <!-- jquery
   ============================================ -->

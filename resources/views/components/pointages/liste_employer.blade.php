@@ -217,6 +217,7 @@
                                         <th>Prénom(s)</th>
                                         <th>Date</th>
                                         <th>Email</th>
+                                        <th>Login</th>
                                         <th>Fonction</th>
                                         <th>Action</th>
                                     </tr>
@@ -230,6 +231,7 @@
                                             <td>{{ \Carbon\Carbon::parse($employe->created_at)->locale('fr')->translatedFormat('l d F Y') }}
                                             </td>
                                             <td>{{ $employe->email }}</td>
+                                            <td>{{ $employe->matricule }}</td>
                                             <td>{{ $employe->fonction }}</td>
                                             <td>
                                                 <a href="" class="btn btn-info btn-reco-mg btn-button-mg">

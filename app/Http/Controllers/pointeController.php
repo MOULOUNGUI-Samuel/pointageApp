@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
+use App\Models\Pointage;
+use App\Models\PointagesIntermediaire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+
 class pointeController extends Controller
 {
     /**
@@ -34,38 +38,98 @@ class pointeController extends Controller
     public function sortie_intermediaire()
     {
         //
-        return view('components.pointages.sortie_intermediaire');
+        $user = Auth::user();
+        $Pointage = Pointage::where('user_id', $user->id)
+            ->whereDate('date_arriver', now()->toDateString())
+            ->first();
+
+        $pointage_intermediaires = PointagesIntermediaire::whereHas('pointage', fn($query) => $query->whereHas('user', fn($subQuery) => $subQuery->where('entreprise_id', $user->entreprise_id)))
+            ->whereHas('pointage', fn($query) => $query->where('date_arriver', now()->format('Y-m-d')))
+            ->get();
+        $cause_sorties = [];
+
+        foreach ($pointage_intermediaires as $pointage_intermediaire) {
+            $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)
+                ->get();
+            $cause_sorties = [
+                'DescriptionPointages' => $DescriptionPointages,
+                'pointage_intermediaires' => $pointage_intermediaires,
+            ];
+        }
+
+        return view('components.pointages.sortie_intermediaire', compact('pointage_intermediaires', 'cause_sorties'));
     }
     public function liste_entreprise()
     {
         $entreprises = Entreprise::All();
         return view('components.pointages.liste_entreprise', compact('entreprises'));
     }
+    public function pointage_compte()
+    {
+        $entreprises = Entreprise::All();
+        return view('components.pointages.pointage_compte');
+    }
+    public function index_employer()
+    {
+        $entreprises = Entreprise::All();
+        return view('components.pointages.index_employer');
+    }
+    public function historique_pointage()
+{
+    $user = Auth::user();
+    $Pointages = Pointage::where('user_id', $user->id)->get();
+    $cause_sorties = [];
 
-    
+    foreach ($Pointages as $Pointage) {
+        $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)->get();
+
+        foreach ($pointage_intermediaires as $pointage_intermediaire) {
+            $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
+
+            $cause_sorties[$Pointage->id][] = [
+                'pointage_intermediaire' => $pointage_intermediaire,
+                'descriptions' => $DescriptionPointages
+            ];
+        }
+    }
+
+    return view('components.pointages.historique_pointage', compact('Pointages', 'cause_sorties'));
+}
+
+    public function profil_employe()
+    {
+        return view('components.pointages.profil_employe');
+    }
+    public function pointage_sortie_connecter()
+    {
+        return view('components.pointages.pointage_sortie_connect');
+    }
+
     public function ajoute_entreprise(Request $request)
     {
 
         // Validate the request data
 
         //
-        $validator = Validator::make($request->all(), [
-            'nom_entreprise' => 'required',
-            'heure_ouverture' => 'required',
-            'heure_fin' => 'required',
-            'heure_debut_pose' => 'required',
-            'heure_fin_pose' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nom_entreprise' => 'required',
+                'heure_ouverture' => 'required',
+                'heure_fin' => 'required',
+                'heure_debut_pose' => 'required',
+                'heure_fin_pose' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
             ],
             [
-            'nom_entreprise.required' => 'Le nom de l\'entreprise est requis',
-            'heure_ouverture.required' => 'L\'heure d\'ouverture est requise',
-            'heure_fin.required' => 'L\'heure de fin est requise',
-            'heure_debut_pose.required' => 'L\'heure de début de pose est requise',
-            'heure_fin_pose.required' => 'L\'heure de fin de pose est requise',
-            'latitude.required' => 'La position X est requise',
-            'longitude.required' => 'La position Y est requise',
+                'nom_entreprise.required' => 'Le nom de l\'entreprise est requis',
+                'heure_ouverture.required' => 'L\'heure d\'ouverture est requise',
+                'heure_fin.required' => 'L\'heure de fin est requise',
+                'heure_debut_pose.required' => 'L\'heure de début de pose est requise',
+                'heure_fin_pose.required' => 'L\'heure de fin de pose est requise',
+                'latitude.required' => 'La position X est requise',
+                'longitude.required' => 'La position Y est requise',
             ]
         );
 
@@ -95,7 +159,7 @@ class pointeController extends Controller
         return redirect()->back()->with('success', 'Entreprise ajoutée avec succès');
     }
 
-   
+
 
     /**
      * Show the form for creating a new resource.

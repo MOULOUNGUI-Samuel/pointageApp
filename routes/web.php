@@ -27,19 +27,25 @@ Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
 Route::get(
     '/dashboard',
     [AdminController::class, 'index_dashboard']
-)->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(
-    function () {
-        // Route::get('/', [AdminController::class, 'dashboard']);
-        Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
-        Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
-
-        Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
-        Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
+    )->middleware(['auth', 'verified'])->name('dashboard');
+    
+    Route::middleware('auth')->group(
+        function () {
+            // Route::get('/', [AdminController::class, 'dashboard']);
+            Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
+            Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
+            
+            Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
+            Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
-
+        Route::get('/pointage_compte', [pointeController::class, 'pointage_compte'])->name('pointage_compte');
+        Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
+        Route::get('/historique_pointage', [pointeController::class, 'historique_pointage'])->name('historique_pointage');
+        Route::get('/profil_employe', [pointeController::class, 'profil_employe'])->name('profil_employe');
+        Route::get('/pointage_sortie_connecter', [pointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
+        Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');
         Route::get('/liste_employer', [AdminController::class, 'liste_employer'])->name('liste_employer');
+        Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
     }
 );
 require __DIR__ . '/auth.php';

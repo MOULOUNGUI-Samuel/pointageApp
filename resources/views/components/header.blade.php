@@ -21,9 +21,8 @@
                 <div class="header-top-menu">
                     <ul class="nav navbar-nav notika-top-nav">
                         <li class="nav-item nc-al">
-                            <a href="#" data-toggle="dropdown" role="button"
-                            aria-expanded="false" class="nav-link dropdown-toggle"><span><i
-                                class="notika-icon notika-alarm"></i></span>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false"
+                                class="nav-link dropdown-toggle"><span><i class="notika-icon notika-alarm"></i></span>
                             </a>
 
                             <div role="menu" class="dropdown-menu message-dd notification-dd animated zoomIn">
@@ -95,17 +94,21 @@
                         <li>
                             <a href="#" data-toggle="dropdown" role="button" aria-expanded="false"
                                 class="nav-link dropdown-toggle">
-                                <div class="spinner-4">{{ Auth::user()->nom ?? 'Utilisateur' }}<span
-                                    class="caret" style="margin-left: 5px"></span></div>
+                                <div class="spinner-4">{{ Auth::user()->nom ?? 'Utilisateur' }}<span class="caret"
+                                        style="margin-left: 5px"></span></div>
                             </a>
                             <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
-                                <li><a href="#"><i class="icon-user" style="font-size: 17px;margin-right:6px"></i><span style="font-size: 15px">Profil</span></a></li>
+                                <li><a href="#"><i class="icon-user"
+                                            style="font-size: 17px;margin-right:6px"></i><span
+                                            style="font-size: 15px">Profil</span></a></li>
                                 <li>
-                                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <a href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="icon-sign-out" style="font-size: 17px;margin-right:6px"></i>
                                         <span style="font-size: 15px">Déconnexion</span>
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        style="display: none;">
                                         @csrf
                                     </form>
                                 </li>
@@ -255,25 +258,27 @@
                             intermédiaires
                         </a>
                     </li>
-                    @if(Auth::user()->role == 'Admin')
-                    <li class="dropdown-trig-sgn">
-                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
-                            role="button" aria-expanded="false">
-                            <i class="icon-cogs" style="font-size: 19px;cursor: pointer;"></i> Paramètres <span
-                                class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
-                            <li><a href="{{ route('liste_entreprise') }}"><i class="icon-database"
-                                        style="font-size: 13px;margin-right:6px"></i>Gestion des entréprises</a></li>
-                            <li><a href="{{ route('liste_employer') }}"><i class="icon-users"
-                                        style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a></li>
-                        </ul>
-                    </li>
+                    @if (Auth::user()->role_user === 'Admin')
+                        <li class="dropdown-trig-sgn">
+                            <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
+                                role="button" aria-expanded="false">
+                                <i class="icon-cogs" style="font-size: 19px;cursor: pointer;"></i> Paramètres <span
+                                    class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
+                                <li><a href="{{ route('liste_entreprise') }}"><i class="icon-database"
+                                            style="font-size: 13px;margin-right:6px"></i>Gestion des entréprises</a>
+                                </li>
+                                <li><a href="{{ route('liste_employer') }}"><i class="icon-users"
+                                            style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
+                                </li>
+                            </ul>
+                        </li>
                     @else
-                    <li>
-                        <a href="{{ route('liste_employer') }}"><i class="icon-users"
-                            style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
-                    </li>
+                        <li>
+                            <a href="{{ route('liste_employer') }}"><i class="icon-users"
+                                    style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
+                        </li>
                     @endif
                 </ul>
             </div>

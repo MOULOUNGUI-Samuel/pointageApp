@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?e87oqx');
-  src:  url('fonts/icomoon.eot?e87oqx#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?e87oqx') format('truetype'),
-    url('fonts/icomoon.woff?e87oqx') format('woff'),
-    url('fonts/icomoon.svg?e87oqx#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?nlus2h');
+  src:  url('fonts/icomoon.eot?nlus2h#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?nlus2h') format('truetype'),
+    url('fonts/icomoon.woff?nlus2h') format('woff'),
+    url('fonts/icomoon.svg?nlus2h#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -157,6 +157,15 @@
 .icon-file-pdf:before {
   content: "\eadf";
 }
+.icon-user-check1:before {
+  content: "\e976";
+}
 .icon-lock:before {
   content: "\e98f";
+}
+.icon-checkmark:before {
+  content: "\ea10";
+}
+.icon-checkbox-checked:before {
+  content: "\ea52";
 }

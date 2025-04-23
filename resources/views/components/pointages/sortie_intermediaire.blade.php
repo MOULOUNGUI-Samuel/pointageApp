@@ -34,17 +34,29 @@
                                     </tr>
                                 </thead>
                                 <tbody id="approbationsTable">
-                                    <tr data-status="en_retard">
-                                        <td>12345</td>
-                                        <td>MOULOUNGUI MOULOUNGUI</td>
-                                        <td>Bienvenu Samuel</td>
-                                        <td>Lundi 31 Décembre 2025</td>
-                                        <td><span class="badge badge-primary">12 h 15 min</span></td>
-                                        <td>Sortie pour la cause...</td>
-                                        <td><button class="btn btn-primary btn-reco-mg btn-button-mg"><i class="icon-eye"
-                                                    style="font-size: 20px;margin-right:10px"></i><span>Profil</span></button>
-                                        </td>
-                                    </tr>
+                                    @foreach ($cause_sorties['pointage_intermediaires'] as $pointage_intermediaire)
+                                        <tr data-status="en_retard">
+                                            <td>{{ $pointage_intermediaire->pointage->user->matricule }}</td>
+                                            <td>{{ $pointage_intermediaire->pointage->user->nom }}</td>
+                                            <td>{{ $pointage_intermediaire->pointage->user->prenom }}</td>
+                                            <td> {{ \App\Helpers\DateHelper::convertirDateEnTexte(App\Helpers\DateHelper::convertirDateFormat($pointage_intermediaire->pointage->date_arriver)) }}
+                                            </td>
+                                            <td><span
+                                                    class="badge badge-primary">{{ $pointage_intermediaire->heure_sortie }}</span>
+                                            </td>
+                                            <td>
+                                                @foreach ($cause_sorties['DescriptionPointages'] as $description)
+                                                    {{ $description->description }}
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-primary btn-reco-mg btn-button-mg">
+                                                    <i class="icon-eye" style="font-size: 20px; margin-right: 10px"></i>
+                                                    <span>Profil</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
