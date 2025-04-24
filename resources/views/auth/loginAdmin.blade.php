@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
   ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{asset('src/img/')}}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src/img/') }}">
     <!-- Google Fonts
   ============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -56,11 +56,6 @@
     <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
 <style>
-    html,
-    body {
-        height: 100%;
-    }
-
     .center-container {
         display: flex;
         justify-content: center;
@@ -99,6 +94,47 @@
         opacity: 0.8;
         transform: scale(1.05);
     }
+
+    .btn {
+        position: relative;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 10px;
+    }
+
+    .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .spinner {
+        display: none;
+        position: absolute;
+        right: 45%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        border: 5px solid white;
+        border-top: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .btn.loading .spinner {
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translateY(-50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translateY(-50%) rotate(360deg);
+        }
+    }
 </style>
 
 <body
@@ -112,6 +148,7 @@ color: #fff;">
         <![endif]-->
     <!-- Login Register area Start-->
     <div class="center-container">
+
         <div class="container px-5 d-none d-lg-block">
             <div class="row">
                 <div class="col-md-12">
@@ -134,7 +171,8 @@ color: #fff;">
                                             <li style="display: flex; justify-content: space-between;">
                                                 <span><i class="icon-warning" style="font-size: 20px"></i>
                                                     {{ $error }}</span>
-                                                 <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                                                <button type="button" class="btn-close" data-dismiss="alert"
+                                                    aria-label="Close"></button>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -179,10 +217,14 @@ color: #fff;">
                                         {{ session('error') }}
                                     </div>
                                 @endif
-
+                                {{-- <button type="button" class="btn btn-primary loading-btn">
+                                    Valider 3
+                                    <span class="spinner"></span>
+                                </button> --}}
                                 <div class="text-center mt-5">
-                                    <button type="submit" class="btn btn-gradient w-50">
+                                    <button type="submit" class="btn btn-gradient w-50 loading-btn">
                                         Se Connecter
+                                        <span class="spinner"></span>
                                     </button>
                                 </div>
                             </div>
@@ -216,7 +258,8 @@ color: #fff;">
                                             <li style="display: flex; justify-content: space-between;">
                                                 <span><i class="icon-warning" style="font-size: 20px"></i>
                                                     {{ $error }}</span>
-                                                 <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                                                <button type="button" class="btn-close" data-dismiss="alert"
+                                                    aria-label="Close"></button>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -262,8 +305,9 @@ color: #fff;">
                                 @endif
 
                                 <div class="text-center mt-5">
-                                    <button type="submit" class="btn btn-gradient w-100">
+                                    <button type="submit" class="btn btn-gradient w-100 loading-btn">
                                         Se Connecter
+                                        <span class="spinner"></span>
                                     </button>
                                 </div>
                             </div>
@@ -273,6 +317,7 @@ color: #fff;">
 
             </div>
         </div>
+
         <div class="footer-copyright-area d-none d-lg-block" style="position: fixed; bottom: 0; width: 100%;">
             <div class="container">
                 <div class="row">
@@ -317,6 +362,42 @@ color: #fff;">
             }
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.loading-btn');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const form = button.closest('form');
+                    const type = button.getAttribute('type') || 'submit';
+
+                    // Si le bouton est de type submit et qu'il est dans un formulaire
+                    if (type === 'submit' && form) {
+                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form
+                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
+                            return;
+                        }
+                        // Si valide : laisser faire la soumission, mais activer le loading
+                        button.classList.add('loading');
+                        // button.disabled = true;
+                    }
+
+                    // Si c’est un bouton normal (type="button"), on le désactive directement
+                    if (type === 'button') {
+                        button.classList.add('loading');
+                        button.disabled = true;
+                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
+                    }
+                });
+            });
+        });
+    </script>
+
+
     <!-- Login Register area End-->
     <!-- jquery
   ============================================ -->

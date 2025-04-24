@@ -135,11 +135,13 @@ color: #fff;">
 
             <div class="col-6 text-left">
                 <label for="filtre-date">DU :</label>
-                <input type="date" id="filtre-date" name="date_debut" class="form-control mb-3">
+                <input type="date" id="filtre-date" placeholder="jj/mm/aaaa" name="date_debut"
+                    class="form-control mb-3">
             </div>
             <div class="col-6 text-left">
                 <label for="filtre-date1">AU :</label>
-                <input type="date" id="filtre-date1" name="date_fin" class="form-control mb-3">
+                <input type="date" id="filtre-date1" placeholder="jj/mm/aaaa" name="date_fin"
+                    class="form-control mb-3">
             </div>
 
             <div class="container-custom" style="max-height: 1000px; overflow-y: auto;">

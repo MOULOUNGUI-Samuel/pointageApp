@@ -99,6 +99,39 @@
         opacity: 0.8;
         transform: scale(1.05);
     }
+
+    .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .spinner {
+        display: none;
+        position: absolute;
+        right: 45%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        border: 5px solid white;
+        border-top: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .btn.loading .spinner {
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translateY(-50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translateY(-50%) rotate(360deg);
+        }
+    }
 </style>
 
 <body
@@ -284,11 +317,14 @@ color: #fff;">
                             </div>
                             <div class="col-md-12 mt-5">
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 w-25">
-                                        <i class="icon-close-solid"></i> Annuler
+                                    <a href="{{ route('pointage_compte') }}" class="btn btn-gradient1 loading-btn">
+                                        <i class="icon-close-solid"></i>
+                                        Annuler
+                                        <span class="spinner"></span>
                                     </a>
-                                    <button type="submit" class="btn btn-gradient">
+                                    <button type="submit" class="btn btn-gradient loading-btn">
                                         <i class="icon-save-disk"></i> Enrégristrer
+                                        <span class="spinner"></span>
                                     </button>
 
                                 </div>
@@ -299,7 +335,39 @@ color: #fff;">
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.loading-btn');
 
+            buttons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const form = button.closest('form');
+                    const type = button.getAttribute('type') || 'submit';
+
+                    // Si le bouton est de type submit et qu'il est dans un formulaire
+                    if (type === 'submit' && form) {
+                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form
+                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
+                            return;
+                        }
+                        // Si valide : laisser faire la soumission, mais activer le loading
+                        button.classList.add('loading');
+                        // button.disabled = true;
+                    }
+
+                    // Si c’est un bouton normal (type="button"), on le désactive directement
+                    if (type === 'button') {
+                        button.classList.add('loading');
+                        button.disabled = true;
+                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
+                    }
+                });
+            });
+        });
+    </script>
     <script>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(

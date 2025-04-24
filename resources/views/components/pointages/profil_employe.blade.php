@@ -55,32 +55,33 @@
 </head>
 <style>
     .profile-form {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            width: 100%;
-            max-width: 100%;
-            color: white;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        }
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        width: 100%;
+        max-width: 100%;
+        color: white;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
 
-        .form-control{
-            padding: 10px;
-            background:transparent;
-            border:1px solid white;
-            font-size: 20px;
-            color:white
-        }
-        .form-control::placeholder {
-            color: #ccc;
+    .form-control {
+        padding: 10px;
+        background: transparent;
+        border: 1px solid white;
+        font-size: 20px;
+        color: white
+    }
 
-        }
+    .form-control::placeholder {
+        color: #ccc;
+
+    }
 
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    .form-group {
+        margin-bottom: 15px;
+    }
 
 
 
@@ -101,9 +102,43 @@
         opacity: 0.8;
         transform: scale(1.05);
     }
+
+    .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .spinner {
+        display: none;
+        position: absolute;
+        right: 45%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        border: 5px solid white;
+        border-top: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .btn.loading .spinner {
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translateY(-50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translateY(-50%) rotate(360deg);
+        }
+    }
 </style>
 
-<body style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
+<body
+    style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
 url('{{ asset('src/images/login.webp') }}') no-repeat center center;
 background-size: cover;
 background-attachment: fixed;
@@ -112,19 +147,19 @@ color: #fff;">
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Login Register area Start-->
-        <!-- Login -->
-        <div class="mx-4" id="l-login">
-            <div class="row" style="margin-top: 40px;">
-                <div class="col-6 text-left">
-                    <a href="{{ route('index_employer') }}">
-                        <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
-                    </a>
-                </div>
-                <div class="col-6 text-right" style="margin-top: 10px;">
-                    <h2>Mon Profil</h2>
-                </div>
+    <!-- Login -->
+    <div class="mx-4" id="l-login">
+        <div class="row" style="margin-top: 40px;">
+            <div class="col-6 text-left">
+                <a href="{{ route('index_employer') }}">
+                    <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
+                </a>
             </div>
-            {{-- <div class="row">
+            <div class="col-6 text-right" style="margin-top: 10px;">
+                <h2>Mon Profil</h2>
+            </div>
+        </div>
+        {{-- <div class="row">
                 <div class="col-12" style="text-align: center">
                     <div class="text-center">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-2"
@@ -132,69 +167,113 @@ color: #fff;">
                     </div>
                 </div>
             </div> --}}
-            <div class="row text-center mt-4">
-                @if (session('success'))
-                    <div class="col-md-12" style="text-align: left">
-                        <div class="alert alert-success " role="alert">
-                            <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
-                                !</strong> {{ session('success') }}
-                        </div>
+        <div class="row text-center mt-4">
+            @if (session('success'))
+                <div class="col-md-12" style="text-align: left">
+                    <div class="alert alert-success " role="alert">
+                        <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
+                            !</strong> {{ session('success') }}
                     </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="col-md-12" style="text-align: left">
-                        <div class="alert alert-danger" role="alert">
-                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
-                                !</strong> {{ session('error') }}
-                        </div>
-                    </div>
-                @endif
-                @if ($errors->has('password'))
-                    <div class="col-md-12" style="text-align: left">
-                        <div class="alert alert-danger" role="alert">
-                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong></strong> {{ $errors->first('password') }}
-                        </div>
-                    </div>
-                @endif
-
-                <div class="profile-form">
-                    
-                    <form action="{{ route('modifier_employer', Auth::user()->id) }}"
-                        method="post" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Matricule" name="matricule" value="{{ Auth::user()->matricule }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ Auth::user()->nom }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Prénom" name="prenom" value="{{ Auth::user()->prenom }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Email" name="email" value="{{ Auth::user()->email }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="date" class="form-control" placeholder="date_naissance" name="date_naissance" value="{{ Auth::user()->date_naissance }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Fonction" name="fonction" value="{{ Auth::user()->fonction }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" name="password1" placeholder="Ancien mot de passe">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" name="password" placeholder="Nouveau mot de passe">
-                        </div>
-                        <button type="submit" class="btn btn-gradient w-100 mt-2">Enregistrer les modifications</button>
-                    </form>
                 </div>
-            </div>
+            @endif
 
+            @if (session('error'))
+                <div class="col-md-12" style="text-align: left">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                            !</strong> {{ session('error') }}
+                    </div>
+                </div>
+            @endif
+            @if ($errors->has('password'))
+                <div class="col-md-12" style="text-align: left">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong></strong>
+                        {{ $errors->first('password') }}
+                    </div>
+                </div>
+            @endif
+
+            <div class="profile-form">
+
+                <form action="{{ route('modifier_employer', Auth::user()->id) }}" method="post"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Matricule" name="matricule"
+                            value="{{ Auth::user()->matricule }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Nom" name="nom"
+                            value="{{ Auth::user()->nom }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Prénom" name="prenom"
+                            value="{{ Auth::user()->prenom }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Email" name="email"
+                            value="{{ Auth::user()->email }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" class="form-control" placeholder="date_naissance"
+                            name="date_naissance" value="{{ Auth::user()->date_naissance }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Fonction" name="fonction"
+                            value="{{ Auth::user()->fonction }}">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password1"
+                            placeholder="Ancien mot de passe">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password"
+                            placeholder="Nouveau mot de passe">
+                    </div>
+                    <button type="submit" class="btn btn-gradient w-100 mt-2 loading-btn">
+                        Enregistrer les modifications
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+            </div>
         </div>
-    <!-- Login Register area End-->
+
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.loading-btn');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const form = button.closest('form');
+                    const type = button.getAttribute('type') || 'submit';
+
+                    // Si le bouton est de type submit et qu'il est dans un formulaire
+                    if (type === 'submit' && form) {
+                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form
+                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
+                            return;
+                        }
+                        // Si valide : laisser faire la soumission, mais activer le loading
+                        button.classList.add('loading');
+                        // button.disabled = true;
+                    }
+
+                    // Si c’est un bouton normal (type="button"), on le désactive directement
+                    if (type === 'button') {
+                        button.classList.add('loading');
+                        button.disabled = true;
+                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
+                    }
+                });
+            });
+        });
+    </script>
     <!-- jquery
   ============================================ -->
     <script src="{{ asset('src/js/vendor/jquery-1.12.4.min.js') }}"></script>
