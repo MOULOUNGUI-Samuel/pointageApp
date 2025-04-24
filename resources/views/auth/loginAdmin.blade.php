@@ -249,7 +249,7 @@ color: #fff;">
                                             style="border: none; padding: 20px; background: transparent" required>
                                     </div>
                                     <!-- Icône pour afficher/masquer -->
-                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword1()">
                                         <i id="toggleIcon1" class="icon-eye"
                                             style="font-size: 25px; cursor: pointer;"></i>
                                     </span>
@@ -286,7 +286,7 @@ color: #fff;">
         </div>
     </div>
     <script>
-        function togglePassword() {
+        function togglePassword1() {
             let passwordField = document.getElementById("passwordField1");
             let toggleIcon = document.getElementById("toggleIcon1");
 
