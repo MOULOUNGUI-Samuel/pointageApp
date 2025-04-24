@@ -44,11 +44,11 @@ class AuthenticatedSessionController extends Controller
         return $earthRadius * $c;
     }
 
-   
+
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        
+
         try {
 
             $request->authenticate();
@@ -67,19 +67,19 @@ class AuthenticatedSessionController extends Controller
 
                 // dd($request->latitude."/". $request->longitude);
                 // Vérification de la géolocalisation
-                $distance = $this->calculateDistance(
-                    $entreprise->latitude,
-                    $entreprise->longitude,
-                    $request->latitude,
-                    $request->longitude
-                );
-                // dd($distance);
-                // Vérifier si la distance est supérieure à 200 mètres
-                if ($distance > 700) {
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
-                }
+                // $distance = $this->calculateDistance(
+                //     $entreprise->latitude,
+                //     $entreprise->longitude,
+                //     $request->latitude,
+                //     $request->longitude
+                // );
+                // // dd($distance);
+                // // Vérifier si la distance est supérieure à 200 mètres
+                // if ($distance > 700) {
+                //     $request->session()->invalidate();
+                //     $request->session()->regenerateToken();
+                //     return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
+                // }
 
                 // Vérifier si le compte est actif
                 if ($user->statut == 0) {
@@ -107,7 +107,7 @@ class AuthenticatedSessionController extends Controller
 
 
                     $PointagesIntermediaires = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
-                    ->orderBy('heure_sortie', 'desc')
+                        ->orderBy('heure_sortie', 'desc')
                         ->first();
                     $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
                     if ($le_pointageIntermediaire) {
@@ -169,19 +169,19 @@ class AuthenticatedSessionController extends Controller
 
                 // dd($request->latitude."/". $request->longitude);
                 // Vérification de la géolocalisation
-                $distance = $this->calculateDistance(
-                    $entreprise->latitude,
-                    $entreprise->longitude,
-                    $request->latitude,
-                    $request->longitude
-                );
+                // $distance = $this->calculateDistance(
+                //     $entreprise->latitude,
+                //     $entreprise->longitude,
+                //     $request->latitude,
+                //     $request->longitude
+                // );
 
-                // Vérifier si la distance est supérieure à 200 mètres
-                if ($distance > 700) {
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
-                }
+                // // Vérifier si la distance est supérieure à 200 mètres
+                // if ($distance > 700) {
+                //     $request->session()->invalidate();
+                //     $request->session()->regenerateToken();
+                //     return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
+                // }
 
                 // Vérifier si le compte est actif
                 if ($user->statut == 0) {

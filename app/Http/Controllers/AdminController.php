@@ -202,17 +202,17 @@ class AdminController extends Controller
 
             // dd($request->latitude."/". $request->longitude);
             // Vérification de la géolocalisation
-            $distance = $this->calculateDistance(
-                $entreprise->latitude,
-                $entreprise->longitude,
-                $request->latitude,
-                $request->longitude
-            );
-            // dd($distance);
-            // Vérifier si la distance est supérieure à 200 mètres
-            if ($distance > 700) {
-                return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
-            }
+            // $distance = $this->calculateDistance(
+            //     $entreprise->latitude,
+            //     $entreprise->longitude,
+            //     $request->latitude,
+            //     $request->longitude
+            // );
+            // // dd($distance);
+            // // Vérifier si la distance est supérieure à 200 mètres
+            // if ($distance > 700) {
+            //     return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
+            // }
 
             // Vérifier si le compte est actif
             if ($user->statut == 0) {

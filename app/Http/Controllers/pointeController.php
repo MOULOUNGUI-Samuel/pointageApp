@@ -78,6 +78,7 @@ class pointeController extends Controller
 {
     $user = Auth::user();
     $Pointages = Pointage::with('user.entreprise')->where('user_id', $user->id)
+    ->orderBy('date_arriver', 'desc')
     ->get();
     $cause_sorties = [];
 
