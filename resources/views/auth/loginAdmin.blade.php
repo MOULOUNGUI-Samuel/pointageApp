@@ -112,8 +112,7 @@ color: #fff;">
         <![endif]-->
     <!-- Login Register area Start-->
     <div class="center-container">
-        {{-- <div class="container- px-5">
-
+        <div class="container px-5 d-none d-lg-block">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center my-1">
@@ -193,8 +192,8 @@ color: #fff;">
                 </div>
 
             </div>
-        </div> --}}
-        <div class="container-fluid">
+        </div>
+        <div class="container-fluid d-block d-lg-none">
 
             <div class="row">
                 <div class="col-md-12">
@@ -274,7 +273,7 @@ color: #fff;">
 
             </div>
         </div>
-        <div class="footer-copyright-area" style="position: fixed; bottom: 0; width: 100%;">
+        <div class="footer-copyright-area d-none d-lg-block" style="position: fixed; bottom: 0; width: 100%;">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
