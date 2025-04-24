@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/login', function () {
-    return view('auth.loginAdmin'); // ou le nom réel de ta vue
+    return view('auth.login'); // C’est bon si tu veux afficher cette version
 })->name('login');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
@@ -30,16 +31,16 @@ Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
 Route::get(
     '/dashboard',
     [AdminController::class, 'index_dashboard']
-    )->middleware(['auth', 'verified'])->name('dashboard');
-    
-    Route::middleware('auth')->group(
-        function () {
-            // Route::get('/', [AdminController::class, 'dashboard']);
-            Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
-            Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
-            
-            Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
-            Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
+)->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(
+    function () {
+        // Route::get('/', [AdminController::class, 'dashboard']);
+        Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
+        Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
+
+        Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
+        Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
         Route::get('/pointage_compte', [pointeController::class, 'pointage_compte'])->name('pointage_compte');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
