@@ -219,12 +219,12 @@ color: #fff;">
                     </div>
                 </div>
 
-                <div class="px-4 pb-4">
+                <div class="px-5 pb-4">
                     <div class="row">
                         <div class="col-md-12">
-                            <input type="text" id="latitude" name="latitude" value="{{ old('latitude') }}"
+                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
                                 style="color:black">
-                            <input type="text" id="longitude" name="longitude" value="{{ old('longitude') }}"
+                            <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
                                 style="color:black">
                             <div class="toggle-select-act mg-t-30">
                                 <div class="nk-toggle-switch" data-ts-color="blue">
@@ -284,10 +284,10 @@ color: #fff;">
                             </div>
                             <div class="col-md-12 mt-5">
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1">
+                                    <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 w-25">
                                         <i class="icon-close-solid"></i> Annuler
                                     </a>
-                                    <button type="submit" class="btn btn-gradient">
+                                    <button type="submit" class="btn btn-gradient w-25">
                                         <i class="icon-save-disk"></i> Enrégristrer
                                     </button>
 

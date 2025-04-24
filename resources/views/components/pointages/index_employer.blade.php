@@ -147,7 +147,7 @@ color: #fff;">
                         <a href="{{ route('profil_employe') }}" class="text-decoration-none shadow-sm">
                             <div class="card card-hover-zoom shadow-lg px-2">
                                 <div class="card-body">
-                                    <i class="icon-profile" style="font-size: 43px"></i>
+                                    <i class="icon-profile" style="font-size: 40px"></i>
                                     <h4 class="fw-bold" style="font-size: 20px">Profil</h4>
                                     <p class="text-muted">Voir votre profil</p>
                                 </div>
@@ -157,14 +157,15 @@ color: #fff;">
                     <div class="col-6">
                         <a href="{{ route('pointage_compte') }}" class="text-decoration-none shadow-sm">
                             <div class="card card-hover-zoom shadow-lg px-2">
-                                <div class="card-body">
-                                    <div class="d-flex text-center mb-1" style="margin-left: 15px">
-                                        <i class="icon-enter text-success me-2" style="font-size: 40px"></i>
-                                        <i class="icon-exit text-danger" style="font-size: 40px"></i>
-                                    </div>
-                                    <h4 class="fw-bold" style="font-size: 20px">Pointage</h4>
-                                    <p class="text-muted">Entrer/Sortie</p>
+                              <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                                <div class="mb-3 d-flex justify-content-center gap-3">
+                                    <i class="icon-enter text-success" style="font-size: 43px;"></i>
+                                    <i class="icon-exit text-danger" style="font-size: 43px;"></i>
                                 </div>
+                                <h4 class="fw-bold" style="font-size: 20px;">Pointage</h4>
+                                <p class="text-muted mb-0">Entrée / Sortie</p>
+                            </div>
+                            
                             </div>
                         </a>
                     </div>

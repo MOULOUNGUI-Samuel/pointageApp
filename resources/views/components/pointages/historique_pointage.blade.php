@@ -61,7 +61,7 @@
         border-radius: 15px;
         padding: 20px;
         text-align: left;
-        max-width: 400px;
+        max-width: 100%;
         width: 100%;
         color: white;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);

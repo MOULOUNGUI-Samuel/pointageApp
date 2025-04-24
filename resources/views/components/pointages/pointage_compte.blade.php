@@ -172,7 +172,7 @@ color: #fff;">
             @endif
 
             <!-- Bloc Entrée -->
-            <div class="col-lg-6 col-sm-12 mb-4">
+            <div class="col-lg-6 col-sm-12 mb-4 ">
                 <form action="{{ route('login_connecter') }}" method="POST">
                     @csrf
                     <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
@@ -180,7 +180,7 @@ color: #fff;">
                     <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
                         style="color:black">
                     <input type="hidden" name="pointage_entrer" value="1">
-                    <button type="submit" class="text-decoration-none shadow-sm"
+                    <button type="submit" class="text-decoration-none shadow-sm w-100"
                         style="background-color: transparent;border:none">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
@@ -195,10 +195,8 @@ color: #fff;">
 
             <!-- Bloc Sortie -->
             <div class="col-lg-6 col-sm-12 mb-4">
-                <div class="row">
-                    <div class="col"></div>
-                    <div class="col-10">
-                        <a href="{{ route('pointage_sortie_connecter') }}" class="text-decoration-none shadow-sm">
+                
+                        <a href="{{ route('pointage_sortie_connecter') }}" class="text-decoration-none shadow-sm ">
                             <div class="card card-hover-zoom shadow-lg px-2">
                                 <div class="card-body">
                                     <i class="icon-exit text-danger" style="font-size: 45px"></i>
@@ -207,9 +205,6 @@ color: #fff;">
                                 </div>
                             </div>
                         </a>
-                    </div>
-                    <div class="col"></div>
-                </div>
             </div>
         </div>
 
