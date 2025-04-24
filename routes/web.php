@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/login', function () {
+    return view('auth.loginAdmin'); // ou le nom réel de ta vue
+})->name('login');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 

@@ -32,23 +32,15 @@ class Handler extends ExceptionHandler
     /**
      * Handle unauthenticated access attempts.
      */
-    // protected function unauthenticated($request, AuthenticationException $exception)
-    // {
-    //     if ($request->expectsJson()) {
-    //         return response()->json([
-    //             'message' => 'Session expirée. Veuillez vous reconnecter.',
-    //         ], 401);
-    //     }
 
-    //     return redirect()->guest(route('login'));
-    // }
-
-    public function unauthenticated($request, \Illuminate\Auth\AuthenticationException $exception)
+    protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['message' => 'Session expirée. Veuillez vous reconnecter.'], 401);
+            return response()->json([
+                'message' => 'Session expirée. Veuillez vous reconnecter.'
+            ], 401);
         }
 
-        return redirect()->guest(route('login'));
+        return redirect()->guest(route('login', ['expired' => '1']));
     }
 }
