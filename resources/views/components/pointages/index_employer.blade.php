@@ -55,6 +55,8 @@
   ============================================ -->
     <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
+
+
 <style>
     .card-hover-zoom {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -91,6 +93,19 @@ url('{{ asset('src/images/login.webp') }}') no-repeat center center;
 background-size: cover;
 background-attachment: fixed;
 color: #fff;">
+    <script>
+        if (window.innerWidth > 1024) {
+            document.body.innerHTML = `
+          <div style="display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; padding: 20px;">
+              <div>
+                <h1>Salut <strong class="text-info mb-2">{{ Auth::user()->prenom }}</strong></h1>
+                  <h2> Vous êtes un employé,cette application est accessible uniquement sur un appareil mobile.</h2>
+                  <p>Veuillez utiliser un smartphone ou une tablette pour y accéder.</p>
+              </div>
+          </div>
+      `;
+        }
+    </script>
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -157,15 +172,16 @@ color: #fff;">
                     <div class="col-6">
                         <a href="{{ route('pointage_compte') }}" class="text-decoration-none shadow-sm">
                             <div class="card card-hover-zoom shadow-lg px-2">
-                              <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                                <div class="mb-3 d-flex justify-content-center gap-3">
-                                    <i class="icon-enter text-success" style="font-size: 43px;"></i>
-                                    <i class="icon-exit text-danger" style="font-size: 43px;"></i>
+                                <div
+                                    class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                                    <div class="mb-3 d-flex justify-content-center gap-3">
+                                        <i class="icon-enter text-success" style="font-size: 43px;"></i>
+                                        <i class="icon-exit text-danger" style="font-size: 43px;"></i>
+                                    </div>
+                                    <h4 class="fw-bold" style="font-size: 20px;">Pointage</h4>
+                                    <p class="text-muted mb-0">Entrée / Sortie</p>
                                 </div>
-                                <h4 class="fw-bold" style="font-size: 20px;">Pointage</h4>
-                                <p class="text-muted mb-0">Entrée / Sortie</p>
-                            </div>
-                            
+
                             </div>
                         </a>
                     </div>
