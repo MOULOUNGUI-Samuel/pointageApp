@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/login', function () {
-    return view('auth.login'); // C’est bon si tu veux afficher cette version
-})->name('login');
+    return view('auth.loginAdmin');
+})->name('login.view');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
@@ -52,5 +52,5 @@ Route::middleware('auth')->group(
         Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
     }
 );
-require __DIR__ . '/auth.php';
-Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+// require __DIR__ . '/auth.php';
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

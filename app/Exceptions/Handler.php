@@ -41,6 +41,6 @@ class Handler extends ExceptionHandler
             ], 401);
         }
 
-        return redirect()->guest(route('login', ['expired' => '1']));
+        return redirect()->guest(route('login.view', ['expired' => '1']));
     }
 }

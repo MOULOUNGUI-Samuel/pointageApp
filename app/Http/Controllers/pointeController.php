@@ -39,25 +39,30 @@ class pointeController extends Controller
     {
         //
         $user = Auth::user();
-        $Pointage = Pointage::where('user_id', $user->id)
-            ->whereDate('date_arriver', now()->toDateString())
-            ->first();
-
-        $pointage_intermediaires = PointagesIntermediaire::whereHas('pointage', fn($query) => $query->whereHas('user', fn($subQuery) => $subQuery->where('entreprise_id', $user->entreprise_id)))
-            ->whereHas('pointage', fn($query) => $query->where('date_arriver', now()->format('Y-m-d')))
+        $Pointages = Pointage::with('user.entreprise') ->whereHas('user', function ($subQuery) use ($user) {
+            $subQuery->where('entreprise_id', $user->entreprise_id);
+        })
+            ->orderBy('date_arriver', 'desc')
             ->get();
         $cause_sorties = [];
 
-        foreach ($pointage_intermediaires as $pointage_intermediaire) {
-            $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)
+        foreach ($Pointages as $Pointage) {
+            $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
+                ->orderBy('heure_sortie', 'desc')
                 ->get();
-            $cause_sorties = [
-                'DescriptionPointages' => $DescriptionPointages,
-                'pointage_intermediaires' => $pointage_intermediaires,
-            ];
+
+            foreach ($pointage_intermediaires as $pointage_intermediaire) {
+                $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
+
+                $cause_sorties[$Pointage->id][] = [
+                    'pointage_intermediaire' => $pointage_intermediaire,
+                    'descriptions' => $DescriptionPointages
+                ];
+            }
         }
 
-        return view('components.pointages.sortie_intermediaire', compact('pointage_intermediaires', 'cause_sorties'));
+
+        return view('components.pointages.sortie_intermediaire', compact('Pointages', 'cause_sorties'));
     }
     public function liste_entreprise()
     {
@@ -75,30 +80,30 @@ class pointeController extends Controller
         return view('components.pointages.index_employer');
     }
     public function historique_pointage()
-{
-    $user = Auth::user();
-    $Pointages = Pointage::with('user.entreprise')->where('user_id', $user->id)
-    ->orderBy('date_arriver', 'desc')
-    ->get();
-    $cause_sorties = [];
+    {
+        $user = Auth::user();
+        $Pointages = Pointage::with('user.entreprise')->where('user_id', $user->id)
+            ->orderBy('date_arriver', 'desc')
+            ->get();
+        $cause_sorties = [];
 
-    foreach ($Pointages as $Pointage) {
-        $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
-        ->orderBy('heure_sortie', 'desc')
-        ->get();
+        foreach ($Pointages as $Pointage) {
+            $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
+                ->orderBy('heure_sortie', 'desc')
+                ->get();
 
-        foreach ($pointage_intermediaires as $pointage_intermediaire) {
-            $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
+            foreach ($pointage_intermediaires as $pointage_intermediaire) {
+                $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
 
-            $cause_sorties[$Pointage->id][] = [
-                'pointage_intermediaire' => $pointage_intermediaire,
-                'descriptions' => $DescriptionPointages
-            ];
+                $cause_sorties[$Pointage->id][] = [
+                    'pointage_intermediaire' => $pointage_intermediaire,
+                    'descriptions' => $DescriptionPointages
+                ];
+            }
         }
-    }
 
-    return view('components.pointages.historique_pointage', compact('Pointages', 'cause_sorties'));
-}
+        return view('components.pointages.historique_pointage', compact('Pointages', 'cause_sorties'));
+    }
 
     public function profil_employe()
     {

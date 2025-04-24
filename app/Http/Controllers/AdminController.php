@@ -7,6 +7,7 @@ use App\Models\Entreprise;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -154,6 +155,12 @@ class AdminController extends Controller
                 return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
             }
         }
+        if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
+            $date = $request->input('date_naissance');
+        } else {
+            // Mauvais format
+            $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
+        }
 
         $user->nom = $request->input('nom');
         $user->prenom = $request->input('prenom');
@@ -162,11 +169,15 @@ class AdminController extends Controller
         if ($request->input('password1') && $request->input('password')) {
             $user->password = Hash::make($request->input('password'));
         }
-        $user->date_naissance = $request->input('date_naissance');
+        if ($request->input('role_user')) {
+            $user->role_user = $request->input('role_user');
+        }
+
+        $user->date_naissance = $date;
         $user->fonction = $request->input('fonction');
         $user->save();
 
-        return redirect()->back()->with('success', 'Informations midifiées avec succès.');
+        return redirect()->back()->with('success', 'Informations modifiées avec succès.');
         // } catch (\Exception $e) {
         //     return redirect()->back()->withErrors(['error' => 'Une erreur est survenue : ' . $e->getMessage()])->withInput();
         // }
@@ -235,10 +246,10 @@ class AdminController extends Controller
                 $le_pointage->save();
 
                 $le_pointageIntermediaire = PointagesIntermediaire::where('pointage_id', $dejaPointage->id)
-                ->orderBy('heure_sortie', 'desc')
-                ->first();
-                
-               
+                    ->orderBy('heure_sortie', 'desc')
+                    ->first();
+
+
                 if ($le_pointageIntermediaire) {
                     $le_pointageIntermediaire->statut = 1;
                     $le_pointageIntermediaire->heure_entrer = now()->format('H:i:s');

@@ -20,6 +20,16 @@
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <div class="header-top-menu">
                     <ul class="nav navbar-nav notika-top-nav">
+                        <li>
+                            <div style="margin-top: 17px; text-align: right;color:aliceblue">
+                                <i>
+                                    <h4 style="font-size: 20px"><i class="icon-library"></i>
+                                        {{ Auth::user()->entreprise->nom_entreprise }}
+                                    </h4>
+                                </i>
+                            </div>
+
+                        </li>
                         <li class="nav-item nc-al">
                             <a href="#" data-toggle="dropdown" role="button" aria-expanded="false"
                                 class="nav-link dropdown-toggle"><span><i class="notika-icon notika-alarm"></i></span>
@@ -41,8 +51,8 @@
                                             </div>
                                         </div>
                                     </a>
-                                    
-                                    
+
+
                                 </div>
                                 <div class="hd-mg-va">
                                     <a href="#">View All</a>
@@ -79,110 +89,6 @@
     </div>
 </div>
 <!-- End Header Top Area -->
-<!-- Mobile Menu start -->
-<div class="mobile-menu-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="mobile-menu">
-                    <nav id="dropdown">
-                        <ul class="mobile-menu-nav">
-                            <li><a href="#">Home</a>
-                                <ul class="collapse dropdown-header-top">
-                                    <li><a href="index.html">Dashboard One</a></li>
-                                    <li><a href="index-2.html">Dashboard Two</a></li>
-                                    <li><a href="index-3.html">Dashboard Three</a></li>
-                                    <li><a href="index-4.html">Dashboard Four</a></li>
-                                    <li><a href="analytics.html">Analytics</a></li>
-                                    <li><a href="widgets.html">Widgets</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#demoevent" href="#">Email</a>
-                                <ul id="demoevent" class="collapse dropdown-header-top">
-                                    <li><a href="inbox.html">Inbox</a></li>
-                                    <li><a href="view-email.html">View Email</a></li>
-                                    <li><a href="compose-email.html">Compose Email</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#democrou" href="#">Interface</a>
-                                <ul id="democrou" class="collapse dropdown-header-top">
-                                    <li><a href="animations.html">Animations</a></li>
-                                    <li><a href="google-map.html">Google Map</a></li>
-                                    <li><a href="data-map.html">Data Maps</a></li>
-                                    <li><a href="code-editor.html">Code Editor</a></li>
-                                    <li><a href="image-cropper.html">Images Cropper</a></li>
-                                    <li><a href="wizard.html">Wizard</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#demolibra" href="#">Charts</a>
-                                <ul id="demolibra" class="collapse dropdown-header-top">
-                                    <li><a href="flot-charts.html">Flot Charts</a></li>
-                                    <li><a href="bar-charts.html">Bar Charts</a></li>
-                                    <li><a href="line-charts.html">Line Charts</a></li>
-                                    <li><a href="area-charts.html">Area Charts</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#demodepart" href="#">Tables</a>
-                                <ul id="demodepart" class="collapse dropdown-header-top">
-                                    <li><a href="normal-table.html">Normal Table</a></li>
-                                    <li><a href="data-table.html">Data Table</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#demo" href="#">Forms</a>
-                                <ul id="demo" class="collapse dropdown-header-top">
-                                    <li><a href="form-elements.html">Form Elements</a></li>
-                                    <li><a href="form-components.html">Form Components</a></li>
-                                    <li><a href="form-examples.html">Form Examples</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#Miscellaneousmob" href="#">App
-                                    views</a>
-                                <ul id="Miscellaneousmob" class="collapse dropdown-header-top">
-                                    <li><a href="notification.html">Notifications</a>
-                                    </li>
-                                    <li><a href="alert.html">Alerts</a>
-                                    </li>
-                                    <li><a href="modals.html">Modals</a>
-                                    </li>
-                                    <li><a href="buttons.html">Buttons</a>
-                                    </li>
-                                    <li><a href="tabs.html">Tabs</a>
-                                    </li>
-                                    <li><a href="accordion.html">Accordion</a>
-                                    </li>
-                                    <li><a href="dialog.html">Dialogs</a>
-                                    </li>
-                                    <li><a href="popovers.html">Popovers</a>
-                                    </li>
-                                    <li><a href="tooltips.html">Tooltips</a>
-                                    </li>
-                                    <li><a href="dropdown.html">Dropdowns</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#Pagemob" href="#">Pages</a>
-                                <ul id="Pagemob" class="collapse dropdown-header-top">
-                                    <li><a href="contact.html">Contact</a>
-                                    </li>
-                                    <li><a href="invoice.html">Invoice</a>
-                                    </li>
-                                    <li><a href="typography.html">Typography</a>
-                                    </li>
-                                    <li><a href="color.html">Color</a>
-                                    </li>
-                                    <li><a href="login-register.html">Login Register</a>
-                                    </li>
-                                    <li><a href="404.html">404 Page</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="main-menu-area mg-tb-40">
     <div class="container">
@@ -190,52 +96,75 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro">
 
-                    <li class="active" style="cursor: pointer;">
-                        <a href="{{ route('dashboard') }}">
-                            <i class="icon-library" style="font-size: 19px;cursor: pointer;"></i> Accueil
+                    <li class="active"
+                        style="{{ request()->routeIs('dashboard')
+                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            : 'margin-right:5px;cursor: pointer;' }}">
+                        <a href="{{ route('dashboard') }}" style="font-size: 17px;cursor: pointer;">
+                            <i class="icon-library"></i> Accueil
                         </a>
                     </li>
 
-                    <li class="dropdown-trig-sgn">
-                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
-                            role="button" aria-expanded="false">
-                            <i class="icon-clock2" style="font-size: 19px"></i> Suivi des présences <span
-                                class="caret"></span>
+                    <li class="dropdown-trig-sgn active"
+                        style="{{ request()->routeIs('liste_presence')
+                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            : 'margin-right:5px' }}">
+                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown" role="button"
+                            aria-expanded="false" style="font-size: 17px;cursor: pointer;">
+                            <i class="icon-clock2"></i> Suivi des présences <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
-                            <li><a href="{{ route('liste_presence') }}"><i class="icon-list"
-                                        style="font-size: 13px;margin-right:6px"></i>Liste des présences</a></li>
+                            <li
+                                style="{{ request()->routeIs('liste_presence') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                <a href="{{ route('liste_presence') }}"><i class="icon-list"
+                                        style="font-size: 13px;margin-right:6px;cursor: pointer;"></i>Liste des
+                                    présences</a>
+                            </li>
                             <li><a href="#"><i class="icon-clock2"
                                         style="font-size: 15px;margin-right:6px"></i>Heures supplémentaires</a></li>
                         </ul>
                     </li>
 
-                    <li>
-                        <a href="{{ route('sortie_intermediaire') }}">
-                            <i class="icon-hour-glass" style="font-size: 19px;cursor: pointer;"></i> Sorties
+                    <li class="active"
+                        style="{{ request()->routeIs('sortie_intermediaire')
+                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            : 'margin-right:5px' }}">
+                        <a href="{{ route('sortie_intermediaire') }}" style="font-size: 17px;cursor: pointer;">
+                            <i class="icon-hour-glass"></i> Sorties
                             intermédiaires
                         </a>
                     </li>
                     @if (Auth::user()->role_user === 'Admin')
-                        <li class="dropdown-trig-sgn">
+                        <li class="dropdown-trig-sgn active"
+                            style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
+                                ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                                : 'margin-right:5px' }}">
                             <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
-                                role="button" aria-expanded="false">
+                                role="button" aria-expanded="false" style="font-size: 17px;cursor: pointer;">
                                 <i class="icon-cogs" style="font-size: 19px;cursor: pointer;"></i> Paramètres <span
                                     class="caret"></span>
                             </a>
                             <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
-                                <li><a href="{{ route('liste_entreprise') }}"><i class="icon-database"
-                                            style="font-size: 13px;margin-right:6px"></i>Gestion des entréprises</a>
+                                <li
+                                    style="{{ request()->routeIs('liste_entreprise') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                    <a href="{{ route('liste_entreprise') }}"><i class="icon-database"
+                                            style="font-size: 17px;cursor: pointer;"></i>Gestion des entréprises</a>
                                 </li>
-                                <li><a href="{{ route('liste_employer') }}"><i class="icon-users"
+                                <li
+                                    style="{{ request()->routeIs('liste_employer') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                    <a href="{{ route('liste_employer') }}"><i class="icon-users"
                                             style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
                                 </li>
                             </ul>
                         </li>
                     @else
-                        <li>
-                            <a href="{{ route('liste_employer') }}"><i class="icon-users"
-                                    style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
+                        <li class="active"
+                            style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
+                                ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;'
+                                : '' }}">
+                            <a href="{{ route('liste_employer') }}" style="font-size: 17px;cursor: pointer;"><i
+                                    class="icon-users" style="font-size: 15px;margin-right:6px"></i>Gestion des
+                                utilisateurs</a>
                         </li>
                     @endif
                 </ul>

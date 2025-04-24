@@ -21,17 +21,32 @@
 	});
 
 	//Warning Message
-	$('#sa-warning').on('click', function(){
-		swal({   
-			title: "Are you sure?",   
-			text: "You will not be able to recover this imaginary file!",   
-			type: "warning",   
-			showCancelButton: true,   
-			confirmButtonText: "Yes, delete it!",
-		}).then(function(){
-			swal("Deleted!", "Your imaginary file has been deleted.", "success"); 
+	$(document).ready(function () {
+		// Cibler tous les boutons avec la classe
+		$('.sa-warning-btn').on('click', function () {
+			const userId = $(this).data('id'); // récupère l'ID si besoin
+	
+			Swal.fire({
+				title: "Êtes-vous sûr ?",
+				text: "Cette action est irréversible.",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				cancelButtonColor: "#3085d6",
+				confirmButtonText: "Oui, supprimer",
+				cancelButtonText: "Annuler"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// Tu peux ici soumettre un formulaire, ou faire un fetch/ajax
+					Swal.fire("Supprimé !", "L'action a bien été effectuée.", "success");
+	
+					// Exemple : soumettre un formulaire lié
+					// $('#form-delete-' + userId).submit();
+				}
+			});
 		});
 	});
+	
 	
 	//Parameter
 	$('#sa-params').on('click', function(){
