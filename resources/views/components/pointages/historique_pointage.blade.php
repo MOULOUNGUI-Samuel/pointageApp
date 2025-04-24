@@ -142,7 +142,7 @@ color: #fff;">
                 <input type="date" id="filtre-date1" name="date_fin" class="form-control mb-3">
             </div>
 
-            <div class="container-custom">
+            <div class="container-custom" style="max-height: 1000px; overflow-y: auto;">
                 <!-- Champ visible (sélecteur de date) -->
 
 
@@ -252,12 +252,6 @@ color: #fff;">
         </div>
 
     </div>
-
-
-
-
-
-
 
     <!-- Login Register area End-->
     <!-- jquery
