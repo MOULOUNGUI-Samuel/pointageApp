@@ -244,13 +244,13 @@ color: #fff;">
                                         <i class="icon-key" style="font-size: 25px"></i>
                                     </span>
                                     <div class="nk-int-st">
-                                        <input type="password" id="passwordField" name="password"
+                                        <input type="password" id="passwordField1" name="password"
                                             class="form-control text-white" placeholder="Mot de passe"
                                             style="border: none; padding: 20px; background: transparent" required>
                                     </div>
                                     <!-- Icône pour afficher/masquer -->
                                     <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                        <i id="toggleIcon" class="icon-eye"
+                                        <i id="toggleIcon1" class="icon-eye"
                                             style="font-size: 25px; cursor: pointer;"></i>
                                     </span>
                                 </div>
@@ -285,6 +285,22 @@ color: #fff;">
             </div>
         </div>
     </div>
+    <script>
+        function togglePassword() {
+            let passwordField = document.getElementById("passwordField1");
+            let toggleIcon = document.getElementById("toggleIcon1");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text"; // Affiche le mot de passe
+                toggleIcon.classList.remove("icon-eye");
+                toggleIcon.classList.add("icon-eye-blocked"); // Change l'icône
+            } else {
+                passwordField.type = "password"; // Masque le mot de passe
+                toggleIcon.classList.remove("icon-eye-blocked");
+                toggleIcon.classList.add("icon-eye");
+            }
+        }
+    </script>
     <script>
         function togglePassword() {
             let passwordField = document.getElementById("passwordField");
