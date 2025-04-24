@@ -287,7 +287,7 @@ color: #fff;">
                                     <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 w-25">
                                         <i class="icon-close-solid"></i> Annuler
                                     </a>
-                                    <button type="submit" class="btn btn-gradient w-25">
+                                    <button type="submit" class="btn btn-gradient">
                                         <i class="icon-save-disk"></i> Enrégristrer
                                     </button>
 
