@@ -134,12 +134,12 @@ color: #fff;">
         <div class="row text-center mt-4">
 
             <div class="col-6 text-left">
-                <label for="filtre-date">DU :</label>
+                <label for="filtre-date">Date début :</label>
                 <input type="date" id="filtre-date" placeholder="jj/mm/aaaa" name="date_debut"
                     class="form-control mb-3">
             </div>
             <div class="col-6 text-left">
-                <label for="filtre-date1">AU :</label>
+                <label for="filtre-date1">Date fin :</label>
                 <input type="date" id="filtre-date1" placeholder="jj/mm/aaaa" name="date_fin"
                     class="form-control mb-3">
             </div>
