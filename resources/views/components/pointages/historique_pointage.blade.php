@@ -236,8 +236,8 @@ color: #fff;">
                                 }
                             });
 
-                            const message = document.getElementById('aucun-resultat');
-                            message.style.display = matchCount === 0 ? 'block' : 'none';
+                            // const message = document.getElementById('aucun-resultat');
+                            // message.style.display = matchCount === 0 ? 'block' : 'none';
                         }
 
                         // ⚡ Déclenchement automatique du filtrage

@@ -44,7 +44,6 @@
                                         <th style="color: white">Date</th>
                                         <th style="color: white">Heure sortie</th>
                                         <th style="color: white">Heure retour</th>
-                                        <th style="color: white">Description</th>
                                         <th style="color: white">Action</th>
                                     </tr>
                                 </thead>
@@ -77,13 +76,6 @@
                                                             style="background-color:green">
                                                             {{ $pointage_intermediaire->heure_entrer }}
                                                         </span>
-                                                    </td>
-                                                    <td>
-                                                        @forelse ($descriptions as $description)
-                                                            <div>{{ $description->description }}</div>
-                                                        @empty
-                                                            <div>Aucune cause spécifiée</div>
-                                                        @endforelse
                                                     </td>
                                                     <td>
                                                         <button class="btn btn-primary btn-reco-mg btn-button-mg">

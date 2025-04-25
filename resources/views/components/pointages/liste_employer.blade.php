@@ -202,7 +202,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">Fermer</button>
+                                                data-dismiss="modal" style="color:black">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
                                         </div>
                                     </form>
@@ -234,22 +234,22 @@
                                             <td>{{ $employe->matricule }}</td>
                                             <td>{{ $employe->fonction }}</td>
                                             <td>
-                                                <a href="" class="btn btn-info btn-reco-mg btn-button-mg">
+                                                {{-- <a href="" class="btn btn-info btn-reco-mg btn-button-mg">
                                                     <i class="icon-eye" style="font-size: 20px;"></i>
-                                                </a>
+                                                </a> --}}
                                                 <a href="#" class="btn btn-warning btn-reco-mg btn-button-mg"
                                                     data-toggle="modal"
                                                     data-target="#floatingLabelsModal{{ $employe->id }}">
                                                     <i class="icon-edit" style="font-size: 20px;"></i>
                                                 </a>
-                                                <form action="" method="POST" style="display:inline-block;">
+                                                {{-- <form action="" method="POST" style="display:inline-block;">
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-danger btn-reco-mg btn-button-mg">
                                                         <i class="icon-box" style="font-size: 20px;"></i>
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                             </td>
                                         </tr>
                                         <div class="modal fade" id="floatingLabelsModal{{ $employe->id }}"
@@ -414,7 +414,7 @@
 
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Fermer</button>
+                                                                data-dismiss="modal" style="color:black">Fermer</button>
                                                             <button type="submit" class="btn btn-warning">Mettre à
                                                                 jour</button>
                                                         </div>

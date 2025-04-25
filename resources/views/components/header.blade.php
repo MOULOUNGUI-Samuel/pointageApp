@@ -109,18 +109,18 @@
                     </li>
 
                     <li class="dropdown-trig-sgn active"
-                        style="{{ request()->routeIs('liste_presence')
+                        style="{{ request()->routeIs('liste_presence','Suivi_profil')
                             ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color: #0384ca87'
                             : 'margin-right:5px' }}">
                         <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown" role="button"
-                            aria-expanded="false" style="{{ request()->routeIs('liste_presence')
+                            aria-expanded="false" style="{{ request()->routeIs('liste_presence','Suivi_profil')
                             ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
                             : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-clock2"></i> Suivi des présences <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
                             <li
-                                style="{{ request()->routeIs('liste_presence') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                style="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'background-color: #0384ca87;color:white' : '' }}">
                                 <a href="{{ route('liste_presence') }}"><i class="icon-list"
                                         style="font-size: 13px;margin-right:6px;cursor: pointer;"></i>Liste des
                                     présences</a>

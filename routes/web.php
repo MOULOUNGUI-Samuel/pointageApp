@@ -45,6 +45,7 @@ Route::middleware('auth')->group(
         Route::get('/pointage_compte', [pointeController::class, 'pointage_compte'])->name('pointage_compte');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
         Route::get('/historique_pointage', [pointeController::class, 'historique_pointage'])->name('historique_pointage');
+        Route::get('/Suivi_profil/{id}', [pointeController::class, 'Suivi_profil'])->name('Suivi_profil');
         Route::get('/profil_employe', [pointeController::class, 'profil_employe'])->name('profil_employe');
         Route::get('/pointage_sortie_connecter', [pointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
         Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');

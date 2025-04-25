@@ -64,9 +64,10 @@
                                             </td>
                                             <td>
                                                 @if ($pointage->heure_arriver > $pointage->user->entreprise->heure_ouverture)
-                                                <span class="badge badge-danger p-2" style="background-color:rgba(196, 12, 12, 0.877)">
-                                                    En retard
-                                                </span>
+                                                    <span class="badge badge-danger p-2"
+                                                        style="background-color:rgba(196, 12, 12, 0.877)">
+                                                        En retard
+                                                    </span>
                                                 @else
                                                     <span class="badge badge-success p-2" style="background-color:green">
                                                         A l'heure
@@ -74,17 +75,19 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button class="btn btn-primary btn-reco-mg btn-button-mg">
+                                                <a href="{{ route('Suivi_profil', $pointage->user->id) }}"
+                                                    class="btn btn-primary btn-reco-mg btn-button-mg">
                                                     <i class="icon-eye" style="font-size: 20px; margin-right: 10px"></i>
                                                     <span>Profil</span>
-                                                </button>
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                             <div id="aucun-resultat" style="display: none;">
-                                <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé pour cette période.</h4>
+                                <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé pour cette
+                                    période.</h4>
                             </div>
 
                         </div>
@@ -101,16 +104,16 @@
             const dd = String(today.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`; // format YYYY-MM-DD
         }
-    
+
         function filtrerParPeriode() {
             const dateDebut = document.getElementById('filtre-date').value;
             const dateFin = document.getElementById('filtre-date1').value;
             const items = document.querySelectorAll('.pointage-item');
             let matchCount = 0;
-    
+
             items.forEach(item => {
                 const itemDate = item.getAttribute('data-date'); // format YYYY-MM-DD
-    
+
                 if (
                     (!dateDebut || itemDate >= dateDebut) &&
                     (!dateFin || itemDate <= dateFin)
@@ -121,26 +124,26 @@
                     item.style.display = 'none';
                 }
             });
-    
+
             const message = document.getElementById('aucun-resultat');
             if (message) {
                 message.style.display = matchCount === 0 ? 'block' : 'none';
             }
         }
-    
-        document.addEventListener('DOMContentLoaded', function () {
+
+        document.addEventListener('DOMContentLoaded', function() {
             const today = getTodayDate();
             document.getElementById('filtre-date').value = today;
             document.getElementById('filtre-date1').value = today;
-            
+
             // Lance le filtrage automatiquement
             filtrerParPeriode();
         });
-    
+
         document.getElementById('filtre-date').addEventListener('change', filtrerParPeriode);
         document.getElementById('filtre-date1').addEventListener('change', filtrerParPeriode);
     </script>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Filtrage par catégorie et statut

@@ -6,6 +6,7 @@ use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -107,6 +108,32 @@ class pointeController extends Controller
         }
 
         return view('components.pointages.historique_pointage', compact('Pointages', 'cause_sorties'));
+    }
+    public function Suivi_profil($id)
+    {
+        $Pointages = Pointage::with('user.entreprise')->where('user_id', $id)
+            ->orderBy('date_arriver', 'desc')
+            ->get();
+        $cause_sorties = [];
+        $user = User::where('id', $id)->first();
+        foreach ($Pointages as $Pointage) {
+            $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
+                ->orderBy('heure_sortie', 'desc')
+                ->get();
+
+            foreach ($pointage_intermediaires as $pointage_intermediaire) {
+                $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
+
+                $cause_sorties[$Pointage->id][] = [
+                    'pointage_intermediaire' => $pointage_intermediaire,
+                    'descriptions' => $DescriptionPointages
+                ];
+            }
+        }
+
+       
+
+        return view('components.pointages.Suivi_profile', compact('Pointages', 'cause_sorties','user'));
     }
 
     public function profil_employe()
