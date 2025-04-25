@@ -57,49 +57,30 @@
                     <div class="email-statis-inner notika-shadow">
                         <div class="email-ctn-round">
                             <div class="email-rdn-hd">
-                                <h2>Évolution des pointages</h2>
-                            </div>
-                            <div class="email-statis-wrap">
-                                <div class="email-round-nock">
-                                    <input type="text" class="knob" value="0" data-rel="55" data-linecap="round"
-                                        data-width="110" data-bgcolor="#E4E4E4" data-fgcolor="#0384ca" data-thickness=".10"
-                                        data-readonly="true">
-                                </div>
-                                <div class="email-ctn-nock">
-                                    <p>Taux d'absence <strong>de la semaine</strong></p>
-                                </div>
+                                <h2>Évolution des absences</h2>
                             </div>
                             <div class="email-round-gp">
                                 <div class="email-round-pro">
                                     <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="75"
+                                        <input type="text" class="knob" value="0" data-rel="{{count($users_non_existants)/count($employes)*100}}"
                                             data-linecap="round" data-width="90" data-bgcolor="#E4E4E4"
                                             data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                     <div class="email-ctn-nock">
-                                        <p>Taux d'absence <strong>du mois</strong></p>
+                                        <p>Taux d' <strong>absence de la semaine</strong></p>
                                     </div>
                                 </div>
                                 <div class="email-round-pro">
                                     <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="55"
+                                        <input type="text" class="knob" value="0" data-rel="{{count($users_non_existants)/count($employes)*100}}"
                                             data-linecap="round" data-width="90" data-bgcolor="#E4E4E4"
                                             data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                     <div class="email-ctn-nock">
-                                        <p>Taux de congé <strong>de la semaine</strong></p>
+                                        <p>Taux d' <strong>absence du mois</strong></p>
                                     </div>
                                 </div>
-                                <div class="email-round-pro sm-res-ds-n lg-res-mg-bl">
-                                    <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="45"
-                                            data-linecap="round" data-width="90" data-bgcolor="#E4E4E4"
-                                            data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
-                                    </div>
-                                    <div class="email-ctn-nock">
-                                        <p>Taux de congé <strong>du mois</strong></p>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
