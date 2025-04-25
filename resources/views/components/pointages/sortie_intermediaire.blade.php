@@ -94,8 +94,6 @@
                                                     </td>
                                                 </tr>
                                             @endforeach
-                                            
-                                            
                                         @endif
                                     @endforeach
 
@@ -112,6 +110,14 @@
         </div>
     </div>
     <script>
+        function getTodayDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // Janvier = 0
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`; // format YYYY-MM-DD
+        }
+    
         function filtrerParPeriode() {
             const dateDebut = document.getElementById('filtre-date').value;
             const dateFin = document.getElementById('filtre-date1').value;
@@ -138,10 +144,19 @@
             }
         }
     
-        // Déclenchement automatique du filtrage
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = getTodayDate();
+            document.getElementById('filtre-date').value = today;
+            document.getElementById('filtre-date1').value = today;
+            
+            // Lance le filtrage automatiquement
+            filtrerParPeriode();
+        });
+    
         document.getElementById('filtre-date').addEventListener('change', filtrerParPeriode);
         document.getElementById('filtre-date1').addEventListener('change', filtrerParPeriode);
     </script>
+    
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {

@@ -9,6 +9,7 @@ use App\Models\Entreprise;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,7 +56,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-
+            $heure_actuelle = Carbon::now('Africa/Libreville')->format('H:i:s');
             if ($request->pointage_entrer) {
                 $entreprise = Entreprise::find($user->entreprise_id);
 
@@ -112,7 +113,7 @@ class AuthenticatedSessionController extends Controller
                     $le_pointageIntermediaire = PointagesIntermediaire::find($PointagesIntermediaires->id);
                     if ($le_pointageIntermediaire) {
                         $le_pointageIntermediaire->statut = 1;
-                        $le_pointageIntermediaire->heure_entrer = now()->format('H:i:s');
+                        $le_pointageIntermediaire->heure_entrer = $heure_actuelle;
                         $le_pointageIntermediaire->save();
                     }
                     // Vérifier s’il a déjà pointé sa sortie aujourd’hui
@@ -138,7 +139,7 @@ class AuthenticatedSessionController extends Controller
                     'user_id' => $user->id,
                     'date_arriver' => now()->toDateString(),
                     'date_fin' => null,
-                    'heure_arriver' => now()->format('H:i:s'),
+                    'heure_arriver' => $heure_actuelle,
                     'heure_fin' => null,
                     'statut' => 1,
                     'autorisation_absence' => 'Non',
@@ -210,7 +211,7 @@ class AuthenticatedSessionController extends Controller
 
                 $pointageIntermediaire = new PointagesIntermediaire();
                 $pointageIntermediaire->pointage_id = $dejaPointage->id;
-                $pointageIntermediaire->heure_sortie = now()->format('H:i:s');
+                $pointageIntermediaire->heure_sortie = $heure_actuelle;
                 $pointageIntermediaire->heure_entrer = null;
                 $pointageIntermediaire->statut = 1;
                 $pointageIntermediaire->save();

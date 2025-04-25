@@ -67,8 +67,8 @@ class User extends Authenticatable
          return $this->belongsTo(Entreprise::class, 'entreprise_id');
      }
 
-     public function pointages()
+     public function pointage()
      {
-         return $this->hasMany(Pointage::class, 'users_id');
+         return $this->hasMany(Pointage::class, 'user_id');
      }
 }

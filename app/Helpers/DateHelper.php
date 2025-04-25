@@ -11,6 +11,7 @@ use App\Models\Ville;
 use App\Models\Beneficiaire;
 use App\Models\Permission;
 use App\Models\PermissionUser;
+use Carbon\Carbon;
 use DateTime;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -94,26 +95,5 @@ class DateHelper
     public static function formatNumber($number)
     {
         return number_format($number, 0, '.', ' '); // Formate le nombre avec des espaces comme séparateurs de milliers
-    }
-
-    public static function determinerTitre($sexe)
-    {
-        // Normaliser le sexe en minuscule pour une comparaison cohérente
-        $sexe = strtolower(trim($sexe ?? ''));
-
-        // Gestion des différents types de codification
-        $codificationsFemmes = ['f', 'femme', 'female', 'féminin', 'madame', 'woman', 'mme', 'mm'];
-        $codificationsHommes = ['h', 'homme', 'male', 'masculin', 'monsieur', 'man', 'm.', 'mr', 'm'];
-
-        if (in_array($sexe, $codificationsFemmes)) {
-            return 'féminin';
-        }
-
-        if (in_array($sexe, $codificationsHommes)) {
-            return 'masculin';
-        }
-
-        // Si le sexe est indéterminé ou non reconnu
-        return '';
     }
 }

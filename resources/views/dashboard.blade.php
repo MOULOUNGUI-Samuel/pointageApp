@@ -127,20 +127,11 @@
                                                         alt="" width="30"
                                                         style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px" />
                                                 </td>
-                                                <td>{{ $absent->user->nom }} {{ $absent->user->prenom }}</td>
+                                                <td>{{ $absent->nom }} {{ $absent->prenom }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
-                                </table>
-                                <div class="recent-post-signle">
-                                    <a href="#">
-                                        <div class="recent-post-flex rc-ps-vw">
-                                            <div class="recent-post-line rct-pt-mg">
-                                                <p style="color:rgba(196, 12, 12, 0.877)">Voir plus</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
+                                </table> 
                             </div>
                         </div>
                     </div>
@@ -178,7 +169,7 @@
                                     <a href="#">
                                         <div class="recent-post-flex rc-ps-vw">
                                             <div class="recent-post-line rct-pt-mg">
-                                                <p style="color:green">Voir plus</p>
+                                                <a href="{{ route('liste_presence') }}" style="color:green">Voir plus</a>
                                             </div>
                                         </div>
                                     </a>

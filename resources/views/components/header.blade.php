@@ -98,19 +98,24 @@
 
                     <li class="active"
                         style="{{ request()->routeIs('dashboard')
-                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            ? 'box-shadow: 0 1px 3px ; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
                             : 'margin-right:5px;cursor: pointer;' }}">
-                        <a href="{{ route('dashboard') }}" style="font-size: 17px;cursor: pointer;">
+                        <a href="{{ route('dashboard') }}"
+                            style="{{ request()->routeIs('dashboard')
+                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-library"></i> Accueil
                         </a>
                     </li>
 
                     <li class="dropdown-trig-sgn active"
                         style="{{ request()->routeIs('liste_presence')
-                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color: #0384ca87'
                             : 'margin-right:5px' }}">
                         <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown" role="button"
-                            aria-expanded="false" style="font-size: 17px;cursor: pointer;">
+                            aria-expanded="false" style="{{ request()->routeIs('liste_presence')
+                            ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                            : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-clock2"></i> Suivi des présences <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
@@ -127,9 +132,11 @@
 
                     <li class="active"
                         style="{{ request()->routeIs('sortie_intermediaire')
-                            ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                            ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
                             : 'margin-right:5px' }}">
-                        <a href="{{ route('sortie_intermediaire') }}" style="font-size: 17px;cursor: pointer;">
+                        <a href="{{ route('sortie_intermediaire') }}" style="{{ request()->routeIs('sortie_intermediaire')
+                            ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                            : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-hour-glass"></i> Sorties
                             intermédiaires
                         </a>
@@ -137,11 +144,13 @@
                     @if (Auth::user()->role_user === 'Admin')
                         <li class="dropdown-trig-sgn active"
                             style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
-                                ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px'
+                                ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
                                 : 'margin-right:5px' }}">
                             <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
                                 role="button" aria-expanded="false" style="font-size: 17px;cursor: pointer;">
-                                <i class="icon-cogs" style="font-size: 19px;cursor: pointer;"></i> Paramètres <span
+                                <i class="icon-cogs" style="{{ request()->routeIs('liste_employer')
+                                    ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                    : 'font-size: 17px;cursor: pointer;' }}"></i> Paramètres <span
                                     class="caret"></span>
                             </a>
                             <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
@@ -159,11 +168,13 @@
                         </li>
                     @else
                         <li class="active"
-                            style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
-                                ? 'box-shadow: 0 1px 3px #0384ca87; transition: all 0.3s ease-in-out; border-radius: 5px;'
+                            style="{{ request()->routeIs('liste_employer', 'liste_employer')
+                                ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;background-color:#0384ca87'
                                 : '' }}">
-                            <a href="{{ route('liste_employer') }}" style="font-size: 17px;cursor: pointer;"><i
-                                    class="icon-users" style="font-size: 15px;margin-right:6px"></i>Gestion des
+                            <a href="{{ route('liste_employer') }}" style="{{ request()->routeIs('liste_employer')
+                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                : 'font-size: 17px;cursor: pointer;' }}"><i
+                                    class="icon-users"></i>Gestion des
                                 utilisateurs</a>
                         </li>
                     @endif

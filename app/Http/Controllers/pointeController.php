@@ -33,13 +33,17 @@ class pointeController extends Controller
     public function liste_presence()
     {
         //
-        return view('components.pointages.liste_presence');
+        $entreprise_id = auth()->user()->entreprise_id;
+        $liste_pointages = Pointage::whereHas('user.entreprise', fn($query) => $query->where('entreprise_id', $entreprise_id))
+            ->get();
+
+        return view('components.pointages.liste_presence', compact('liste_pointages'));
     }
     public function sortie_intermediaire()
     {
         //
         $user = Auth::user();
-        $Pointages = Pointage::with('user.entreprise') ->whereHas('user', function ($subQuery) use ($user) {
+        $Pointages = Pointage::with('user.entreprise')->whereHas('user', function ($subQuery) use ($user) {
             $subQuery->where('entreprise_id', $user->entreprise_id);
         })
             ->orderBy('date_arriver', 'desc')
