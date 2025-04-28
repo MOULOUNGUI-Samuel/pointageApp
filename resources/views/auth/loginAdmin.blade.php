@@ -143,9 +143,6 @@ url('{{ asset('src/images/admin.jpg') }}') no-repeat center center;
 background-size: cover;
 background-attachment: fixed;
 color: #fff;">
-    <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
     <!-- Login Register area Start-->
     <div class="center-container">
 

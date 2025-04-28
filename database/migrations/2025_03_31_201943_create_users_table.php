@@ -14,6 +14,10 @@ return new class extends Migration
     Schema::create('users', function (Blueprint $table) {
         $table->uuid('id')->primary();
         $table->uuid('entreprise_id')->nullable();
+        $table->uuid('module_id')->nullable();
+        $table->string('photo')->nullable();
+        $table->string('telephone')->nullable();
+        $table->string('adresse')->nullable();
         $table->string('nom');
         $table->string('prenom');
         $table->string('matricule')->unique();
@@ -24,8 +28,8 @@ return new class extends Migration
         $table->string('role_user');
         $table->boolean('statut')->default(1);
         $table->timestamps();
-
         $table->foreign('entreprise_id')->references('id')->on('entreprises')->onDelete('cascade');
+        $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
     });
 }
 

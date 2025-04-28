@@ -237,8 +237,10 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
                 return redirect()->route('loginPointe')->with('success', 'Le pointage de sortie a été effectué avec succès.');
             } else {
+
                 if ($user->role_user == 'RH' || $user->role_user == 'Admin') {
                     // Redirection pour les rôles autres que Employer
+                    // return redirect()->intended(route('ModuleAdmin', absolute: false));
                     return redirect()->intended(route('dashboard', absolute: false));
                 } else {
                     return redirect()->intended(route('index_employer', absolute: false));

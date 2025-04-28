@@ -18,6 +18,11 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function modules()
+    {
+        //
+        return view("components.liste_modules");
+    }
     public function index()
     {
         //

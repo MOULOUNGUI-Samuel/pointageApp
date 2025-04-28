@@ -66,6 +66,10 @@ class User extends Authenticatable
      {
          return $this->belongsTo(Entreprise::class, 'entreprise_id');
      }
+     public function module()
+     {
+         return $this->belongsToMany(Module::class, 'module_id');
+     }
 
      public function pointage()
      {

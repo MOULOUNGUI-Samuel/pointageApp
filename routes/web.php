@@ -36,6 +36,7 @@ Route::get(
 Route::middleware('auth')->group(
     function () {
         // Route::get('/', [AdminController::class, 'dashboard']);
+        Route::get('/modules', [AdminController::class, 'modules'])->name('ModuleAdmin');
         Route::get('/liste_presence', [PointeController::class, 'liste_presence'])->name('liste_presence');
         Route::get('/sortie_intermediaire', [PointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
 
