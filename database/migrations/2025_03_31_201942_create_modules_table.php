@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('nom_module');
+            $table->string('logo')->nullable();
             $table->text('description')->nullable();
             $table->boolean('statut')->default(1);
             $table->timestamps();
