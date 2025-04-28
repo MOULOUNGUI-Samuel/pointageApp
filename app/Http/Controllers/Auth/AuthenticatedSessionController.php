@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
+use App\Models\Module;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
@@ -237,13 +238,28 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
                 return redirect()->route('loginPointe')->with('success', 'Le pointage de sortie a été effectué avec succès.');
             } else {
+                // Récupérer une variable et la stocker en session
+
 
                 if ($user->role_user == 'RH' || $user->role_user == 'Admin') {
-                    // Redirection pour les rôles autres que Employer
-                    // return redirect()->intended(route('ModuleAdmin', absolute: false));
-                    return redirect()->intended(route('dashboard', absolute: false));
+                    // dd($request->module_id);
+                    if ($request->module_id) {
+                        // Récupérer le module_id et le stocker en session
+                        $module = Module::find($request->module_id);
+                        // dd($module);
+                        if ($module) {
+                            session()->put('module_nom', $module->nom_module);
+                            session()->put('module_logo', $module->logo);
+                            session()->put('module_id', $module->id);
+                        } else {
+                            return redirect()->back()->with('error', 'Module non trouvé.');
+                        }
+                    }
+                    // Redirection pour RH et Admin
+                    return redirect()->intended(route('dashboard', [], false));
                 } else {
-                    return redirect()->intended(route('index_employer', absolute: false));
+                    // Redirection pour Employer
+                    return redirect()->intended(route('index_employer', [], false));
                 }
             }
         } catch (\Exception $e) {
@@ -266,5 +282,15 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
+    }
+    public function logout_module(Request $request, $id): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/liste_modules');
     }
 }

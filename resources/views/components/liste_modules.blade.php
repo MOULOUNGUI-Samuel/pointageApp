@@ -85,8 +85,9 @@
     }
 </style>
 
-<body  style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
-url('{{ asset('src/images/login.webp') }}') no-repeat center center;
+<body
+    style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
+url('{{ asset('src/images/groupe.jpg') }}') no-repeat center center;
 background-size: cover;
 background-attachment: fixed;
 color: #fff;">
@@ -95,89 +96,64 @@ color: #fff;">
         <![endif]-->
     <!-- Login Register area Start-->
 
-        <!-- Login -->
-        <div class="mx-5" id="l-login">
-            <div class="text-center">
-                <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
-                    style="max-width: 200px;">
-            </div>
-            <div class="row text-center mt-4 mx-5">
-                @if (session('success'))
-                    <div class="col-md-12" style="text-align: left">
-                        <div class="alert alert-success " role="alert">
-                            <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
-                                !</strong> {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+    <!-- Login -->
+    <div class="mx-5" id="l-login">
+        <div class="text-center mt-5">
+            <img src="{{ asset('src/images/Logo_Nedco.PNG') }}" alt="Logo" class="mb-4"
+                style="max-width: 200px;">
+        </div>
+        <div style=" text-align: center;">
+          <div>
+            <h1>Bienvenue sur YODNedCo</h1>
+          </div>
+      </div>
+        <div class="row text-center mt-4 mx-5">
+            @if (session('success'))
+                <div class="col-md-12" style="text-align: left">
+                    <div class="alert alert-success " role="alert">
+                        <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
+                            !</strong> {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="col-md-12" style="text-align: left">
-                        <div class="alert alert-danger" role="alert">
-                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
-                                !</strong> {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="col-md-12" style="text-align: left">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                            !</strong> {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                @endif
-
+                </div>
+            @endif
+            @foreach ($modules as $module)
                 <!-- Bloc Entrée -->
                 <div class="col-lg-3 col-sm-12 mb-4">
-                    <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">
+                    <a href="{{ route('loginGroupe',$module->id) }}" class="text-decoration-none shadow-sm">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
-                                <i class="icon-enter text-success" style="font-size: 45px"></i>
-                                <h3 class="text-success fw-bold">YODIRH</h3>
-                                <p class="text-muted">Découvrez le logiciel YODIRH.</p>
+                                @if (!empty($module->logo))
+                                    <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo du module"
+                                        style="max-width: 100px; height: auto;">
+                                @else
+                                    <i class="icon-user" style="font-size: 45px"></i>
+                                @endif
+                                <h3 class="fw-bold my-2">{{ $module->nom_module ?? 'YODIPOINTE' }}</h3>
+                                <p class="text-muted">Découvrez le logiciel {{ $module->nom_module ?? 'YODIPOINTE' }}.</p>
                             </div>
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-3 col-sm-12 mb-4">
-                    <a href="{{ route('entrer') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-enter text-success" style="font-size: 45px"></i>
-                                <h3 class="text-success fw-bold">Entrée</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre arrivée.</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Bloc Sortie -->
-                <div class="col-lg-3 col-sm-12 mb-4">
-                    <a href="{{ route('sortie') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-exit text-danger" style="font-size: 45px"></i>
-                                <h3 class="text-danger fw-bold">Sortie</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre départ.</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-3 col-sm-12 mb-4">
-                    <a href="{{ route('sortie') }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
-                                <i class="icon-exit text-danger" style="font-size: 45px"></i>
-                                <h3 class="text-danger fw-bold">Sortie</h3>
-                                <p class="text-muted">Cliquez ici pour signaler votre départ.</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
+            @endforeach
         </div>
 
-        <!-- Forgot Password -->
+    </div>
+
+    <!-- Forgot Password -->
 
     <!-- Login Register area End-->
     <!-- jquery

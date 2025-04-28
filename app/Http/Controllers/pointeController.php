@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
+use App\Models\Module;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
@@ -74,6 +75,11 @@ class PointeController extends Controller
         $entreprises = Entreprise::All();
         return view('components.pointages.liste_entreprise', compact('entreprises'));
     }
+    public function liste_modules()
+    {
+        $modules = Module::All();
+        return view('components.liste_modules', compact('modules'));
+    }
     public function pointage_compte()
     {
         $entreprises = Entreprise::All();
@@ -131,9 +137,9 @@ class PointeController extends Controller
             }
         }
 
-       
 
-        return view('components.pointages.Suivi_profile', compact('Pointages', 'cause_sorties','user'));
+
+        return view('components.pointages.Suivi_profile', compact('Pointages', 'cause_sorties', 'user'));
     }
 
     public function profil_employe()
@@ -198,6 +204,66 @@ class PointeController extends Controller
         $entreprise->save();
         return redirect()->back()->with('success', 'Entreprise ajoutée avec succès');
     }
+    public function ajout_module(Request $request)
+{
+    $validator = Validator::make(
+        $request->all(),
+        [
+            'nom_module' => 'required',
+        ],
+        [
+            'nom_module.required' => 'Le nom du module est requis'
+        ]
+    );
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    $module = new Module();
+
+    if ($request->hasFile('logo')) {
+        $path = $request->file('logo')->store('images', 'public'); // correction ici
+        $module->logo = $path;
+    }
+
+    $module->nom_module = $request->nom_module;
+    $module->statut = 1;
+    $module->save();
+
+    return redirect()->back()->with('success', 'Module ajouté avec succès');
+}
+
+public function modifier_module(Request $request, $id)
+{
+    $validator = Validator::make(
+        $request->all(),
+        [
+            'nom_module' => 'required',
+        ],
+        [
+            'nom_module.required' => 'Le nom du module est requis'
+        ]
+    );
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    $module = Module::findOrFail($id);
+
+    if ($request->hasFile('logo')) {
+        $path = $request->file('logo')->store('images', 'public');
+        $module->logo = $path;
+    }
+
+    $module->nom_module = $request->nom_module;
+    $module->save();
+
+    return redirect()->back()->with('success', 'Module modifié avec succès');
+}
+
+
 
 
 

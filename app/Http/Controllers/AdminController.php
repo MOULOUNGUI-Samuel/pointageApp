@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
+use App\Models\Module;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
@@ -18,10 +19,22 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function loginGroupe($id)
+    {
+        //
+        $module = Module::find($id);
+
+        if (!$module) {
+            return redirect()->back()->with('error', 'Module non trouvé.');
+        }
+
+        return view('Auth.loginGroupe',compact('module'));
+    }
     public function modules()
     {
         //
-        return view("components.liste_modules");
+        $modules = Module::All();
+        return view("components.modul_admin", compact('modules'));
     }
     public function index()
     {

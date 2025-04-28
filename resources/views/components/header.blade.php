@@ -4,8 +4,15 @@
         <div class="row">
             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                 <div>
-                    <a href="#"><img src="{{ asset('src/images/YODIPOINTE1.png') }}" alt="" width="96"
-                            class="rounded" /></a>
+                    <a href="#">
+                        @if (isset($module_logo))
+                            <img src="{{ asset('storage/' . $module_logo) }}" alt="" width="96"
+                                class="rounded" />
+                        @else
+                            <img src="{{ asset('src/images/YODIPOINTE1.png') }}" alt="" width="96"
+                                class="rounded" />
+                        @endif
+                    </a>
                 </div>
             </div>
 
@@ -20,16 +27,18 @@
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <div class="header-top-menu">
                     <ul class="nav navbar-nav notika-top-nav">
-                        <li>
-                            <div style="margin-top: 17px; text-align: right;color:aliceblue">
-                                <i>
-                                    <h4 style="font-size: 20px"><i class="icon-library"></i>
-                                        {{ Auth::user()->entreprise->nom_entreprise }}
-                                    </h4>
-                                </i>
-                            </div>
+                        @if (Auth::user()->role_user !== 'Admin')
+                            <li>
+                                <div style="margin-top: 17px; text-align: right;color:aliceblue">
+                                    <i>
+                                        <h4 style="font-size: 20px"><i class="icon-library"></i>
+                                            {{ Auth::user()->entreprise->nom_entreprise }}
+                                        </h4>
+                                    </i>
+                                </div>
 
-                        </li>
+                            </li>
+                        @endif
                         <li class="nav-item nc-al">
                             <a href="#" data-toggle="dropdown" role="button" aria-expanded="false"
                                 class="nav-link dropdown-toggle"><span><i class="notika-icon notika-alarm"></i></span>
@@ -70,15 +79,33 @@
                                             style="font-size: 17px;margin-right:6px"></i><span
                                             style="font-size: 15px">Profil</span></a></li>
                                 <li>
-                                    <a href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="icon-sign-out" style="font-size: 17px;margin-right:6px"></i>
-                                        <span style="font-size: 15px">Déconnexion</span>
-                                    </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                    </form>
+                                    @if (session('module_id'))
+                                        <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="icon-sign-out" style="font-size: 17px;margin-right:6px"></i>
+                                            <span style="font-size: 15px">Déconnexion</span>
+                                        </a>
+
+                                        <form id="logout-form"
+                                            action="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    @else
+                                        <a href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="icon-sign-out" style="font-size: 17px;margin-right:6px"></i>
+                                            <span style="font-size: 15px">Déconnexion</span>
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            style="display: none;">
+                                            @csrf
+                                        </form>
+                                    @endif
+
+
+
                                 </li>
                             </ul>
                         </li>
@@ -109,18 +136,19 @@
                     </li>
 
                     <li class="dropdown-trig-sgn active"
-                        style="{{ request()->routeIs('liste_presence','Suivi_profil')
+                        style="{{ request()->routeIs('liste_presence', 'Suivi_profil')
                             ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color: #0384ca87'
                             : 'margin-right:5px' }}">
                         <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown" role="button"
-                            aria-expanded="false" style="{{ request()->routeIs('liste_presence','Suivi_profil')
-                            ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                            : 'font-size: 17px;cursor: pointer;' }}">
+                            aria-expanded="false"
+                            style="{{ request()->routeIs('liste_presence', 'Suivi_profil')
+                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-clock2"></i> Suivi des présences <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
                             <li
-                                style="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                style="{{ request()->routeIs('liste_presence', 'Suivi_profil') ? 'background-color: #0384ca87;color:white' : '' }}">
                                 <a href="{{ route('liste_presence') }}"><i class="icon-list"
                                         style="font-size: 13px;margin-right:6px;cursor: pointer;"></i>Liste des
                                     présences</a>
@@ -134,9 +162,10 @@
                         style="{{ request()->routeIs('sortie_intermediaire')
                             ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
                             : 'margin-right:5px' }}">
-                        <a href="{{ route('sortie_intermediaire') }}" style="{{ request()->routeIs('sortie_intermediaire')
-                            ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                            : 'font-size: 17px;cursor: pointer;' }}">
+                        <a href="{{ route('sortie_intermediaire') }}"
+                            style="{{ request()->routeIs('sortie_intermediaire')
+                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                : 'font-size: 17px;cursor: pointer;' }}">
                             <i class="icon-hour-glass"></i> Sorties
                             intermédiaires
                         </a>
@@ -148,10 +177,11 @@
                                 : 'margin-right:5px' }}">
                             <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
                                 role="button" aria-expanded="false" style="font-size: 17px;cursor: pointer;">
-                                <i class="icon-cogs" style="{{ request()->routeIs('liste_employer')
-                                    ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                                    : 'font-size: 17px;cursor: pointer;' }}"></i> Paramètres <span
-                                    class="caret"></span>
+                                <i class="icon-cogs"
+                                    style="{{ request()->routeIs('liste_employer')
+                                        ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                        : 'font-size: 17px;cursor: pointer;' }}"></i>
+                                Paramètres <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
                                 <li
@@ -164,6 +194,11 @@
                                     <a href="{{ route('liste_employer') }}"><i class="icon-users"
                                             style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
                                 </li>
+                                <li
+                                    style="{{ request()->routeIs('liste_modules') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                    <a href="{{ route('liste_modules') }}"><i class="icon-users"
+                                            style="font-size: 15px;margin-right:6px"></i>Gestion des modules</a>
+                                </li>
                             </ul>
                         </li>
                     @else
@@ -171,9 +206,10 @@
                             style="{{ request()->routeIs('liste_employer', 'liste_employer')
                                 ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;background-color:#0384ca87'
                                 : '' }}">
-                            <a href="{{ route('liste_employer') }}" style="{{ request()->routeIs('liste_employer')
-                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                                : 'font-size: 17px;cursor: pointer;' }}"><i
+                            <a href="{{ route('liste_employer') }}"
+                                style="{{ request()->routeIs('liste_employer')
+                                    ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
+                                    : 'font-size: 17px;cursor: pointer;' }}"><i
                                     class="icon-users"></i>Gestion des
                                 utilisateurs</a>
                         </li>
