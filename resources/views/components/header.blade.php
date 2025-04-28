@@ -195,8 +195,8 @@
                                             style="font-size: 15px;margin-right:6px"></i>Gestion des utilisateurs</a>
                                 </li>
                                 <li
-                                    style="{{ request()->routeIs('liste_modules') ? 'background-color: #0384ca87;color:white' : '' }}">
-                                    <a href="{{ route('liste_modules') }}"><i class="icon-users"
+                                    style="{{ request()->routeIs('ModuleAdmin') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                    <a href="{{ route('ModuleAdmin') }}"><i class="icon-users"
                                             style="font-size: 15px;margin-right:6px"></i>Gestion des modules</a>
                                 </li>
                             </ul>

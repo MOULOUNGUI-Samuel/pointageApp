@@ -104,7 +104,7 @@ color: #fff;">
         </div>
         <div style=" text-align: center;">
           <div>
-            <h1>Bienvenue sur YODNedCo</h1>
+            <h1>Bienvenue sur NedCore</h1>
           </div>
       </div>
         <div class="row text-center mt-4 mx-5">

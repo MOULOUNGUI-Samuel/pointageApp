@@ -291,6 +291,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/liste_modules');
+        return redirect('/components.liste_module');
     }
 }

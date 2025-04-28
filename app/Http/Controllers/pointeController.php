@@ -75,7 +75,7 @@ class PointeController extends Controller
         $entreprises = Entreprise::All();
         return view('components.pointages.liste_entreprise', compact('entreprises'));
     }
-    public function liste_modules()
+    public function listemodules()
     {
         $modules = Module::All();
         return view('components.liste_modules', compact('modules'));
@@ -205,63 +205,63 @@ class PointeController extends Controller
         return redirect()->back()->with('success', 'Entreprise ajoutée avec succès');
     }
     public function ajout_module(Request $request)
-{
-    $validator = Validator::make(
-        $request->all(),
-        [
-            'nom_module' => 'required',
-        ],
-        [
-            'nom_module.required' => 'Le nom du module est requis'
-        ]
-    );
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nom_module' => 'required',
+            ],
+            [
+                'nom_module.required' => 'Le nom du module est requis'
+            ]
+        );
 
-    if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator)->withInput();
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $module = new Module();
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('images', 'public'); // correction ici
+            $module->logo = $path;
+        }
+
+        $module->nom_module = $request->nom_module;
+        $module->statut = 1;
+        $module->save();
+
+        return redirect()->back()->with('success', 'Module ajouté avec succès');
     }
 
-    $module = new Module();
+    public function modifier_module(Request $request, $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nom_module' => 'required',
+            ],
+            [
+                'nom_module.required' => 'Le nom du module est requis'
+            ]
+        );
 
-    if ($request->hasFile('logo')) {
-        $path = $request->file('logo')->store('images', 'public'); // correction ici
-        $module->logo = $path;
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $module = Module::findOrFail($id);
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('images', 'public');
+            $module->logo = $path;
+        }
+
+        $module->nom_module = $request->nom_module;
+        $module->save();
+
+        return redirect()->back()->with('success', 'Module modifié avec succès');
     }
-
-    $module->nom_module = $request->nom_module;
-    $module->statut = 1;
-    $module->save();
-
-    return redirect()->back()->with('success', 'Module ajouté avec succès');
-}
-
-public function modifier_module(Request $request, $id)
-{
-    $validator = Validator::make(
-        $request->all(),
-        [
-            'nom_module' => 'required',
-        ],
-        [
-            'nom_module.required' => 'Le nom du module est requis'
-        ]
-    );
-
-    if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator)->withInput();
-    }
-
-    $module = Module::findOrFail($id);
-
-    if ($request->hasFile('logo')) {
-        $path = $request->file('logo')->store('images', 'public');
-        $module->logo = $path;
-    }
-
-    $module->nom_module = $request->nom_module;
-    $module->save();
-
-    return redirect()->back()->with('success', 'Module modifié avec succès');
-}
 
 
 
