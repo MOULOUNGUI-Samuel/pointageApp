@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\PointeController;
+use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,10 +24,10 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 
 // Route::get('/LoginAdmin', [AdminController::class, 'index'])->name('loginAdmin');
 
-Route::get('/loginPointe', [PointeController::class, 'loginPointe'])->name('loginPointe');
-Route::get('/sotier', [PointeController::class, 'index'])->name('sortie');
-Route::get('/entrer', [PointeController::class, 'index1'])->name('entrer');
-Route::get('/liste_modules', [PointeController::class, 'listemodules'])->name('components.liste_module');
+Route::get('/loginPointe', [pointeController::class, 'loginPointe'])->name('loginPointe');
+Route::get('/sotier', [pointeController::class, 'index'])->name('sortie');
+Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
+Route::get('/liste_modules', [pointeController::class, 'listemodules'])->name('components.liste_module');
 
 Route::get(
     '/dashboard',
@@ -38,25 +38,25 @@ Route::middleware('auth')->group(
     function () {
         // Route::get('/', [AdminController::class, 'dashboard']);
         Route::get('/modules', [AdminController::class, 'modules'])->name('ModuleAdmin');
-        Route::get('/liste_presence', [PointeController::class, 'liste_presence'])->name('liste_presence');
-        Route::get('/sortie_intermediaire', [PointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
+        Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
+        Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
 
-        Route::get('/liste_entreprise', [PointeController::class, 'liste_entreprise'])->name('liste_entreprise');
-        Route::post('/ajoute_entreprise', [PointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
+        Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
+        Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
 
-        Route::post('/ajout_module', [PointeController::class, 'ajout_module'])->name('ajout_module');
-        Route::put('/modifier_module/{id}', [PointeController::class, 'modifier_module'])->name('modifier_module');
+        Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');
+        Route::put('/modifier_module/{id}', [pointeController::class, 'modifier_module'])->name('modifier_module');
 
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
-        Route::get('/index_employer', [PointeController::class, 'index_employer'])->name('index_employer');
+        Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
         Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');
 
-        Route::get('/pointage_compte', [PointeController::class, 'pointage_compte'])->name('pointage_compte');
-        Route::get('/historique_pointage', [PointeController::class, 'historique_pointage'])->name('historique_pointage');
-        Route::get('/Suivi_profil/{id}', [PointeController::class, 'Suivi_profil'])->name('Suivi_profil');
-        Route::get('/profil_employe', [PointeController::class, 'profil_employe'])->name('profil_employe');
+        Route::get('/pointage_compte', [pointeController::class, 'pointage_compte'])->name('pointage_compte');
+        Route::get('/historique_pointage', [pointeController::class, 'historique_pointage'])->name('historique_pointage');
+        Route::get('/Suivi_profil/{id}', [pointeController::class, 'Suivi_profil'])->name('Suivi_profil');
+        Route::get('/profil_employe', [pointeController::class, 'profil_employe'])->name('profil_employe');
 
-        Route::get('/pointage_sortie_connecter', [PointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
+        Route::get('/pointage_sortie_connecter', [pointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
         Route::get('/liste_employer', [AdminController::class, 'liste_employer'])->name('liste_employer');
         Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
     }

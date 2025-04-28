@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
-class PointeController extends Controller
+class pointeController extends Controller
 {
     /**
      * Display a listing of the resource.
