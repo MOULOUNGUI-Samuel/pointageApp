@@ -123,10 +123,10 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro">
 
-                    <li class="active"
+                    <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}"
                         style="{{ request()->routeIs('dashboard')
-                            ? 'box-shadow: 0 1px 3px ; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
-                            : 'margin-right:5px;cursor: pointer;' }}">
+                            ? 'box-shadow: 0 1px 3px ; transition: all 0.3s ease-in-out; border-radius: 2px;margin-right:5px;background-color:#0384ca87'
+                            : 'margin-right:5px;cursor: pointer;background-color:white;border-radius: 2px' }}">
                         <a href="{{ route('dashboard') }}"
                             style="{{ request()->routeIs('dashboard')
                                 ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
@@ -134,47 +134,22 @@
                             <i class="icon-library"></i> Accueil
                         </a>
                     </li>
-
-                    <li class="dropdown-trig-sgn active"
-                        style="{{ request()->routeIs('liste_presence', 'Suivi_profil')
-                            ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color: #0384ca87'
-                            : 'margin-right:5px' }}">
-                        <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown" role="button"
-                            aria-expanded="false"
-                            style="{{ request()->routeIs('liste_presence', 'Suivi_profil')
+                    <li class="{{ request()->routeIs('liste_presence', 'Suivi_profil', 'sortie_intermediaire', 'liste_employer') ? 'active' : '' }}"
+                        style="{{ request()->routeIs('liste_presence', 'Suivi_profil', 'sortie_intermediaire', 'liste_employer')
+                            ? 'box-shadow: 0 1px 3px ; transition: all 0.3s ease-in-out; border-radius: 2px;margin-right:5px;background-color:#0384ca87'
+                            : 'margin-right:5px;cursor: pointer;background-color:white;border-radius: 2px' }}">
+                        <a data-toggle="tab" href="#Personnel"
+                            style="{{ request()->routeIs('liste_presence', 'Suivi_profil', 'sortie_intermediaire', 'liste_employer')
                                 ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
                                 : 'font-size: 17px;cursor: pointer;' }}">
-                            <i class="icon-clock2"></i> Suivi des présences <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu triger-zoomIn-dp" role="menu">
-                            <li
-                                style="{{ request()->routeIs('liste_presence', 'Suivi_profil') ? 'background-color: #0384ca87;color:white' : '' }}">
-                                <a href="{{ route('liste_presence') }}"><i class="icon-list"
-                                        style="font-size: 13px;margin-right:6px;cursor: pointer;"></i>Liste des
-                                    présences</a>
-                            </li>
-                            <li><a href="#"><i class="icon-clock2"
-                                        style="font-size: 15px;margin-right:6px"></i>Heures supplémentaires</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="active"
-                        style="{{ request()->routeIs('sortie_intermediaire')
-                            ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
-                            : 'margin-right:5px' }}">
-                        <a href="{{ route('sortie_intermediaire') }}"
-                            style="{{ request()->routeIs('sortie_intermediaire')
-                                ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                                : 'font-size: 17px;cursor: pointer;' }}">
-                            <i class="icon-hour-glass"></i> Sorties
-                            intermédiaires
+                            <i class="icon-groups"></i> Gestion du Personnel
                         </a>
                     </li>
                     @if (Auth::user()->role_user === 'Admin')
-                        <li class="dropdown-trig-sgn active"
+                        <li class="dropdown-trig-sgn"
                             style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
-                                ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;margin-right:5px;background-color:#0384ca87'
-                                : 'margin-right:5px' }}">
+                                ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 2px;margin-right:5px;background-color:#0384ca87'
+                                : 'margin-right:5px; background-color:white;border-radius: 2px' }}">
                             <a href="#" class="dropdown-toggle triger-zoomIn" data-toggle="dropdown"
                                 role="button" aria-expanded="false" style="font-size: 17px;cursor: pointer;">
                                 <i class="icon-cogs"
@@ -201,21 +176,43 @@
                                 </li>
                             </ul>
                         </li>
-                    @else
-                        <li class="active"
-                            style="{{ request()->routeIs('liste_employer', 'liste_employer')
-                                ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 5px;background-color:#0384ca87'
-                                : '' }}">
-                            <a href="{{ route('liste_employer') }}"
-                                style="{{ request()->routeIs('liste_employer')
-                                    ? 'font-size: 17px;cursor: pointer;background-color:transparent;color:aliceblue'
-                                    : 'font-size: 17px;cursor: pointer;' }}"><i
-                                    class="icon-users"></i>Gestion des
-                                utilisateurs</a>
-                        </li>
                     @endif
                 </ul>
+                <div class="tab-content custom-menu-content" style="margin-bottom: 10px;margin-top: 5px">
+                    <div id="Personnel"
+                        class="{{ request()->routeIs('liste_presence', 'Suivi_profil', 'sortie_intermediaire', 'liste_employer') ? 'tab-pane in active notika-tab-menu-bg animated flipInX' : 'tab-pane notika-tab-menu-bg animated flipInX' }}">
+                        <ul class="notika-main-menu-dropdown">
+                            @if (Auth::user()->role_user !== 'Admin')
+                                <li
+                                    style="{{ request()->routeIs('liste_employer') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                    <a href="{{ route('liste_employer') }}"
+                                        style="{{ request()->routeIs('liste_employer') ? 'color:white' : '' }}"><i
+                                            class="icon-users" style="margin-right: 5px"></i>Gestion des
+                                        utilisateurs</a>
+                                </li>
+                            @endif
+                            <li><a href="#"><i class="icon-address-book" style="margin-right: 5px"></i>
+                                    Contrats de travail</a>
+                            </li>
+                            <li
+                                style="{{ request()->routeIs('liste_presence', 'Suivi_profil') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                <a href="{{ route('liste_presence') }}"
+                                    style="{{ request()->routeIs('liste_presence', 'Suivi_profil') ? 'color:white' : '' }}">
+                                    <i class="icon-clock2"></i> Suivi des absences et congés</a>
+                            </li>
+                            <li
+                                style="{{ request()->routeIs('sortie_intermediaire') ? 'background-color: #0384ca87;color:white' : '' }}">
+                                <a href="{{ route('sortie_intermediaire') }}"
+                                    style="{{ request()->routeIs('sortie_intermediaire') ? 'color:white' : '' }}"> <i
+                                        class="icon-hour-glass"></i> Sorties
+                                    intermédiaires</a>
+                            </li>
+                            <li><a href="#"><i class="icon-pie-chart"
+                                        style="margin-right: 5px"></i>Organigramme</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>

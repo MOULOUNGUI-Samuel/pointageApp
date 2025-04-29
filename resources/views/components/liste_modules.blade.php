@@ -132,7 +132,7 @@ color: #fff;">
             @endif
             @foreach ($modules as $module)
                 <!-- Bloc Entrée -->
-                <div class="col-lg-3 col-sm-12 mb-4">
+                <div class="col-lg-2 col-sm-12 mb-4">
                     <a href="{{ route('loginGroupe',$module->id) }}" class="text-decoration-none shadow-sm">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
@@ -142,8 +142,7 @@ color: #fff;">
                                 @else
                                     <i class="icon-user" style="font-size: 45px"></i>
                                 @endif
-                                <h3 class="fw-bold my-2">{{ $module->nom_module ?? 'YODIPOINTE' }}</h3>
-                                <p class="text-muted">Découvrez le logiciel {{ $module->nom_module ?? 'YODIPOINTE' }}.</p>
+                                <h3 class="fw-bold my-2">{{ $module->nom_module ?? 'YODIRH' }}</h3>
                             </div>
                         </div>
                     </a>

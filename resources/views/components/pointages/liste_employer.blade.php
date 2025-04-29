@@ -180,7 +180,7 @@
                                                                     {{ old('role_user') == 'Employer' ? 'checked' : '' }}
                                                                     autocomplete="off">
                                                                 <label for="ts6" class="ts-helper"></label>
-                                                                <label for="ts6" class="ts-label">Employé</label>
+                                                                <label for="ts6" class="ts-label" style="color: black">Employé</label>
                                                             </div>
                                                         </div>
 
@@ -191,7 +191,7 @@
                                                                     {{ old('role_user') == 'RH' ? 'checked' : '' }}
                                                                     autocomplete="off">
                                                                 <label for="ts7" class="ts-helper"></label>
-                                                                <label for="ts7" class="ts-label">RH</label>
+                                                                <label for="ts7" class="ts-label" style="color: black">RH</label>
                                                             </div>
                                                         </div>
 
@@ -380,30 +380,30 @@
                                                                         <div class="toggle-select-act">
                                                                             <div class="nk-toggle-switch"
                                                                                 data-ts-color="blue">
-                                                                                <input id="ts6" type="checkbox"
+                                                                                <input id="ts6{{$employe->id}}" type="checkbox"
                                                                                     hidden="hidden" name="role_user"
                                                                                     value="Employer"
                                                                                     {{ old('role_user', $employe->role_user) == 'Employer' ? 'checked' : '' }}
                                                                                     autocomplete="off">
-                                                                                <label for="ts6"
+                                                                                <label for="ts6{{$employe->id}}"
                                                                                     class="ts-helper"></label>
-                                                                                <label for="ts6"
-                                                                                    class="ts-label">Employé</label>
+                                                                                <label for="ts6{{$employe->id}}"
+                                                                                    class="ts-label" style="color: black">Employé</label>
                                                                             </div>
                                                                         </div>
 
                                                                         <div class="toggle-select-act">
                                                                             <div class="nk-toggle-switch"
                                                                                 data-ts-color="blue">
-                                                                                <input id="ts7" type="checkbox"
+                                                                                <input id="ts7{{$employe->id}}" type="checkbox"
                                                                                     hidden="hidden" name="role_user"
                                                                                     value="RH"
                                                                                     {{ old('role_user', $employe->role_user) == 'RH' ? 'checked' : '' }}
                                                                                     autocomplete="off">
-                                                                                <label for="ts7"
+                                                                                <label for="ts7{{$employe->id}}"
                                                                                     class="ts-helper"></label>
-                                                                                <label for="ts7"
-                                                                                    class="ts-label">RH</label>
+                                                                                <label for="ts7{{$employe->id}}"
+                                                                                    class="ts-label" style="color: black">RH</label>
                                                                             </div>
                                                                         </div>
 
@@ -422,6 +422,30 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <script>
+                                            const employeCheckbox = document.getElementById('ts6{{$employe->id}}');
+                                            const rhCheckbox = document.getElementById('ts7{{$employe->id}}');
+                                            const form = document.querySelector('form');
+                                    
+                                            employeCheckbox.addEventListener('change', function() {
+                                                if (this.checked) {
+                                                    rhCheckbox.checked = false;
+                                                }
+                                            });
+                                    
+                                            rhCheckbox.addEventListener('change', function() {
+                                                if (this.checked) {
+                                                    employeCheckbox.checked = false;
+                                                }
+                                            });
+                                    
+                                            form.addEventListener('submit', function(event) {
+                                                if (!employeCheckbox.checked && !rhCheckbox.checked) {
+                                                    event.preventDefault();
+                                                    alert('Veuillez sélectionner au moins un rôle (Employé ou RH).');
+                                                }
+                                            });
+                                        </script>
                                     @endforeach
                                 </tbody>
                             </table>

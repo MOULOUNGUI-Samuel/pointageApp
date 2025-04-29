@@ -215,7 +215,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Fermer</button>
+                                                        data-dismiss="modal" style="color: black">Fermer</button>
                                                     <button type="submit" class="btn btn-primary">Modifier</button>
                                                 </div>
                                         </form>
@@ -223,6 +223,20 @@
                                     </div>
                                 </div>
                             </div>
+                            <script>
+                                document.getElementById('file-upload-{{ $module->id }}').addEventListener('change', function(event) {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = function(e) {
+                                            const preview = document.getElementById('preview-image-{{ $module->id }}');
+                                            preview.src = e.target.result;
+                                            preview.style.display = 'block';
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                });
+                            </script>
 
                 @endforeach
             </div>
