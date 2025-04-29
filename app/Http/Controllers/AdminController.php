@@ -28,7 +28,7 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Module non trouvé.');
         }
 
-        return view('Auth.loginGroupe',compact('module'));
+        return view('auth.loginGroupe', compact('module'));
     }
     public function modules()
     {

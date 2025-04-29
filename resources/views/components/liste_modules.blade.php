@@ -99,7 +99,7 @@ color: #fff;">
     <!-- Login -->
     <div class="mx-5" id="l-login">
         <div class="text-center mt-5">
-            <img src="{{ asset('src/images/Logo_Nedco.PNG') }}" alt="Logo" class="mb-4"
+            <img src="{{ asset('src/images/Logo_Nedco.png') }}" alt="Logo" class="mb-4"
                 style="max-width: 200px;">
         </div>
         <div style=" text-align: center;">
