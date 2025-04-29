@@ -183,7 +183,6 @@
                                                                 <label for="ts6" class="ts-label" style="color: black">Employé</label>
                                                             </div>
                                                         </div>
-
                                                         <div class="toggle-select-act">
                                                             <div class="nk-toggle-switch" data-ts-color="blue">
                                                                 <input id="ts7" type="checkbox" hidden="hidden"
