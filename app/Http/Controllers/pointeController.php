@@ -189,9 +189,14 @@ class pointeController extends Controller
         // Handle the logo upload if provided
         if ($request->hasFile('logo')) {
             $logo = $request->file('logo');
-            $logoName = time() . '_' . $logo->getClientOriginalName();
-            $logoPath = $logo->storeAs('logos', $logoName, 'public');
-            $entreprise->logo = $logoPath;
+            $path = $logo->store('images', 'public');
+            $entreprise->logo = $path;
+        
+            // Copier l'image vers public/storage automatiquement
+            \Illuminate\Support\Facades\File::copy(
+                storage_path('app/public/' . $path),
+                public_path('storage/' . $path)
+            );
         }
         $entreprise->nom_entreprise = $request->nom_entreprise;
         $entreprise->heure_ouverture = $request->heure_ouverture;
@@ -225,6 +230,12 @@ class pointeController extends Controller
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('images', 'public'); // correction ici
             $module->logo = $path;
+
+            // Copier l'image vers public/storage automatiquement
+            \Illuminate\Support\Facades\File::copy(
+                storage_path('app/public/' . $path),
+                public_path('storage/' . $path)
+            );
         }
 
         $module->nom_module = $request->nom_module;
