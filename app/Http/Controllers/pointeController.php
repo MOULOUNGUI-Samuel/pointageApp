@@ -268,6 +268,14 @@ class pointeController extends Controller
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('images', 'public');
             $module->logo = $path;
+
+            $source = storage_path('app/public/' . $path);
+            $destination = base_path('public_html/storage/' . $path);
+        
+            if (file_exists($source)) {
+                \Illuminate\Support\Facades\File::ensureDirectoryExists(dirname($destination));
+                \Illuminate\Support\Facades\File::copy($source, $destination);
+            }
         }
 
         $module->nom_module = $request->nom_module;
