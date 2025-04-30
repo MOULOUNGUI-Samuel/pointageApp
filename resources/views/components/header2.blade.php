@@ -17,13 +17,13 @@
                             <div class="col-lg-1 col-md-0 col-sm-1 col-xs-12">
                                 <div class="menu-switcher-pro">
                                     <button type="button" id="sidebarCollapse" class="btn bar-button-pro header-drl-controller-btn btn-info navbar-btn text-primary">
-                                            <i class="fa fa-bars" style="color: #05436b"></i>
+                                            <i class="fa fa-bars" style="color: #05436b;"></i>
                                         </button>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12">
                                 <div class="header-top-menu tabl-d-n">
-                                    <ul class="nav navbar-nav mai-top-nav">
+                                    {{-- <ul class="nav navbar-nav mai-top-nav">
                                         <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">Home</a>
                                         </li>
                                         <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">About</a>
@@ -32,7 +32,7 @@
                                         </li>
                                         <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">Support</a>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
                                 </div>
                             </div>
                             <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
@@ -207,9 +207,17 @@
             </div>
         </div>
     </div>
+    <style>
+        @media (min-width: 1024px) {
+        .top-section {
+            margin-left: 90px; 
+            margin-right: 90px;
+        }
+    }
+    </style>
     <!-- Mobile Menu end -->
     <div class="breadcome-area">
-        <div class="container-fluid">
+        <div class="top-section container-fluid" >
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="breadcome-list">
@@ -217,16 +225,14 @@
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="breadcome-heading">
                                     <form role="search" class="">
-                                        <input type="text" placeholder="Search..." class="form-control">
-                                        <a href=""><i class="fa fa-search"></i></a>
+                                        <input type="text" placeholder="Rechercher..." class="form-control">
+                                        <a href=""><i class="fa fa-search" style="margin-top:10px"></i></a>
                                     </form>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <ul class="breadcome-menu">
-                                    <li><a href="#">Home</a> <span class="bread-slash">/</span>
-                                    </li>
-                                    <li><span class="bread-blod">Dashboard V.1</span>
+                                    <li><a href="#">Tableau de bord</a>
                                     </li>
                                 </ul>
                             </div>

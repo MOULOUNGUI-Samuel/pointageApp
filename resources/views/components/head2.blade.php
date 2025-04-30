@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{{ asset('src2/css/owl.carousel.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.theme.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.transitions.css') }}">
+
+     {{-- <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}"> --}}
     <!-- animate CSS
         ============================================ -->
     <link rel="stylesheet" href="{{ asset('src2/css/animate.css') }}">
@@ -53,6 +55,7 @@
     <!-- responsive CSS
         ============================================ -->
     <link rel="stylesheet" href="{{ asset('src2/css/responsive.css') }}">
+   
     <!-- modernizr JS
         ============================================ -->
     <script src="{{ asset('src2/js/vendor/modernizr-2.8.3.min.js') }}"></script>

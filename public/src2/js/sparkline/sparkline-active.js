@@ -6,55 +6,55 @@
         lineColor: '#17997f',
 		lineWidth: 1,
 		barSpacing: '100px',
-        fillColor: '#03a9f4',
+        fillColor: '#05436b',
     });
     $("#sparkline2").sparkline([-4, -2, 2, 0, 4, 5, 6, 7], {
         type: 'bar',
-        barColor: '#03a9f4',
+        barColor: '#05436b',
         negBarColor: '#303030'});
 
     $("#sparkline3").sparkline([1, 1, 2], {
         type: 'pie',
-        sliceColors: ['#03a9f4', '#303030', '#ff9999']});
+        sliceColors: ['#05436b', '#303030', '#ff9999']});
 
     $("#sparklinedask1").sparkline([1, 3, 2], {
         type: 'pie',
 		width: '80',
             height: '80',
-        sliceColors: ['#03a9f4', '#303030', '#ff9999']});
+        sliceColors: ['#05436b', '#303030', '#ff9999']});
 
     $("#sparklinedask2").sparkline([1, 1, 2], {
         type: 'pie',
 		width: '80',
             height: '80',
-        sliceColors: ['#03a9f4', '#303030', '#ff9999']});
+        sliceColors: ['#05436b', '#303030', '#ff9999']});
 
     $("#sparkline4").sparkline([34, 43, 43, 35, 44, 32, 15, 22, 46, 33, 86, 54, 73, 53, 12, 53, 23, 65, 23, 63, 53, 42, 34, 56, 76, 15, 54, 23, 44], {
         type: 'line',
-        lineColor: '#03a9f4',
+        lineColor: '#05436b',
         fillColor: '#ffffff',
     });
 
     $("#sparkline5").sparkline([1, 1, 0, 1, 1, 1, 1, 1, -1, -2, -3, -4], {
         type: 'tristate',
-        posBarColor: '#03a9f4',
+        posBarColor: '#05436b',
         negBarColor: '#303030'});
 
 
     $("#sparkline6").sparkline([4, 6, 7, 7, 4, 3, 2, 1, 4, 4, 5, 6, 3, 4, 5, 8, 7, 6, 9, 3, 2, 4, 1, 5, 6, 4, 3, 7, ], {
         type: 'discrete',
-        lineColor: '#03a9f4'});
+        lineColor: '#05436b'});
 
     $("#sparkline7").sparkline([52, 12, 44], {
         type: 'pie',
         height: '150px',
-        sliceColors: ['#03a9f4', '#303030', '#e4f0fb']});
+        sliceColors: ['#05436b', '#303030', '#e4f0fb']});
 
     $("#sparkline8").sparkline([5, 6, 7, 2, 0, 4, 2, 4, 5, 7, 2, 4, 12, 14, 4, 2, 14, 12, 7], {
         type: 'bar',
         barWidth: 8,
         height: '150px',
-        barColor: '#03a9f4',
+        barColor: '#05436b',
         negBarColor: '#303030'});
 
     $("#sparkline9").sparkline([34, 43, 43, 35, 44, 32, 15, 22, 46, 33, 86, 54, 73, 53, 12, 53, 23, 65, 23, 63, 53, 42, 34, 56, 76, 15, 54, 23, 44], {
@@ -63,10 +63,10 @@
         width: '150px',
         height: '150px',
         lineColor: '#999',
-        fillColor: '#03a9f4',
+        fillColor: '#05436b',
     });
 	
-	 $('.sparklineadminpro').sparkline([ [1], [2], [3], [4, 2], [3], [5, 3] ], { type: 'bar', barColor: '#03a9f4',
+	 $('.sparklineadminpro').sparkline([ [1], [2], [3], [4, 2], [3], [5, 3] ], { type: 'bar', barColor: '#05436b',
         negBarColor: '#303030',});
 	
 	

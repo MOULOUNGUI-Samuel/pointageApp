@@ -5,24 +5,24 @@
 	
 	
 	 $("span.pie").peity("pie", {
-        fill: ['#03a9f4', '#d7d7d7', '#ffffff']
+        fill: ['#05436b', '#d7d7d7', '#ffffff']
     })
 
     $(".line").peity("line",{
-        fill: '#03a9f4',
+        fill: '#05436b',
         stroke:'#169c81',
     })
 
     $(".bar").peity("bar", {
-        fill: ["#03a9f4", "#d7d7d7"]
+        fill: ["#05436b", "#d7d7d7"]
     })
 
     $(".bar_dashboard").peity("bar", {
-        fill: ["#03a9f4", "#d7d7d7"],
+        fill: ["#05436b", "#d7d7d7"],
         width:100
     })
 
-    var updatingChart = $(".updating-chart").peity("line", { fill: '#03a9f4',stroke:'#169c81', width: 64 })
+    var updatingChart = $(".updating-chart").peity("line", { fill: '#05436b',stroke:'#169c81', width: 64 })
 
     setInterval(function() {
         var random = Math.round(Math.random() * 10)

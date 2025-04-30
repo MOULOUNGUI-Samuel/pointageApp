@@ -238,9 +238,9 @@
                 label: "Unique Visitors",
                 data: data2,
                 xaxis: 2,
-                color: "#03A9F4",
+                color: "#05436b",
                 points: {
-                    fillColor: "#03A9F4",
+                    fillColor: "#05436b",
                     show: !0,
                     radius: 2,
                 },
