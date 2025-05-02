@@ -55,6 +55,7 @@ class AdminController extends Controller
                 $query->whereDate('date_arriver', now()->format('Y-m-d'));
             })
             ->get();
+            
         $pointage_intermediaires = PointagesIntermediaire::whereHas('pointage', fn($query) => $query->whereHas('user', fn($subQuery) => $subQuery->where('entreprise_id', auth()->user()->entreprise_id)))
             ->whereHas('pointage', fn($query) => $query->where('date_arriver', now()->format('Y-m-d')))
             ->get();

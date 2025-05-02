@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -27,10 +28,50 @@ class User extends Authenticatable
         'matricule',
         'password',
         'email',
+        'email_professionnel',
         'date_naissance',
+        'date_embauche',
+        'service_id',
+        'role_id',
+        'lieu_naissance',
+        'nationalite',
+        'numero_securite_sociale',
+        'etat_civil',
+        'nombre_enfant',
+        'photo',
+        'adresse',
+        'adresse_complementaire',
+        'code_postal',
+        'superieur_hierarchique',
+        'niveau_etude',
+        'competence',
+        'ville_id',
+        'pays_id',
+        'categorie_professionel_id',
+        'type_contrat',
+        'salaire',
+        'mode_paiement',
+        'iban',
+        'bic',
+        'titulaire_compte',
+        'nom_banque',
+        'nom_agence',
+        'telephone',
+        'telephone_professionnel',
         'fonction',
+        'cv',
+        'permis_conduire',
+        'piece_identite',
+        'diplome',
+        'certificat_travail',
         'role_user',
+        'statu_user',
         'statut',
+        'nom_completaire',
+        'lien_completaire',
+        'contact_completaire',
+        'formation_completaire',
+        'commmentaire_completaire',
     ];
 
     /**
@@ -61,18 +102,45 @@ class User extends Authenticatable
         });
     }
 
-     // Relations
-     public function entreprise()
-     {
-         return $this->belongsTo(Entreprise::class, 'entreprise_id');
-     }
-     public function module()
-     {
-         return $this->belongsToMany(Module::class, 'module_id');
-     }
+    // Relations
 
-     public function pointage()
-     {
-         return $this->hasMany(Pointage::class, 'user_id');
-     }
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class);
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
+
+    public function ville()
+    {
+        return $this->belongsTo(Ville::class);
+    }
+
+    public function pays()
+    {
+        return $this->belongsTo(Pays::class);
+    }
+
+    public function categorieProfessionnelle()
+    {
+        return $this->belongsTo(CategorieProfessionnelle::class);
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'permissions_users');
+    }
+    // App\Models\User.php
+
+    public function pointage()
+    {
+        return $this->hasMany(Pointage::class);
+    }
 }

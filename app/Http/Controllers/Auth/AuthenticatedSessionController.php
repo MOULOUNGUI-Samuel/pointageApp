@@ -7,9 +7,11 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
 use App\Models\Module;
+use App\Models\Pays;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
 use App\Models\User;
+use App\Models\Ville;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,8 +47,6 @@ class AuthenticatedSessionController extends Controller
         // Calculer la distance
         return $earthRadius * $c;
     }
-
-
 
     public function store(LoginRequest $request): RedirectResponse
     {
