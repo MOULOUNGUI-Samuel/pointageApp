@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/dashboard_2', function () {
-    return view('dashboard2');
-})->name('dashboard_2');
+// Route::get('/dashboard_2', function () {
+//     return view('dashboard2');
+// })->name('dashboard_2');
 
 
 Route::get('/login', function () {
@@ -40,6 +40,12 @@ Route::get(
     '/dashboard',
     [AdminController::class, 'index_dashboard']
 )->middleware(['auth', 'verified'])->name('dashboard');
+Route::get(
+    '/dashboard_yodirh',
+    function () {
+        return view('dashboard2');
+    }
+)->middleware(['auth', 'verified'])->name('dashboard_2');
 
 Route::middleware('auth')->group(
     function () {

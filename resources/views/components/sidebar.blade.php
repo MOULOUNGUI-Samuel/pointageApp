@@ -1,7 +1,7 @@
 <div class="left-sidebar-pro">
     <nav id="sidebar" class="">
         <div class="sidebar-header">
-            <a href="index.html"><img class="main-logo" src="{{ asset('src/images/YODIPOINTE1.png') }}" alt=""
+            <a href="{{ route('dashboard_2') }}"><img class="main-logo" src="{{ asset('src/images/YODIPOINTE1.png') }}" alt=""
                     width="100" /></a>
             <strong><img src="{{ asset('src2/img/logo/logosn.png') }}" alt="" /></strong>
         </div>
@@ -9,7 +9,7 @@
             <nav class="sidebar-nav left-sidebar-menu-pro">
                 <ul class="metismenu" id="menu1">
                     <li class="active">
-                        <a href="index.html">
+                        <a href="{{ route('dashboard_2') }}">
                             <i class="fa big-icon fa-home icon-wrap"></i>
                             <span class="mini-click-non">Tableau de bord</span>
                         </a>
