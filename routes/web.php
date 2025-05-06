@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\pointeController;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -64,6 +66,21 @@ Route::middleware('auth')->group(
         Route::get('/pointage_sortie_connecter', [pointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
         Route::get('/liste_employer', [AdminController::class, 'liste_employer'])->name('liste_employer');
         Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
+
+
+        Route::get('/Documents', [DocumentController::class, 'index'])->name('document.index');
+        Route::post('/import-html', [DocumentController::class, 'import'])
+            ->name('html.import');
+        Route::get('/import-html', [DocumentController::class, 'import_affiche'])
+            ->name('html.import.affiche');
+        Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])
+            ->name('html.import.owncloud');
+        // Chargement des routes dynamiques si le fichier existe
+        $importedRoutesPath = base_path('routes/imported.php');
+
+        if (File::exists($importedRoutesPath)) {
+            require $importedRoutesPath;
+        }
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
