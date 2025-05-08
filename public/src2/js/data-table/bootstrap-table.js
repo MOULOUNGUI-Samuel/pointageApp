@@ -462,39 +462,39 @@
 
     BootstrapTable.LOCALES = {};
 
-    BootstrapTable.LOCALES['en-US'] = BootstrapTable.LOCALES.en = {
-        formatLoadingMessage: function () {
-            return 'Loading, please wait...';
-        },
+    BootstrapTable.LOCALES['en-US'] = BootstrapTable.LOCALES.fr = {
+        // formatLoadingMessage: function () {
+        //     return 'Chargement, veuillez patienter...';
+        // },
         formatRecordsPerPage: function (pageNumber) {
-            return sprintf('%s rows per page', pageNumber);
+            return sprintf('%s lignes par page', pageNumber);
         },
         formatShowingRows: function (pageFrom, pageTo, totalRows) {
-            return sprintf('Showing %s to %s of %s rows', pageFrom, pageTo, totalRows);
+            return sprintf('Affichage de %s à %s sur %s lignes', pageFrom, pageTo, totalRows);
         },
         formatDetailPagination: function (totalRows) {
-            return sprintf('Showing %s rows', totalRows);
+            return sprintf('Affichage de %s lignes', totalRows);
         },
         formatSearch: function () {
-            return 'Search';
+            return 'Rechercher';
         },
         formatNoMatches: function () {
-            return 'No matching records found';
+            return 'Aucun enregistrement correspondant trouvé';
         },
         formatPaginationSwitch: function () {
-            return 'Hide/Show pagination';
+            return 'Masquer/Afficher la pagination';
         },
         formatRefresh: function () {
-            return 'Refresh';
+            return 'Rafraîchir';
         },
         formatToggle: function () {
-            return 'Toggle';
+            return 'Basculer';
         },
         formatColumns: function () {
-            return 'Columns';
+            return 'Colonnes';
         },
         formatAllRows: function () {
-            return 'All';
+            return 'Tout';
         }
     };
 
@@ -603,7 +603,6 @@
             '<div class="fixed-table-header"><table></table></div>',
             '<div class="fixed-table-body">',
             '<div class="fixed-table-loading">',
-            this.options.formatLoadingMessage(),
             '</div>',
             '</div>',
             '<div class="fixed-table-footer"><table><tr></tr></table></div>',

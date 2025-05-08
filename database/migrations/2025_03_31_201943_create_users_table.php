@@ -48,7 +48,7 @@ return new class extends Migration
         $table->string('diplome')->nullable();
         $table->string('certificat_travail')->nullable();
         $table->string('type_contrat')->nullable();
-        $table->decimal('salaire', 10, 2)->nullable();
+        $table->integer('salaire')->nullable();
         $table->string('mode_paiement')->nullable();
         $table->string('iban')->nullable();
         $table->string('superieur_hierarchique')->nullable();
@@ -56,7 +56,6 @@ return new class extends Migration
         $table->string('titulaire_compte')->nullable();
         $table->string('nom_banque')->nullable();
         $table->string('nom_agence')->nullable();
-        $table->string('role_user');
         $table->boolean('statu_user')->default(1);
         $table->boolean('statut')->default(1);
         $table->string('nom_completaire')->nullable();

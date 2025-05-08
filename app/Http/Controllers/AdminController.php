@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategorieProfessionnelle;
 use App\Models\DescriptionPointage;
 use App\Models\Entreprise;
 use App\Models\Module;
+use App\Models\Pays;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
+use App\Models\Role;
+use App\Models\Service;
 use App\Models\User;
+use App\Models\Ville;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 class AdminController extends Controller
 {
     /**
@@ -66,59 +72,126 @@ class AdminController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function formulaire()
     {
-        try {
-            $validated = $request->validate([
-                'nom' => 'required|string',
-                'prenom' => 'required|string',
-                'date_naissance' => 'required|date_format:d/m/Y',
-                'fonction' => 'required|string',
-                'email' => 'required|email|unique:users,email',
-                'matricule' => 'required|string|unique:users,matricule',
-                'password' => 'required|string|min:6',
-            ], [
-                'nom.required' => 'Le nom est obligatoire.',
-                'nom.max' => 'Le nom ne peut pas dépasser 100 caractères.',
-
-                'prenom.required' => 'Le prénom est obligatoire.',
-                'prenom.max' => 'Le prénom ne peut pas dépasser 100 caractères.',
-
-                'date_naissance.required' => 'La date de naissance est obligatoire.',
-                'date_naissance.date_format' => 'La date de naissance doit être au format JJ/MM/AAAA.',
-
-                'fonction.required' => 'La fonction est obligatoire.',
-                'fonction.max' => 'La fonction ne peut pas dépasser 100 caractères.',
-
-                'email.required' => 'L\'adresse email est obligatoire.',
-                'email.email' => 'L\'adresse email doit être valide.',
-                'email.unique' => 'Cet email est déjà utilisé.',
-
-                'matricule.required' => 'L\'identifiant (matricule) est obligatoire.',
-                'matricule.unique' => 'Ce matricule est déjà utilisé.',
-                'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
-
-                'password.required' => 'Le mot de passe est obligatoire.',
-                'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
-            ]);
-
-            $user = new User();
-            $user->entreprise_id = $request->input('entreprise_id') ?? Auth::user()->entreprise_id;
-            $user->nom = $request->input('nom');
-            $user->prenom = $request->input('prenom');
-            $user->matricule = $request->input('matricule');
-            $user->email = $request->input('email');
-            $user->password = Hash::make($request->input('password'));
-            $user->date_naissance = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
-            $user->fonction = $request->input('fonction');
-            $user->role_user = $request->input('role_user'); // Default to 'Admin' if not provided
-            $user->save();
-
-            return redirect()->back()->with('success', 'Utilisateur ajouté avec succès.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Une erreur est survenue : ' . $e->getMessage()])->withInput();
-        }
+        //
+        $entreprises = Entreprise::all();
+        $services = Service::all();
+        $roles = Role::all();
+        $users = User::all();
+        $pays = Pays::all();
+        $villes = Ville::all();
+        $categorie_professionelles = CategorieProfessionnelle::all();
+        $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
+        ->orderBy('id', 'desc')
+        ->get();
+    
+        return view('components.yodirh.utilisateurs', compact('entreprises', 'services', 'roles', 'users', 'pays', 'villes', 'categorie_professionelles', 'utilisateurs'));
     }
+ 
+
+public function create(Request $request)
+{
+    try {
+        // Validation
+        $validator = Validator::make([
+            'nom' => 'required|string|max:100',
+            'prenom' => 'required|string|max:100',
+            'date_naissance' => 'required|date_format:d/m/Y',
+            'adresse' => 'required|string|max:255',
+            'telephone' => 'required|string|max:20',
+            'matricule' => 'required|string|max:50|unique:users,matricule',
+            'email' => 'nullable|email|unique:users,email',
+            'email_professionnel' => 'nullable|email|unique:users,email_professionnel',
+            'password' => 'nullable|string|min:6',
+            'salaire' => 'nullable|numeric|min:0',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:4096',
+            'permis_conduire' => 'nullable',
+            'piece_identite' => 'nullable',
+            'diplome' => 'nullable',
+            'pays_id' => 'required',
+            'ville_id' => 'required',
+            'type_contrat' => 'nullable',
+            'certificat_travail' => 'nullable',
+        ], [
+            'nom.required' => 'Le nom est obligatoire.',
+            'prenom.required' => 'Le prénom est obligatoire.',
+            'date_naissance.required' => 'La date de naissance est obligatoire.',
+            'matricule.required' => 'Le matricule est obligatoire.',
+            'matricule.unique' => 'Ce matricule est déjà utilisé.',
+            'pays_id.required' => 'Le pays est obligatoire.',
+            'ville_id.required' => 'La ville est obligatoire.',
+            'email.unique' => 'Cet email est déjà utilisé.',
+            'email_professionnel.unique' => 'Cet email professionnel est déjà utilisé.',
+            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        // Création de l'utilisateur
+        $user = new User();
+        $user->entreprise_id = $request->input('entreprise_id') ?? auth()->user()->entreprise_id;
+        $user->service_id = $request->input('service_id');
+        $user->role_id = $request->input('role_id');
+        $user->pays_id = $request->input('pays_id');
+        $user->ville_id = $request->input('ville_id');
+        $user->nom = $request->input('nom');
+        $user->prenom = $request->input('prenom');
+        $user->date_naissance = Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
+        $user->lieu_naissance = $request->input('lieu_naissance');
+        $user->nationalite = $request->input('nationalite');
+        $user->numero_securite_sociale = $request->input('numero_securite_sociale');
+        $user->etat_civil = $request->input('etat_civil');
+        $user->nombre_enfant = $request->input('nombre_enfant');
+        $user->adresse = $request->input('adresse');
+        $user->adresse_complementaire = $request->input('adresse_complementaire');
+        $user->code_postal = $request->input('code_postal');
+        $user->telephone = $request->input('telephone');
+        $user->email = $request->input('email');
+        $user->email_professionnel = $request->input('email_professionnel');
+        $user->telephone_professionnel = $request->input('telephone_professionnel');
+        $user->date_embauche = $request->input('date_embauche') ? Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d') : null;
+        $user->fonction = $request->input('fonction');
+        $user->matricule = $request->input('matricule');
+        $user->superieur_hierarchique = $request->input('superieur_hierarchique');
+        $user->niveau_etude = $request->input('niveau_etude');
+        $user->competence = $request->input('competence');
+        $user->salaire = $request->input('salaire');
+        $user->type_contrat = $request->input('type_contrat');
+        $user->mode_paiement = $request->input('mode_paiement');
+        $user->iban = $request->input('iban');
+        $user->bic = $request->input('bic');
+        $user->titulaire_compte = $request->input('titulaire_compte');
+        $user->nom_banque = $request->input('nom_banque');
+        $user->nom_agence = $request->input('nom_agence');
+        $user->nom_completaire = $request->input('nom_completaire');
+        $user->lien_completaire = $request->input('lien_completaire');
+        $user->contact_completaire = $request->input('contact_completaire');
+        $user->formation_completaire = $request->input('formation_completaire');
+        $user->commmentaire_completaire = $request->input('commmentaire_completaire');
+
+        // Hash mot de passe s’il est fourni
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        // Gestion des fichiers
+        foreach (['photo', 'cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $path = $request->file($fileField)->store('documents_utilisateur', 'public');
+                $user->$fileField = $path;
+            }
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Utilisateur enregistré avec succès.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
+    }
+}
+
     public function liste_employer()
     {
         $entreprise_id = auth()->user()->entreprise_id;

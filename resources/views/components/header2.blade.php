@@ -2,7 +2,8 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="logo-pro">
-                <a href="index.html"><img class="main-logo" src="{{asset('src2/img/logo/logo.png')}}" alt="" /></a>
+                <a href="index.html"><img class="main-logo" src="{{ asset('src2/img/logo/logo.png') }}"
+                        alt="" /></a>
             </div>
         </div>
     </div>
@@ -10,15 +11,17 @@
 <div class="header-advance-area">
     <div class="header-top-area">
         <div class="container-fluid"  style="background-color: white;margin-left: 20px">
+            
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="header-top-wraper">
                         <div class="row">
                             <div class="col-lg-1 col-md-0 col-sm-1 col-xs-12">
                                 <div class="menu-switcher-pro">
-                                    <button type="button" id="sidebarCollapse" class="btn bar-button-pro header-drl-controller-btn btn-info navbar-btn text-primary">
-                                            <i class="fa fa-bars" style="color: #05436b;"></i>
-                                        </button>
+                                    <button type="button" id="sidebarCollapse"
+                                        class="btn bar-button-pro header-drl-controller-btn btn-info navbar-btn text-primary">
+                                        <i class="fa fa-bars" style="color: #05436b;"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12">
@@ -39,21 +42,29 @@
                                 <div class="header-right-info">
                                     <ul class="nav navbar-nav mai-top-nav header-right-menu">
                                         <li class="nav-item">
-                                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="nav-link dropdown-toggle">
-                                                    <i class="fa fa-user adminpro-user-rounded header-riht-inf" aria-hidden="true" style="color: #05436b"></i>
-                                                    <span class="admin-name"  style="color: #05436b">Advanda Cro</span>
-                                                    <i class="fa fa-angle-down adminpro-icon adminpro-down-arrow"></i>
-                                                </a>
-                                            <ul role="menu" class="dropdown-header-top author-log dropdown-menu animated zoomIn">
-                                                <li><a href="register.html"><span class="fa fa-home author-log-ic"></span>Register</a>
+                                            <a href="#" data-toggle="dropdown" role="button"
+                                                aria-expanded="false" class="nav-link dropdown-toggle">
+                                                <i class="fa fa-user adminpro-user-rounded header-riht-inf"
+                                                    aria-hidden="true" style="color: #05436b"></i>
+                                                <span class="admin-name" style="color: #05436b">Advanda Cro</span>
+                                                <i class="fa fa-angle-down adminpro-icon adminpro-down-arrow"></i>
+                                            </a>
+                                            <ul role="menu"
+                                                class="dropdown-header-top author-log dropdown-menu animated zoomIn">
+                                                <li><a href="register.html"><span
+                                                            class="fa fa-home author-log-ic"></span>Register</a>
                                                 </li>
-                                                <li><a href="#"><span class="fa fa-user author-log-ic"></span>My Profile</a>
+                                                <li><a href="#"><span class="fa fa-user author-log-ic"></span>My
+                                                        Profile</a>
                                                 </li>
-                                                <li><a href="lock.html"><span class="fa fa-diamond author-log-ic"></span> Lock</a>
+                                                <li><a href="lock.html"><span
+                                                            class="fa fa-diamond author-log-ic"></span> Lock</a>
                                                 </li>
-                                                <li><a href="#"><span class="fa fa-cog author-log-ic"></span>Settings</a>
+                                                <li><a href="#"><span
+                                                            class="fa fa-cog author-log-ic"></span>Settings</a>
                                                 </li>
-                                                <li><a href="login.html"><span class="fa fa-lock author-log-ic"></span>Log Out</a>
+                                                <li><a href="login.html"><span
+                                                            class="fa fa-lock author-log-ic"></span>Log Out</a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -74,7 +85,8 @@
                     <div class="mobile-menu">
                         <nav id="dropdown">
                             <ul class="mobile-menu-nav">
-                                <li><a data-toggle="collapse" data-target="#Charts" href="#">Home <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Charts" href="#">Home <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul class="collapse dropdown-header-top">
                                         <li><a href="index.html">Dashboard v.1</a></li>
                                         <li><a href="index-1.html">Dashboard v.2</a></li>
@@ -88,7 +100,8 @@
                                         <li><a href="widgets.html">Widgets</a></li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#demo" href="#">Mailbox <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#demo" href="#">Mailbox <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="demo" class="collapse dropdown-header-top">
                                         <li><a href="mailbox.html">Inbox</a>
                                         </li>
@@ -98,7 +111,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#others" href="#">Miscellaneous <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#others" href="#">Miscellaneous <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="others" class="collapse dropdown-header-top">
                                         <li><a href="file-manager.html">File Manager</a></li>
                                         <li><a href="contacts.html">Contacts Client</a></li>
@@ -110,7 +124,8 @@
                                         <li><a href="500.html">500 Page</a></li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Miscellaneousmob" href="#">Interface <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Miscellaneousmob" href="#">Interface
+                                        <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Miscellaneousmob" class="collapse dropdown-header-top">
                                         <li><a href="google-map.html">Google Map</a>
                                         </li>
@@ -130,7 +145,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Chartsmob" href="#">Charts <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Chartsmob" href="#">Charts <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Chartsmob" class="collapse dropdown-header-top">
                                         <li><a href="bar-charts.html">Bar Charts</a>
                                         </li>
@@ -148,7 +164,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Tablesmob" href="#">Tables <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Tablesmob" href="#">Tables <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Tablesmob" class="collapse dropdown-header-top">
                                         <li><a href="static-table.html">Static Table</a>
                                         </li>
@@ -156,7 +173,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#formsmob" href="#">Forms <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#formsmob" href="#">Forms <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="formsmob" class="collapse dropdown-header-top">
                                         <li><a href="basic-form-element.html">Basic Form Elements</a>
                                         </li>
@@ -172,7 +190,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Appviewsmob" href="#">App views <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Appviewsmob" href="#">App views
+                                        <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Appviewsmob" class="collapse dropdown-header-top">
                                         <li><a href="basic-form-element.html">Basic Form Elements</a>
                                         </li>
@@ -188,7 +207,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Pagemob" href="#">Pages <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#Pagemob" href="#">Pages <span
+                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Pagemob" class="collapse dropdown-header-top">
                                         <li><a href="login.html">Login</a>
                                         </li>
@@ -209,37 +229,40 @@
     </div>
     <style>
         @media (min-width: 1024px) {
-        .top-section {
-            margin-left: 90px; 
-            margin-right: 90px;
+            .top-section {
+                margin-left: 90px;
+                margin-right: 90px;
+            }
         }
-    }
     </style>
     <!-- Mobile Menu end -->
-    <div class="breadcome-area">
-        <div class="top-section container-fluid" >
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="breadcome-list">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <div class="breadcome-heading">
-                                    <form role="search" class="">
-                                        <input type="text" placeholder="Rechercher..." class="form-control">
-                                        <a href=""><i class="fa fa-search" style="margin-top:10px"></i></a>
-                                    </form>
+    @if (request()->routeIs('dashboard_2'))
+        <div class="breadcome-area">
+            <div class="top-section container-fluid">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="breadcome-list">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="breadcome-heading">
+                                        <form role="search" class="">
+                                            <input type="text" placeholder="Rechercher..." class="form-control">
+                                            <a href=""><i class="fa fa-search"
+                                                    style="margin-top:10px"></i></a>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <ul class="breadcome-menu">
-                                    <li><a href="#">Tableau de bord</a>
-                                    </li>
-                                </ul>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <ul class="breadcome-menu">
+                                        <li><a href="#">Tableau de bord</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 </div>

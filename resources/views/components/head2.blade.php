@@ -10,14 +10,10 @@
     <!-- Google Fonts
         ============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Play:400,700" rel="stylesheet">
-    <!-- Bootstrap CSS
-        ============================================ -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/bootstrap.min.css') }}">
-    <!-- Bootstrap CSS
-        ============================================ -->
     <link rel="stylesheet" href="{{ asset('src2/css/font-awesome.min.css') }}">
-    <!-- owl.carousel CSS
-        ============================================ -->
+    <!-- owl.carousel CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/owl.carousel.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.theme.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.transitions.css') }}">
@@ -29,6 +25,9 @@
     <link rel="stylesheet" href="{{ asset('src2/css/meanmenu.min.css') }}">
     <!-- main CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/main.css') }}">
+     <!-- modals CSS
+		============================================ -->
+        <link rel="stylesheet" href="{{ asset('src2/css/modals.css') }}">
     <!-- morrisjs CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/morrisjs/morris.css') }}">
     <!-- mCustomScrollbar CSS -->
@@ -56,8 +55,20 @@
     <link rel="stylesheet" href="{{ asset('src2/css/ionRangeSlider/ion.rangeSlider.skinFlat.css') }}">
     <!-- style CSS -->
     <link rel="stylesheet" href="{{ asset('src2/style.css') }}">
+    <!-- Preloader CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/preloader/preloader-style.css') }}">
     <!-- responsive CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/responsive.css') }}">
     <!-- modernizr JS -->
     <script src="{{ asset('src2/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
+<style>
+    .text-primary {
+        color: #05436b !important;
+    }
+    .shadow {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        border-radius: 5px;
+    }
+</style>

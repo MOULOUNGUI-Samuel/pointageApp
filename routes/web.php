@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\pointeController;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,14 +18,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/dashboard_2', function () {
-    return view('dashboard2');
-})->name('dashboard_2');
-
-Route::get('/components.utilisateur', function () {
-    return view('components.yodirh.utilisateurs');
-})->name('yodirh.utilisateurs');
-
+// Route::get('/dashboard_2', function () {
+//     return view('dashboard2');
+// })->name('dashboard_2');
 
 Route::get('/login', function () {
     return view('auth.loginAdmin');
@@ -42,6 +39,12 @@ Route::get(
     '/dashboard',
     [AdminController::class, 'index_dashboard']
 )->middleware(['auth', 'verified'])->name('dashboard');
+Route::get(
+    '/dashboard_yodirh',
+    function () {
+        return view('dashboard2');
+    }
+)->middleware(['auth', 'verified'])->name('dashboard_2');
 
 Route::middleware('auth')->group(
     function () {
@@ -56,6 +59,7 @@ Route::middleware('auth')->group(
         Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');
         Route::put('/modifier_module/{id}', [pointeController::class, 'modifier_module'])->name('modifier_module');
 
+        Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.utilisateurs');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
         Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');
@@ -68,6 +72,21 @@ Route::middleware('auth')->group(
         Route::get('/pointage_sortie_connecter', [pointeController::class, 'pointage_sortie_connecter'])->name('pointage_sortie_connecter');
         Route::get('/liste_employer', [AdminController::class, 'liste_employer'])->name('liste_employer');
         Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
+
+
+        Route::get('/Documents', [DocumentController::class, 'index'])->name('document.index');
+        Route::post('/import-html', [DocumentController::class, 'import'])
+            ->name('html.import');
+        Route::get('/import-html', [DocumentController::class, 'import_affiche'])
+            ->name('html.import.affiche');
+        Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])
+            ->name('html.import.owncloud');
+        // Chargement des routes dynamiques si le fichier existe
+        $importedRoutesPath = base_path('routes/imported.php');
+
+        if (File::exists($importedRoutesPath)) {
+            require $importedRoutesPath;
+        }
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

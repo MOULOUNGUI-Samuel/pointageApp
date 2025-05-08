@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 class CategorieProfessionnelle extends Model
 {
-    protected $table = 'categories_professionnelles';
+    protected $table = 'categorie_professionnelles';
     protected $keyType = 'string';
     public $incrementing = false;
 

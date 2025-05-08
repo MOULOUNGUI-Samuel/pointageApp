@@ -64,7 +64,6 @@ class User extends Authenticatable
         'piece_identite',
         'diplome',
         'certificat_travail',
-        'role_user',
         'statu_user',
         'statut',
         'nom_completaire',
