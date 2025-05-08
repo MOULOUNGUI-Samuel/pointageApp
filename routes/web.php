@@ -20,6 +20,10 @@ Route::get('/dashboard_2', function () {
     return view('dashboard2');
 })->name('dashboard_2');
 
+Route::get('/components.utilisateur', function () {
+    return view('components.yodirh.utilisateurs');
+})->name('yodirh.utilisateurs');
+
 
 Route::get('/login', function () {
     return view('auth.loginAdmin');

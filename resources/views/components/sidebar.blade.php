@@ -18,7 +18,7 @@
                     <li>
                         <a class="has-arrow" href="mailbox.html" aria-expanded="false"><i
                                 class="fa big-icon fa-users icon-wrap"></i> <span class="mini-click-non">Gestion du
-                                personnel</span></a>
+                                personnel...</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a title="Gestion des employés" href="mailbox.html"><i class="fa fa-user sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des

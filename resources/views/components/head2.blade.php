@@ -21,42 +21,43 @@
     <link rel="stylesheet" href="{{ asset('src2/css/owl.carousel.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.theme.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/owl.transitions.css') }}">
-
-     {{-- <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}"> --}}
-    <!-- animate CSS
-        ============================================ -->
+    <!-- animate CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/animate.css') }}">
-    <!-- normalize CSS
-        ============================================ -->
+    <!-- normalize CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/normalize.css') }}">
-    <!-- meanmenu icon CSS
-        ============================================ -->
+    <!-- meanmenu icon CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/meanmenu.min.css') }}">
-    <!-- main CSS
-        ============================================ -->
+    <!-- main CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/main.css') }}">
-    <!-- morrisjs CSS
-        ============================================ -->
+    <!-- morrisjs CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/morrisjs/morris.css') }}">
-    <!-- mCustomScrollbar CSS
-        ============================================ -->
+    <!-- mCustomScrollbar CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/scrollbar/jquery.mCustomScrollbar.min.css') }}">
-    <!-- metisMenu CSS
-        ============================================ -->
+    <!-- metisMenu CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/metisMenu/metisMenu.min.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/metisMenu/metisMenu-vertical.css') }}">
-    <!-- calendar CSS
-        ============================================ -->
+    <!-- calendar CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/calendar/fullcalendar.min.css') }}">
     <link rel="stylesheet" href="{{ asset('src2/css/calendar/fullcalendar.print.min.css') }}">
-    <!-- style CSS
-        ============================================ -->
+    <!-- touchspin CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/touchspin/jquery.bootstrap-touchspin.min.css') }}">
+    <!-- datapicker CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/datapicker/datepicker3.css') }}">
+    <!-- forms CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/form/themesaller-forms.css') }}">
+    <!-- colorpicker CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/colorpicker/colorpicker.css') }}">
+    <!-- select2 CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/select2/select2.min.css') }}">
+    <!-- chosen CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/chosen/bootstrap-chosen.css') }}">
+    <!-- ionRangeSlider CSS -->
+    <link rel="stylesheet" href="{{ asset('src2/css/ionRangeSlider/ion.rangeSlider.css') }}">
+    <link rel="stylesheet" href="{{ asset('src2/css/ionRangeSlider/ion.rangeSlider.skinFlat.css') }}">
+    <!-- style CSS -->
     <link rel="stylesheet" href="{{ asset('src2/style.css') }}">
-    <!-- responsive CSS
-        ============================================ -->
+    <!-- responsive CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/responsive.css') }}">
-   
-    <!-- modernizr JS
-        ============================================ -->
+    <!-- modernizr JS -->
     <script src="{{ asset('src2/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 </head>
