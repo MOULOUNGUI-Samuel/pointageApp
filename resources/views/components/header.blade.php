@@ -145,7 +145,7 @@
                             <i class="icon-groups"></i> Gestion du Personnel
                         </a>
                     </li>
-                    @if (Auth::user()->role_user === 'Admin')
+                    {{-- @if (Auth::user()->role_user === 'Admin') --}}
                         <li class="dropdown-trig-sgn"
                             style="{{ request()->routeIs('liste_entreprise', 'liste_employer')
                                 ? 'box-shadow: 0 1px 3px; transition: all 0.3s ease-in-out; border-radius: 2px;margin-right:5px;background-color:#0384ca87'
@@ -176,7 +176,7 @@
                                 </li>
                             </ul>
                         </li>
-                    @endif
+                    {{-- @endif --}}
                 </ul>
                 <div class="tab-content custom-menu-content" style="margin-bottom: 10px;margin-top: 5px">
                     <div id="Personnel"
