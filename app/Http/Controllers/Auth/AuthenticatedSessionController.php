@@ -240,17 +240,20 @@ class AuthenticatedSessionController extends Controller
             } else {
                 // Récupérer une variable et la stocker en session
 
-
-                if ($user->role_user == 'RH' || $user->role_user == 'Admin') {
+                $role_user=User::where('id',$user->id)->with('role')->first();
+                
+                if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
                     if ($request->module_id) {
                         // Récupérer le module_id et le stocker en session
                         $module = Module::find($request->module_id);
                         // dd($module);
                         if ($module) {
+
                             session()->put('module_nom', $module->nom_module);
                             session()->put('module_logo', $module->logo);
                             session()->put('module_id', $module->id);
+
                         } else {
                             return redirect()->back()->with('error', 'Module non trouvé.');
                         }
