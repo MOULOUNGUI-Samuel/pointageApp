@@ -1,15 +1,15 @@
 <div class="left-sidebar-pro">
     <nav id="sidebar" class="">
         <div class="sidebar-header">
-            <a href="{{ route('dashboard_2') }}"><img class="main-logo" src="{{ asset('src/images/YODIPOINTE1.png') }}" alt=""
-                    width="100" /></a>
+            <a href="{{ route('yodirh.dashboard') }}"><img class="main-logo"
+                    src="{{ asset('src/images/YODIPOINTE1.png') }}" alt="" width="100" /></a>
             <strong><img src="{{ asset('src2/img/logo/logosn.png') }}" alt="" /></strong>
         </div>
         <div class="left-custom-menu-adp-wrap comment-scrollbar">
             <nav class="sidebar-nav left-sidebar-menu-pro">
                 <ul class="metismenu" id="menu1">
                     <li class="active">
-                        <a href="{{ route('dashboard_2') }}">
+                        <a href="{{ route('yodirh.dashboard') }}">
                             <i class="fa big-icon fa-home icon-wrap"></i>
                             <span class="mini-click-non">Tableau de bord</span>
                         </a>
@@ -20,8 +20,9 @@
                                 class="fa big-icon fa-users icon-wrap"></i> <span class="mini-click-non">Gestion du
                                 personnel...</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion des employés" href="{{route('yodirh.utilisateurs')}}"><i class="fa fa-user sub-icon-mg"
-                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des
+                            <li><a title="Gestion des employés" href="{{ route('yodirh.utilisateurs') }}"><i
+                                        class="fa fa-user sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion des
                                         employés</span></a></li>
                             <li><a title="Contrats de travail" href="mailbox-view.html"><i
                                         class="fa fa-file-text sub-icon-mg" aria-hidden="true"></i> <span

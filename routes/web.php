@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DashboardRHController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\File;
@@ -18,16 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/dashboard_2', function () {
+// Route::get('/yodirh.dashboard', function () {
 //     return view('dashboard2');
-// })->name('dashboard_2');
+// })->name('yodirh.dashboard');
 
 Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
-Route::get('/laure', function () {
-    return view('components.laure');
-})->name('laure');
+
 
 Route::get('/loginGroupe/{id}', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
@@ -43,12 +42,11 @@ Route::get(
     '/dashboard',
     [AdminController::class, 'index_dashboard']
 )->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get(
     '/dashboard_yodirh',
-    function () {
-        return view('dashboard2');
-    }
-)->middleware(['auth', 'verified'])->name('dashboard_2');
+    [DashboardRHController::class, 'index_dashboard']
+)->middleware(['auth', 'verified'])->name('yodirh.dashboard');
 
 Route::middleware('auth')->group(
     function () {
@@ -63,8 +61,11 @@ Route::middleware('auth')->group(
         Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');
         Route::put('/modifier_module/{id}', [pointeController::class, 'modifier_module'])->name('modifier_module');
 
-        Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.utilisateurs');
+        Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
+        Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
+        Route::get('/modif_affiche_utilisateur/{id}', [AdminController::class, 'edit'])->name('modif_affiche_utilisateur');
+        Route::put('/modifier_utilisateur/{id}', [AdminController::class, 'update'])->name('modifier_utilisateur');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
         Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');
 

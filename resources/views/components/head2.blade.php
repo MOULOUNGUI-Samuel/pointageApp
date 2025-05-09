@@ -5,7 +5,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
-		============================================ -->
+  ============================================ -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src2/img/favicon.ico') }}">
     <!-- Google Fonts
         ============================================ -->
@@ -25,9 +25,9 @@
     <link rel="stylesheet" href="{{ asset('src2/css/meanmenu.min.css') }}">
     <!-- main CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/main.css') }}">
-     <!-- modals CSS
-		============================================ -->
-        <link rel="stylesheet" href="{{ asset('src2/css/modals.css') }}">
+    <!-- modals CSS
+  ============================================ -->
+    <link rel="stylesheet" href="{{ asset('src2/css/modals.css') }}">
     <!-- morrisjs CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/morrisjs/morris.css') }}">
     <!-- mCustomScrollbar CSS -->
@@ -66,9 +66,17 @@
     .text-primary {
         color: #05436b !important;
     }
+
     .shadow {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transition: 0.3s;
         border-radius: 5px;
     }
+
+    .d-flex-justify-content-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
 </style>

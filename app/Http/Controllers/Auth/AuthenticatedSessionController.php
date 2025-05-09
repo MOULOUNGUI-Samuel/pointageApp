@@ -259,7 +259,7 @@ class AuthenticatedSessionController extends Controller
                         }
                     }
                     // Redirection pour RH et Admin
-                    return redirect()->intended(route('dashboard_2', [], false));
+                    return redirect()->intended(route('yodirh.dashboard', [], false));
                 } else {
                     // Redirection pour Employer
                     return redirect()->intended(route('index_employer', [], false));

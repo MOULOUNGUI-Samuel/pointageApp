@@ -20,6 +20,7 @@
 </style>
 
 <body>
+    
     <!-- Preloader -->
     <div id="preloader" class="preloader-single">
         <div class="ts_preloading_box">
