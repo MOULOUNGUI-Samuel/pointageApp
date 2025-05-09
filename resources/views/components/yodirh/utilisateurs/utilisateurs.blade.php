@@ -22,20 +22,16 @@
                     @endif
                     <div class="sparkline13-graph">
                         <div class="datatable-dashv1-list custom-datatable-overright">
-                            <div id="toolbar">
+                            {{-- <div id="toolbar">
                                 <select class="form-control">
                                     <option value="">Exporter de base</option>
                                     <option value="all">Exporter tout</option>
                                     <option value="selected">Exporter sélectionné</option>
                                 </select>
-                            </div>
-                            <table id="table" data-toggle="table" data-pagination="true" data-search="true"
-                                data-show-columns="true" data-show-pagination-switch="true" data-show-refresh="true"
-                                data-key-events="true" data-show-toggle="true" data-resizable="true" data-cookie="true"
-                                data-cookie-id-table="saveId" data-show-export="true" data-click-to-select="true"
-                                data-toolbar="#toolbar">
+                            </div> --}}
+                            <table id="data-table-basic" class="table table-striped">
                                 <thead>
-                                    <tr>
+                                    <tr class="bg-primary" style="color: white">
                                         <th data-field="state" data-checkbox="true"></th>
                                         {{-- <th>ID</th> --}}
                                         <th>Nom</th>

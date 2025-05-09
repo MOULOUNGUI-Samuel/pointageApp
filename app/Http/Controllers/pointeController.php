@@ -35,11 +35,36 @@ class pointeController extends Controller
     public function liste_presence()
     {
         //
-        $entreprise_id = auth()->user()->entreprise_id;
-        $liste_pointages = Pointage::whereHas('user.entreprise', fn($query) => $query->where('entreprise_id', $entreprise_id))
+        // $entreprise_id = auth()->user()->entreprise_id;
+        // $liste_pointages = Pointage::whereHas('user.entreprise', fn($query) => $query->where('entreprise_id', $entreprise_id))
+        //     ->get();
+        $liste_pointages = Pointage::with('user.entreprise')
             ->get();
 
-        return view('components.pointages.liste_presence', compact('liste_pointages'));
+        $user = Auth::user();
+        $Pointages = Pointage::with('user.entreprise')->whereHas('user', function ($subQuery) use ($user) {
+            $subQuery->where('entreprise_id', $user->entreprise_id);
+        })
+            ->orderBy('date_arriver', 'desc')
+            ->get();
+        $cause_sorties = [];
+
+        foreach ($Pointages as $Pointage) {
+            $pointage_intermediaires = PointagesIntermediaire::where('pointage_id', $Pointage->id)
+                ->orderBy('heure_sortie', 'desc')
+                ->get();
+
+            foreach ($pointage_intermediaires as $pointage_intermediaire) {
+                $DescriptionPointages = DescriptionPointage::where('pointage_intermediaire_id', $pointage_intermediaire->id)->get();
+
+                $cause_sorties[$Pointage->id][] = [
+                    'pointage_intermediaire' => $pointage_intermediaire,
+                    'descriptions' => $DescriptionPointages
+                ];
+            }
+        }
+
+        return view('components.yodirh.suivi_absences_conger', compact('liste_pointages', 'Pointages', 'cause_sorties'));
     }
     public function sortie_intermediaire()
     {

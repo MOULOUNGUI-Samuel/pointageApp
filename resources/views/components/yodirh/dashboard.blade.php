@@ -33,7 +33,7 @@
                                     <h4 class="text-left text-uppercase"><b>Nombre d'employés</b></h4>
                                     <div class="row vertical-center-box vertical-center-box-tablet">
                                         <div class="col-xs-12 cus-gh-hd-pro">
-                                            <h2 class="text-right no-margin">10,000</h2>
+                                            <h2 class="text-right no-margin">{{ count($employes) }}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                     <h4 class="text-left text-uppercase"><b>Employés présents</b></h4>
                                     <div class="row vertical-center-box vertical-center-box-tablet">
                                         <div class="col-xs-12 cus-gh-hd-pro">
-                                            <h2 class="text-right no-margin">5,000</h2>
+                                            <h2 class="text-right no-margin">{{ count($pointages_oui) }}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -68,7 +68,7 @@
                                     <h4 class="text-left text-uppercase"><b>Sorties intermediaires</b></h4>
                                     <div class="row vertical-center-box vertical-center-box-tablet">
                                         <div class="col-xs-12 cus-gh-hd-pro">
-                                            <h2 class="text-right no-margin">70,000</h2>
+                                            <h2 class="text-right no-margin">{{ count($pointage_intermediaires) }}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +85,7 @@
                                     <h4 class="text-left text-uppercase"><b>Employés absences</b></h4>
                                     <div class="row vertical-center-box vertical-center-box-tablet">
                                         <div class="col-xs-12 cus-gh-hd-pro">
-                                            <h2 class="text-right no-margin">100,000</h2>
+                                            <h2 class="text-right no-margin">{{ count($users_non_existants) }}</h2>
                                         </div>
                                     </div>
                                 </div>

@@ -16,7 +16,7 @@
 
                     </li>
                     <li>
-                        <a class="has-arrow" href="mailbox.html" aria-expanded="false"><i
+                        <a class="has-arrow" href="#" aria-expanded="false"><i
                                 class="fa big-icon fa-users icon-wrap"></i> <span class="mini-click-non">Gestion du
                                 personnel...</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
@@ -24,13 +24,13 @@
                                         class="fa fa-user sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion des
                                         employés</span></a></li>
-                            <li><a title="Contrats de travail" href="mailbox-view.html"><i
+                            <li><a title="Contrats de travail" href="#"><i
                                         class="fa fa-file-text sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Contrats de travail</span></a></li>
-                            <li><a title="Suivi des absences et congés" href="mailbox-compose.html"><i
+                            <li><a title="Suivi des absences et congés" href="{{route('liste_presence')}}"><i
                                         class="fa fa-calendar sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Suivi des absences et congés</span></a></li>
-                            <li><a title="Organigramme" href="mailbox-compose.html"><i class="fa fa-sitemap sub-icon-mg"
+                            <li><a title="Organigramme" href="#"><i class="fa fa-sitemap sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Organigramme</span></a></li>
                         </ul>
                     </li>
