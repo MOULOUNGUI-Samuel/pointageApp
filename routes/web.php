@@ -25,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
+Route::get('/laure', function () {
+    return view('components.laure');
+})->name('laure');
+
 Route::get('/loginGroupe/{id}', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
