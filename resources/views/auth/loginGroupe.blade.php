@@ -146,7 +146,7 @@ color: #fff;">
     <!-- Login Register area Start-->
     <div class="center-container">
 
-        <div class="container px-5">
+        <div class="container px-5 d-none d-lg-block">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center my-1">
@@ -175,6 +175,15 @@ color: #fff;">
                                     </ul>
                                 </div>
                             @endif
+
+                            @if (request()->has('expired'))
+                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                    Votre session a expiré. Veuillez vous reconnecter.
+                                    <button type="button" class="btn-close" data-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
+
                         </div>
                         <div class="col"></div>
                     </div>
@@ -239,8 +248,8 @@ color: #fff;">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center my-1">
-                        <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
-                            style="max-width: 150px;">
+                        <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
+                        style="max-width: 150px;">
                         <h4>Bienvenue ! Veuillez vous connecter pour continuer.
                         </h4>
                     </div>
