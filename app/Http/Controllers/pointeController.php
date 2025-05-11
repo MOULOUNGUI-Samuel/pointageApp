@@ -98,7 +98,7 @@ class pointeController extends Controller
     public function liste_entreprise()
     {
         $entreprises = Entreprise::All();
-        return view('components.pointages.liste_entreprise', compact('entreprises'));
+        return view('components.yodirh.liste_entreprise', compact('entreprises'));
     }
     public function listemodules()
     {
@@ -164,7 +164,7 @@ class pointeController extends Controller
 
 
 
-        return view('components.pointages.Suivi_profile', compact('Pointages', 'cause_sorties', 'user'));
+        return view('components.yodirh.Suivi_profile', compact('Pointages', 'cause_sorties', 'user'));
     }
 
     public function profil_employe()
@@ -228,6 +228,59 @@ class pointeController extends Controller
         $entreprise->statut = 1;
         $entreprise->save();
         return redirect()->back()->with('success', 'Entreprise ajoutée avec succès');
+    }
+    public function modifier_entreprise(Request $request, $id)
+    {
+        // Validate the request data
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nom_entreprise' => 'required',
+                'heure_ouverture' => 'required',
+                'heure_fin' => 'required',
+                'heure_debut_pose' => 'required',
+                'heure_fin_pose' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
+            ],
+            [
+                'nom_entreprise.required' => 'Le nom de l\'entreprise est requis',
+                'heure_ouverture.required' => 'L\'heure d\'ouverture est requise',
+                'heure_fin.required' => 'L\'heure de fin est requise',
+                'heure_debut_pose.required' => 'L\'heure de début de pose est requise',
+                'heure_fin_pose.required' => 'L\'heure de fin de pose est requise',
+                'latitude.required' => 'La position X est requise',
+                'longitude.required' => 'La position Y est requise',
+            ]
+        );
+
+        // Return a success message if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Find the existing Entreprise instance
+        $entreprise = Entreprise::findOrFail($id);
+
+        // Handle the logo upload if provided
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $logoName = time() . '_' . $logo->getClientOriginalName();
+            $logoPath = $logo->storeAs('logos', $logoName, 'public');
+            $entreprise->logo = $logoPath;
+        }
+
+        // Update the entreprise details
+        $entreprise->nom_entreprise = $request->nom_entreprise;
+        $entreprise->heure_ouverture = $request->heure_ouverture;
+        $entreprise->heure_fin = $request->heure_fin;
+        $entreprise->heure_debut_pose = $request->heure_debut_pose;
+        $entreprise->heure_fin_pose = $request->heure_fin_pose;
+        $entreprise->latitude = $request->latitude;
+        $entreprise->longitude = $request->longitude;
+        $entreprise->save();
+
+        return redirect()->back()->with('success', 'Entreprise modifiée avec succès');
     }
     public function ajout_module(Request $request)
     {

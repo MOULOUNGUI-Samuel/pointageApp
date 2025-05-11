@@ -218,8 +218,9 @@ class AdminController extends Controller
         }
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
+        
         try {
             // Validation
             $validator = Validator::make($request->all(), [
@@ -261,46 +262,60 @@ class AdminController extends Controller
 
             // Récupération de l'utilisateur
             $user = User::findOrFail($id);
-
+            if ($request->input('password')) {
+                // Vérification du mot de passe
+                if (!Hash::check($request->input('password1'), $user->password)) {
+                    return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
+                }
+            }
             $user->entreprise_id = $request->input('entreprise_id') ?? $user->entreprise_id;
-            $user->service_id = $request->input('service_id');
-            $user->role_id = $request->input('role_id');
-            $user->pays_id = $request->input('pays_id');
-            $user->ville_id = $request->input('ville_id');
-            $user->nom = $request->input('nom');
-            $user->prenom = $request->input('prenom');
-            $user->date_naissance = Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
-            $user->lieu_naissance = $request->input('lieu_naissance');
-            $user->nationalite = $request->input('nationalite');
-            $user->numero_securite_sociale = $request->input('numero_securite_sociale');
-            $user->etat_civil = $request->input('etat_civil');
-            $user->nombre_enfant = $request->input('nombre_enfant');
-            $user->adresse = $request->input('adresse');
-            $user->adresse_complementaire = $request->input('adresse_complementaire');
-            $user->code_postal = $request->input('code_postal');
-            $user->telephone = $request->input('telephone');
-            $user->email = $request->input('email');
-            $user->email_professionnel = $request->input('email_professionnel');
-            $user->telephone_professionnel = $request->input('telephone_professionnel');
-            $user->date_embauche = $request->input('date_embauche') ? Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d') : $user->date_embauche;
-            $user->fonction = $request->input('fonction');
-            $user->matricule = $request->input('matricule');
-            $user->superieur_hierarchique = $request->input('superieur_hierarchique');
-            $user->niveau_etude = $request->input('niveau_etude');
-            $user->competence = $request->input('competence');
-            $user->salaire = $request->input('salaire');
-            $user->type_contrat = $request->input('type_contrat');
-            $user->mode_paiement = $request->input('mode_paiement');
-            $user->iban = $request->input('iban');
-            $user->bic = $request->input('bic');
-            $user->titulaire_compte = $request->input('titulaire_compte');
-            $user->nom_banque = $request->input('nom_banque');
-            $user->nom_agence = $request->input('nom_agence');
-            $user->nom_completaire = $request->input('nom_completaire');
-            $user->lien_completaire = $request->input('lien_completaire');
-            $user->contact_completaire = $request->input('contact_completaire');
-            $user->formation_completaire = $request->input('formation_completaire');
-            $user->commmentaire_completaire = $request->input('commmentaire_completaire');
+            $user->service_id = $request->input('service_id') ?? $user->service_id;
+            $user->role_id = $request->input('role_id') ?? $user->role_id;
+            $user->pays_id = $request->input('pays_id') ?? $user->pays_id;
+            $user->ville_id = $request->input('ville_id') ?? $user->ville_id;
+            $user->nom = $request->input('nom') ?? $user->nom;
+            $user->prenom = $request->input('prenom') ?? $user->prenom;
+            if ($request->filled('date_naissance')) {
+                if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
+                    $date = $request->input('date_naissance');
+                } else {
+                    $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
+                }
+                $user->date_naissance = $date;
+            }
+            $user->lieu_naissance = $request->input('lieu_naissance') ?? $user->lieu_naissance;
+            $user->nationalite = $request->input('nationalite') ?? $user->nationalite;
+            $user->numero_securite_sociale = $request->input('numero_securite_sociale') ?? $user->numero_securite_sociale;
+            $user->etat_civil = $request->input('etat_civil') ?? $user->etat_civil;
+            $user->nombre_enfant = $request->input('nombre_enfant') ?? $user->nombre_enfant;
+            $user->adresse = $request->input('adresse') ?? $user->adresse;
+            $user->adresse_complementaire = $request->input('adresse_complementaire') ?? $user->adresse_complementaire;
+            $user->code_postal = $request->input('code_postal') ?? $user->code_postal;
+            $user->telephone = $request->input('telephone') ?? $user->telephone;
+            $user->email = $request->input('email') ?? $user->email;
+            $user->email_professionnel = $request->input('email_professionnel') ?? $user->email_professionnel;
+            $user->telephone_professionnel = $request->input('telephone_professionnel') ?? $user->telephone_professionnel;
+            if ($request->filled('date_embauche')) {
+                $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
+            }
+            $user->fonction = $request->input('fonction') ?? $user->fonction;
+            $user->matricule = $request->input('matricule') ?? $user->matricule;
+            $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;
+            $user->niveau_etude = $request->input('niveau_etude') ?? $user->niveau_etude;
+            $user->competence = $request->input('competence') ?? $user->competence;
+            $user->salaire = $request->input('salaire') ?? $user->salaire;
+            $user->type_contrat = $request->input('type_contrat') ?? $user->type_contrat;
+            $user->mode_paiement = $request->input('mode_paiement') ?? $user->mode_paiement;
+            $user->iban = $request->input('iban') ?? $user->iban;
+            $user->bic = $request->input('bic') ?? $user->bic;
+            $user->titulaire_compte = $request->input('titulaire_compte') ?? $user->titulaire_compte;
+            $user->nom_banque = $request->input('nom_banque') ?? $user->nom_banque;
+            $user->nom_agence = $request->input('nom_agence') ?? $user->nom_agence;
+            $user->nom_completaire = $request->input('nom_completaire') ?? $user->nom_completaire;
+            $user->lien_completaire = $request->input('lien_completaire') ?? $user->lien_completaire;
+            $user->contact_completaire = $request->input('contact_completaire') ?? $user->contact_completaire;
+            $user->formation_completaire = $request->input('formation_completaire') ?? $user->formation_completaire;
+            $user->commmentaire_completaire = $request->input('commmentaire_completaire') ?? $user->commmentaire_completaire;
 
             // Gestion des fichiers
             foreach (['photo', 'cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $fileField) {
@@ -312,7 +327,11 @@ class AdminController extends Controller
 
             $user->save();
 
-            return redirect()->route('yodirh.utilisateurs')->with('success', 'Utilisateur modifié avec succès.');
+            if ($request->input('profile_mobile')) {
+                return redirect()->back()->with('success', 'Informations modifié avec succès.');
+            } else {
+                return redirect()->route('yodirh.utilisateurs')->with('success', 'Utilisateur modifié avec succès.');
+            }
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
         }
@@ -519,17 +538,17 @@ class AdminController extends Controller
 
             // dd($request->latitude."/". $request->longitude);
             // Vérification de la géolocalisation
-            $distance = $this->calculateDistance(
-                $entreprise->latitude,
-                $entreprise->longitude,
-                $request->latitude,
-                $request->longitude
-            );
+            // $distance = $this->calculateDistance(
+            //     $entreprise->latitude,
+            //     $entreprise->longitude,
+            //     $request->latitude,
+            //     $request->longitude
+            // );
 
-            // Vérifier si la distance est supérieure à 200 mètres
-            if ($distance > 700) {
-                return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
-            }
+            // // Vérifier si la distance est supérieure à 200 mètres
+            // if ($distance > 700) {
+            //     return redirect()->back()->with('error', 'Oups, quelque chose n’a pas fonctionné. Essayez à nouveau !');
+            // }
 
             // Vérifier si le compte est actif
             if ($user->statut == 0) {

@@ -240,7 +240,7 @@ class AuthenticatedSessionController extends Controller
             } else {
                 // Récupérer une variable et la stocker en session
 
-                $role_user=User::where('id',$user->id)->with('role')->first();
+                $role_user = User::where('id', $user->id)->with('role')->first();
                 
                 if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
@@ -253,7 +253,6 @@ class AuthenticatedSessionController extends Controller
                             session()->put('module_nom', $module->nom_module);
                             session()->put('module_logo', $module->logo);
                             session()->put('module_id', $module->id);
-
                         } else {
                             return redirect()->back()->with('error', 'Module non trouvé.');
                         }
@@ -261,6 +260,7 @@ class AuthenticatedSessionController extends Controller
                     // Redirection pour RH et Admin
                     return redirect()->intended(route('yodirh.dashboard', [], false));
                 } else {
+                    
                     // Redirection pour Employer
                     return redirect()->intended(route('index_employer', [], false));
                 }
@@ -284,7 +284,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/liste_modules');
     }
     public function logout_module(Request $request, $id): RedirectResponse
     {

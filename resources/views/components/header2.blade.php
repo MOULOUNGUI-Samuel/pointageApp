@@ -46,25 +46,39 @@
                                                 aria-expanded="false" class="nav-link dropdown-toggle">
                                                 <i class="fa fa-user adminpro-user-rounded header-riht-inf"
                                                     aria-hidden="true" style="color: #05436b"></i>
-                                                <span class="admin-name" style="color: #05436b">Advanda Cro</span>
+                                                <span class="admin-name" style="color: #05436b">{{ Auth::user()->nom ?? 'Utilisateur' }}</span>
                                                 <i class="fa fa-angle-down adminpro-icon adminpro-down-arrow"></i>
                                             </a>
                                             <ul role="menu"
                                                 class="dropdown-header-top author-log dropdown-menu animated zoomIn">
-                                                <li><a href="register.html"><span
-                                                            class="fa fa-home author-log-ic"></span>Register</a>
-                                                </li>
-                                                <li><a href="#"><span class="fa fa-user author-log-ic"></span>My
-                                                        Profile</a>
-                                                </li>
-                                                <li><a href="lock.html"><span
-                                                            class="fa fa-diamond author-log-ic"></span> Lock</a>
-                                                </li>
-                                                <li><a href="#"><span
-                                                            class="fa fa-cog author-log-ic"></span>Settings</a>
-                                                </li>
-                                                <li><a href="login.html"><span
-                                                            class="fa fa-lock author-log-ic"></span>Log Out</a>
+                                                
+                                                <li>
+                                                    @if (session('module_id'))
+                                                        <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                            <i class="fa fa-sign-out"
+                                                                style="font-size: 17px;margin-right:6px"></i>
+                                                            <span style="font-size: 15px">Déconnexion</span>
+                                                        </a>
+
+                                                        <form id="logout-form"
+                                                            action="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                                            method="POST" style="display: none;">
+                                                            @csrf
+                                                        </form>
+                                                    @else
+                                                        <a href="{{ route('logout') }}"
+                                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                            <i class="fa fa-sign-out"
+                                                                style="font-size: 17px;margin-right:6px"></i>
+                                                            <span style="font-size: 15px">Déconnexion</span>
+                                                        </a>
+
+                                                        <form id="logout-form" action="{{ route('logout') }}"
+                                                            method="POST" style="display: none;">
+                                                            @csrf
+                                                        </form>
+                                                    @endif
                                                 </li>
                                             </ul>
                                         </li>
@@ -111,8 +125,8 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#others" href="#">Miscellaneous <span
-                                            class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
+                                <li><a data-toggle="collapse" data-target="#others" href="#">Miscellaneous
+                                        <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="others" class="collapse dropdown-header-top">
                                         <li><a href="file-manager.html">File Manager</a></li>
                                         <li><a href="contacts.html">Contacts Client</a></li>
@@ -124,7 +138,8 @@
                                         <li><a href="500.html">500 Page</a></li>
                                     </ul>
                                 </li>
-                                <li><a data-toggle="collapse" data-target="#Miscellaneousmob" href="#">Interface
+                                <li><a data-toggle="collapse" data-target="#Miscellaneousmob"
+                                        href="#">Interface
                                         <span class="admin-project-icon adminpro-icon adminpro-down-arrow"></span></a>
                                     <ul id="Miscellaneousmob" class="collapse dropdown-header-top">
                                         <li><a href="google-map.html">Google Map</a>

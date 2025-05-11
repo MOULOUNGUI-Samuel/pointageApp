@@ -56,6 +56,7 @@ Route::middleware('auth')->group(
         Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
 
         Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
+        Route::put('/modifier_entreprise/{id}', [pointeController::class, 'modifier_entreprise'])->name('modifier_entreprise');
         Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
 
         Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');

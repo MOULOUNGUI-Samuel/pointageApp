@@ -5,7 +5,7 @@
                 <div class="row" style="margin-left: 20px; margin-right: 20px;">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="data-table-list">
-                            <div class="d-flex-justify-content-between mb-3 mt-3">
+                            <div class="d-flex-justify-content-between mb-3 mt-3" style="margin-top: 10px">
                                 <h2 class="card-title text-primary">Liste des presences</h2>
             
                                 <button type="button" class="btn btn-primary" style="margin-bottom: 5px;" data-toggle="modal" data-target="#sortiesIntermediairesModal">
@@ -16,11 +16,9 @@
                                 <div class="modal fade" id="sortiesIntermediairesModal" tabindex="-1" role="dialog" aria-labelledby="sortiesIntermediairesModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="sortiesIntermediairesModalLabel">Sorties Intermédiaires</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
+                                            <div class="modal-header bg-primary">
+                                                <h4 class="modal-title text-white" id="sortiesIntermediairesModalLabel">Sorties Intermédiaires
+                                                </h4>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -28,9 +26,24 @@
                                                         <div class="data-table-list">
                                                             <div class="row mx-3 " style="margin-bottom: 10px">
                                                                 <div class="col-md-4 mt-2">
-                                                                    <div class="basic-tb-hd">
-                                                                        <h6>Liste des sorties intermediaires</h6>
-                                                                    </div>
+                                                                    <label for="searchInput">Recherche</label>
+                                                                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..." onkeyup="searchTable1()" style="width: 100%;">
+
+                                                                    <script>
+                                                                        function searchTable() {
+                                                                            const input = document.getElementById('searchInput').value.toLowerCase();
+                                                                            const rows = document.querySelectorAll('#approbationsTable2 tr');
+
+                                                                            rows.forEach(row => {
+                                                                                const rowText = row.textContent.toLowerCase();
+                                                                                row.style.display = rowText.includes(input) ? '' : 'none';
+                                                                            });
+
+                                                                            const message = document.getElementById('aucun-resultat2');
+                                                                            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                                                                            message.style.display = visibleRows.length === 0 ? 'block' : 'none';
+                                                                        }
+                                                                    </script>
                                                                 </div>
                                                                 <div class="col-md-4 mb-2">
                                                                     <div class="d-flex align-items-center">
@@ -125,12 +138,29 @@
                                 </div>
                             </div>
                             <div class="row mb-3 mx-3" style="margin-bottom: 10px">
-                                <div class="col-md-5 mt-2">
-                                    {{-- <div class="basic-tb-hd">
-                                        <h2>Liste des presences</h2>
-                                    </div> --}}
+                                <div class="col-md-4 ">
                                 </div>
-                                <div class="col-md-3"></div>
+                                <div class="col-md-4">
+                                   <label for="searchInput1">Recherche</label>
+                                        <input type="text" id="searchInput1" class="form-control" placeholder="Rechercher..." onkeyup="searchTable1()" style="width: 100%;">
+                              
+
+                                    <script>
+                                        function searchTable1() {
+                                            const input = document.getElementById('searchInput1').value.toLowerCase();
+                                            const rows = document.querySelectorAll('#approbationsTable tr');
+
+                                            rows.forEach(row => {
+                                                const rowText = row.textContent.toLowerCase();
+                                                row.style.display = rowText.includes(input) ? '' : 'none';
+                                            });
+
+                                            const message = document.getElementById('aucun-resultat');
+                                            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                                            message.style.display = visibleRows.length === 0 ? 'block' : 'none';
+                                        }
+                                    </script>
+                                </div>
                                 <div class="col-md-2 mb-2">
                                     <div class="d-flex align-items-center">
                                         <label for="filtre-date" class="me-2 mb-0">Date début :</label>
@@ -196,7 +226,7 @@
                                                 <td>
                                                     <a href="{{ route('Suivi_profil', $pointage->user->id) }}"
                                                         class="btn btn-primary btn-reco-mg btn-button-mg">
-                                                        <i class="icon-eye" style="font-size: 20px; margin-right: 10px"></i>
+                                                        <i class="fa fa-eye" style="font-size: 20px; margin-right: 10px"></i>
                                                         <span>Profil</span>
                                                     </a>
                                                 </td>

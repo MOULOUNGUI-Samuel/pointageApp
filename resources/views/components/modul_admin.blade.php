@@ -1,5 +1,5 @@
-@extends('layouts.master')
-@section('content')
+@extends('layouts.master2')
+@section('content2')
     <style>
         .upload-container {
             text-align: center;
@@ -43,15 +43,15 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
-    <div class="data-table-area">
-        <div class="container">
+       <div class="section-admin container-fluid"  style="margin-left: 40px; margin-right: 40px;">
+
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="data-table-list">
-                        <div class="row mb-3 mx-3">
+                        <div class="row mx-3" style="margin-top: 20px;">
                             <div class="col-md-3 mt-2">
                                 <div class="basic-tb-hd">
-                                    <h2>Liste des modules</h2>
+                                    <h2 class="card-title text-primary">Liste des modules</h2>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -138,7 +138,6 @@
 
 
                         </div>
-
                     </div>
                 </div>
                 @foreach ($modules as $module)
@@ -240,7 +239,6 @@
 
                 @endforeach
             </div>
-        </div>
     </div>
     <script>
         document.getElementById('file-upload').addEventListener('change', function(event) {

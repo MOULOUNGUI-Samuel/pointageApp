@@ -338,15 +338,35 @@
                             <label class="form-label">Commentaire</label>
                             <textarea name="commmentaire_completaire" class="form-control">{{ old('commmentaire_completaire') }}</textarea>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label class="form-label">Mot de passe</label>
-                            <input type="password" name="password" class="form-control" autocomplete="false">
+                        <div class="col-md-4">
+                            <div class="form-group" id="data_1">
+                                <label class="form-label">Mot de passe</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" id="password" autocomplete="false">
+                                    <span class="input-group-addon" id="togglePassword" style="cursor: pointer"><i class="fa fa-eye"></i></span>
+                                </div>
+                            </div>
                         </div>
+
+                        <script>
+                            document.getElementById('togglePassword').addEventListener('click', function () {
+                                const passwordField = document.getElementById('password');
+                                const icon = this.querySelector('i');
+                                if (passwordField.type === 'password') {
+                                    passwordField.type = 'text';
+                                    icon.classList.remove('fa-eye');
+                                    icon.classList.add('fa-eye-slash');
+                                } else {
+                                    passwordField.type = 'password';
+                                    icon.classList.remove('fa-eye-slash');
+                                    icon.classList.add('fa-eye');
+                                }
+                            });
+                        </script>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                            style="color:black">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <div class="d-flex-justify-content-between mt-4">
+                        <button type="reset" class="btn btn-secondary">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer l'utilisateur</button>
                     </div>
                 </form>
             </div>

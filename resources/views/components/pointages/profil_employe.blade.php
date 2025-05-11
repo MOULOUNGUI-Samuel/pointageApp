@@ -196,10 +196,12 @@ color: #fff;">
 
             <div class="profile-form">
 
-                <form action="{{ route('modifier_employer', Auth::user()->id) }}" method="post"
+                <form action="{{ route('modifier_utilisateur', Auth::user()->id) }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+                    <input type="text" class="form-control" placeholder="ID" name="profile_mobile"
+                        value="{{ Auth::user()->id }}" hidden>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Matricule" name="matricule"
                             value="{{ Auth::user()->matricule }}">

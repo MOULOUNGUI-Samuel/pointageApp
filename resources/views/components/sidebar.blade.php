@@ -90,6 +90,17 @@
                         </a>
 
                     </li>
+                    <li>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i
+                                class="fa big-icon fa-cogs icon-wrap"></i> <span
+                                class="mini-click-non">Paramètre</span></a>
+                        <ul class="submenu-angle" aria-expanded="false">
+                            <li><a title="Gestion entreprise" href="{{route('liste_entreprise')}}"><i class="fa fa-building sub-icon-mg"
+                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion entreprise</span></a></li>
+                            <li><a title="Gestion des modules" href="{{route('ModuleAdmin')}}"><i class="fa fa-puzzle-piece sub-icon-mg"
+                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des modules</span></a></li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </div>

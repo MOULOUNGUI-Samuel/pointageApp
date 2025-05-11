@@ -1,5 +1,5 @@
-@extends('layouts.master')
-@section('content')
+@extends('layouts.master2')
+@section('content2')
     <style>
         .container-custom {
             background: rgba(255, 255, 255, 0.1);
@@ -54,12 +54,12 @@
         }
     </style>
     <div class="data-table-area">
-        <div class="container">
+        <div class="container" style="margin-top: 10px">
             <div class="mx-4" id="l-login">
                 <div class="row mx-3 " style="margin-bottom: 10px">
                     <div class="col-md-5 mt-2">
                         <div class="basic-tb-hd">
-                            <h2 style="color: #d0d7db">Profil : {{ $user->nom }} {{ $user->prenom }}</h2>
+                            <h2 class="text-primary">Profil : {{ $user->nom }} {{ $user->prenom }}</h2>
                         </div>
                     </div>
                     <div class="col-md-1"></div>
@@ -92,7 +92,7 @@
                         @foreach ($Pointages as $Pointage)
                             <div class="col-md-4">
                                 <div class="pointage-item{{ $Pointage->id }}" data-status="{{ $Pointage->date_arriver }}">
-                                    <div class="date-header shadow-sm text-capitalize" style="font-size: 19px">
+                                    <div class="date-header shadow-sm text-capitalize text-primary" style="font-size: 19px">
                                         {{ \App\Helpers\DateHelper::convertirDateEnTexte(App\Helpers\DateHelper::convertirDateFormat($Pointage->date_arriver)) }}
                                     </div>
 
