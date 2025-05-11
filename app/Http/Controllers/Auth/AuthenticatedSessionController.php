@@ -96,7 +96,7 @@ class AuthenticatedSessionController extends Controller
                     ->first();
 
                 if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
-                    return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
+                    return redirect()->route('loginPointe')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
                 }
 
                 if ($dejaPointage && $dejaPointage->statut == 1) {
@@ -201,7 +201,7 @@ class AuthenticatedSessionController extends Controller
                     ->whereDate('date_arriver', now()->toDateString())
                     ->first();
                 if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
-                    return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus effectuer de pointage, car votre sortie de fin de journée a déjà été enregistrée.');
+                    return redirect()->route('loginPointe')->with('error', 'Vous ne pouvez plus effectuer de pointage, car votre sortie de fin de journée a déjà été enregistrée.');
                 }
                 if (!$dejaPointage) {
                     $request->session()->invalidate();
