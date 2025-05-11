@@ -1,35 +1,38 @@
 <div class="left-sidebar-pro">
     <nav id="sidebar" class="">
         <div class="sidebar-header">
-            <a href="{{ route('yodirh.dashboard') }}"><img class="main-logo"
-                    src="{{ asset('src/images/YODIRH.png') }}" alt="" width="100" /></a>
+            <a href="{{ route('yodirh.dashboard') }}"><img class="main-logo" src="{{ asset('src/images/YODIRH.png') }}"
+                    alt="" width="100" /></a>
             <strong><img src="{{ asset('src2/img/logo/logosn.png') }}" alt="" /></strong>
         </div>
         <div class="left-custom-menu-adp-wrap comment-scrollbar">
             <nav class="sidebar-nav left-sidebar-menu-pro">
                 <ul class="metismenu" id="menu1">
-                    <li class="active">
-                        <a href="{{ route('yodirh.dashboard') }}">
+                    <li>
+                        <a href="{{ route('yodirh.dashboard') }}"
+                            class="{{ request()->routeIs('yodirh.dashboard') ? 'bg-primary' : '' }}">
                             <i class="fa big-icon fa-home icon-wrap"></i>
                             <span class="mini-click-non">Tableau de bord</span>
                         </a>
 
                     </li>
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i
-                                class="fa big-icon fa-users icon-wrap"></i> <span class="mini-click-non">Gestion du
+                    <li class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','Suivi_profil') ? 'active' : '' }}">
+                        <a class="has-arrow  {{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','Suivi_profil') ? 'bg-primary' : '' }}"
+                            href="#" aria-expanded="false"><i class="fa big-icon fa-users icon-wrap"></i> <span
+                                class="mini-click-non">Gestion du
                                 personnel...</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion des employés" href="{{ route('yodirh.utilisateurs') }}"><i
-                                        class="fa fa-user sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Gestion des
+                            <li><a title="Gestion des employés" href="{{ route('yodirh.utilisateurs') }}" class="{{ request()->routeIs('yodirh.utilisateurs') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-user sub-icon-mg"
+                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des
                                         employés</span></a></li>
-                            <li><a title="Contrats de travail" href="#"><i
-                                        class="fa fa-file-text sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Contrats de travail</span></a></li>
-                            <li><a title="Suivi des absences et congés" href="{{route('liste_presence')}}"><i
-                                        class="fa fa-calendar sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Suivi des absences et congés</span></a></li>
+                            <li><a title="Contrats de travail" href="#"><i class="fa fa-file-text sub-icon-mg"
+                                        aria-hidden="true"></i> <span class="mini-sub-pro">Contrats de
+                                        travail</span></a></li>
+                            <li><a title="Suivi des absences et congés" href="{{ route('liste_presence') }}" class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-calendar sub-icon-mg"
+                                        aria-hidden="true"></i> <span class="mini-sub-pro">Suivi des absences <br> et
+                                        congés</span></a></li>
                             <li><a title="Organigramme" href="#"><i class="fa fa-sitemap sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Organigramme</span></a></li>
                         </ul>
@@ -58,7 +61,7 @@
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a title="Calcul et édition des bulletins" href="#"><i
                                         class="fa fa-calculator sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Calcul et édition des bulletins</span></a></li>
+                                        class="mini-sub-pro">Calcul et édition des <br> bulletins</span></a></li>
                             <li><a title="Déclarations sociales" href="#"><i class="fa fa-file-text sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Déclarations
                                         sociales</span></a></li>
@@ -80,7 +83,7 @@
                                         class="mini-sub-pro">Suivi des compétences</span></a></li>
                             <li><a title="Évaluations et entretiens annuels" href="#"><i
                                         class="fa fa-check-circle sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Évaluations et entretiens annuels</span></a></li>
+                                        class="mini-sub-pro">Évaluations et entretiens <br> annuels</span></a></li>
                         </ul>
                     </li>
                     <li class="active">
@@ -90,15 +93,17 @@
                         </a>
 
                     </li>
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i
+                    <li class="{{ request()->routeIs('liste_entreprise','ModuleAdmin') ? 'active' : '' }}">
+                        <a class="has-arrow {{ request()->routeIs('liste_entreprise','ModuleAdmin') ? 'bg-primary' : '' }}" href="#" aria-expanded="false"><i
                                 class="fa big-icon fa-cogs icon-wrap"></i> <span
                                 class="mini-click-non">Paramètre</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion entreprise" href="{{route('liste_entreprise')}}"><i class="fa fa-building sub-icon-mg"
-                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion entreprise</span></a></li>
-                            <li><a title="Gestion des modules" href="{{route('ModuleAdmin')}}"><i class="fa fa-puzzle-piece sub-icon-mg"
-                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des modules</span></a></li>
+                            <li><a title="Gestion entreprise" href="{{ route('liste_entreprise') }}" class="{{ request()->routeIs('liste_entreprise') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-building sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion entreprise</span></a></li>
+                            <li><a title="Gestion des modules" href="{{ route('ModuleAdmin') }}" class="{{ request()->routeIs('ModuleAdmin') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-puzzle-piece sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion des modules</span></a></li>
                         </ul>
                     </li>
                 </ul>

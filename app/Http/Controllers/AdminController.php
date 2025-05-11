@@ -220,7 +220,7 @@ class AdminController extends Controller
 
     public function update(Request $request, $id)
     {
-        
+
         try {
             // Validation
             $validator = Validator::make($request->all(), [
@@ -470,7 +470,9 @@ class AdminController extends Controller
             $dejaPointage = Pointage::where('user_id', $user->id)
                 ->whereDate('date_arriver', now()->toDateString())
                 ->first();
-
+            if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
+                return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
+            }
             if ($dejaPointage && $dejaPointage->statut == 1) {
                 return redirect()->back()->with('error', 'Vous avez déjà pointé l\'entrée.');
             }
@@ -563,6 +565,9 @@ class AdminController extends Controller
             if (!$dejaPointage) {
                 return redirect()->route('pointage_compte')->with('error', 'Vous n\'avez pas encore pointé aujourd\'hui.');
             }
+            if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
+                return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus effectuer de pointage, car votre sortie de fin de journée a déjà été enregistrée.');
+            }
 
             if ($dejaPointage->statut == 0) {
                 return redirect()->route('pointage_compte')->with('error', 'Vous avez déjà pointé votre sortie,veuillez pointé votre entrée.');
@@ -584,12 +589,18 @@ class AdminController extends Controller
                         'pointage_intermediaire_id' => $pointageIntermediaire->id,
                         'description' => $description,
                     ]);
+                    if ($description == "fin de service") {
+                        $le_pointageFin = Pointage::find($dejaPointage->id);
+                        $le_pointageFin->heure_fin = $heure_actuelle;
+                        $le_pointageFin->save();
+                    }
                 }
             }
 
             if ($dejaPointage) {
                 $le_pointage = Pointage::find($dejaPointage->id);
                 $le_pointage->statut = 0;
+
                 $le_pointage->save();
             }
             return redirect()->route('index_employer')->with('success', 'Le pointage de sortie a été effectué avec succès.');

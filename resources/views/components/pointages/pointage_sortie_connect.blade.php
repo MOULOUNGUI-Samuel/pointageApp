@@ -295,6 +295,14 @@ color: #fff;">
                                     <label for="ts6" class="ts-label">Pause</label>
                                 </div>
                             </div>
+                            <div class="toggle-select-act mg-t-30">
+                                <div class="nk-toggle-switch" data-ts-color="blue">
+                                    <input id="ts8" type="checkbox" name="description[]" hidden="hidden"
+                                        value="fin de service">
+                                    <label for="ts8" class="ts-helper"></label>
+                                    <label for="ts8" class="ts-label">Fin de la journée</label>
+                                </div>
+                            </div>
 
                             <div class="toggle-select-act mg-t-30">
                                 <div class="nk-toggle-switch" data-ts-color="blue">

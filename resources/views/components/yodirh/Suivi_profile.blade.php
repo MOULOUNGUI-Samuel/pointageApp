@@ -56,13 +56,35 @@
     <div class="data-table-area">
         <div class="container" style="margin-top: 10px">
             <div class="mx-4" id="l-login">
+                <div class="d-flex-justify-content-between mb-3 mt-3" style="margin-top: 10px">
+                    <h2 class="card-title text-primary">Profil : {{ $user->nom }} {{ $user->prenom }}</h2>
+
+                    <a href="{{route('liste_presence')}}" type="button" class="btn btn-primary" style="margin-bottom: 5px;" >
+                        <i class="fa fa-list"></i> Liste de présence
+                    </a>
+                </div> 
                 <div class="row mx-3 " style="margin-bottom: 10px">
-                    <div class="col-md-5 mt-2">
-                        <div class="basic-tb-hd">
-                            <h2 class="text-primary">Profil : {{ $user->nom }} {{ $user->prenom }}</h2>
-                        </div>
-                    </div>
-                    <div class="col-md-1"></div>
+                    <div class="col-md-6">
+                        <label for="searchInput1">Recherche</label>
+                             <input type="text" id="searchInput1" class="form-control" placeholder="Rechercher..." onkeyup="searchTable1()" style="width: 100%;">
+                   
+
+                         <script>
+                             function searchTable1() {
+                                 const input = document.getElementById('searchInput1').value.toLowerCase();
+                                 const rows = document.querySelectorAll('#approbationsTable');
+
+                                 rows.forEach(row => {
+                                     const rowText = row.textContent.toLowerCase();
+                                     row.style.display = rowText.includes(input) ? '' : 'none';
+                                 });
+
+                                 const message = document.getElementById('aucun-resultat');
+                                 const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                                 message.style.display = visibleRows.length === 0 ? 'block' : 'none';
+                             }
+                         </script>
+                     </div>
                     <div class="col-md-3 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="filtre-date" class="me-2 mb-0">Date début :</label>
@@ -88,7 +110,7 @@
 
                 <!-- Champ visible (sélecteur de date) -->
                 <div class="container-custom">
-                    <div class="row">
+                    <div class="row" id="approbationsTable">
                         @foreach ($Pointages as $Pointage)
                             <div class="col-md-4">
                                 <div class="pointage-item{{ $Pointage->id }}" data-status="{{ $Pointage->date_arriver }}">
@@ -111,7 +133,7 @@
                                         <div class="mb-2" style="font-size: 19px;margin-top:5px">
                                             <i class="icon-exit me-2" style="color:darkorange"></i>
                                             <span style="color:darkorange"> Sortie :
-                                                {{ $Pointage->heure_sortie ?? '-- : -- : --' }}
+                                                {{ $Pointage->heure_fin ?? '-- : -- : --' }}
                                             </span>
                                         </div>
                                     </div>
@@ -160,7 +182,7 @@
                     </div>
 
                     <div id="aucun-resultat" class="alert alert-warning text-center" style="display: none;">
-                        Aucun résultat trouvé pour cette date.
+                        Aucun résultat trouvé.
                     </div>
                 </div>
                 @foreach ($Pointages as $Pointage)
@@ -195,7 +217,8 @@
 
                                                         @if (!empty($sortie['descriptions']))
                                                             <div class="mb-2" style="margin-bottom: 5px;margin-top:5px">
-                                                                <small style="color:rgb(255, 255, 255); cursor: pointer;font-size: 15px;padding:5px; background:rgb(169, 169, 169);border-radius:30px"
+                                                                <small
+                                                                    style="color:rgb(255, 255, 255); cursor: pointer;font-size: 15px;padding:5px; background:rgb(169, 169, 169);border-radius:30px"
                                                                     data-toggle="collapse"
                                                                     data-target="#motifSortie{{ $loop->index }}">
                                                                     Motif de sortie :

@@ -295,6 +295,16 @@ color: #fff;">
                                         <div class="col-6">
                                             <div class="toggle-select-act mg-t-30">
                                                 <div class="nk-toggle-switch" data-ts-color="blue">
+                                                    <input id="ts8" type="checkbox" name="description[]"
+                                                        hidden="hidden" value="fin de service">
+                                                    <label for="ts8" class="ts-helper"></label>
+                                                    <label for="ts8" class="ts-label">Fin de la journée</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="toggle-select-act mg-t-30">
+                                                <div class="nk-toggle-switch" data-ts-color="blue">
                                                     <input id="ts7" type="checkbox" hidden="hidden"
                                                         onclick="showDescription()">
                                                     <label for="ts7" class="ts-helper"></label>

@@ -66,6 +66,14 @@
     .text-primary {
         color: #05436b !important;
     }
+    .bg-primary {
+        background-color: #05436b !important;
+        color: white !important;
+    }
+    .bg-primary2 {
+        background-color: #05426bc6 !important;
+        color: white !important;
+    }
 
     .shadow {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

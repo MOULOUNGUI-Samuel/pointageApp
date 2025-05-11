@@ -95,6 +95,10 @@ class AuthenticatedSessionController extends Controller
                     ->whereDate('date_arriver', now()->toDateString())
                     ->first();
 
+                if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
+                    return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
+                }
+
                 if ($dejaPointage && $dejaPointage->statut == 1) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
@@ -196,7 +200,9 @@ class AuthenticatedSessionController extends Controller
                 $dejaPointage = Pointage::where('user_id', $user->id)
                     ->whereDate('date_arriver', now()->toDateString())
                     ->first();
-
+                if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
+                    return redirect()->route('pointage_compte')->with('error', 'Vous ne pouvez plus effectuer de pointage, car votre sortie de fin de journée a déjà été enregistrée.');
+                }
                 if (!$dejaPointage) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
@@ -225,6 +231,11 @@ class AuthenticatedSessionController extends Controller
                             'pointage_intermediaire_id' => $pointageIntermediaire->id,
                             'description' => $description,
                         ]);
+                        if ($description == "fin de service") {
+                            $le_pointageFin = Pointage::find($dejaPointage->id);
+                            $le_pointageFin->heure_fin = $heure_actuelle;
+                            $le_pointageFin->save();
+                        }
                     }
                 }
 
@@ -241,7 +252,7 @@ class AuthenticatedSessionController extends Controller
                 // Récupérer une variable et la stocker en session
 
                 $role_user = User::where('id', $user->id)->with('role')->first();
-                
+
                 if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
                     if ($request->module_id) {
@@ -260,7 +271,7 @@ class AuthenticatedSessionController extends Controller
                     // Redirection pour RH et Admin
                     return redirect()->intended(route('yodirh.dashboard', [], false));
                 } else {
-                    
+
                     // Redirection pour Employer
                     return redirect()->intended(route('index_employer', [], false));
                 }
