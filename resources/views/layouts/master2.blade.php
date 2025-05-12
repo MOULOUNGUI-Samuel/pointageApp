@@ -33,7 +33,10 @@
             </div>
         </div>
     </div>
-    @switch($module_nom)
+    @php
+        $moduleNom = strtolower($module_nom);
+    @endphp
+    @switch($moduleNom)
         @case('smi')
             @include('components/smi/sidebar')
         @break

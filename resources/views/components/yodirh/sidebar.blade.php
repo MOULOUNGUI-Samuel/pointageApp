@@ -12,26 +12,29 @@
                         <a href="{{ route('yodirh.dashboard') }}"
                             class="{{ request()->routeIs('yodirh.dashboard') ? 'bg-primary' : '' }}">
                             <i class="fa big-icon fa-home icon-wrap"></i>
-                            <span class="mini-click-non">Tableau de bord</span>
+                            <span class="mini-click-non">Tableau de bord ({{ $module_nom }})</span>
                         </a>
 
                     </li>
-                    <li class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','Suivi_profil') ? 'active' : '' }}">
-                        <a class="has-arrow  {{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','Suivi_profil') ? 'bg-primary' : '' }}"
+                    <li
+                        class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence', 'Suivi_profil') ? 'active' : '' }}">
+                        <a class="has-arrow  {{ request()->routeIs('yodirh.utilisateurs', 'liste_presence', 'Suivi_profil') ? 'bg-primary' : '' }}"
                             href="#" aria-expanded="false"><i class="fa big-icon fa-users icon-wrap"></i> <span
                                 class="mini-click-non">Gestion du
                                 personnel...</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion des employés" href="{{ route('yodirh.utilisateurs') }}" class="{{ request()->routeIs('yodirh.utilisateurs') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-user sub-icon-mg"
-                                        aria-hidden="true"></i> <span class="mini-sub-pro">Gestion des
+                            <li><a title="Gestion des employés" href="{{ route('yodirh.utilisateurs') }}"
+                                    class="{{ request()->routeIs('yodirh.utilisateurs') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-user sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion des
                                         employés</span></a></li>
                             <li><a title="Contrats de travail" href="#"><i class="fa fa-file-text sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Contrats de
                                         travail</span></a></li>
-                            <li><a title="Suivi des absences et congés" href="{{ route('liste_presence') }}" class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-calendar sub-icon-mg"
-                                        aria-hidden="true"></i> <span class="mini-sub-pro">Suivi des absences <br> et
+                            <li><a title="Suivi des absences et congés" href="{{ route('liste_presence') }}"
+                                    class="{{ request()->routeIs('liste_presence', 'Suivi_profil') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-calendar sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Suivi des absences <br> et
                                         congés</span></a></li>
                             <li><a title="Organigramme" href="#"><i class="fa fa-sitemap sub-icon-mg"
                                         aria-hidden="true"></i> <span class="mini-sub-pro">Organigramme</span></a></li>
@@ -93,21 +96,27 @@
                         </a>
 
                     </li>
-                    <li class="{{ request()->routeIs('liste_entreprise','ModuleAdmin','services','categorieprofessionel') ? 'active' : '' }}">
-                        <a class="has-arrow {{ request()->routeIs('liste_entreprise','ModuleAdmin','services','categorieprofessionel') ? 'bg-primary' : '' }}" href="#" aria-expanded="false"><i
-                                class="fa big-icon fa-cogs icon-wrap"></i> <span
+                    <li
+                        class="{{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'active' : '' }}">
+                        <a class="has-arrow {{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'bg-primary' : '' }}"
+                            href="#" aria-expanded="false"><i class="fa big-icon fa-cogs icon-wrap"></i> <span
                                 class="mini-click-non">Paramètre</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion entreprise" href="{{ route('liste_entreprise') }}" class="{{ request()->routeIs('liste_entreprise') ? 'bg-primary2' : '' }}"><i
+                            <li><a title="Gestion entreprise" href="{{ route('liste_entreprise') }}"
+                                    class="{{ request()->routeIs('liste_entreprise') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-building sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion entreprise</span></a></li>
-                            <li><a title="Gestion des modules" href="{{ route('ModuleAdmin') }}" class="{{ request()->routeIs('ModuleAdmin') ? 'bg-primary2' : '' }}"><i
+                            <li><a title="Gestion des modules" href="{{ route('ModuleAdmin') }}"
+                                    class="{{ request()->routeIs('ModuleAdmin') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-cubes sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion des modules</span></a></li>
-                            <li><a title="Gestion des services" href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'bg-primary2' : '' }}"><i
+                            <li><a title="Gestion des services" href="{{ route('services') }}"
+                                    class="{{ request()->routeIs('services') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-briefcase sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion des services</span></a></li>
-                            <li><a title="Gestion des catégories professionnelles" href="{{ route('categorieprofessionel') }}" class="{{ request()->routeIs('categorieprofessionel') ? 'bg-primary2' : '' }}"><i
+                            <li><a title="Gestion des catégories professionnelles"
+                                    href="{{ route('categorieprofessionel') }}"
+                                    class="{{ request()->routeIs('categorieprofessionel') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-users sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion des catégorie <br> professionnelle</span></a></li>
 
