@@ -81,129 +81,118 @@
                         </div>
                         @foreach ($utilisateurs as $user)
                             <div id="detailsMondale{{ $user->id }}"
-                                class="modal modal-adminpro-general default-popup-PrimaryModal fade" role="dialog">
-                                <div class="modal-dialog modal-2xl modal-dialog-scrollable">
+                                class="modal fade" role="dialog"tabindex="-1" role="dialog" aria-labelledby="detailsMondale" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
-                                        <div class="modal-header header-color-modal bg-color-1">
+                                        <div class="modal-header bg-primary">
                                             <h4 class="modal-title">{{ $user->nom }} {{ $user->prenom }}</h4>
-                                            <div class="modal-close-area modal-close-df">
-                                                <a class="close" data-dismiss="modal" href="#"><i
-                                                        class="fa fa-close"></i></a>
-                                            </div>
                                         </div>
 
                                         <div class="modal-body">
-                                            <div class="row text-left">
-                                                @if ($user->date_naissance)
-                                                    <div class="col-md-4"><strong>Date
-                                                            naissance</strong><br>{{ $user->date_naissance }}</div>
-                                                @endif
-                                                @if ($user->date_embauche)
-                                                    <div class="col-md-4"><strong>Date
-                                                            embauche</strong><br>{{ $user->date_embauche }}</div>
-                                                @endif
-                                                @if ($user->nationalite)
-                                                    <div class="col-md-4">
-                                                        <strong>Nationalité</strong><br>{{ $user->nationalite }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->adresse)
-                                                    <div class="col-md-4">
-                                                        <strong>Adresse</strong><br>{{ $user->adresse }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->telephone)
-                                                    <div class="col-md-4">
-                                                        <strong>Téléphone</strong><br>{{ $user->telephone }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->email_professionnel)
-                                                    <div class="col-md-4"><strong>Email
-                                                            professionnel</strong><br>{{ $user->email_professionnel }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->etat_civil)
-                                                    <div class="col-md-4"><strong>État
-                                                            civil</strong><br>{{ $user->etat_civil }}</div>
-                                                @endif
-                                                @if ($user->nombre_enfant)
-                                                    <div class="col-md-4"><strong>Nombre
-                                                            d'enfants</strong><br>{{ $user->nombre_enfant }}</div>
-                                                @endif
-                                                @if ($user->ville?->nom)
-                                                    <div class="col-md-4">
-                                                        <strong>Ville</strong><br>{{ $user->ville->nom }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->pays?->nom)
-                                                    <div class="col-md-4">
-                                                        <strong>Pays</strong><br>{{ $user->pays->nom }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->salaire)
-                                                    <div class="col-md-4">
-                                                        <strong>Salaire</strong><br>{{ $user->salaire }} FCFA
-                                                    </div>
-                                                @endif
-                                                @if ($user->type_contrat)
-                                                    <div class="col-md-4"><strong>Type de
-                                                            contrat</strong><br>{{ $user->type_contrat }}</div>
-                                                @endif
-                                                @if ($user->mode_paiement)
-                                                    <div class="col-md-4"><strong>Mode de
-                                                            paiement</strong><br>{{ $user->mode_paiement }}</div>
-                                                @endif
-                                                @if ($user->iban)
-                                                    <div class="col-md-4"><strong>IBAN</strong><br>{{ $user->iban }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->bic)
-                                                    <div class="col-md-4"><strong>BIC</strong><br>{{ $user->bic }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->nom_banque)
-                                                    <div class="col-md-4">
-                                                        <strong>Banque</strong><br>{{ $user->nom_banque }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->nom_agence)
-                                                    <div class="col-md-4">
-                                                        <strong>Agence</strong><br>{{ $user->nom_agence }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->competence)
-                                                    <div class="col-md-12">
-                                                        <strong>Compétences</strong><br>{{ $user->competence }}
-                                                    </div>
-                                                @endif
-                                                @if ($user->commmentaire_completaire)
-                                                    <div class="col-md-12">
-                                                        <strong>Commentaires</strong><br>{{ $user->commmentaire_completaire }}
-                                                    </div>
-                                                @endif
-                                            </div>
-
-                                            <hr>
-
-                                            <div class="row mt-3 text-start">
-                                                @if ($user->photo)
-                                                    <div class="col-md-4">
-                                                        <p><strong>Photo</strong></p>
-                                                        <img src="{{ asset('storage/' . $user->photo) }}"
-                                                            class="img-thumbnail" width="100">
-                                                    </div>
-                                                @endif
-
-                                                @foreach (['cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $doc)
-                                                    @if ($user->$doc)
-                                                        <div class="col-md-4">
-                                                            <p><strong>{{ ucfirst(str_replace('_', ' ', $doc)) }}</strong>
-                                                            </p>
-                                                            <a href="{{ asset('storage/' . $user->$doc) }}" target="_blank"
-                                                                class="btn btn-outline-primary btn-sm">Télécharger</a>
+                                            <div class="card shadow-sm mb-4">
+                                                <div class="card-header bg-info text-white">
+                                                    <h5 class="mb-0" style="padding: 5px;margin-top:10px">Informations personnelles</h5>
+                                                </div>
+                                                <div class="card-body row g-4">
+                                                    @if ($user->photo)
+                                                        <div class="col-md-3 text-center">
+                                                            <img src="{{ asset('storage/' . $user->photo) }}" class="img-fluid rounded-circle border" width="150" alt="Photo de profil">
+                                                        </div>
+                                                    @else
+                                                        <div class="col-md-3 text-center">
+                                                            <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid rounded-circle border" width="150" alt="Photo de profil">
                                                         </div>
                                                     @endif
-                                                @endforeach
+                                            
+                                                    <div class="col-md-9 row g-3">
+                                                        @if ($user->date_naissance)
+                                                            <div class="col-md-6"><strong>Date de naissance :</strong><br><span>{{ $user->date_naissance }}</span></div>
+                                                        @endif
+                                                        @if ($user->date_embauche)
+                                                            <div class="col-md-6"><strong>Date d'embauche :</strong><br><span>{{ $user->date_embauche }}</span></div>
+                                                        @endif
+                                                        @if ($user->etat_civil)
+                                                            <div class="col-md-6"><strong>État civil :</strong><br><span>{{ $user->etat_civil }}</span></div>
+                                                        @endif
+                                                        @if ($user->adresse)
+                                                            <div class="col-md-6"><strong>Adresse :</strong><br><span>{{ $user->adresse }}</span></div>
+                                                        @endif
+                                                        @if ($user->ville?->nom)
+                                                            <div class="col-md-6"><strong>Ville :</strong><br><span>{{ $user->ville->nom }}</span></div>
+                                                        @endif
+                                                        @if ($user->pays?->nom)
+                                                            <div class="col-md-6"><strong>Pays :</strong><br><span>{{ $user->pays->nom }}</span></div>
+                                                        @endif
+                                                        @if ($user->telephone)
+                                                            <div class="col-md-6"><strong>Téléphone :</strong><br><span>{{ $user->telephone }}</span></div>
+                                                        @endif
+                                                        @if ($user->email_professionnel)
+                                                            <div class="col-md-6"><strong>Email professionnel :</strong><br><span>{{ $user->email_professionnel }}</span></div>
+                                                        @endif
+                                                        @if ($user->nationalite)
+                                                            <div class="col-md-6"><strong>Nationalité :</strong><br><span>{{ $user->nationalite }}</span></div>
+                                                        @endif
+                                                        @if ($user->nombre_enfant)
+                                                            <div class="col-md-6"><strong>Nombre d'enfants :</strong><br><span>{{ $user->nombre_enfant }}</span></div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card shadow-sm mb-4">
+                                                <div class="card-header bg-info text-white">
+                                                    <h5 class="mb-0"  style="padding: 5px;margin-top:10px">Informations professionnelles</h5>
+                                                </div>
+                                                <div class="card-body row g-3">
+                                                    @if ($user->type_contrat)
+                                                        <div class="col-md-6"><strong>Type de contrat :</strong><br><span>{{ $user->type_contrat }}</span></div>
+                                                    @endif
+                                                    @if ($user->mode_paiement)
+                                                        <div class="col-md-6"><strong>Mode de paiement :</strong><br><span>{{ $user->mode_paiement }}</span></div>
+                                                    @endif
+                                                    @if ($user->salaire)
+                                                        <div class="col-md-6"><strong>Salaire :</strong><br><span>{{ number_format($user->salaire, 0, ',', ' ') }} FCFA</span></div>
+                                                    @endif
+                                                    @if ($user->iban)
+                                                        <div class="col-md-6"><strong>IBAN :</strong><br><span>{{ $user->iban }}</span></div>
+                                                    @endif
+                                                    @if ($user->bic)
+                                                        <div class="col-md-6"><strong>BIC :</strong><br><span>{{ $user->bic }}</span></div>
+                                                    @endif
+                                                    @if ($user->nom_banque)
+                                                        <div class="col-md-6"><strong>Banque :</strong><br><span>{{ $user->nom_banque }}</span></div>
+                                                    @endif
+                                                    @if ($user->nom_agence)
+                                                        <div class="col-md-6"><strong>Agence bancaire :</strong><br><span>{{ $user->nom_agence }}</span></div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card shadow-sm mb-4">
+                                                <div class="card-header bg-info text-white">
+                                                    <h5 class="mb-0" style="padding: 5px;margin-top:10px">Documents et compétences</h5>
+                                                </div>
+                                                <div class="card-body row g-3">
+                                                    @foreach (['cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $doc)
+                                                        @if ($user->$doc)
+                                                            <div class="col-md-4">
+                                                                <strong>{{ ucfirst(str_replace('_', ' ', $doc)) }}</strong><br>
+                                                                <a href="{{ asset('storage/' . $user->$doc) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-1">📄 Télécharger</a>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                            
+                                                    @if ($user->competence)
+                                                        <div class="col-md-12"><strong>Compétences :</strong><br>{{ $user->competence }}</div>
+                                                    @endif
+                                                    @if ($user->commmentaire_completaire)
+                                                        <div class="col-md-12"><strong>Commentaires :</strong><br>{{ $user->commmentaire_completaire }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="text-right">
+                                                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
                                             </div>
                                         </div>
                                     </div>
