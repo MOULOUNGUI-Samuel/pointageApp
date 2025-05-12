@@ -1,7 +1,7 @@
 @extends('layouts.master2')
 @section('content2')
     <div class="section-admin container-fluid">
-       
+
         <div class="container">
             <div class="card-body">
                 <div class="justify-content-between align-items-center mb-4">
@@ -16,7 +16,7 @@
                 </a>
             </div>
             <div class="card-body shadow p-3" style="background-color: white;shadow: 0px 0px 10px #ccc;padding: 40px;">
-                
+
 
                 @if (session('error'))
                     <div class="alert alert-danger" role="alert">
@@ -31,9 +31,10 @@
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
-                                <li>{{ $error }} <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button></li>
+                                <li>{{ $error }} <button type="button" class="close" data-dismiss="alert"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button></li>
                             @endforeach
                         </ul>
 
@@ -68,27 +69,27 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Lieu de naissance</label>
                             <input type="text" name="lieu_naissance" class="form-control" autocomplete="false"
-                                value="{{ old('lieu_naissance') }}">
+                                value="{{ old('lieu_naissance') }}" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Nationalité</label>
                             <input type="text" name="nationalite" class="form-control" autocomplete="false"
-                                value="{{ old('nationalite') }}">
+                                value="{{ old('nationalite') }}" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Numéro sécurité sociale</label>
-                            <input type="text" name="numero_securite_sociale" class="form-control"
-                                autocomplete="false" value="{{ old('numero_securite_sociale') }}">
+                            <input type="text" name="numero_securite_sociale" class="form-control" autocomplete="false"
+                                value="{{ old('numero_securite_sociale') }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">État civil</label>
                             <input type="text" name="etat_civil" class="form-control" autocomplete="false"
-                                value="{{ old('etat_civil') }}">
+                                value="{{ old('etat_civil') }}" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Nombre d'enfants</label>
-                            <input type="number" name="nombre_enfant" class="form-control" min="0"
-                                max="50" value="{{ old('nombre_enfant', 0) }}">
+                            <input type="number" name="nombre_enfant" class="form-control" min="0" max="50"
+                                value="{{ old('nombre_enfant', 0) }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Adresse</label>
@@ -117,7 +118,7 @@
                         </div>
                         <div class="form-group  col-md-4">
                             <label class="form-label">Pays</label>
-                            <select class="select2_demo_3 form-control" name="pays_id" style="width: 100%;">
+                            <select class="select2_demo_3 form-control" name="pays_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($pays as $Lepays)
                                     <option value="{{ $Lepays->id }}"
@@ -128,7 +129,7 @@
                         </div>
                         <div class="form-group  col-md-4">
                             <label class="form-label">Ville</label>
-                            <select class="select2_demo_3 form-control" name="ville_id" style="width: 100%;">
+                            <select class="select2_demo_3 form-control" name="ville_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($villes as $ville)
                                     <option value="{{ $ville->id }}"
@@ -143,7 +144,8 @@
                     <div class="row g-3">
                         <div class="form-group  col-md-4">
                             <label class="form-label">Entreprise</label>
-                            <select class="select2_demo_3 form-control" name="entreprise_id" style="width: 100%;">
+                            <select class="select2_demo_3 form-control" name="entreprise_id" style="width: 100%;"
+                                required>
                                 <option value=""></option>
                                 @foreach ($entreprises as $entreprise)
                                     <option value="{{ $entreprise->id }}"
@@ -154,7 +156,7 @@
                         </div>
                         <div class="form-group  col-md-4">
                             <label class="form-label">Service</label>
-                            <select class="select2_demo_3 form-control" name="service_id" style="width: 100%;">
+                            <select class="select2_demo_3 form-control" name="service_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($services as $service)
                                     <option value="{{ $service->id }}"
@@ -164,9 +166,9 @@
                             </select>
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">categoriepr ofessionelle</label>
+                            <label class="form-label">categorie professionelle</label>
                             <select class="select2_demo_3 form-control" name="categorie_professionel_id "
-                                style="width: 100%;">
+                                style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($categorie_professionelles as $categorie_professionel)
                                     <option value="{{ $categorie_professionel->id }}"
@@ -177,7 +179,8 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Poste/Fonction</label>
-                            <input type="text" name="fonction" class="form-control" value="{{ old('fonction') }}">
+                            <input type="text" name="fonction" class="form-control" value="{{ old('fonction') }}"
+                                required>
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Matricule</label>
@@ -209,7 +212,7 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Rôle</label>
-                            <select class="select2_demo_3 form-control" name="role_id" style="width: 100%;">
+                            <select class="select2_demo_3 form-control" name="role_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}"
@@ -220,7 +223,7 @@
                         <div class="form-group  col-md-4">
                             <label class="form-label">Responsable hiérarchique</label>
                             <select class="select2_demo_3 form-control" name="superieur_hierarchique"
-                                style="width: 100%;">
+                                style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->nom }} {{ $user->prenom }}"
@@ -245,7 +248,7 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Salaire</label>
                             <input type="number" step="0.01" name="salaire" class="form-control"
-                                autocomplete="false" value="{{ old('salaire') }}">
+                                autocomplete="false" value="{{ old('salaire') }}" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Type de contrat</label>
@@ -342,14 +345,16 @@
                             <div class="form-group" id="data_1">
                                 <label class="form-label">Mot de passe</label>
                                 <div class="input-group">
-                                    <input type="password" name="password" class="form-control" id="password" autocomplete="false">
-                                    <span class="input-group-addon" id="togglePassword" style="cursor: pointer"><i class="fa fa-eye"></i></span>
+                                    <input type="password" name="password" class="form-control" id="password"
+                                        autocomplete="false" required>
+                                    <span class="input-group-addon" id="togglePassword" style="cursor: pointer"><i
+                                            class="fa fa-eye"></i></span>
                                 </div>
                             </div>
                         </div>
 
                         <script>
-                            document.getElementById('togglePassword').addEventListener('click', function () {
+                            document.getElementById('togglePassword').addEventListener('click', function() {
                                 const passwordField = document.getElementById('password');
                                 const icon = this.querySelector('i');
                                 if (passwordField.type === 'password') {
