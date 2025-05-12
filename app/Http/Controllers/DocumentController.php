@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use ZipArchive;
 
 class DocumentController extends Controller
@@ -105,12 +106,53 @@ class DocumentController extends Controller
             // Nettoyer les fichiers temporaires
             File::delete($tmpZipPath);
             File::deleteDirectory($extractPath);
-            return redirect()->back()->with('success', 'Entreprise ajoutée avec succès','Fichiers HTML importés : ' . implode(', ', $imported));
-
+            return redirect()->back()->with('success', 'Entreprise ajoutée avec succès', 'Fichiers HTML importés : ' . implode(', ', $imported));
         }
 
         return back()->withErrors(['Erreur lors de l\'extraction du fichier ZIP.']);
     }
 
+    public function indexfile()
+    {
+       
+        $url = 'https://cloud.yodingenierie.com/index.php/s/JsUWCyjc5l22zX2';
+        $zipUrl = $url . '/download';
 
+        // Télécharger l'archive zip
+        $zipContent = @file_get_contents($zipUrl);
+        if ($zipContent === false) {
+            return back()->withErrors(['Impossible de récupérer les fichiers depuis le lien.']);
+        }
+
+        // Sauvegarder temporairement le zip
+        $tmpZipPath = storage_path('app/tmp_owncloud_import.zip');
+        File::put($tmpZipPath, $zipContent);
+
+        // Dossier d’extraction
+        $extractPath = storage_path('app/tmp_owncloud_extracted');
+        if (!File::exists($extractPath)) {
+            File::makeDirectory($extractPath, 0755, true);
+        } else {
+            File::cleanDirectory($extractPath);
+        }
+
+        // Extraire le zip
+        $zip = new ZipArchive;
+        if ($zip->open($tmpZipPath) === true) {
+            $zip->extractTo($extractPath);
+            $zip->close();
+        } else {
+            return back()->withErrors(['Impossible d’extraire l’archive.']);
+        }
+
+        // Lister tous les fichiers et dossiers
+        $structure = $this->listDirectoryStructure($extractPath, $extractPath);
+
+        // Nettoyer le zip uniquement (pas les fichiers extraits)
+        File::delete($tmpZipPath);
+
+        return view('components.smi.procedureOperationnelles', ['structure' => $structure]);
+    }
+
+   
 }

@@ -142,7 +142,7 @@ color: #fff;">
                                 @else
                                     <i class="icon-user" style="font-size: 45px"></i>
                                 @endif
-                                <h3 class="fw-bold my-2">{{ $module->nom_module ?? 'YODIRH' }}</h3>
+                                <h3 class="fw-bold my-2">Gestion : {{ $module->nom_module ?? '' }}</h3>
                             </div>
                         </div>
                     </a>

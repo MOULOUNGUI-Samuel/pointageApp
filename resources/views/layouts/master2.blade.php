@@ -20,7 +20,7 @@
 </style>
 
 <body>
-    
+
     <!-- Preloader -->
     <div id="preloader" class="preloader-single">
         <div class="ts_preloading_box">
@@ -33,8 +33,18 @@
             </div>
         </div>
     </div>
+    @switch($module_nom)
+        @case('smi')
+            @include('components/smi/sidebar')
+        @break
 
-    @include('components/sidebar')
+        @case('rh')
+            @include('components/yodirh/sidebar')
+        @break
+
+        @default
+            @include('components/yodirh/sidebar')
+    @endswitch
 
     <!-- Ajout de l'ID requis pour le script -->
     <div id="main-content" class="all-content-wrapper">

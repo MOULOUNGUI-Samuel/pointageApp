@@ -41,6 +41,7 @@ class AdminController extends Controller
     {
         //
         $modules = Module::All();
+
         return view("components.modul_admin", compact('modules'));
     }
     public function index()
@@ -138,6 +139,7 @@ class AdminController extends Controller
                 'diplome' => 'nullable',
                 'pays_id' => 'required',
                 'ville_id' => 'required',
+                'categorie_professionel_id' => 'required',
                 'type_contrat' => 'nullable',
                 'certificat_travail' => 'nullable',
             ], [
@@ -148,6 +150,7 @@ class AdminController extends Controller
                 'matricule.unique' => 'Ce matricule est déjà utilisé.',
                 'pays_id.required' => 'Le pays est obligatoire.',
                 'ville_id.required' => 'La ville est obligatoire.',
+                'categorie_professionel_id.required' => 'La Catégorie professionnelle est obligatoire.',
                 'email.unique' => 'Cet email est déjà utilisé.',
                 'email_professionnel.unique' => 'Cet email professionnel est déjà utilisé.',
                 'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
@@ -162,6 +165,7 @@ class AdminController extends Controller
             $user->role_id = $request->input('role_id');
             $user->pays_id = $request->input('pays_id');
             $user->ville_id = $request->input('ville_id');
+            $user->categorie_professionel_id = $request->input('categorie_professionel_id');
             $user->nom = $request->input('nom');
             $user->prenom = $request->input('prenom');
             $user->date_naissance = Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
@@ -174,7 +178,7 @@ class AdminController extends Controller
             $user->adresse_complementaire = $request->input('adresse_complementaire');
             $user->code_postal = $request->input('code_postal');
             $user->telephone = $request->input('telephone');
-            $user->email = $request->input('email');
+            $user->email = $request->input('email') ?? null;
             $user->email_professionnel = $request->input('email_professionnel');
             $user->telephone_professionnel = $request->input('telephone_professionnel');
             $user->date_embauche = $request->input('date_embauche') ? Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d') : null;
@@ -183,7 +187,7 @@ class AdminController extends Controller
             $user->superieur_hierarchique = $request->input('superieur_hierarchique');
             $user->niveau_etude = $request->input('niveau_etude');
             $user->competence = $request->input('competence');
-            $user->salaire = $request->input('salaire');
+            $user->salaire = (int) trim($request->input('salaire'));
             $user->type_contrat = $request->input('type_contrat');
             $user->mode_paiement = $request->input('mode_paiement');
             $user->iban = $request->input('iban');

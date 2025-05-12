@@ -95,12 +95,15 @@ Route::middleware('auth')->group(
             ->name('html.import.affiche');
         Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])
             ->name('html.import.owncloud');
+
         // Chargement des routes dynamiques si le fichier existe
         $importedRoutesPath = base_path('routes/imported.php');
 
         if (File::exists($importedRoutesPath)) {
             require $importedRoutesPath;
         }
+
+        
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

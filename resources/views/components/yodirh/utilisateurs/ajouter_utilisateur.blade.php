@@ -46,18 +46,18 @@
                     <h4 class="mb-3 text-primary">Informations personnelles</h4>
                     <div class="row g-3">
                         <div class="form-group col-md-4">
-                            <label class="form-label">Nom</label>
+                            <label class="form-label">Nom(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="nom" class="form-control" required autocomplete="false"
                                 value="{{ old('nom') }}">
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Prénom</label>
+                            <label class="form-label">Prénom(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="prenom" class="form-control" required autocomplete="false"
                                 value="{{ old('prenom') }}">
                         </div>
                         <div class="col-md-4">
                             <div class="form-group" id="data_1">
-                                <label class="form-label">Date de naissance</label>
+                                <label class="form-label">Date de naissance(<span style="color: red;font-size:12px">***</span>) </label>
                                 <div class="input-group date">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input type="text" class="form-control" name="date_naissance"
@@ -67,12 +67,12 @@
                             </div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Lieu de naissance</label>
+                            <label class="form-label">Lieu de naissance(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="lieu_naissance" class="form-control" autocomplete="false"
                                 value="{{ old('lieu_naissance') }}" required>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Nationalité</label>
+                            <label class="form-label">Nationalité(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="nationalite" class="form-control" autocomplete="false"
                                 value="{{ old('nationalite') }}" required>
                         </div>
@@ -82,7 +82,7 @@
                                 value="{{ old('numero_securite_sociale') }}">
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">État civil</label>
+                            <label class="form-label">État civil(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="etat_civil" class="form-control" autocomplete="false"
                                 value="{{ old('etat_civil') }}" required>
                         </div>
@@ -92,7 +92,7 @@
                                 value="{{ old('nombre_enfant', 0) }}">
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Adresse</label>
+                            <label class="form-label">Adresse(<span style="color: red;font-size:12px">***</span>)</label>
                             <input type="text" name="adresse" class="form-control" required autocomplete="false"
                                 value="{{ old('adresse') }}">
                         </div>
@@ -107,7 +107,7 @@
                                 autocomplete="false" value="{{ old('code_postal') }}">
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Téléphone</label>
+                            <label class="form-label">Téléphone personel(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="telephone" class="form-control" required
                                 data-mask="999 99 99 99" autocomplete="false" value="{{ old('telephone') }}">
                         </div>
@@ -117,7 +117,7 @@
                                 value="{{ old('email') }}">
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">Pays</label>
+                            <label class="form-label">Pays(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="pays_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($pays as $Lepays)
@@ -128,7 +128,7 @@
                             </select>
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">Ville</label>
+                            <label class="form-label">Ville(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="ville_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($villes as $ville)
@@ -143,7 +143,7 @@
                     <h4 class="mt-4 mb-3 text-primary">Informations professionnelles</h4>
                     <div class="row g-3">
                         <div class="form-group  col-md-4">
-                            <label class="form-label">Entreprise</label>
+                            <label class="form-label">Entreprise(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="entreprise_id" style="width: 100%;"
                                 required>
                                 <option value=""></option>
@@ -155,7 +155,7 @@
                             </select>
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">Service</label>
+                            <label class="form-label">Service(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="service_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($services as $service)
@@ -166,8 +166,8 @@
                             </select>
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">categorie professionelle</label>
-                            <select class="select2_demo_3 form-control" name="categorie_professionel_id "
+                            <label class="form-label">categorie professionelle(<span style="color: red;font-size:12px">***</span>) </label>
+                            <select class="select2_demo_3 form-control" name="categorie_professionel_id"
                                 style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($categorie_professionelles as $categorie_professionel)
@@ -178,12 +178,12 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Poste/Fonction</label>
+                            <label class="form-label">Poste/Fonction(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="fonction" class="form-control" value="{{ old('fonction') }}"
                                 required>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Matricule</label>
+                            <label class="form-label">Matricule(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="matricule" class="form-control" required autocomplete="false"
                                 value="{{ old('matricule') }}">
                         </div>
@@ -201,7 +201,7 @@
 
                         <div class="col-md-4">
                             <div class="form-group" id="data_1">
-                                <label class="form-label">Date d'embauche</label>
+                                <label class="form-label">Date d'embauche(<span style="color: red;font-size:12px">***</span>) </label>
                                 <div class="input-group date">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input type="text" class="form-control" name="date_embauche"
@@ -211,7 +211,7 @@
                             </div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Rôle</label>
+                            <label class="form-label">Rôle(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="role_id" style="width: 100%;" required>
                                 <option value=""></option>
                                 @foreach ($roles as $role)
@@ -221,7 +221,7 @@
                             </select>
                         </div>
                         <div class="form-group  col-md-4">
-                            <label class="form-label">Responsable hiérarchique</label>
+                            <label class="form-label">Responsable hiérarchique(<span style="color: red;font-size:12px">***</span>) </label>
                             <select class="select2_demo_3 form-control" name="superieur_hierarchique"
                                 style="width: 100%;" required>
                                 <option value=""></option>
@@ -246,7 +246,7 @@
                     <h4 class="mt-4 mb-3 text-primary">Informations de rémunération</h4>
                     <div class="row g-3">
                         <div class="form-group col-md-4">
-                            <label class="form-label">Salaire</label>
+                            <label class="form-label">Salaire(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="number" step="0.01" name="salaire" class="form-control"
                                 autocomplete="false" value="{{ old('salaire') }}" required>
                         </div>
@@ -343,7 +343,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group" id="data_1">
-                                <label class="form-label">Mot de passe</label>
+                                <label class="form-label">Mot de passe(<span style="color: red;font-size:12px">***</span>) </label>
                                 <div class="input-group">
                                     <input type="password" name="password" class="form-control" id="password"
                                         autocomplete="false" required>

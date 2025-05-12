@@ -3,7 +3,7 @@
         <div class="sidebar-header">
             <a href="{{ route('yodirh.dashboard') }}"><img class="main-logo" src="{{ asset('src/images/YODIRH.png') }}"
                     alt="" width="100" /></a>
-            <strong><img src="{{ asset('src2/img/logo/logosn.png') }}" alt="" /></strong>
+            <strong><img src="{{ asset('storage/' . $module_logo) }}" alt="" /></strong>
         </div>
         <div class="left-custom-menu-adp-wrap comment-scrollbar">
             <nav class="sidebar-nav left-sidebar-menu-pro">
