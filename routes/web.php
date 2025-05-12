@@ -62,6 +62,14 @@ Route::middleware('auth')->group(
         Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');
         Route::put('/modifier_module/{id}', [pointeController::class, 'modifier_module'])->name('modifier_module');
 
+        Route::get('/services', [DashboardRHController::class, 'services'])->name('services');
+        Route::post('/Ajoutservices', [DashboardRHController::class, 'Ajoutservices'])->name('Ajoutservices');
+        Route::put('/modifier_service/{id}', [DashboardRHController::class, 'modifier_service'])->name('modifier_service');
+
+        Route::get('/categorieprofessionel', [DashboardRHController::class, 'categorieprofessionel'])->name('categorieprofessionel');
+        Route::post('/Ajoutcategorieprofessionels', [DashboardRHController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
+        Route::put('/modifier_categorieprofessionel/{id}', [DashboardRHController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
+
         Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
         Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');

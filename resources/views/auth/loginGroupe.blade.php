@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Yodipointe</title>
+    <title>{{ $module->nom_module }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
   ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src/img/') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/' . $module->logo) }}">
     <!-- Google Fonts
   ============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -191,7 +191,8 @@ color: #fff;">
                         @csrf
                         <div class="row p-3">
                             <div class="col">
-                                <input class="text-primary" type="hidden" name="module_id" value="{{ $module->id }}">
+                                <input class="text-primary" type="hidden" name="module_id"
+                                    value="{{ $module->id }}">
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <div class="input-group shadow-sm rounded mt-4"
@@ -249,7 +250,7 @@ color: #fff;">
                 <div class="col-md-12">
                     <div class="text-center my-1">
                         <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
-                        style="max-width: 150px;">
+                            style="max-width: 150px;">
                         <h4>Bienvenue ! Veuillez vous connecter pour continuer.
                         </h4>
                     </div>

@@ -93,8 +93,8 @@
                         </a>
 
                     </li>
-                    <li class="{{ request()->routeIs('liste_entreprise','ModuleAdmin') ? 'active' : '' }}">
-                        <a class="has-arrow {{ request()->routeIs('liste_entreprise','ModuleAdmin') ? 'bg-primary' : '' }}" href="#" aria-expanded="false"><i
+                    <li class="{{ request()->routeIs('liste_entreprise','ModuleAdmin','services','categorieprofessionel') ? 'active' : '' }}">
+                        <a class="has-arrow {{ request()->routeIs('liste_entreprise','ModuleAdmin','services','categorieprofessionel') ? 'bg-primary' : '' }}" href="#" aria-expanded="false"><i
                                 class="fa big-icon fa-cogs icon-wrap"></i> <span
                                 class="mini-click-non">Paramètre</span></a>
                         <ul class="submenu-angle" aria-expanded="false">
@@ -102,8 +102,15 @@
                                         class="fa fa-building sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion entreprise</span></a></li>
                             <li><a title="Gestion des modules" href="{{ route('ModuleAdmin') }}" class="{{ request()->routeIs('ModuleAdmin') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-puzzle-piece sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="fa fa-cubes sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Gestion des modules</span></a></li>
+                            <li><a title="Gestion des services" href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-briefcase sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion des services</span></a></li>
+                            <li><a title="Gestion des catégories professionnelles" href="{{ route('categorieprofessionel') }}" class="{{ request()->routeIs('categorieprofessionel') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-users sub-icon-mg" aria-hidden="true"></i> <span
+                                        class="mini-sub-pro">Gestion des catégorie <br> professionnelle</span></a></li>
+
                         </ul>
                     </li>
                 </ul>

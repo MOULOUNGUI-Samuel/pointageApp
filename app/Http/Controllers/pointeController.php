@@ -340,6 +340,7 @@ class pointeController extends Controller
 
         return redirect()->back()->with('success', 'Module modifié avec succès');
     }
+  
 
 
 
