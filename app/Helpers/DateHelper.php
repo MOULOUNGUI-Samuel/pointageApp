@@ -9,6 +9,7 @@ use App\Models\RegimeAssurance;
 use App\Models\Pays;
 use App\Models\Ville;
 use App\Models\Beneficiaire;
+use App\Models\LienDoc;
 use App\Models\Permission;
 use App\Models\PermissionUser;
 use Carbon\Carbon;
@@ -20,22 +21,19 @@ use Illuminate\Support\Facades\Auth;
 class DateHelper
 {
 
-    public static function approbation_info()
+    public static function dossier_info()
     {
 
-        $approbaEvenement = ApprobaEvenement::where('statut', 'en_attente')->where('entreprise_id', Auth::user()->entreprise_id)->count();
-        $ApprobaCaisse = ApprobaCaisse::where('statut', 'en_attente')->where('entreprise_id', Auth::user()->entreprise_id)->count();
-        $ApprobaCaution = ApprobaCaution::where('statut', 'en_attente')->where('entreprise_id', Auth::user()->entreprise_id)->count();
-        $nombre_approbation = $approbaEvenement + $ApprobaCaisse + $ApprobaCaution;
+        $dossier = LienDoc::first();
+       
 
-        $PermissionUsers = PermissionUser::with('permission')
-        ->where('user_id', Auth::id())
-        ->get();
-        // dd($PermissionUsers);
+        // $PermissionUsers = PermissionUser::with('permission')
+        // ->where('user_id', Auth::id())
+        // ->get();
+        // // dd($PermissionUsers);
 
         return [
-            'nombre_approbation' => $nombre_approbation,
-            'PermissionUsers' => $PermissionUsers,
+            'dossier' => $dossier,
         ];
     }
     public static function convertirDateFormat($date)

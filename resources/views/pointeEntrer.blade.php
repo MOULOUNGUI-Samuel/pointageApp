@@ -115,11 +115,11 @@ color: #fff;">
         <div class="container px-5">
 
             <div class="row">
-                <div class="col-md-2 text-left">
+                {{-- <div class="col-md-2 text-left">
                     <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                         style="max-width: 150px;">
-                </div>
-                <div class="col-md-8">
+                </div> --}}
+                <div class="col-md-12">
                     <div class="text-center my-1">
                         <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 60px; color: #f7f7f7;"></h1>
                     </div>

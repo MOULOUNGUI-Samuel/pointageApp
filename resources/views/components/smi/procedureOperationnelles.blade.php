@@ -1,134 +1,197 @@
-{{-- @extends('layouts.master2')
+@extends('layouts.master2')
 @section('content2')
     <style>
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            color: #102147;
-            font-weight: bold;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-
-        .search-input {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .file-list ul {
-            list-style: none;
+        .tree ul {
+            list-style-type: none;
             padding-left: 20px;
         }
 
-        .file-list li {
-            margin: 6px 0;
-            padding: 5px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
+        .tree li {
+            margin: 5px 0;
         }
 
-        .file-list li:hover {
-            background-color: #f1f9ff;
+        .tree .folder-toggle {
+            cursor: pointer;
         }
 
-        .file-icon {
-            margin-right: 6px;
-        }
-
-        .folder-label {
-            font-weight: bold;
-            color: #f39c12;
-        }
-
-        .file-link {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .file-link:hover {
-            text-decoration: underline;
-        }
-
-        .hidden {
+        .tree ul {
             display: none;
+        }
+
+        .tree>ul {
+            display: block;
         }
     </style>
 
-    <div class="container mt-4">
-        <h2>📁 Sommaire des fichiers extraits</h2>
+    <div class="file-manager-area mg-tb-15">
+        <div class="container-fluid" style="margin-left: 50px;margin-right: 50px;">
+            <div class="row" id="afficheAJoutLien" style="display: none">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8">
+                    <form action="{{ route('html.import.owncloudProcedure') }}" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label>Nom du dossier :</label>
+                                <input type="text" name="nom_lien" placeholder="Nom du dossier" required
+                                    class="form-control mb-3">
+                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}" required
+                                    class="form-control mb-3">
+                                <input type="hidden" name="module_id" value="{{ $module_id }}" required
+                                    class="form-control mb-3">
+                            </div>
+                            <div class="col-md-5">
+                                <label>Lien du OwnCloud :</label>
+                                <input type="text" name="cloud_url" placeholder="Collez ici votre lien public" required
+                                    class="form-control mb-3">
+                            </div>
+                            <div class="col-md-2 text-left">
+                                <button type="submit" class="btn btn-primary" style="margin-top:23px">Importer depuis le
+                                    cloud</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
 
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Rechercher un fichier ou un dossier...">
+            <div class="row mt-2" style="margin-top: 20px;margin-bottom: 20px;">
+                <div class="col-md-3"></div>
+                <div class="col-md-6 mb-3">
+                    <label>Rechercher un dossier ou fichier</label>
+                    <input type="text" id="searchInput" class="form-control"
+                        placeholder="🔍 Rechercher un dossier ou fichier...">
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-md-3 col-sm-3 col-xs-12">
+                    <div class="hpanel responsive-mg-b-30">
+                        <div class="panel-body">
+                            <a class="btn btn-primary btn-block" style="margin-bottom: 10px;color:white"
+                                onclick="document.getElementById('afficheAJoutLien').style.display = 'block';">
+                                AJOUTER UN LIEN CLOUD
+                            </a>
+                            <div class="text-center">
+                                <h3 class="text-info">Gestion des fichiers par liens</h3>
+                                <p class="text-muted" style="font-size:15px">Gérez vos fichiers et dossiers</p>
+                            </div>
+                            <ul class="h-list m-t">
+                                @foreach ($lienDocuments as $lienDocument)
+                                    <li class="active">
+                                        <a href="{{ route('html.import.owncloudProcedure') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fa fa-folder text-warning"
+                                                style="margin-right: 8px"></i>{{ $lienDocument->nom_lien }}</a>
 
-        <div class="file-list mt-3" id="fileTree">
-            @if (empty($structure))
-                <p class="text-muted">Aucun fichier trouvé.</p>
-            @else
-                {!! afficherStructure($structure) !!}
-            @endif
+                                        <form id="logout-form" action="{{ route('html.import.owncloudProcedure') }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}" required
+                                                class="form-control mb-3">
+                                            <input type="hidden" name="module_id" value="{{ $module_id }}" required
+                                                class="form-control mb-3">
+                                            <input type="hidden" name="cloud_url"
+                                                value="{{ $lienDocument->lien }}" required
+                                                class="form-control mb-3">
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
+                    </div>
+                    <ul id="file-tree" class="tree" style="font-size: 25px;margin-top: 10px;">
+                        {!! afficherArborescence($imported) !!}
+                    </ul>
+                </div>
+            </div>
+
+
+            @php
+                function afficherArborescence($files)
+                {
+                    $tree = [];
+
+                    // Regrouper fichiers par chemin
+                    foreach ($files as $view) {
+                        $parts = explode('.', $view);
+                        $current = &$tree;
+
+                        foreach ($parts as $i => $part) {
+                            if ($i === count($parts) - 1) {
+                                $current['__files'][] = [
+                                    'name' => $part,
+                                    'full' => $view,
+                                ];
+                            } else {
+                                $current[$part] = $current[$part] ?? [];
+                                $current = &$current[$part];
+                            }
+                        }
+                    }
+
+                    return afficherNiveau($tree);
+                }
+
+                function afficherNiveau($arbre)
+                {
+                    $html =
+                        '<ul style="background-color:white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 5px; padding-top: 5px; padding-bottom: 5px;">';
+                    foreach ($arbre as $cle => $valeur) {
+                        if ($cle === '__files') {
+                            foreach ($valeur as $file) {
+                                $html .=
+                                    '<li class="file-item" ><i class="fa fa-file text-success"></i> <a href="' .
+                                    route('imported.' . $file['full']) .
+                                    '" target="_blank">' .
+                                    $file['name'] .
+                                    '</a></li>';
+                            }
+                        } else {
+                            $html .=
+                                '<li class="folder-item"><span class="folder-toggle"><i class="fa fa-folder text-warning"></i> ' .
+                                $cle .
+                                '</span>';
+                            $html .= afficherNiveau($valeur);
+                            $html .= '</li>';
+                        }
+                    }
+                    $html .= '</ul>';
+                    return $html;
+                }
+            @endphp
+
+
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('searchInput');
-            const tree = document.getElementById('fileTree');
-
-            searchInput.addEventListener('input', function () {
-                const term = this.value.toLowerCase();
-
-                tree.querySelectorAll('li').forEach(function (item) {
-                    const text = item.textContent.toLowerCase();
-                    if (text.includes(term)) {
-                        item.classList.remove('hidden');
-                        showParents(item);
-                    } else {
-                        item.classList.add('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dossiers repliables
+            document.querySelectorAll('.folder-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const next = this.nextElementSibling;
+                    if (next && next.tagName === 'UL') {
+                        next.style.display = next.style.display === 'none' ? 'block' : 'none';
                     }
                 });
+            });
 
-                function showParents(el) {
-                    let parent = el.parentElement;
-                    while (parent && parent.tagName.toLowerCase() === 'ul') {
-                        parent.previousElementSibling?.classList.remove('hidden');
-                        parent = parent.parentElement;
-                    }
-                }
+            // Recherche
+            const input = document.getElementById('searchInput');
+            input.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                document.querySelectorAll('#file-tree li').forEach(el => {
+                    const text = el.textContent.toLowerCase();
+                    el.style.display = text.includes(query) ? 'list-item' : 'none';
+                });
             });
         });
     </script>
 @endsection
-
-@php
-function afficherStructure($items)
-{
-    $html = '<ul>';
-    foreach ($items as $item) {
-        if ($item['type'] === 'directory') {
-            $html .= '<li><span class="file-icon">📁</span><span class="folder-label">' . e($item['name']) . '</span>';
-            $html .= afficherStructure($item['children']);
-            $html .= '</li>';
-        } else {
-            $path = storage_path('app/tmp_owncloud_extracted/' . $item['path']);
-            $webPath = asset('storage/tmp_owncloud_extracted/' . $item['path']); // For future if needed
-            $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
-            $url = asset('tmp-preview?f=' . urlencode($item['path'])); // Laravel route vers preview
-
-            $openable = in_array($ext, ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'html', 'htm']);
-            $target = $openable ? ' target="_blank"' : '';
-
-            $html .= '<li><span class="file-icon">📄</span><a class="file-link" href="' . $url . '" ' . $target . '>' . e($item['name']) . '</a></li>';
-        }
-    }
-    $html .= '</ul>';
-    return $html;
-}
-@endphp --}}

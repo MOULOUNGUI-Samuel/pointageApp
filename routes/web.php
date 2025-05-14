@@ -88,22 +88,24 @@ Route::middleware('auth')->group(
         Route::post('/login_connecter', [AdminController::class, 'pointage_connecter'])->name('login_connecter');
 
 
-        Route::get('/Documents', [DocumentController::class, 'index'])->name('document.index');
-        Route::post('/import-html', [DocumentController::class, 'import'])
-            ->name('html.import');
-        Route::get('/import-html', [DocumentController::class, 'import_affiche'])
-            ->name('html.import.affiche');
-        Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])
-            ->name('html.import.owncloud');
+        // Gestion des documents
+        Route::get('/indexcartographie', [DocumentController::class, 'indexcartographie'])->name('document.indexcartographie');
+        Route::get('/indexprocedure/{nom_lien}', [DocumentController::class, 'indexprocedure'])->name('indexprocedure');
+        Route::post('/import-html/from-owncloudProcedure', [DocumentController::class, 'importFromOwncloudProcedure'])->name('html.import.owncloudProcedure');
 
-        // Chargement des routes dynamiques si le fichier existe
+        // Import HTML local
+        // Route::get('/import-html', [DocumentController::class, 'import_affiche'])->name('html.import.affiche');
+        // Route::post('/import-html', [DocumentController::class, 'import'])->name('html.import');
+
+        // Import depuis OwnCloud
+        Route::get('/documents', [DocumentController::class, 'index'])->name('document.index');
+        Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])->name('html.import.owncloud');
+
+        // Chargement des vues importées dynamiques
         $importedRoutesPath = base_path('routes/imported.php');
-
         if (File::exists($importedRoutesPath)) {
             require $importedRoutesPath;
         }
-
-        
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

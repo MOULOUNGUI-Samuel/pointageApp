@@ -116,11 +116,11 @@ color: #fff;">
             <form action="{{ route('login') }}" method="post">
                 @csrf
                 <div class="row">
-                    <div class="col-md-2 text-left">
+                    {{-- <div class="col-md-2 text-left">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                             style="max-width: 150px;">
-                    </div>
-                    <div class="col-md-8">
+                    </div> --}}
+                    <div class="col-md-12">
                         <div class="text-center my-1  mt-3">
                             <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;">
                             </h1>
@@ -245,7 +245,7 @@ color: #fff;">
 
                             <div class="row">
                                 <div class="col"> </div>
-                                <div class="col-md-8">
+                                <div class="col-md-10">
                                     <input type="hidden" id="latitude" name="latitude"
                                         value="{{ old('latitude') }}" style="color:black">
                                     <input type="hidden" id="longitude" name="longitude"
