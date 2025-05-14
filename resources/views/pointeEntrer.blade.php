@@ -113,9 +113,9 @@ color: #fff;">
     <!-- Login Register area Start-->
 
     {{-- <div class="center-container"> --}}
-    <div class="container ">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-6 text-left" style="margin-top: 80px;margin-left:10px">
+            <div class="col-6 text-left" style="margin-top: 80px;">
                 <a href="{{ route('loginPointe') }}">
                     <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
                 </a>
@@ -219,7 +219,7 @@ color: #fff;">
                                 <input type="text" class="form-control text-white"
                                     placeholder="Identifiant de connexion"
                                     style="border:none;padding: 20px;background: transparent" name="matricule"
-                                    autocomplete="off">
+                                    autocomplete="off" required>
                             </div>
 
                             <div class="input-group mt-3 shadow-sm rounded"
@@ -231,7 +231,7 @@ color: #fff;">
                                     <input type="password" id="passwordField" class="form-control text-white"
                                         placeholder="Mot de passe" name="password"
                                         style="border: none; padding: 20px; background: transparent"
-                                        autocomplete="off">
+                                        autocomplete="off" required>
                                 </div>
                                 <!-- Icône pour afficher/masquer -->
                                 <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">

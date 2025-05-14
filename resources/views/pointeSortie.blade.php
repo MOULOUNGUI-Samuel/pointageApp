@@ -112,9 +112,9 @@ color: #fff;">
         <![endif]-->
     <!-- Login Register area Start-->
 
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-6 text-left" style="margin-top: 80px;margin-left:10px">
+                <div class="col-6 text-left" style="margin-top: 80px;">
                     <a href="{{ route('loginPointe') }}">
                         <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
                     </a>
