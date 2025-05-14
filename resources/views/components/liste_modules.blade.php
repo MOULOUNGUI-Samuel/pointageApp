@@ -156,7 +156,7 @@ color: #fff;">
           const popup = document.createElement('div');
           popup.innerHTML = `
               <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
-                  📡 Connexion perdue. <button onclick="location.reload()" class="btn btn-sm btn-light ms-2">🔄 Réessayer</button>
+                  📡 Connexion perdue. 
               </div>
           `;
           document.body.appendChild(popup);
