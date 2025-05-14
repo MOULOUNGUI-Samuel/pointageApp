@@ -159,7 +159,7 @@ color: #fff;">
             const popup = document.createElement('div');
             popup.id = 'offline-popup';
             popup.innerHTML = `
-             <div alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+              <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                   <span class="me-3">📡 Connexion perdue ou session expirée.</span>
               </div>
           `;
