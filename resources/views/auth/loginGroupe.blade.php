@@ -144,7 +144,7 @@ background-size: cover;
 background-attachment: fixed;
 color: #fff;">
     <!-- Login Register area Start-->
-    <div class="center-container  d-none d-lg-block">
+    <div class="center-container d-flex justify-content-center align-items-center">
 
         <div class="container px-5">
             <div class="row">
@@ -258,7 +258,7 @@ color: #fff;">
         </div>
     </div>
 
-    <div class="container-fluid d-block d-lg-none">
+    {{-- <div class="container-fluid d-block d-lg-none">
         <div class="row">
             <div class="col-6 text-left" style="margin-top: 80px;">
                 <a href="{{ route('components.liste_module') }}">
@@ -354,7 +354,7 @@ color: #fff;">
             </div>
 
         </div>
-    </div>
+    </div> --}}
 
     <script>
         // 🔌 GESTION CONNEXION PERDUE

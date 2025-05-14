@@ -40,8 +40,8 @@
                     </li>
 
                     {{-- Gestion Documentaire --}}
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false">
+                    <li class="{{ request()->routeIs('document.index') ? 'active' : '' }}">
+                        <a class="has-arrow {{ request()->routeIs('document.index') ? 'bg-primary' : '' }}" aria-expanded="false">
                             <i class="fa fa-folder icon-wrap"></i>
                             <span class="mini-click-non">Gestion Documentaire</span>
                         </a>
@@ -52,7 +52,7 @@
                                         class="mini-sub-pro">Cycle de vie des documents</span></a></li>
                             <li><a href="#distribution"><i class="fa fa-share-alt sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Diffusion et consultation</span></a></li>
-                            <li><a href="#extdocs"><i class="fa fa-cloud-download sub-icon-mg"></i> <span
+                            <li><a href="{{ route('document.index') }}" class="{{ request()->routeIs('document.index') ? 'bg-primary2' : '' }}"><i class="fa fa-cloud-download sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Documentation externe</span></a></li>
                         </ul>
                     </li>

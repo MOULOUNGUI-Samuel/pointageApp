@@ -59,7 +59,7 @@ class DocumentController extends Controller
         }
         session()->put('nom_lien', $nom_lien);
 
-        $imported = [];
+        $procedures = [];
 
         if (File::exists($basePath)) {
             $files = File::allFiles($basePath);
@@ -73,13 +73,13 @@ class DocumentController extends Controller
                 // Convertit en nom de vue : HTML/autre_contenu.blade.php => HTML.autre_contenu
                 $viewName = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
 
-                $imported[] = $viewName;
+                $procedures[] = $viewName;
             }
         }
 
         $lienDocuments=LienDoc::All();
 
-        return view('components.smi.procedureOperationnelles', compact('imported','lienDocuments'));
+        return view('components.smi.procedureOperationnelles', compact('procedures','lienDocuments'))->with('procedures', $procedures);
     }
 
     // public function import(Request $request)
@@ -172,7 +172,9 @@ class DocumentController extends Controller
 
     public function importFromOwncloud(Request $request)
     {
+
         $url = $request->input('cloud_url');
+        
         $zipContent = @file_get_contents($url . '/download');
 
         if ($zipContent === false) {
@@ -276,7 +278,7 @@ class DocumentController extends Controller
 
         // 4. Parcourir les fichiers HTML extraits
         $htmlFiles = File::allFiles($extractPath);
-        $imported = [];
+        $procedures = [];
 
         foreach ($htmlFiles as $file) {
             if ($file->getExtension() !== 'html') continue;
@@ -305,7 +307,7 @@ class DocumentController extends Controller
 
             // Construction du nom de vue
             $viewName = str_replace(['/', '\\'], '.', trim($relativeDir . '/' . $safeName, '/\\'));
-            $imported[] = $viewName;
+            $procedures[] = $viewName;
         }
 
         // 5. Nettoyer les fichiers temporaires

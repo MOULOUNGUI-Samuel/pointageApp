@@ -82,11 +82,11 @@
                                 @foreach ($lienDocuments as $lienDocument)
                                     <li class="active">
                                         <a href="{{ route('html.import.owncloudProcedure') }}"
-                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            onclick="event.preventDefault(); document.getElementById('owncloudProcedure').submit();">
                                             <i class="fa fa-folder text-warning"
                                                 style="margin-right: 8px"></i>{{ $lienDocument->nom_lien }}</a>
 
-                                        <form id="logout-form" action="{{ route('html.import.owncloudProcedure') }}"
+                                        <form id="owncloudProcedure" action="{{ route('html.import.owncloudProcedure') }}"
                                             method="POST" style="display: none;">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ Auth::user()->id }}" required
@@ -108,7 +108,7 @@
                         <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
                     </div>
                     <ul id="file-tree" class="tree" style="font-size: 25px;margin-top: 10px;">
-                        {!! afficherArborescence($imported) !!}
+                        {!! afficherArborescence($procedures) !!}
                     </ul>
                 </div>
             </div>
