@@ -253,6 +253,9 @@ class AuthenticatedSessionController extends Controller
 
                 $role_user = User::where('id', $user->id)->with('role')->first();
 
+                if ($request->mobileforme) {
+                    return redirect()->intended(route('index_employer', [], false));
+                }
                 if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
                     if ($request->module_id) {

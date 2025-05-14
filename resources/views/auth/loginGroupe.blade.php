@@ -251,7 +251,7 @@ color: #fff;">
                     <div class="text-center my-1">
                         <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
                             style="max-width: 150px;">
-                        <h4>Bienvenue ! Veuillez vous connecter pour continuer.
+                        <h4>Bienvenue ! Veuillez vous connecter pour continuer. mobile
                         </h4>
                     </div>
 
@@ -289,6 +289,7 @@ color: #fff;">
                     <form action="{{ route('login') }}" method="post">
                         @csrf
                         <div class="row p-3">
+                            <input type="hidden" name="mobileforme" value="1">
                             <div class="col-md-12 col-sm-12">
                                 <div class="input-group shadow-sm rounded mt-4"
                                     style="background: none;border-bottom: 1px solid #fff">
