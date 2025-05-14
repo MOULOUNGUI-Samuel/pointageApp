@@ -58,16 +58,15 @@
                     </li>
 
                     {{-- Processus & Procédures --}}
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false">
+                    <li class="{{ request()->routeIs('indexprocedure') ? 'active' : '' }}">
+                        <a class="has-arrow" aria-expanded="false" class="{{ request()->routeIs('indexprocedure') ? 'bg-primary' : '' }}">
                             <i class="fa fa-cogs icon-wrap"></i>
                             <span class="mini-click-non">Processus & Procédures</span>
                         </a>
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a href="#mapping"><i class="fa fa-map sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Cartographie des processus</span></a></li>
-                            <li><a
-                                    href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'procedures']) }}"><i
+                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'procedures']) }}" class="{{ request()->routeIs('indexprocedure') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-list-alt sub-icon-mg"></i> <span class="mini-sub-pro">Procédures
                                         opérationnelles</span></a></li>
                             <li><a href="#optimization"><i class="fa fa-line-chart sub-icon-mg"></i> <span
