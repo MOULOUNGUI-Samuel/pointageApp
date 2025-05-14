@@ -255,70 +255,69 @@ color: #fff;">
 
     </div>
     <script>
-      function showOfflineMessage(redirect = false) {
+      // 🔌 GESTION CONNEXION PERDUE
+      function showOfflinePopup() {
           const existingPopup = document.getElementById('offline-popup');
-          if (existingPopup) return; // Ne pas dupliquer
-
+          if (existingPopup) return;
+  
           const popup = document.createElement('div');
           popup.id = 'offline-popup';
           popup.innerHTML = `
-            <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
-                <span class="me-3">📡 Connexion perdue ou session expirée.</span>
-            </div>
-        `;
+              <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                  <span class="me-3">📡 Connexion perdue.</span>
+              </div>
+          `;
           document.body.appendChild(popup);
-
-          if (redirect) {
-              // Redirection automatique vers une route définie
-              setTimeout(() => {
-                  window.location.href = "/liste_modules";
-              }, 3000);
-          }
       }
-
-      function removeOfflineMessage() {
+  
+      function removeOfflinePopup() {
           const popup = document.getElementById('offline-popup');
           if (popup) popup.remove();
       }
-
-      function retryAutoReload() {
-          const btns = document.querySelectorAll('#offline-popup button');
-          btns.forEach(btn => btn.disabled = true);
-
-          const interval = setInterval(() => {
-              if (navigator.onLine) {
-                  clearInterval(interval);
-                  location.reload();
-              }
-          }, 1000); // tente toutes les 3 secondes
+  
+      window.addEventListener('offline', showOfflinePopup);
+      window.addEventListener('online', removeOfflinePopup);
+  
+      if (!navigator.onLine) {
+          showOfflinePopup();
       }
-
+  
+      // ⏱️ GESTION SESSION EXPIRÉE
+      function showSessionExpiredPopup() {
+          const existingPopup = document.getElementById('session-popup');
+          if (existingPopup) return;
+  
+          const popup = document.createElement('div');
+          popup.id = 'session-popup';
+          popup.innerHTML = `
+              <div class="alert alert-warning text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                  ⌛ Session expirée. Redirection en cours...
+              </div>
+          `;
+          document.body.appendChild(popup);
+  
+          setTimeout(() => {
+              window.location.href = "/liste_modules";
+          }, 1000);
+      }
+  
       function checkSessionExpired() {
           fetch(window.location.href, {
-                  method: 'HEAD',
-                  cache: 'no-store'
-              })
-              .then(response => {
-                  if (response.status === 419 || response.status === 401) {
-                      showOfflineMessage(true); // redirige vers /components/liste_module
-                  }
-              })
-              .catch(() => {
-                  // Si l’appel échoue complètement, probablement hors ligne
-                  showOfflineMessage();
-              });
+              method: 'HEAD',
+              cache: 'no-store'
+          })
+          .then(response => {
+              if (response.status === 419 || response.status === 401) {
+                  showSessionExpiredPopup();
+              }
+          })
+          .catch(() => {
+              // Si requête échoue, considérer comme hors ligne
+              showOfflinePopup();
+          });
       }
-
-      window.addEventListener('offline', showOfflineMessage);
-      window.addEventListener('online', removeOfflineMessage);
-
-      // Vérifie l'état initial au chargement
-      if (!navigator.onLine) {
-          showOfflineMessage();
-      }
-
-      // Vérifie périodiquement si la session a expiré
-      setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
+  
+      setInterval(checkSessionExpired, 60000); // Vérifie toutes les 60s
   </script>
   
     <!-- Login Register area End-->

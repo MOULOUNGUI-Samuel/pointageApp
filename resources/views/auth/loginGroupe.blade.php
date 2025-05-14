@@ -357,13 +357,69 @@ color: #fff;">
     </div>
 
     <script>
-        window.addEventListener('offline', function () {
-            window.location.href = "/connexion-error.html"; // fichier statique local
-        });
+        // 🔌 GESTION CONNEXION PERDUE
+        function showOfflinePopup() {
+            const existingPopup = document.getElementById('offline-popup');
+            if (existingPopup) return;
+    
+            const popup = document.createElement('div');
+            popup.id = 'offline-popup';
+            popup.innerHTML = `
+                <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                    <span class="me-3">📡 Connexion perdue.</span>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+    
+        function removeOfflinePopup() {
+            const popup = document.getElementById('offline-popup');
+            if (popup) popup.remove();
+        }
+    
+        window.addEventListener('offline', showOfflinePopup);
+        window.addEventListener('online', removeOfflinePopup);
     
         if (!navigator.onLine) {
-            window.location.href = "/connexion-error.html";
+            showOfflinePopup();
         }
+    
+        // ⏱️ GESTION SESSION EXPIRÉE
+        function showSessionExpiredPopup() {
+            const existingPopup = document.getElementById('session-popup');
+            if (existingPopup) return;
+    
+            const popup = document.createElement('div');
+            popup.id = 'session-popup';
+            popup.innerHTML = `
+                <div class="alert alert-warning text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                    ⌛ Session expirée. Redirection en cours...
+                </div>
+            `;
+            document.body.appendChild(popup);
+    
+            setTimeout(() => {
+                window.location.href = "/liste_modules";
+            }, 1000);
+        }
+    
+        function checkSessionExpired() {
+            fetch(window.location.href, {
+                method: 'HEAD',
+                cache: 'no-store'
+            })
+            .then(response => {
+                if (response.status === 419 || response.status === 401) {
+                    showSessionExpiredPopup();
+                }
+            })
+            .catch(() => {
+                // Si requête échoue, considérer comme hors ligne
+                showOfflinePopup();
+            });
+        }
+    
+        setInterval(checkSessionExpired, 60000); // Vérifie toutes les 60s
     </script>
     
 
