@@ -361,7 +361,7 @@ color: #fff;">
         function showOfflinePopup() {
             const existingPopup = document.getElementById('offline-popup');
             if (existingPopup) return;
-    
+
             const popup = document.createElement('div');
             popup.id = 'offline-popup';
             popup.innerHTML = `
@@ -371,7 +371,7 @@ color: #fff;">
             `;
             document.body.appendChild(popup);
         }
-    
+
         function showOnlinePopup() {
             const popup = document.createElement('div');
             popup.id = 'online-popup';
@@ -383,24 +383,27 @@ color: #fff;">
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 4000);
         }
-    
+
         function removeOfflinePopup() {
             const popup = document.getElementById('offline-popup');
             if (popup) popup.remove();
             showOnlinePopup();
         }
-    
+
         window.addEventListener('offline', showOfflinePopup);
         window.addEventListener('online', removeOfflinePopup);
-    
+
         if (!navigator.onLine) {
             showOfflinePopup();
         }
-    
+
         // 📶 GESTION QUALITÉ RÉSEAU INTERNET
         function checkNetworkQuality() {
             const start = Date.now();
-            fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+            fetch(window.location.href, {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                })
                 .then(() => {
                     const duration = Date.now() - start;
                     let message = '';
@@ -411,23 +414,23 @@ color: #fff;">
                     } else {
                         message = '🐢 Réseau lent';
                     }
-    
+
                     const quality = document.createElement('div');
                     quality.className = 'alert alert-info text-center position-fixed bottom-0 start-0 end-0 m-3 shadow';
                     quality.style.zIndex = 9999;
                     quality.innerText = message;
                     document.body.appendChild(quality);
-                    setTimeout(() => quality.remove(), 4000);
+                    setTimeout(() => quality.remove(), 1000);
                 });
         }
-    
+
         setInterval(checkNetworkQuality, 60000); // Test de réseau toutes les 60s
-    
+
         // ⏱️ GESTION SESSION EXPIRÉE
         function showSessionExpiredPopup() {
             const existingPopup = document.getElementById('session-popup');
             if (existingPopup) return;
-    
+
             const popup = document.createElement('div');
             popup.id = 'session-popup';
             popup.innerHTML = `
@@ -436,31 +439,31 @@ color: #fff;">
                 </div>
             `;
             document.body.appendChild(popup);
-    
+
             setTimeout(() => {
                 window.location.href = "/liste_modules";
             }, 3000);
         }
-    
+
         function checkSessionExpired() {
             fetch(window.location.href, {
-                method: 'HEAD',
-                cache: 'no-store'
-            })
-            .then(response => {
-                if (response.status === 419 || response.status === 401) {
-                    showSessionExpiredPopup();
-                }
-            })
-            .catch(() => {
-                showOfflinePopup();
-            });
+                    method: 'HEAD',
+                    cache: 'no-store'
+                })
+                .then(response => {
+                    if (response.status === 419 || response.status === 401) {
+                        showSessionExpiredPopup();
+                    }
+                })
+                .catch(() => {
+                    showOfflinePopup();
+                });
         }
-    
+
         setInterval(checkSessionExpired, 60000); // Vérifie expiration session toutes les 60s
     </script>
-    
-    
+
+
 
 
     <script>
