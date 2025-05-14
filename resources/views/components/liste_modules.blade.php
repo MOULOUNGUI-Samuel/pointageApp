@@ -168,7 +168,7 @@ color: #fff;">
             if (redirect) {
                 // Redirection automatique vers une route définie
                 setTimeout(() => {
-                    window.location.href = "/components.liste_module";
+                    window.location.href = "/liste_modules";
                 }, 3000);
             }
         }
