@@ -103,10 +103,10 @@ color: #fff;">
                 style="max-width: 200px;">
         </div>
         <div style=" text-align: center;">
-          <div>
-            <h1>Bienvenue sur NedCore</h1>
-          </div>
-      </div>
+            <div>
+                <h1>Bienvenue sur NedCore</h1>
+            </div>
+        </div>
         <div class="row text-center mt-4 mx-5">
             @if (session('success'))
                 <div class="col-md-12" style="text-align: left">
@@ -133,7 +133,7 @@ color: #fff;">
             @foreach ($modules as $module)
                 <!-- Bloc Entrée -->
                 <div class="col-lg-2 col-sm-12 mb-4">
-                    <a href="{{ route('loginGroupe',$module->id) }}" class="text-decoration-none shadow-sm">
+                    <a href="{{ route('loginGroupe', $module->id) }}" class="text-decoration-none shadow-sm">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
                                 @if (!empty($module->logo))
@@ -152,14 +152,38 @@ color: #fff;">
 
     </div>
     <script>
-      window.addEventListener('offline', function () {
-          window.location.href = "/connexion-error.html"; // fichier statique local
-      });
-  
-      if (!navigator.onLine) {
-          window.location.href = "/connexion-error.html";
+      function showOfflineMessage() {
+          const popup = document.createElement('div');
+          popup.innerHTML = `
+              <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                  📡 Connexion perdue. <button onclick="location.reload()" class="btn btn-sm btn-light ms-2">🔄 Réessayer</button>
+              </div>
+          `;
+          document.body.appendChild(popup);
       }
+  
+      function removeOfflineMessage() {
+          const popup = document.querySelector('.alert-danger');
+          if (popup) popup.remove();
+      }
+  
+      window.addEventListener('offline', showOfflineMessage);
+      window.addEventListener('online', removeOfflineMessage);
   </script>
+  
+    <script>
+        window.addEventListener('online', function() {
+            const message = document.createElement('div');
+            message.innerHTML = "✅ Connexion rétablie. Redirection en cours...";
+            message.className = "alert alert-success mt-3";
+            document.querySelector('.error-container').appendChild(message);
+
+            setTimeout(() => {
+                window.history.back();
+            }, 2000);
+        });
+    </script>
+
     <!-- Forgot Password -->
 
     <!-- Login Register area End-->
