@@ -144,9 +144,9 @@ background-size: cover;
 background-attachment: fixed;
 color: #fff;">
     <!-- Login Register area Start-->
-    <div class="center-container">
+    <div class="center-container  d-none d-lg-block">
 
-        <div class="container px-5 d-none d-lg-block">
+        <div class="container px-5">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center my-1">
@@ -244,98 +244,6 @@ color: #fff;">
 
             </div>
         </div>
-        <div class="container-fluid d-block d-lg-none">
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
-                            style="max-width: 150px;">
-                        <h4>Bienvenue ! Veuillez vous connecter pour continuer. mobile
-                        </h4>
-                    </div>
-
-                </div>
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col-md-6">
-                            @if ($errors->any())
-                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                            <li style="display: flex; justify-content: space-between;">
-                                                <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                    {{ $error }}</span>
-                                                <button type="button" class="btn-close" data-dismiss="alert"
-                                                    aria-label="Close"></button>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-
-                            @if (request()->has('expired'))
-                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                    Votre session a expiré. Veuillez vous reconnecter.
-                                    <button type="button" class="btn-close" data-dismiss="alert"
-                                        aria-label="Close"></button>
-                                </div>
-                            @endif
-
-                        </div>
-                        <div class="col"></div>
-                    </div>
-                    <form action="{{ route('login') }}" method="post">
-                        @csrf
-                        <div class="row p-3">
-                            <input type="hidden" name="mobileforme" value="1">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="input-group shadow-sm rounded mt-4"
-                                    style="background: none;border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                            style="font-size: 25px"></i></span>
-                                    <input type="text" class="form-control text-white" name="matricule"
-                                        value="{{ old('matricule') }}" placeholder="Votre identifiant"
-                                        style="border:none;padding: 20px;background: transparent" required>
-                                </div>
-
-                                <div class="input-group mt-4 shadow-sm rounded"
-                                    style="background: none; border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro">
-                                        <i class="icon-key" style="font-size: 25px"></i>
-                                    </span>
-                                    <div class="nk-int-st">
-                                        <input type="password" id="passwordField1" name="password"
-                                            class="form-control text-white" placeholder="Mot de passe"
-                                            style="border: none; padding: 20px; background: transparent" required>
-                                    </div>
-                                    <!-- Icône pour afficher/masquer -->
-                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword1()">
-                                        <i id="toggleIcon1" class="icon-eye"
-                                            style="font-size: 25px; cursor: pointer;"></i>
-                                    </span>
-                                </div>
-
-                                @if (session('error'))
-                                    <div class="alert alert-danger text-center mt-3">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
-
-                                <div class="text-center mt-5">
-                                    <button type="submit" class="btn btn-gradient w-100 loading-btn">
-                                        Se Connecter
-                                        <span class="spinner"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-            </div>
-        </div>
 
         <div class="footer-copyright-area d-none d-lg-block" style="position: fixed; bottom: 0; width: 100%;">
             <div class="container">
@@ -349,6 +257,106 @@ color: #fff;">
             </div>
         </div>
     </div>
+
+    <div class="container-fluid d-block d-lg-none">
+        <div class="row">
+            <div class="col-6 text-left" style="margin-top: 80px;">
+                <a href="{{ route('components.liste_module') }}">
+                    <i class="fa fa-arrow-left text-white" style="font-size: 2rem;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 80px;">
+            <div class="col-md-12">
+                <div class="text-center my-1">
+                    <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
+                        style="max-width: 150px;">
+                    <h4>Bienvenue ! Veuillez vous connecter pour continuer. mobile
+                    </h4>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-md-6">
+                        @if ($errors->any())
+                            <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li style="display: flex; justify-content: space-between;">
+                                            <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                {{ $error }}</span>
+                                            <button type="button" class="btn-close" data-dismiss="alert"
+                                                aria-label="Close"></button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        @if (request()->has('expired'))
+                            <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                Votre session a expiré. Veuillez vous reconnecter.
+                                <button type="button" class="btn-close" data-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                        @endif
+
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <form action="{{ route('login') }}" method="post">
+                    @csrf
+                    <div class="row p-3">
+                        <input type="hidden" name="mobileforme" value="1">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="input-group shadow-sm rounded mt-4"
+                                style="background: none;border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                        style="font-size: 25px"></i></span>
+                                <input type="text" class="form-control text-white" name="matricule"
+                                    value="{{ old('matricule') }}" placeholder="Votre identifiant"
+                                    style="border:none;padding: 20px;background: transparent" required>
+                            </div>
+
+                            <div class="input-group mt-4 shadow-sm rounded"
+                                style="background: none; border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro">
+                                    <i class="icon-key" style="font-size: 25px"></i>
+                                </span>
+                                <div class="nk-int-st">
+                                    <input type="password" id="passwordField1" name="password"
+                                        class="form-control text-white" placeholder="Mot de passe"
+                                        style="border: none; padding: 20px; background: transparent" required>
+                                </div>
+                                <!-- Icône pour afficher/masquer -->
+                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword1()">
+                                    <i id="toggleIcon1" class="icon-eye"
+                                        style="font-size: 25px; cursor: pointer;"></i>
+                                </span>
+                            </div>
+
+                            @if (session('error'))
+                                <div class="alert alert-danger text-center mt-3">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn btn-gradient w-100 loading-btn">
+                                    Se Connecter
+                                    <span class="spinner"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         function togglePassword1() {
             let passwordField = document.getElementById("passwordField1");
