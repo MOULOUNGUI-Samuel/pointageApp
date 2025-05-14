@@ -75,6 +75,7 @@ Route::middleware('auth')->group(
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
         Route::get('/modif_affiche_utilisateur/{id}', [AdminController::class, 'edit'])->name('modif_affiche_utilisateur');
         Route::put('/modifier_utilisateur/{id}', [AdminController::class, 'update'])->name('modifier_utilisateur');
+        Route::put('/updateCompteUser/{id}', [AdminController::class, 'updateCompteUser'])->name('updateCompteUser');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
         Route::put('/modifier_employer/{id}', [AdminController::class, 'update'])->name('modifier_employer');
 

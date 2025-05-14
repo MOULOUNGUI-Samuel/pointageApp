@@ -196,7 +196,7 @@ color: #fff;">
 
             <div class="profile-form">
 
-                <form action="{{ route('modifier_utilisateur', Auth::user()->id) }}" method="post"
+                <form action="{{ route('updateCompteUser', Auth::user()->id) }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')

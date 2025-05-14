@@ -355,73 +355,69 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function update(Request $request, $id)
-    // {
-    //     // try {
+    public function updateCompteUser(Request $request, $id)
+    {
+        // try {
 
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'nom' => 'required|string',
-    //             'prenom' => 'required|string',
-    //             'date_naissance' => 'required',
-    //             'fonction' => 'required|string',
-    //             'email' => 'required|email|unique:users,email,' . $id,
-    //             'matricule' => 'required|string|unique:users,matricule,' . $id,
-    //             'password' => 'nullable|string|min:6',
-    //         ],
-    //         [
-    //             'nom.required' => 'Le nom est obligatoire.',
-    //             'prenom.required' => 'Le prénom est obligatoire.',
-    //             'date_naissance.required' => 'La date de naissance est obligatoire.',
-    //             'date_naissance.date_format' => 'La date de naissance doit être au format JJ/MM/AAAA.',
-    //             'fonction.required' => 'La fonction est obligatoire.',
-    //             'email.required' => 'L\'adresse email est obligatoire.',
-    //             'email.email' => 'L\'adresse email doit être valide.',
-    //             'email.unique' => 'Cet email est déjà utilisé.',
-    //             'matricule.required' => 'L\'identifiant (matricule) est obligatoire.',
-    //             'matricule.unique' => 'Ce matricule est déjà utilisé.',
-    //             'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
-    //         ]
-    //     );
-    //     if ($validator->fails()) {
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nom' => 'required|string',
+                'prenom' => 'required|string',
+                'date_naissance' => 'required',
+                'fonction' => 'required|string',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'matricule' => 'required|string|unique:users,matricule,' . $id,
+                'password' => 'nullable|string|min:6',
+            ],
+            [
+                'nom.required' => 'Le nom est obligatoire.',
+                'prenom.required' => 'Le prénom est obligatoire.',
+                'date_naissance.required' => 'La date de naissance est obligatoire.',
+                'date_naissance.date_format' => 'La date de naissance doit être au format JJ/MM/AAAA.',
+                'fonction.required' => 'La fonction est obligatoire.',
+                'email.required' => 'L\'adresse email est obligatoire.',
+                'email.email' => 'L\'adresse email doit être valide.',
+                'email.unique' => 'Cet email est déjà utilisé.',
+                'matricule.required' => 'L\'identifiant (matricule) est obligatoire.',
+                'matricule.unique' => 'Ce matricule est déjà utilisé.',
+                'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+            ]
+        );
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-    //     $user = User::findOrFail($id);
-    //     if ($request->input('password')) {
-    //         // Vérification du mot de passe
-    //         if (!Hash::check($request->input('password1'), $user->password)) {
-    //             return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
-    //         }
-    //     }
-    //     if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
-    //         $date = $request->input('date_naissance');
-    //     } else {
-    //         // Mauvais format
-    //         $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
-    //     }
+        $user = User::findOrFail($id);
+        if ($request->input('password')) {
+            // Vérification du mot de passe
+            if (!Hash::check($request->input('password1'), $user->password)) {
+                return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
+            }
+        }
+        if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
+            $date = $request->input('date_naissance');
+        } else {
+            // Mauvais format
+            $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
+        }
 
-    //     $user->nom = $request->input('nom');
-    //     $user->prenom = $request->input('prenom');
-    //     $user->matricule = $request->input('matricule');
-    //     $user->email = $request->input('email');
-    //     if ($request->input('password1') && $request->input('password')) {
-    //         $user->password = Hash::make($request->input('password'));
-    //     }
-    //     if ($request->input('role_user')) {
-    //         $user->role_user = $request->input('role_user');
-    //     }
+        $user->nom = $request->input('nom');
+        $user->prenom = $request->input('prenom');
+        $user->matricule = $request->input('matricule');
+        $user->email = $request->input('email');
+        if ($request->input('password1') && $request->input('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->date_naissance = $date;
+        $user->fonction = $request->input('fonction');
+        $user->save();
 
-    //     $user->date_naissance = $date;
-    //     $user->fonction = $request->input('fonction');
-    //     $user->save();
-
-    //     return redirect()->back()->with('success', 'Informations modifiées avec succès.');
-    //     // } catch (\Exception $e) {
-    //     //     return redirect()->back()->withErrors(['error' => 'Une erreur est survenue : ' . $e->getMessage()])->withInput();
-    //     // }
-    // }
+        return redirect()->back()->with('success', 'Informations modifiées avec succès.');
+        // } catch (\Exception $e) {
+        //     return redirect()->back()->withErrors(['error' => 'Une erreur est survenue : ' . $e->getMessage()])->withInput();
+        // }
+    }
 
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
