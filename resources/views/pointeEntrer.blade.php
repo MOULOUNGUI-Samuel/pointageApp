@@ -204,7 +204,7 @@ color: #fff;">
                                 style="color:black">
                                 <input type="hidden" name="pointage_entrer" value="1">
                             <div class="col"></div>
-                            <div class="col-md-8 col-sm-12">
+                            <div class="col-md-10 col-sm-12">
                                 <div class="input-group shadow-sm rounded mt-4"
                                     style="background: none;border-bottom: 1px solid #fff">
                                     <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
