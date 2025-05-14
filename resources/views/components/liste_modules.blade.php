@@ -152,25 +152,91 @@ color: #fff;">
 
     </div>
     <script>
-      function showOfflineMessage() {
-          const popup = document.createElement('div');
-          popup.innerHTML = `
+        function showOfflineMessage(redirect = false) {
+            const existingPopup = document.getElementById('offline-popup');
+            if (existingPopup) return; // Ne pas dupliquer
+
+            const popup = document.createElement('div');
+            popup.id = 'offline-popup';
+            popup.innerHTML = `
+              <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow d-flex justify-content-between align-items-center" role="alert" style="z-index: 9999;">
+                  <span class="me-3">📡 Connexion perdue ou session expirée.</span>
+              </div>
+          `;
+            document.body.appendChild(popup);
+
+            if (redirect) {
+                // Redirection automatique vers une route définie
+                setTimeout(() => {
+                    window.location.href = "/components/liste_module";
+                }, 3000);
+            }
+        }
+
+        function removeOfflineMessage() {
+            const popup = document.getElementById('offline-popup');
+            if (popup) popup.remove();
+        }
+
+        function retryAutoReload() {
+            const btns = document.querySelectorAll('#offline-popup button');
+            btns.forEach(btn => btn.disabled = true);
+
+            const interval = setInterval(() => {
+                if (navigator.onLine) {
+                    clearInterval(interval);
+                    location.reload();
+                }
+            }, 3000); // tente toutes les 3 secondes
+        }
+
+        function checkSessionExpired() {
+            fetch(window.location.href, {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                })
+                .then(response => {
+                    if (response.status === 419 || response.status === 401) {
+                        showOfflineMessage(true); // redirige vers /components/liste_module
+                    }
+                })
+                .catch(() => {
+                    // Si l’appel échoue complètement, probablement hors ligne
+                    showOfflineMessage();
+                });
+        }
+
+        window.addEventListener('offline', showOfflineMessage);
+        window.addEventListener('online', removeOfflineMessage);
+
+        // Vérifie l'état initial au chargement
+        if (!navigator.onLine) {
+            showOfflineMessage();
+        }
+
+        // Vérifie périodiquement si la session a expiré
+        setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
+    </script>
+    {{-- <script>
+        function showOfflineMessage() {
+            const popup = document.createElement('div');
+            popup.innerHTML = `
               <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                   📡 Connexion perdue. 
               </div>
           `;
-          document.body.appendChild(popup);
-      }
-  
-      function removeOfflineMessage() {
-          const popup = document.querySelector('.alert-danger');
-          if (popup) popup.remove();
-      }
-  
-      window.addEventListener('offline', showOfflineMessage);
-      window.addEventListener('online', removeOfflineMessage);
-  </script>
-  
+            document.body.appendChild(popup);
+        }
+
+        function removeOfflineMessage() {
+            const popup = document.querySelector('.alert-danger');
+            if (popup) popup.remove();
+        }
+
+        window.addEventListener('offline', showOfflineMessage);
+        window.addEventListener('online', removeOfflineMessage);
+    </script>
+
     <script>
         window.addEventListener('online', function() {
             const message = document.createElement('div');
@@ -182,7 +248,7 @@ color: #fff;">
                 window.history.back();
             }, 2000);
         });
-    </script>
+    </script> --}}
 
     <!-- Forgot Password -->
 
