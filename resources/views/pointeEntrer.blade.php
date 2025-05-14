@@ -111,147 +111,154 @@ color: #fff;">
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Login Register area Start-->
-    <div class="center-container">
-        <div class="container px-5">
 
-            <div class="row">
-                {{-- <div class="col-md-2 text-left">
+    {{-- <div class="center-container"> --}}
+    <div class="container ">
+        <div class="row">
+            <div class="col-6 text-left" style="margin-top: 80px;margin-left:10px">
+                <a href="{{ route('loginPointe') }}">
+                    <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 150px">
+            {{-- <div class="col-md-2 text-left">
                     <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                         style="max-width: 150px;">
                 </div> --}}
-                <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 60px; color: #f7f7f7;"></h1>
-                    </div>
-                    <div class="text-center my-1">
-                        <h4>Bienvenue ! Vous pointez pour : <span id="currentDateTime" style="font-size: 25px"></span>
-                        </h4>
-                    </div>
-                    <script>
-                        function updateDateTime() {
-                            let now = new Date();
-                            let dateTimeString = now.toLocaleString("fr-FR", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric"
-                            });
-                            document.getElementById("currentDateTime").innerText = dateTimeString;
-                        }
-                        setInterval(updateDateTime, 1000); // Met à jour chaque seconde
-                        updateDateTime();
-                    </script>
-                    <script>
-                        function updateTime() {
-                            let now = new Date();
-                            let hours = now.getHours().toString().padStart(2, '0');
-                            let minutes = now.getMinutes().toString().padStart(2, '0');
-                            let seconds = now.getSeconds().toString().padStart(2, '0');
-                            document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                        }
-
-                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                        updateTime(); // Exécute immédiatement au chargement
-                    </script>
-                    @if (session('success'))
-                        <div class="alert alert-success " role="alert">
-                            <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
-                                !</strong> {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger" role="alert">
-                            <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
-                                !</strong> {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @endif
-
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col-md-10 col-sm-12">
-                            @if ($errors->any())
-                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                            <li style="display: flex; justify-content: space-between;">
-                                                <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                    {{ $error }}</span>
-                                                <button type="button" class="btn-close" data-dismiss="alert"
-                                                    aria-label="Close"></button>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="col"></div>
-                    </div>
+            <div class="col-md-12">
+                <div class="text-center my-1">
+                    <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 60px; color: #f7f7f7;"></h1>
                 </div>
-                <div class="col-md-12">
-                    <form action="{{ route('login') }}" method="post">
-                        @csrf
-                        <div class="row p-3">
-                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
-                                style="color:black">
-                                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
-                                style="color:black">
-                                <input type="hidden" name="pointage_entrer" value="1">
-                            <div class="col"></div>
-                            <div class="col-md-10 col-sm-12">
-                                <div class="input-group shadow-sm rounded mt-4"
-                                    style="background: none;border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                            style="font-size: 25px"></i></span>
-                                    <input type="text" class="form-control text-white"
-                                        placeholder="Identifiant de connexion"
-                                        style="border:none;padding: 20px;background: transparent" name="matricule"
+                <div class="text-center my-1">
+                    <h4>Bienvenue ! Vous pointez pour : <span id="currentDateTime" style="font-size: 25px"></span>
+                    </h4>
+                </div>
+                <script>
+                    function updateDateTime() {
+                        let now = new Date();
+                        let dateTimeString = now.toLocaleString("fr-FR", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                        });
+                        document.getElementById("currentDateTime").innerText = dateTimeString;
+                    }
+                    setInterval(updateDateTime, 1000); // Met à jour chaque seconde
+                    updateDateTime();
+                </script>
+                <script>
+                    function updateTime() {
+                        let now = new Date();
+                        let hours = now.getHours().toString().padStart(2, '0');
+                        let minutes = now.getMinutes().toString().padStart(2, '0');
+                        let seconds = now.getSeconds().toString().padStart(2, '0');
+                        document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
+                    }
+
+                    setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+                    updateTime(); // Exécute immédiatement au chargement
+                </script>
+                @if (session('success'))
+                    <div class="alert alert-success " role="alert">
+                        <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
+                            !</strong> {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                            !</strong> {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-md-10 col-sm-12">
+                        @if ($errors->any())
+                            <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li style="display: flex; justify-content: space-between;">
+                                            <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                {{ $error }}</span>
+                                            <button type="button" class="btn-close" data-dismiss="alert"
+                                                aria-label="Close"></button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <form action="{{ route('login') }}" method="post">
+                    @csrf
+                    <div class="row p-3">
+                        <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
+                            style="color:black">
+                        <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
+                            style="color:black">
+                        <input type="hidden" name="pointage_entrer" value="1">
+
+                        <div class="col-md-12 col-sm-12">
+                            <div class="input-group shadow-sm rounded mt-4"
+                                style="background: none;border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                        style="font-size: 25px"></i></span>
+                                <input type="text" class="form-control text-white"
+                                    placeholder="Identifiant de connexion"
+                                    style="border:none;padding: 20px;background: transparent" name="matricule"
+                                    autocomplete="off">
+                            </div>
+
+                            <div class="input-group mt-3 shadow-sm rounded"
+                                style="background: none; border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro">
+                                    <i class="icon-key" style="font-size: 25px"></i>
+                                </span>
+                                <div class="nk-int-st">
+                                    <input type="password" id="passwordField" class="form-control text-white"
+                                        placeholder="Mot de passe" name="password"
+                                        style="border: none; padding: 20px; background: transparent"
                                         autocomplete="off">
                                 </div>
-
-                                <div class="input-group mt-3 shadow-sm rounded"
-                                    style="background: none; border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro">
-                                        <i class="icon-key" style="font-size: 25px"></i>
-                                    </span>
-                                    <div class="nk-int-st">
-                                        <input type="password" id="passwordField" class="form-control text-white"
-                                            placeholder="Mot de passe" name="password"
-                                            style="border: none; padding: 20px; background: transparent"
-                                            autocomplete="off">
-                                    </div>
-                                    <!-- Icône pour afficher/masquer -->
-                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                        <i id="toggleIcon" class="icon-eye"
-                                            style="font-size: 25px; cursor: pointer;"></i>
-                                    </span>
-                                </div>
-
-                                <div class="d-flex justify-content-between mt-5">
-                                    <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
-                                        <i class="icon-close-solid"></i> Annuler
-                                    </a>
-                                    <button type="submit" class="btn btn-gradient">
-                                        <i class="icon-save-disk"></i> Enrégristrer
-                                    </button>
-
-                                </div>
+                                <!-- Icône pour afficher/masquer -->
+                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                    <i id="toggleIcon" class="icon-eye"
+                                        style="font-size: 25px; cursor: pointer;"></i>
+                                </span>
                             </div>
-                            <div class="col"></div>
+
+                            <div class="d-flex justify-content-between mt-5">
+                                <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 ">
+                                    <i class="icon-close-solid"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-gradient">
+                                    <i class="icon-save-disk"></i> Enrégristrer
+                                </button>
+
+                            </div>
                         </div>
-                    </form>
-                </div>
 
+                    </div>
+                </form>
             </div>
-        </div>
 
+        </div>
     </div>
+
+    {{-- </div> --}}
     <script>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(

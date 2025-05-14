@@ -111,11 +111,18 @@ color: #fff;">
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <!-- Login Register area Start-->
-    <div class="center-container">
-        <div class="container px-5">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-6 text-left" style="margin-top: 80px;margin-left:10px">
+                    <a href="{{ route('loginPointe') }}">
+                        <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
+                    </a>
+                </div>
+            </div>
             <form action="{{ route('login') }}" method="post">
                 @csrf
-                <div class="row">
+                <div class="row" style="margin-top: 150px">
                     {{-- <div class="col-md-2 text-left">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                             style="max-width: 150px;">
@@ -201,8 +208,8 @@ color: #fff;">
                                 </div>
                             @endif
                             <input type="hidden" name="pointagesortie" value="1">
-                            <div class="col"></div>
-                            <div class="col-md-8 col-sm-12">
+                           
+                            <div class="col-md-12 col-sm-12">
                                 <div class="input-group shadow-sm rounded"
                                     style="background: none;border-bottom: 1px solid #fff">
                                     <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
@@ -231,7 +238,7 @@ color: #fff;">
                                 </div>
 
                             </div>
-                            <div class="col"></div>
+                            
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -241,11 +248,11 @@ color: #fff;">
                     </div>
 
                     <div class="col-md-12">
-                        <div class="px-5 pb-4">
+                        <div class="px-2 pb-4">
 
                             <div class="row">
-                                <div class="col"> </div>
-                                <div class="col-md-10">
+                           
+                                <div class="col-md-12">
                                     <input type="hidden" id="latitude" name="latitude"
                                         value="{{ old('latitude') }}" style="color:black">
                                     <input type="hidden" id="longitude" name="longitude"
@@ -335,7 +342,6 @@ color: #fff;">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col"> </div>
                             </div>
 
                         </div>
@@ -344,7 +350,7 @@ color: #fff;">
             </form>
         </div>
 
-    </div>
+
     <script>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
