@@ -187,7 +187,7 @@ color: #fff;">
                     clearInterval(interval);
                     location.reload();
                 }
-            }, 3000); // tente toutes les 3 secondes
+            }, 1000); // tente toutes les 3 secondes
         }
 
         function checkSessionExpired() {

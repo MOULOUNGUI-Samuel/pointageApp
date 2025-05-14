@@ -205,13 +205,70 @@ color: #fff;">
 
     </div>
     <script>
-      window.addEventListener('offline', function () {
-          window.location.href = "/connexion-error.html"; // fichier statique local
-      });
-  
-      if (!navigator.onLine) {
-          window.location.href = "/connexion-error.html";
+      function showOfflineMessage(redirect = false) {
+          const existingPopup = document.getElementById('offline-popup');
+          if (existingPopup) return; // Ne pas dupliquer
+
+          const popup = document.createElement('div');
+          popup.id = 'offline-popup';
+          popup.innerHTML = `
+            <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                <span class="me-3">📡 Connexion perdue ou session expirée.</span>
+            </div>
+        `;
+          document.body.appendChild(popup);
+
+          if (redirect) {
+              // Redirection automatique vers une route définie
+              setTimeout(() => {
+                  window.location.href = "/liste_modules";
+              }, 3000);
+          }
       }
+
+      function removeOfflineMessage() {
+          const popup = document.getElementById('offline-popup');
+          if (popup) popup.remove();
+      }
+
+      function retryAutoReload() {
+          const btns = document.querySelectorAll('#offline-popup button');
+          btns.forEach(btn => btn.disabled = true);
+
+          const interval = setInterval(() => {
+              if (navigator.onLine) {
+                  clearInterval(interval);
+                  location.reload();
+              }
+          }, 1000); // tente toutes les 3 secondes
+      }
+
+      function checkSessionExpired() {
+          fetch(window.location.href, {
+                  method: 'HEAD',
+                  cache: 'no-store'
+              })
+              .then(response => {
+                  if (response.status === 419 || response.status === 401) {
+                      showOfflineMessage(true); // redirige vers /components/liste_module
+                  }
+              })
+              .catch(() => {
+                  // Si l’appel échoue complètement, probablement hors ligne
+                  showOfflineMessage();
+              });
+      }
+
+      window.addEventListener('offline', showOfflineMessage);
+      window.addEventListener('online', removeOfflineMessage);
+
+      // Vérifie l'état initial au chargement
+      if (!navigator.onLine) {
+          showOfflineMessage();
+      }
+
+      // Vérifie périodiquement si la session a expiré
+      setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
   </script>
   
     <!-- Login Register area End-->
