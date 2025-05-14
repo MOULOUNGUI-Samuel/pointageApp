@@ -344,6 +344,17 @@ color: #fff;">
         </form>
     </div>
     <script>
+        window.addEventListener('offline', function () {
+            window.location.href = "/connexion-error.html"; // fichier statique local
+        });
+    
+        if (!navigator.onLine) {
+            window.location.href = "/connexion-error.html";
+        }
+    </script>
+    
+    
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.loading-btn');
 

@@ -210,6 +210,16 @@ color: #fff;">
 
     </div>
     <script>
+      window.addEventListener('offline', function () {
+          window.location.href = "/connexion-error.html"; // fichier statique local
+      });
+  
+      if (!navigator.onLine) {
+          window.location.href = "/connexion-error.html";
+      }
+  </script>
+  
+    <script>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {

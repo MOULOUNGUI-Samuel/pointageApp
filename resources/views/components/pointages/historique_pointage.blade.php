@@ -254,7 +254,16 @@ color: #fff;">
         </div>
 
     </div>
-
+    <script>
+      window.addEventListener('offline', function () {
+          window.location.href = "/connexion-error.html"; // fichier statique local
+      });
+  
+      if (!navigator.onLine) {
+          window.location.href = "/connexion-error.html";
+      }
+  </script>
+  
     <!-- Login Register area End-->
     <!-- jquery
   ============================================ -->

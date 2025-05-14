@@ -173,6 +173,9 @@ color: #fff;">
                     <div class="alert alert-success " role="alert">
                         <i class="icon-user-check1" style="font-size: 20px;margin-right:10px"></i><strong>Succès
                             !</strong> {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
                     </div>
                 </div>
             @endif
@@ -182,6 +185,9 @@ color: #fff;">
                     <div class="alert alert-danger" role="alert">
                         <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong>Rappel
                             !</strong> {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
                     </div>
                 </div>
             @endif
@@ -190,6 +196,9 @@ color: #fff;">
                     <div class="alert alert-danger" role="alert">
                         <i class="icon-warning" style="font-size: 20px;margin-right:10px"></i><strong></strong>
                         {{ $errors->first('password') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 </div>
             @endif
@@ -243,6 +252,17 @@ color: #fff;">
         </div>
 
     </div>
+    <script>
+      window.addEventListener('offline', function () {
+          window.location.href = "/connexion-error.html"; // fichier statique local
+      });
+  
+      if (!navigator.onLine) {
+          window.location.href = "/connexion-error.html";
+      }
+  </script>
+  
+  
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.loading-btn');

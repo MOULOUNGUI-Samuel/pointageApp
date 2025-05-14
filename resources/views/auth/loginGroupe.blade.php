@@ -271,8 +271,7 @@ color: #fff;">
                 <div class="text-center my-1">
                     <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
                         style="max-width: 150px;">
-                    <h4>Bienvenue ! Veuillez vous connecter pour continuer. mobile
-                    </h4>
+                    <h4>Bienvenue ! Veuillez vous connecter pour continuer.</h4>
                 </div>
 
             </div>
@@ -356,6 +355,18 @@ color: #fff;">
 
         </div>
     </div>
+
+    <script>
+        window.addEventListener('offline', function () {
+            window.location.href = "/connexion-error.html"; // fichier statique local
+        });
+    
+        if (!navigator.onLine) {
+            window.location.href = "/connexion-error.html";
+        }
+    </script>
+    
+
 
     <script>
         function togglePassword1() {

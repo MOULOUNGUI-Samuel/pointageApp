@@ -57,7 +57,16 @@
     </div>
 
     @include('components/script2')
-
+    <script>
+        window.addEventListener('offline', function () {
+            window.location.href = "/connexion-error.html"; // fichier statique local
+        });
+    
+        if (!navigator.onLine) {
+            window.location.href = "/connexion-error.html";
+        }
+    </script>
+    
     <script>
         // Nombre de tâches de chargement en cours
         let pendingTasks = 0;

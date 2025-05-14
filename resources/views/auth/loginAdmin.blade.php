@@ -337,6 +337,17 @@ color: #fff;">
         </div>
     </div>
     <script>
+        window.addEventListener('offline', function () {
+            window.location.href = "/connexion-error.html"; // fichier statique local
+        });
+    
+        if (!navigator.onLine) {
+            window.location.href = "/connexion-error.html";
+        }
+    </script>
+    
+    
+    <script>
         function togglePassword1() {
             let passwordField = document.getElementById("passwordField1");
             let toggleIcon = document.getElementById("toggleIcon1");
