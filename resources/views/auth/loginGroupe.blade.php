@@ -179,14 +179,14 @@ color: #fff;">
                                     </div>
                                 @endif
 
-                                @if (request()->has('expired'))
+                                {{-- @if (request()->has('expired'))
                                     <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
                                         Votre session a expiré. Veuillez vous reconnecter.
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
-                                @endif
+                                @endif --}}
 
                             </div>
                             <div class="col"></div>
