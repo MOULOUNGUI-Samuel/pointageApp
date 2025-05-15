@@ -294,7 +294,7 @@ color: #fff;">
             if (redirect) {
                 // Redirection automatique vers une route définie
                 setTimeout(() => {
-                    window.location.href = "/liste_modules";
+                    window.location.href = "/loginGroupe";
                 }, 3000);
             }
         }
@@ -344,38 +344,38 @@ color: #fff;">
         setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-          const buttons = document.querySelectorAll('.loading-btn');
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.loading-btn');
 
-          buttons.forEach(button => {
-              button.addEventListener('click', function(event) {
-                  const form = button.closest('form');
-                  const type = button.getAttribute('type') || 'submit';
+            buttons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const form = button.closest('form');
+                    const type = button.getAttribute('type') || 'submit';
 
-                  // Si le bouton est de type submit et qu'il est dans un formulaire
-                  if (type === 'submit' && form) {
-                      // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
-                      if (!form.checkValidity()) {
-                          event.preventDefault();
-                          form
-                              .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
-                          return;
-                      }
-                      // Si valide : laisser faire la soumission, mais activer le loading
-                      button.classList.add('loading');
-                      // button.disabled = true;
-                  }
+                    // Si le bouton est de type submit et qu'il est dans un formulaire
+                    if (type === 'submit' && form) {
+                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form
+                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
+                            return;
+                        }
+                        // Si valide : laisser faire la soumission, mais activer le loading
+                        button.classList.add('loading');
+                        // button.disabled = true;
+                    }
 
-                  // Si c’est un bouton normal (type="button"), on le désactive directement
-                  if (type === 'button') {
-                      button.classList.add('loading');
-                      button.disabled = true;
-                      // ... tu peux faire une action JS ici (ex: AJAX, etc.)
-                  }
-              });
-          });
-      });
-  </script>
+                    // Si c’est un bouton normal (type="button"), on le désactive directement
+                    if (type === 'button') {
+                        button.classList.add('loading');
+                        button.disabled = true;
+                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
+                    }
+                });
+            });
+        });
+    </script>
     {{-- </div> --}}
     <script>
         if ("geolocation" in navigator) {

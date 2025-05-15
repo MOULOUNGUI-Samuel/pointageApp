@@ -169,9 +169,10 @@ color: #fff;">
                                                 <li style="display: flex; justify-content: space-between;">
                                                     <span><i class="icon-warning" style="font-size: 20px"></i>
                                                         {{ $error }}</span>
-                                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
+                                                    <button type="button" class="close" data-dismiss="alert"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -199,9 +200,10 @@ color: #fff;">
                                 </div>
                                 <div class="col-md-6 col-sm-12">
                                     @if (session('error'))
-                                        <div class="alert alert-danger text-center mb-3"  style="font-size: 16px">
+                                        <div class="alert alert-danger text-center mb-3" style="font-size: 16px">
                                             {{ session('error') }}
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <button type="button" class="close" data-dismiss="alert"
+                                                aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
@@ -456,7 +458,7 @@ color: #fff;">
             document.body.appendChild(popup);
 
             setTimeout(() => {
-                window.location.href = "/liste_modules";
+                window.location.href = "/loginGroupe";
             }, 3000);
         }
 

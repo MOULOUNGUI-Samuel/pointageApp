@@ -130,344 +130,344 @@ color: #fff;">
         <![endif]-->
     <!-- Login Register area Start-->
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-6 text-left" style="margin-top: 80px;">
-                    <a href="{{ route('loginPointe') }}">
-                        <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
-                    </a>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6 text-left" style="margin-top: 80px;">
+                <a href="{{ route('loginPointe') }}">
+                    <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
+                </a>
             </div>
-            <form action="{{ route('login') }}" method="post">
-                @csrf
-                <div class="row" style="margin-top: 150px">
-                    {{-- <div class="col-md-2 text-left">
+        </div>
+        <form action="{{ route('login') }}" method="post">
+            @csrf
+            <div class="row" style="margin-top: 150px">
+                {{-- <div class="col-md-2 text-left">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                             style="max-width: 150px;">
                     </div> --}}
-                    <div class="col-md-12">
-                        <div class="text-center my-1  mt-3">
-                            <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;">
-                            </h1>
-                        </div>
-                        <div class="text-center">
-                            <h4>N’oubliez pas de pointer votre retour si vous revenez. Bonne sortie !
-                            </h4>
-                        </div>
-
-                        <script>
-                            function updateDateTime() {
-                                let now = new Date();
-                                let dateTimeString = now.toLocaleString("fr-FR", {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric"
-                                });
-                                document.getElementById("currentDateTime").innerText = dateTimeString;
-                            }
-                            setInterval(updateDateTime, 1000); // Met à jour chaque seconde
-                            updateDateTime();
-                        </script>
-                        <script>
-                            function updateTime() {
-                                let now = new Date();
-                                let hours = now.getHours().toString().padStart(2, '0');
-                                let minutes = now.getMinutes().toString().padStart(2, '0');
-                                let seconds = now.getSeconds().toString().padStart(2, '0');
-                                document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                            }
-
-                            setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                            updateTime(); // Exécute immédiatement au chargement
-                        </script>
-
+                <div class="col-md-12">
+                    <div class="text-center my-1  mt-3">
+                        <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 30px; color: #f7f7f7;">
+                        </h1>
+                    </div>
+                    <div class="text-center">
+                        <h4>N’oubliez pas de pointer votre retour si vous revenez. Bonne sortie !
+                        </h4>
                     </div>
 
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col"></div>
-                            <div class="col-md-6 col-sm-12">
-                                @if ($errors->any())
-                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                        <ul class="mb-0">
-                                            @foreach ($errors->all() as $error)
-                                                <li style="display: flex; justify-content: space-between;">
-                                                    <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                        {{ $error }}</span>
-                                                    <button type="button" class="btn-close" data-dismiss="alert"
-                                                        aria-label="Close"></button>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="col"></div>
-                        </div>
-                        <div class="row p-3">
-                            @if (session('error'))
-                                <div class="col-md-12" style="text-align: left">
-                                    <div class="row">
-                                        <div class="col"></div>
-                                        <div class="col-md-6">
-                                            <div class="alert alert-danger" role="alert">
-                                                <i class="icon-warning"
-                                                    style="font-size: 20px;margin-right:10px"></i><strong>Rappel
-                                                    !</strong> {{ session('error') }}
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Fermer">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col"></div>
-                                    </div>
+                    <script>
+                        function updateDateTime() {
+                            let now = new Date();
+                            let dateTimeString = now.toLocaleString("fr-FR", {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric"
+                            });
+                            document.getElementById("currentDateTime").innerText = dateTimeString;
+                        }
+                        setInterval(updateDateTime, 1000); // Met à jour chaque seconde
+                        updateDateTime();
+                    </script>
+                    <script>
+                        function updateTime() {
+                            let now = new Date();
+                            let hours = now.getHours().toString().padStart(2, '0');
+                            let minutes = now.getMinutes().toString().padStart(2, '0');
+                            let seconds = now.getSeconds().toString().padStart(2, '0');
+                            document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
+                        }
+
+                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+                        updateTime(); // Exécute immédiatement au chargement
+                    </script>
+
+                </div>
+
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col"></div>
+                        <div class="col-md-6 col-sm-12">
+                            @if ($errors->any())
+                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li style="display: flex; justify-content: space-between;">
+                                                <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                    {{ $error }}</span>
+                                                <button type="button" class="btn-close" data-dismiss="alert"
+                                                    aria-label="Close"></button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
                             @endif
-                            <input type="hidden" name="pointagesortie" value="1">
-                           
-                            <div class="col-md-12 col-sm-12">
-                                <div class="input-group shadow-sm rounded"
-                                    style="background: none;border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                            style="font-size: 25px"></i></span>
-                                    <input type="text" class="form-control text-white"
-                                        placeholder="Identifiant de connexion"
-                                        style="border:none;padding: 20px;background: transparent" name="matricule"
-                                        required autocomplete="off">
-                                </div>
-
-                                <div class="input-group mt-3 shadow-sm rounded"
-                                    style="background: none; border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro">
-                                        <i class="icon-key" style="font-size: 25px"></i>
-                                    </span>
-                                    <div class="nk-int-st">
-                                        <input type="password" id="passwordField" class="form-control text-white"
-                                            placeholder="Mot de passe" name="password" required
-                                            style="border: none; padding: 20px; background: transparent">
-                                    </div>
-                                    <!-- Icône pour afficher/masquer -->
-                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                        <i id="toggleIcon" class="icon-eye"
-                                            style="font-size: 25px; cursor: pointer;"></i>
-                                    </span>
-                                </div>
-
-                            </div>
-                            
                         </div>
+                        <div class="col"></div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="text-center my-1">
-                            <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="px-2 pb-4">
-
-                            <div class="row">
-                           
-                                <div class="col-md-12">
-                                    <input type="hidden" id="latitude" name="latitude"
-                                        value="{{ old('latitude') }}" style="color:black">
-                                    <input type="hidden" id="longitude" name="longitude"
-                                        value="{{ old('longitude') }}" style="color:black">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts3" type="checkbox" name="description[]"
-                                                        hidden="hidden" value="Visite médicale">
-                                                    <label for="ts3" class="ts-helper"></label>
-                                                    <label for="ts3" class="ts-label">Visite médicale</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts4" type="checkbox" name="description[]"
-                                                        hidden="hidden" value="Courses essentielles">
-                                                    <label for="ts4" class="ts-helper"></label>
-                                                    <label for="ts4" class="ts-label">Courses
-                                                        essentielles</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts5" type="checkbox" name="description[]"
-                                                        hidden="hidden" value="Prospection">
-                                                    <label for="ts5" class="ts-helper"></label>
-                                                    <label for="ts5" class="ts-label">Prospection</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts6" type="checkbox" name="description[]"
-                                                        hidden="hidden" value="Pause">
-                                                    <label for="ts6" class="ts-helper"></label>
-                                                    <label for="ts6" class="ts-label">Pause</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts8" type="checkbox" name="description[]"
-                                                        hidden="hidden" value="fin de service">
-                                                    <label for="ts8" class="ts-helper"></label>
-                                                    <label for="ts8" class="ts-label">Fin de la journée</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="toggle-select-act mg-t-30">
-                                                <div class="nk-toggle-switch" data-ts-color="blue">
-                                                    <input id="ts7" type="checkbox" hidden="hidden"
-                                                        onclick="showDescription()">
-                                                    <label for="ts7" class="ts-helper"></label>
-                                                    <label for="ts7" class="ts-label">Autre</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12" style="display: none" id="description">
-                                            <div class="form-group  mg-t-30">
-                                                <div class="floating-label">
-                                                    <div class="input-group custom shadow">
-                                                        <textarea class="form-control shadow rounded" name="description[]" rows="1" cols=""
-                                                            style="height: 80px;overflow: auto;" placeholder="Veuillez renseigner la cause"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 mt-3">
-                                        <div class="d-flex justify-content-between">
-                                            <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 loading-btn">
-                                                <i class="icon-close-solid"></i> Annuler
-                                                <span class="spinner"></span>
-                                            </a>
-                                            <button type="submit" class="btn btn-gradient loading-btn">
-                                                <i class="icon-save-disk"></i> Enrégristrer
-                                                <span class="spinner"></span>
+                    <div class="row p-3">
+                        @if (session('error'))
+                            <div class="col-md-12" style="text-align: left">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-danger" role="alert">
+                                            <i class="icon-warning"
+                                                style="font-size: 20px;margin-right:10px"></i><strong>Rappel
+                                                !</strong> {{ session('error') }}
+                                            <button type="button" class="close" data-dismiss="alert"
+                                                aria-label="Fermer">
+                                                <span aria-hidden="true">&times;</span>
                                             </button>
-
                                         </div>
                                     </div>
+                                    <div class="col"></div>
                                 </div>
+                            </div>
+                        @endif
+                        <input type="hidden" name="pointagesortie" value="1">
+
+                        <div class="col-md-12 col-sm-12">
+                            <div class="input-group shadow-sm rounded"
+                                style="background: none;border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                        style="font-size: 25px"></i></span>
+                                <input type="text" class="form-control text-white"
+                                    placeholder="Identifiant de connexion"
+                                    style="border:none;padding: 20px;background: transparent" name="matricule"
+                                    required autocomplete="off">
+                            </div>
+
+                            <div class="input-group mt-3 shadow-sm rounded"
+                                style="background: none; border-bottom: 1px solid #fff">
+                                <span class="input-group-addon nk-ic-st-pro">
+                                    <i class="icon-key" style="font-size: 25px"></i>
+                                </span>
+                                <div class="nk-int-st">
+                                    <input type="password" id="passwordField" class="form-control text-white"
+                                        placeholder="Mot de passe" name="password" required
+                                        style="border: none; padding: 20px; background: transparent">
+                                </div>
+                                <!-- Icône pour afficher/masquer -->
+                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                    <i id="toggleIcon" class="icon-eye"
+                                        style="font-size: 25px; cursor: pointer;"></i>
+                                </span>
                             </div>
 
                         </div>
+
                     </div>
                 </div>
-            </form>
-        </div>
-        <script>
-            function showOfflineMessage(redirect = false) {
-                const existingPopup = document.getElementById('offline-popup');
-                if (existingPopup) return; // Ne pas dupliquer
-    
-                const popup = document.createElement('div');
-                popup.id = 'offline-popup';
-                popup.innerHTML = `
+                <div class="col-md-12">
+                    <div class="text-center my-1">
+                        <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="px-2 pb-4">
+
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}"
+                                    style="color:black">
+                                <input type="hidden" id="longitude" name="longitude"
+                                    value="{{ old('longitude') }}" style="color:black">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts3" type="checkbox" name="description[]"
+                                                    hidden="hidden" value="Visite médicale">
+                                                <label for="ts3" class="ts-helper"></label>
+                                                <label for="ts3" class="ts-label">Visite médicale</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts4" type="checkbox" name="description[]"
+                                                    hidden="hidden" value="Courses essentielles">
+                                                <label for="ts4" class="ts-helper"></label>
+                                                <label for="ts4" class="ts-label">Courses
+                                                    essentielles</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts5" type="checkbox" name="description[]"
+                                                    hidden="hidden" value="Prospection">
+                                                <label for="ts5" class="ts-helper"></label>
+                                                <label for="ts5" class="ts-label">Prospection</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts6" type="checkbox" name="description[]"
+                                                    hidden="hidden" value="Pause">
+                                                <label for="ts6" class="ts-helper"></label>
+                                                <label for="ts6" class="ts-label">Pause</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts8" type="checkbox" name="description[]"
+                                                    hidden="hidden" value="fin de service">
+                                                <label for="ts8" class="ts-helper"></label>
+                                                <label for="ts8" class="ts-label">Fin de la journée</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="toggle-select-act mg-t-30">
+                                            <div class="nk-toggle-switch" data-ts-color="blue">
+                                                <input id="ts7" type="checkbox" hidden="hidden"
+                                                    onclick="showDescription()">
+                                                <label for="ts7" class="ts-helper"></label>
+                                                <label for="ts7" class="ts-label">Autre</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="display: none" id="description">
+                                        <div class="form-group  mg-t-30">
+                                            <div class="floating-label">
+                                                <div class="input-group custom shadow">
+                                                    <textarea class="form-control shadow rounded" name="description[]" rows="1" cols=""
+                                                        style="height: 80px;overflow: auto;" placeholder="Veuillez renseigner la cause"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 loading-btn">
+                                            <i class="icon-close-solid"></i> Annuler
+                                            <span class="spinner"></span>
+                                        </a>
+                                        <button type="submit" class="btn btn-gradient loading-btn">
+                                            <i class="icon-save-disk"></i> Enrégristrer
+                                            <span class="spinner"></span>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        function showOfflineMessage(redirect = false) {
+            const existingPopup = document.getElementById('offline-popup');
+            if (existingPopup) return; // Ne pas dupliquer
+
+            const popup = document.createElement('div');
+            popup.id = 'offline-popup';
+            popup.innerHTML = `
                   <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                       <span class="me-3">📡 Connexion perdue ou session expirée.</span>
                   </div>
               `;
-                document.body.appendChild(popup);
-    
-                if (redirect) {
-                    // Redirection automatique vers une route définie
-                    setTimeout(() => {
-                        window.location.href = "/liste_modules";
-                    }, 3000);
+            document.body.appendChild(popup);
+
+            if (redirect) {
+                // Redirection automatique vers une route définie
+                setTimeout(() => {
+                    window.location.href = "/loginGroupe";
+                }, 3000);
+            }
+        }
+
+        function removeOfflineMessage() {
+            const popup = document.getElementById('offline-popup');
+            if (popup) popup.remove();
+        }
+
+        function retryAutoReload() {
+            const btns = document.querySelectorAll('#offline-popup button');
+            btns.forEach(btn => btn.disabled = true);
+
+            const interval = setInterval(() => {
+                if (navigator.onLine) {
+                    clearInterval(interval);
+                    location.reload();
                 }
-            }
-    
-            function removeOfflineMessage() {
-                const popup = document.getElementById('offline-popup');
-                if (popup) popup.remove();
-            }
-    
-            function retryAutoReload() {
-                const btns = document.querySelectorAll('#offline-popup button');
-                btns.forEach(btn => btn.disabled = true);
-    
-                const interval = setInterval(() => {
-                    if (navigator.onLine) {
-                        clearInterval(interval);
-                        location.reload();
+            }, 1000); // tente toutes les 3 secondes
+        }
+
+        function checkSessionExpired() {
+            fetch(window.location.href, {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                })
+                .then(response => {
+                    if (response.status === 419 || response.status === 401) {
+                        showOfflineMessage(true); // redirige vers /components/liste_module
                     }
-                }, 1000); // tente toutes les 3 secondes
-            }
-    
-            function checkSessionExpired() {
-                fetch(window.location.href, {
-                        method: 'HEAD',
-                        cache: 'no-store'
-                    })
-                    .then(response => {
-                        if (response.status === 419 || response.status === 401) {
-                            showOfflineMessage(true); // redirige vers /components/liste_module
+                })
+                .catch(() => {
+                    // Si l’appel échoue complètement, probablement hors ligne
+                    showOfflineMessage();
+                });
+        }
+
+        window.addEventListener('offline', showOfflineMessage);
+        window.addEventListener('online', removeOfflineMessage);
+
+        // Vérifie l'état initial au chargement
+        if (!navigator.onLine) {
+            showOfflineMessage();
+        }
+
+        // Vérifie périodiquement si la session a expiré
+        setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.loading-btn');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const form = button.closest('form');
+                    const type = button.getAttribute('type') || 'submit';
+
+                    // Si le bouton est de type submit et qu'il est dans un formulaire
+                    if (type === 'submit' && form) {
+                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form
+                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
+                            return;
                         }
-                    })
-                    .catch(() => {
-                        // Si l’appel échoue complètement, probablement hors ligne
-                        showOfflineMessage();
-                    });
-            }
-    
-            window.addEventListener('offline', showOfflineMessage);
-            window.addEventListener('online', removeOfflineMessage);
-    
-            // Vérifie l'état initial au chargement
-            if (!navigator.onLine) {
-                showOfflineMessage();
-            }
-    
-            // Vérifie périodiquement si la session a expiré
-            setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const buttons = document.querySelectorAll('.loading-btn');
-    
-                buttons.forEach(button => {
-                    button.addEventListener('click', function(event) {
-                        const form = button.closest('form');
-                        const type = button.getAttribute('type') || 'submit';
-    
-                        // Si le bouton est de type submit et qu'il est dans un formulaire
-                        if (type === 'submit' && form) {
-                            // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
-                            if (!form.checkValidity()) {
-                                event.preventDefault();
-                                form
-                                    .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
-                                return;
-                            }
-                            // Si valide : laisser faire la soumission, mais activer le loading
-                            button.classList.add('loading');
-                            // button.disabled = true;
-                        }
-    
-                        // Si c’est un bouton normal (type="button"), on le désactive directement
-                        if (type === 'button') {
-                            button.classList.add('loading');
-                            button.disabled = true;
-                            // ... tu peux faire une action JS ici (ex: AJAX, etc.)
-                        }
-                    });
+                        // Si valide : laisser faire la soumission, mais activer le loading
+                        button.classList.add('loading');
+                        // button.disabled = true;
+                    }
+
+                    // Si c’est un bouton normal (type="button"), on le désactive directement
+                    if (type === 'button') {
+                        button.classList.add('loading');
+                        button.disabled = true;
+                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
+                    }
                 });
             });
-        </script>
+        });
+    </script>
 
     <script>
         if ("geolocation" in navigator) {

@@ -294,7 +294,7 @@ color: #fff;">
             document.body.appendChild(popup);
 
             setTimeout(() => {
-                window.location.href = "/liste_modules";
+                window.location.href = "/loginGroupe";
             }, 3000);
         }
 
