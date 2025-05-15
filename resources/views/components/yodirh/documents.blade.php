@@ -25,9 +25,9 @@
 
     <div class="file-manager-area mg-tb-15">
         <div  class="container-fluid" style="margin-left: 50px;margin-right: 50px;">
+          
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6 text-center">
+                <div class="col-md-3 text-center">
                     <form action="{{ route('html.import.owncloud') }}" method="POST">
                         @csrf
                         <label>Lien de partage OwnCloud :</label>
@@ -36,24 +36,18 @@
                         <button type="submit" class="btn btn-primary" style="margin-top: 10px">Importer depuis le cloud</button>
                     </form>
                 </div>
-            </div>
-            <div class="row mt-2" style="margin-top: 20px;margin-bottom: 20px;">
-                <div class="col-md-3"></div>
-                <div class="col-md-6 mb-3">
-                    <label>Rechercher un dossier ou fichier</label>
-                    <input type="text" id="searchInput" class="form-control"
-                        placeholder="🔍 Rechercher un dossier ou fichier...">
-                </div>
-                <div class="col-md-3"></div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="text-center">
                         <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
                     </div>
                     <ul id="file-tree" class="tree" style="font-size: 25px;margin-top: 10px;">
                         {!! afficherArborescence($imported) !!}
                     </ul>
+                </div>
+                <div class="col-md-3 text-center">
+                    <label>Rechercher un dossier ou fichier</label>
+                    <input type="text" id="searchInput" class="form-control"
+                        placeholder="🔍 Rechercher un dossier ou fichier...">
                 </div>
             </div>
 
