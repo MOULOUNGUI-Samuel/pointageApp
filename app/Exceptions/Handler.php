@@ -41,6 +41,6 @@ class Handler extends ExceptionHandler
             ], 401);
         }
 
-        return redirect()->guest(route('components.liste_module', ['expired' => '1']));
+        return redirect()->guest(route('loginGroupe', ['expired' => '1']));
     }
 }
