@@ -23,6 +23,7 @@ class Entreprise extends Model
         'nom_entreprise',
         'heure_ouverture',
         'heure_fin',
+        'code_entreprise',
         'logo',
         'heure_debut_pose',
         'heure_fin_pose',

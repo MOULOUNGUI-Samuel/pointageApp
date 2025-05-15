@@ -20,8 +20,13 @@ class CategorieProfessionnelle extends Model
     }
 
     protected $fillable = [
+        'entreprise_id',
         'nom_categorie_professionnelle',
         'description',
         'statut',
     ];
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class);
+    }
 }

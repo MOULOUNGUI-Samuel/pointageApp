@@ -122,7 +122,7 @@
                                                                     </tbody>
                                                                 </table>
                                                                 <div id="aucun-resultat2" style="display: none;">
-                                                                    <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé pour cette période.</h4>
+                                                                    <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé.</h4>
                                                                 </div>
                                                             </div>
                                                         </div>

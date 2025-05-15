@@ -17,6 +17,7 @@ return new class extends Migration
             $table->time('heure_ouverture')->nullable();
             $table->time('heure_fin')->nullable();
             $table->string('logo')->nullable();
+            $table->string('code_entreprise');
             $table->time('heure_debut_pose')->nullable();
             $table->time('heure_fin_pose')->nullable();
             $table->double('latitude');

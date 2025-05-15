@@ -97,16 +97,21 @@ color: #fff;">
     <!-- Login Register area Start-->
 
     <!-- Login -->
-    <div class="mx-5" id="l-login">
-        <div class="text-center mt-5">
-            <img src="{{ asset('src/images/Logo_Nedco.png') }}" alt="Logo" class="mb-4"
-                style="max-width: 200px;">
-        </div>
-        <div style=" text-align: center;">
-            <div>
-                <h1>Bienvenue sur NedCore</h1>
+    <div class="container-fluid">
+        <div class="row" style="margin-left: 10px">
+            <div class="col-md-2 mt-2">
+                <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Logo" class="mb-4"
+                    style="max-width: 100px;border-radius:10px">
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-md-2 mt-2 text-right">
+                <img src="{{ asset('src/images/Logo_Nedco.png') }}" alt="Logo" class="mb-4"
+                    style="max-width: 150px;">
             </div>
         </div>
+    </div>
+    <div class="mx-5">
         <div class="row text-center mt-4 mx-5">
             @if (session('success'))
                 <div class="col-md-12" style="text-align: left">
@@ -133,7 +138,7 @@ color: #fff;">
             @foreach ($modules as $module)
                 <!-- Bloc Entrée -->
                 <div class="col-lg-2 col-sm-12 mb-4">
-                    <a href="{{ route('loginGroupe', $module->id) }}" class="text-decoration-none shadow-sm">
+                    <a href="{{ route('dashboard', $module->id) }}" class="text-decoration-none shadow-sm">
                         <div class="card card-hover-zoom shadow-lg px-2">
                             <div class="card-body">
                                 @if (!empty($module->logo))

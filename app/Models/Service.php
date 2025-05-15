@@ -21,8 +21,14 @@ class Service extends Model
     }
 
     protected $fillable = [
+        'entreprise_id',
         'nom_service',
         'description',
         'statut',
     ];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class);
+    }
 }

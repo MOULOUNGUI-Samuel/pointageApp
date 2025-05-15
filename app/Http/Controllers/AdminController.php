@@ -26,49 +26,17 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function loginGroupe($id)
+    public function loginGroupe()
     {
         //
-        $module = Module::find($id);
 
-        if (!$module) {
-            return redirect()->back()->with('error', 'Module non trouvé.');
-        }
-
-        return view('auth.loginGroupe', compact('module'));
+        return view('auth.loginGroupe');
     }
-    public function modules()
-    {
-        //
-        $modules = Module::All();
 
-        return view("components.modul_admin", compact('modules'));
-    }
     public function index()
     {
         //
         return view("auth.loginAdmin");
-    }
-    public function index_dashboard()
-    {
-        //
-        $entreprise_id = auth()->user()->entreprise_id;
-        $employes = User::where('entreprise_id', $entreprise_id)->get();
-        $pointages_oui = Pointage::whereHas('user', fn($query) => $query->where('entreprise_id', $entreprise_id))
-            ->where('date_arriver', now()->format('Y-m-d'))
-            ->get();
-
-        $users_non_existants = User::where('entreprise_id', $entreprise_id)
-            ->whereDoesntHave('pointage', function ($query) {
-                $query->whereDate('date_arriver', now()->format('Y-m-d'));
-            })
-            ->get();
-
-        $pointage_intermediaires = PointagesIntermediaire::whereHas('pointage', fn($query) => $query->whereHas('user', fn($subQuery) => $subQuery->where('entreprise_id', auth()->user()->entreprise_id)))
-            ->whereHas('pointage', fn($query) => $query->where('date_arriver', now()->format('Y-m-d')))
-            ->get();
-
-        return view("dashboard", compact('employes', 'pointages_oui', 'users_non_existants', 'pointage_intermediaires'));
     }
 
     /**
@@ -77,8 +45,10 @@ class AdminController extends Controller
     public function affiche_utilisateur()
     {
         //
+        $entreprise_id = session('entreprise_id');
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
+            ->where('entreprise_id', $entreprise_id)
             ->get();
 
         return view('components.yodirh.utilisateurs.utilisateurs', compact('utilisateurs'));
@@ -341,17 +311,6 @@ class AdminController extends Controller
         }
     }
 
-    public function liste_employer()
-    {
-        $entreprise_id = auth()->user()->entreprise_id;
-        if ($entreprise_id == null) {
-            $employes = User::all();
-        } else {
-            $employes = User::where('entreprise_id', $entreprise_id)->get();
-        }
-        $entreprises = Entreprise::All();
-        return view('components.pointages.liste_employer', compact('employes', 'entreprises'));
-    }
     /**
      * Store a newly created resource in storage.
      */

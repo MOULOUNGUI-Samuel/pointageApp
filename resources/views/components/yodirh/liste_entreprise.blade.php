@@ -49,10 +49,30 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="d-flex-justify-content-between mb-3 mt-3">
                     <h2 class="card-title text-primary">Liste des entreprises</h2>
+                    <div class="d-flex-justify-content-between mb-3 mt-3">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..."
+                            onkeyup="searchTable()" style="width: 500px;">
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#floatingLabelsModal">
-                        Ajouter une entreprise
-                    </button>
+                        <script>
+                            function searchTable() {
+                                const input = document.getElementById('searchInput').value.toLowerCase();
+                                const rows = document.querySelectorAll('#approbationsTable tr');
+
+                                rows.forEach(row => {
+                                    const rowText = row.textContent.toLowerCase();
+                                    row.style.display = rowText.includes(input) ? '' : 'none';
+                                });
+
+                                const message = document.getElementById('aucun-resultat');
+                                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                                message.style.display = visibleRows.length === 0 ? 'block' : 'none';
+                            }
+                        </script>
+                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#floatingLabelsModal" style="margin-left: 10px">
+                            Ajouter une entreprise
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,10 +125,14 @@
                         @csrf
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" id="latitude" name="latitude" value="{{ old('latitude') }}">
-                                    <input type="text" id="longitude" name="longitude" value="{{ old('longitude') }}">
+                                <div class="col-md-12">
+                                    <span id="geoloc-error" class="text-danger d-block my-2"
+                                        style="font-weight: bold;"></span>
                                 </div>
+
+                                <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
+                                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
+
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                     <div class="form-group ic-cmp-int float-lb floating-lb">
                                         <div class="form-ic-cmp">
@@ -117,6 +141,17 @@
                                         <div class="nk-int-st">
                                             <input type="text" class="form-control" name="nom_entreprise"
                                                 placeholder="Nom de l'entreprise" value="{{ old('nom_entreprise') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group ic-cmp-int float-lb floating-lb">
+                                        <div class="form-ic-cmp">
+                                            <i class="icon-library"></i>
+                                        </div>
+                                        <div class="nk-int-st">
+                                            <input type="text" class="form-control" name="code_entreprise"
+                                                placeholder="Code Entreprise" value="{{ old('code_entreprise') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -138,8 +173,9 @@
                                             <i class="icon-clock"></i>
                                         </div>
                                         <div class="nk-int-st">
-                                            <input type="text" class="form-control" name="heure_fin" data-mask="99:99"
-                                                placeholder="Heure de fermeture" value="{{ old('heure_fin') }}">
+                                            <input type="text" class="form-control" name="heure_fin"
+                                                data-mask="99:99" placeholder="Heure de fermeture"
+                                                value="{{ old('heure_fin') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -196,27 +232,46 @@
                     </form>
 
                     <script>
-                        if ("geolocation" in navigator) {
-                            navigator.geolocation.getCurrentPosition(
-                                function(position) {
-                                    const latitude = position.coords.latitude;
-                                    const longitude = position.coords.longitude;
+                        window.addEventListener('load', function() {
+                            const errorSpan = document.getElementById("geoloc-error");
 
-                                    console.log("Latitude:", latitude);
-                                    console.log("Longitude:", longitude);
+                            if ("geolocation" in navigator) {
+                                navigator.geolocation.getCurrentPosition(
+                                    function(position) {
+                                        const latitude = position.coords.latitude;
+                                        const longitude = position.coords.longitude;
 
-                                    // Tu peux ensuite les envoyer à Laravel par AJAX ou les insérer dans un formulaire :
-                                    document.getElementById("latitude").value = latitude;
-                                    document.getElementById("longitude").value = longitude;
-                                },
-                                function(error) {
-                                    console.error("Erreur de géolocalisation :", error.message);
-                                }
-                            );
-                        } else {
-                            alert("La géolocalisation n’est pas prise en charge par ce navigateur.");
-                        }
+                                        console.log("Latitude:", latitude);
+                                        console.log("Longitude:", longitude);
+
+                                        document.getElementById("latitude").value = latitude;
+                                        document.getElementById("longitude").value = longitude;
+
+                                        errorSpan.textContent = ''; // Effacer tout message si succès
+                                    },
+                                    function(error) {
+                                        console.error("Erreur de géolocalisation :", error.message);
+
+                                        document.getElementById("latitude").value = 0;
+                                        document.getElementById("longitude").value = 0;
+
+                                        errorSpan.textContent =
+                                            "⚠️ Veuillez activer la géolocalisation pour créer une entreprise.";
+                                    }, {
+                                        enableHighAccuracy: true,
+                                        timeout: 10000,
+                                        maximumAge: 0
+                                    }
+                                );
+                            } else {
+                                document.getElementById("latitude").value = 0;
+                                document.getElementById("longitude").value = 0;
+
+                                errorSpan.textContent = "❌ La géolocalisation n’est pas prise en charge par ce navigateur.";
+                            }
+                        });
                     </script>
+
 
                 </div>
             </div>
@@ -228,6 +283,7 @@
                     <tr class="bg-primary" style="color: white">
                         <th>Logo</th>
                         <th>Nom</th>
+                        <th>Code Entreprise</th>
                         <th>Position x</th>
                         <th>Position y</th>
                         <th>Heure d'ouverture</th>
@@ -249,6 +305,7 @@
                                 @endif
                             </td>
                             <td>{{ $entreprise->nom_entreprise }}</td>
+                            <td>{{ $entreprise->code_entreprise }}</td>
                             <td>{{ $entreprise->latitude }}</td>
                             <td>{{ $entreprise->longitude }}</td>
                             <td>{{ $entreprise->heure_ouverture }}</td>
@@ -284,18 +341,19 @@
                                         @method('PUT')
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <input type="text" id="latitude" name="latitude"
-                                                        value="{{ old('latitude', $entreprise->latitude) }}">
-                                                    <input type="text" id="longitude" name="longitude"
-                                                        value="{{ old('longitude', $entreprise->longitude) }}">
-                                                </div>
+
+                                                <input type="hidden" id="latitude" name="latitude"
+                                                    value="{{ old('latitude', $entreprise->latitude) }}">
+                                                <input type="hidden" id="longitude" name="longitude"
+                                                    value="{{ old('longitude', $entreprise->longitude) }}">
+
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                     <div class="form-group ic-cmp-int float-lb floating-lb">
                                                         <div class="form-ic-cmp">
                                                             <i class="icon-library"></i>
                                                         </div>
                                                         <div class="nk-int-st">
+                                                            <label for="">Nom</label>
                                                             <input type="text" class="form-control"
                                                                 name="nom_entreprise" placeholder="Nom de l'entreprise"
                                                                 value="{{ old('nom_entreprise', $entreprise->nom_entreprise) }}">
@@ -305,9 +363,23 @@
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                     <div class="form-group ic-cmp-int float-lb floating-lb">
                                                         <div class="form-ic-cmp">
+                                                            <i class="icon-library"></i>
+                                                        </div>
+                                                        <div class="nk-int-st">
+                                                            <label for="">Code</label>
+                                                            <input type="text" class="form-control"
+                                                                name="code_entreprise" placeholder="Code Entreprise"
+                                                                value="{{ old('code_entreprise', $entreprise->code_entreprise) }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                    <div class="form-group ic-cmp-int float-lb floating-lb">
+                                                        <div class="form-ic-cmp">
                                                             <i class="icon-clock"></i>
                                                         </div>
                                                         <div class="nk-int-st">
+                                                            <label for="">Heure d'ouverture</label>
                                                             <input type="text" class="form-control"
                                                                 name="heure_ouverture" data-mask="99:99"
                                                                 placeholder="Heure d'ouverture"
@@ -321,6 +393,7 @@
                                                             <i class="icon-clock"></i>
                                                         </div>
                                                         <div class="nk-int-st">
+                                                            <label for="">Heure de fermeture</label>
                                                             <input type="text" class="form-control" name="heure_fin"
                                                                 data-mask="99:99" placeholder="Heure de fermeture"
                                                                 value="{{ old('heure_fin', $entreprise->heure_fin) }}">
@@ -334,6 +407,7 @@
                                                             <i class="icon-clock"></i>
                                                         </div>
                                                         <div class="nk-int-st">
+                                                            <label for="">Heure de pose</label>
                                                             <input type="text" class="form-control"
                                                                 name="heure_debut_pose" data-mask="99:99"
                                                                 placeholder="Heure de pose"
@@ -347,6 +421,7 @@
                                                             <i class="icon-clock"></i>
                                                         </div>
                                                         <div class="nk-int-st">
+                                                            <label for="">Heure fin de pose</label>
                                                             <input type="text" class="form-control"
                                                                 name="heure_fin_pose" data-mask="99:99"
                                                                 placeholder="Heure de fin de pose"
@@ -427,6 +502,9 @@
 
                 </tbody>
             </table>
+            <div id="aucun-resultat" style="display: none;">
+                <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé .</h4>
+            </div>
         </div>
 
     </div>

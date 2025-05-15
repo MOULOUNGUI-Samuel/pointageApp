@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardRHController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\ParamettreController;
 use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -19,16 +20,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/yodirh.dashboard', function () {
-//     return view('dashboard2');
-// })->name('yodirh.dashboard');
 
 Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
 
 
-Route::get('/loginGroupe/{id}', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
+Route::get('/loginGroupe', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
 // Route::get('/LoginAdmin', [AdminController::class, 'index'])->name('loginAdmin');
@@ -36,39 +34,34 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 Route::get('/loginPointe', [pointeController::class, 'loginPointe'])->name('loginPointe');
 Route::get('/sotier', [pointeController::class, 'index'])->name('sortie');
 Route::get('/entrer', [pointeController::class, 'index1'])->name('entrer');
-Route::get('/liste_modules', [pointeController::class, 'listemodules'])->name('components.liste_module');
 
 Route::get(
-    '/dashboard',
-    [AdminController::class, 'index_dashboard']
-)->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get(
-    '/dashboard_yodirh',
+    '/dashboard/{id}',
     [DashboardRHController::class, 'index_dashboard']
-)->middleware(['auth', 'verified'])->name('yodirh.dashboard');
+)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(
     function () {
+        Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
         // Route::get('/', [AdminController::class, 'dashboard']);
-        Route::get('/modules', [AdminController::class, 'modules'])->name('ModuleAdmin');
+        Route::get('/modules', [ParamettreController::class, 'modules'])->name('ModuleAdmin');
         Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
         Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
 
-        Route::get('/liste_entreprise', [pointeController::class, 'liste_entreprise'])->name('liste_entreprise');
-        Route::put('/modifier_entreprise/{id}', [pointeController::class, 'modifier_entreprise'])->name('modifier_entreprise');
-        Route::post('/ajoute_entreprise', [pointeController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
+        Route::get('/liste_entreprise', [ParamettreController::class, 'liste_entreprise'])->name('liste_entreprise');
+        Route::put('/modifier_entreprise/{id}', [ParamettreController::class, 'modifier_entreprise'])->name('modifier_entreprise');
+        Route::post('/ajoute_entreprise', [ParamettreController::class, 'ajoute_entreprise'])->name('ajoute_entreprise');
 
-        Route::post('/ajout_module', [pointeController::class, 'ajout_module'])->name('ajout_module');
-        Route::put('/modifier_module/{id}', [pointeController::class, 'modifier_module'])->name('modifier_module');
+        Route::post('/ajout_module', [ParamettreController::class, 'ajout_module'])->name('ajout_module');
+        Route::put('/modifier_module/{id}', [ParamettreController::class, 'modifier_module'])->name('modifier_module');
 
-        Route::get('/services', [DashboardRHController::class, 'services'])->name('services');
-        Route::post('/Ajoutservices', [DashboardRHController::class, 'Ajoutservices'])->name('Ajoutservices');
-        Route::put('/modifier_service/{id}', [DashboardRHController::class, 'modifier_service'])->name('modifier_service');
+        Route::get('/services', [ParamettreController::class, 'services'])->name('services');
+        Route::post('/Ajoutservices', [ParamettreController::class, 'Ajoutservices'])->name('Ajoutservices');
+        Route::put('/modifier_service/{id}', [ParamettreController::class, 'modifier_service'])->name('modifier_service');
 
-        Route::get('/categorieprofessionel', [DashboardRHController::class, 'categorieprofessionel'])->name('categorieprofessionel');
-        Route::post('/Ajoutcategorieprofessionels', [DashboardRHController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
-        Route::put('/modifier_categorieprofessionel/{id}', [DashboardRHController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
+        Route::get('/categorieprofessionel', [ParamettreController::class, 'categorieprofessionel'])->name('categorieprofessionel');
+        Route::post('/Ajoutcategorieprofessionels', [ParamettreController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
+        Route::put('/modifier_categorieprofessionel/{id}', [ParamettreController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
 
         Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
         Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');

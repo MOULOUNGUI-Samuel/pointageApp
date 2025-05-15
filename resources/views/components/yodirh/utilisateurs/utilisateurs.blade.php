@@ -6,10 +6,31 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="d-flex-justify-content-between mb-3 mt-3">
                     <h2 class="card-title text-primary">Gestion des utilisateurs</h2>
+                    <div class="d-flex-justify-content-between mb-3 mt-3">
+                        <input type="text" id="searchInput2" class="form-control" placeholder="Rechercher..."
+                            onkeyup="searchTable()" style="width: 500px;">
 
-                    <a href="{{ route('yodirh.formulaire_utilisateurs') }}" class="btn btn-primary" style="margin-bottom: 5px;">
-                        <i class="fa fa-plus"></i> Ajouter un utilisateur
-                    </a>
+                        <script>
+                            function searchTable() {
+                                const input = document.getElementById('searchInput2').value.toLowerCase();
+                                const rows = document.querySelectorAll('#approbationsTable2 tr');
+
+                                rows.forEach(row => {
+                                    const rowText = row.textContent.toLowerCase();
+                                    row.style.display = rowText.includes(input) ? '' : 'none';
+                                });
+
+                                const message = document.getElementById('aucun-resultat');
+                                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                                message.style.display = visibleRows.length === 0 ? 'block' : 'none';
+                            }
+                        </script>
+                        
+                        <a href="{{ route('yodirh.formulaire_utilisateurs') }}" class="btn btn-primary" style="margin-bottom: 5px;margin-left: 10px">
+                            <i class="fa fa-plus"></i> Ajouter un utilisateur
+                        </a>
+                    </div>
+                    
                 </div>
                 <div class="sparkline13-list">
                     @if (session('success'))
@@ -43,7 +64,7 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="approbationsTable2">
                                     @foreach ($utilisateurs as $user)
                                         <tr>
                                             <td></td>
@@ -77,7 +98,9 @@
                                     @endforeach
                                 </tbody>
                             </table>
-
+                            <div id="aucun-resultat" style="display: none;">
+                                <h4 colspan="8" class="text-center text-warning">Aucun pointage trouvé.</h4>
+                            </div>
                         </div>
                         @foreach ($utilisateurs as $user)
                             <div id="detailsMondale{{ $user->id }}"

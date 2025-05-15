@@ -202,6 +202,16 @@
                     </div>
                 </div>
             @endforeach
+            @if ($services->isEmpty())
+                <div class="col-md-3"></div>
+
+                <div class="col-lg-6 text-center" style="margin-top: 20px;">
+                    <div class="alert alert-info" style="font-size: 20px">
+                        Aucun service n'est disponible pour le moment.
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            @endif
         </div>
     </div>
 

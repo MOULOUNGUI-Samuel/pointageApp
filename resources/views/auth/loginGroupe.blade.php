@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ $module->nom_module }}</title>
+    <title>NedCor</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon
   ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/' . $module->logo) }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src/images/Logo_Nedco.png') }}">
     <!-- Google Fonts
   ============================================ -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
@@ -144,104 +144,119 @@ background-size: cover;
 background-attachment: fixed;
 color: #fff;">
     <!-- Login Register area Start-->
-    <div class="center-container d-flex justify-content-center align-items-center">
+    <div class="d-none d-md-block">
+        <div class="center-container d-flex justify-content-center align-items-center">
 
-        <div class="container px-5">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
-                            style="max-width: 150px;">
-                        <h4>Bienvenue ! Veuillez vous connecter pour continuer.
-                        </h4>
-                    </div>
-
-                </div>
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col"></div>
-                        <div class="col-md-6">
-                            @if ($errors->any())
-                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                            <li style="display: flex; justify-content: space-between;">
-                                                <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                    {{ $error }}</span>
-                                                <button type="button" class="btn-close" data-dismiss="alert"
-                                                    aria-label="Close"></button>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-
-                            @if (request()->has('expired'))
-                                <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                    Votre session a expiré. Veuillez vous reconnecter.
-                                    <button type="button" class="btn-close" data-dismiss="alert"
-                                        aria-label="Close"></button>
-                                </div>
-                            @endif
-
+            <div class="container px-5">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center mb-1">
+                            <img src="{{ asset('src/images/Logo_Nedco.png') }}" alt="Logo" class="mb-4 rounded"
+                                style="max-width: 150px;">
+                            <h4>Bienvenue ! Veuillez vous connecter pour continuer.
+                            </h4>
                         </div>
-                        <div class="col"></div>
+
                     </div>
-                    <form action="{{ route('login') }}" method="post">
-                        @csrf
-                        <div class="row p-3">
-                            <div class="col">
-                                <input class="text-primary" type="hidden" name="module_id"
-                                    value="{{ $module->id }}">
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                                <div class="input-group shadow-sm rounded mt-4"
-                                    style="background: none;border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                            style="font-size: 25px"></i></span>
-                                    <input type="text" class="form-control text-white" name="matricule"
-                                        value="{{ old('matricule') }}" placeholder="Votre identifiant"
-                                        style="border:none;padding: 20px;background: transparent" required>
-                                </div>
-
-                                <div class="input-group mt-3 shadow-sm rounded"
-                                    style="background: none; border-bottom: 1px solid #fff">
-                                    <span class="input-group-addon nk-ic-st-pro">
-                                        <i class="icon-key" style="font-size: 25px"></i>
-                                    </span>
-                                    <div class="nk-int-st">
-                                        <input type="password" id="passwordField" name="password"
-                                            class="form-control text-white" placeholder="Mot de passe"
-                                            style="border: none; padding: 20px; background: transparent" required>
-                                    </div>
-                                    <!-- Icône pour afficher/masquer -->
-                                    <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                        <i id="toggleIcon" class="icon-eye"
-                                            style="font-size: 25px; cursor: pointer;"></i>
-                                    </span>
-                                </div>
-
-                                @if (session('error'))
-                                    <div class="alert alert-danger text-center mt-3">
-                                        {{ session('error') }}
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col"></div>
+                            <div class="col-md-6">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li style="display: flex; justify-content: space-between;">
+                                                    <span><i class="icon-warning" style="font-size: 20px"></i>
+                                                        {{ $error }}</span>
+                                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
                                 @endif
-                                {{-- <button type="button" class="btn btn-primary loading-btn">
-                                    Valider 3
-                                    <span class="spinner"></span>
-                                </button> --}}
-                                <div class="text-center mt-5">
-                                    <button type="submit" class="btn btn-gradient w-50 loading-btn">
-                                        Se Connecter
-                                        <span class="spinner"></span>
-                                    </button>
-                                </div>
+
+                                @if (request()->has('expired'))
+                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                                        Votre session a expiré. Veuillez vous reconnecter.
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                @endif
+
                             </div>
                             <div class="col"></div>
                         </div>
-                    </form>
-                </div>
+                        <form action="{{ route('login') }}" method="post">
+                            @csrf
+                            <div class="row p-3">
+                                <div class="col">
+                                    {{-- <input class="text-primary" type="hidden" name="module_id"
+                                    value="{{ $module->id }}"> --}}
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    @if (session('error'))
+                                        <div class="alert alert-danger text-center mb-3"  style="font-size: 16px">
+                                            {{ session('error') }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    @endif
+                                    <div class="input-group shadow-sm rounded mt-4"
+                                        style="background: none;border-bottom: 1px solid #fff">
+                                        <span class="input-group-addon nk-ic-st-pro">XX</span>
+                                        <input type="text" class="form-control text-white" name="code_entreprise"
+                                            value="{{ old('code_entreprise') }}" placeholder="Code entreprise"
+                                            style="border:none;padding: 20px;background: transparent" required>
+                                    </div>
+                                    <div class="input-group shadow-sm rounded mt-4"
+                                        style="background: none;border-bottom: 1px solid #fff">
+                                        <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
+                                                style="font-size: 25px"></i></span>
+                                        <input type="text" class="form-control text-white" name="matricule"
+                                            value="{{ old('matricule') }}" placeholder="Votre identifiant"
+                                            style="border:none;padding: 20px;background: transparent" required>
+                                    </div>
 
+                                    <div class="input-group mt-3 shadow-sm rounded"
+                                        style="background: none; border-bottom: 1px solid #fff">
+                                        <span class="input-group-addon nk-ic-st-pro">
+                                            <i class="icon-key" style="font-size: 25px"></i>
+                                        </span>
+                                        <div class="nk-int-st">
+                                            <input type="password" id="passwordField" name="password"
+                                                class="form-control text-white" placeholder="Mot de passe"
+                                                style="border: none; padding: 20px; background: transparent" required>
+                                        </div>
+                                        <!-- Icône pour afficher/masquer -->
+                                        <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
+                                            <i id="toggleIcon" class="icon-eye"
+                                                style="font-size: 25px; cursor: pointer;"></i>
+                                        </span>
+                                    </div>
+
+
+                                    {{-- <button type="button" class="btn btn-primary loading-btn">
+                                    Valider 3
+                                    <span class="spinner"></span>
+                                </button> --}}
+                                    <div class="text-center mt-5">
+                                        <button type="submit" class="btn btn-gradient w-50 loading-btn">
+                                            Se Connecter
+                                            <span class="spinner"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
             </div>
         </div>
 
@@ -258,19 +273,19 @@ color: #fff;">
         </div>
     </div>
 
-    {{-- <div class="container-fluid d-block d-lg-none">
-        <div class="row">
+    <div class="container-fluid d-block d-lg-none">
+        {{-- <div class="row">
             <div class="col-6 text-left" style="margin-top: 80px;">
                 <a href="{{ route('components.liste_module') }}">
                     <i class="fa fa-arrow-left text-white" style="font-size: 2rem;"></i>
                 </a>
             </div>
-        </div>
+        </div> --}}
         <div class="row" style="margin-top: 80px;">
             <div class="col-md-12">
                 <div class="text-center my-1">
-                    <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
-                        style="max-width: 150px;">
+                    {{-- <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
+                        style="max-width: 150px;"> --}}
                     <h4>Bienvenue ! Veuillez vous connecter pour continuer.</h4>
                 </div>
 
@@ -354,7 +369,7 @@ color: #fff;">
             </div>
 
         </div>
-    </div> --}}
+    </div>
 
     <script>
         // 🔌 GESTION CONNEXION PERDUE

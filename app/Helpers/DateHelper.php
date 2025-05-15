@@ -10,6 +10,7 @@ use App\Models\Pays;
 use App\Models\Ville;
 use App\Models\Beneficiaire;
 use App\Models\LienDoc;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionUser;
 use Carbon\Carbon;
@@ -25,15 +26,14 @@ class DateHelper
     {
 
         $dossier = LienDoc::first();
-       
-
         // $PermissionUsers = PermissionUser::with('permission')
         // ->where('user_id', Auth::id())
         // ->get();
         // // dd($PermissionUsers);
-
+        $modules = Module::where('statut', 1)->get();
         return [
             'dossier' => $dossier,
+            'modules' => $modules,
         ];
     }
     public static function convertirDateFormat($date)

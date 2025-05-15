@@ -258,21 +258,24 @@ class AuthenticatedSessionController extends Controller
                 }
                 if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
-                    if ($request->module_id) {
+                    if ($request->code_entreprise) {
                         // Récupérer le module_id et le stocker en session
-                        $module = Module::find($request->module_id);
+                        $code_entreprise = trim($request->code_entreprise);
+                        $entreprise = Entreprise::where('code_entreprise', $code_entreprise)->first();
                         // dd($module);
-                        if ($module) {
-
-                            session()->put('module_nom', $module->nom_module);
-                            session()->put('module_logo', $module->logo);
-                            session()->put('module_id', $module->id);
+                        if ($entreprise) {
+                            session()->put('entreprise_nom', $entreprise->nom_entreprise);
+                            session()->put('entreprise_logo', $entreprise->logo);
+                            session()->put('entreprise_id', $entreprise->id);
                         } else {
-                            return redirect()->back()->with('error', 'Module non trouvé.');
+                            $request->session()->invalidate();
+                            $request->session()->regenerateToken();
+                            return redirect()->back()->with('error', 'Code entréprise invaide.')->withInput($request->only('matricule', 'code_entreprise'));
                         }
                     }
                     // Redirection pour RH et Admin
-                    return redirect()->intended(route('yodirh.dashboard', [], false));
+                    return redirect()->intended(route('components.liste_module', [], false));
+                    // return redirect()->intended(route('dashboard', [], false));
                 } else {
 
                     // Redirection pour Employer
@@ -281,8 +284,8 @@ class AuthenticatedSessionController extends Controller
             }
         } catch (\Exception $e) {
             return redirect()->back()
-                ->withInput($request->only('matricule'))
-                ->withErrors(['login' => 'Informations de connexion incorrectes, merci de réessayer.']);
+                ->withInput($request->only('matricule', 'code_entreprise'))
+                ->withErrors(['login' => 'Informations de connexion incorrectes !']);
         }
     }
 
@@ -298,7 +301,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/liste_modules');
+        return redirect('/loginGroupe');
     }
     public function logout_module(Request $request, $id): RedirectResponse
     {
@@ -308,6 +311,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/liste_modules');
+        return redirect('/loginGroupe');
     }
 }

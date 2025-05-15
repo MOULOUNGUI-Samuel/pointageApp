@@ -2,12 +2,25 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="logo-pro">
-                <a href="#"><img class="main-logo" src="{{ asset('src2/img/logo/logo.png') }}"
-                        alt="" /></a>
+                <a href="#"><img class="main-logo" src="{{ asset('src2/img/logo/logo.png') }}" alt="" /></a>
             </div>
         </div>
     </div>
 </div>
+@php
+    $mesModules = \App\Helpers\DateHelper::dossier_info();
+@endphp
+<style>
+    .logo-unifie {
+        height: 50px;
+        width: 60px;
+        border-radius: 5px;
+        border: 1px solid #05426b60;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        object-fit: cover;
+        /* Pour éviter les déformations */
+    }
+</style>
 <div class="header-advance-area">
     <div class="header-top-area">
         <div class="container-fluid" style="background-color: white;margin-left: 20px">
@@ -15,29 +28,33 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="header-top-wraper">
-                        <div class="row">
-                            <div class="col-lg-1 col-md-0 col-sm-1 col-xs-12">
-                                <div class="menu-switcher-pro">
-                                    <button type="button" id="sidebarCollapse"
-                                        class="btn bar-button-pro header-drl-controller-btn btn-info navbar-btn text-primary">
-                                        <i class="fa fa-bars" style="color: #05436b;"></i>
-                                    </button>
+                        <div class="row" style="margin-left: 20px">
+                            <div class="col-lg-7 col-md-0 col-sm-1 col-xs-12" style="display: flex">
+                                <div class="d-flex" style=";margin-top: 5px">
+                                    <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Logo"
+                                        class="logo-unifie mb-4">
                                 </div>
+                                <h3 style="margin-left: 15px;margin-top: 15px;color: #05426bce">{{ $entreprise_nom }}
+                                </h3>
                             </div>
-                            <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12">
-                                <div class="header-top-menu tabl-d-n">
-                                    {{-- <ul class="nav navbar-nav mai-top-nav">
-                                        <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">Home</a>
+                            {{-- <div class="col-lg- col-md-7 col-sm-6 col-xs-12"> --}}
+                            {{-- <div class="header-top-menu tabl-d-n">
+                                    <ul class="nav navbar-nav mai-top-nav">
+                                        <li class="nav-item"><a href="#" class="nav-link"
+                                                style="color: #05436b">Home</a>
                                         </li>
-                                        <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">About</a>
+                                        <li class="nav-item"><a href="#" class="nav-link"
+                                                style="color: #05436b">About</a>
                                         </li>
-                                        <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">Services</a>
+                                        <li class="nav-item"><a href="#" class="nav-link"
+                                                style="color: #05436b">Services</a>
                                         </li>
-                                        <li class="nav-item"><a href="#" class="nav-link" style="color: #05436b">Support</a>
+                                        <li class="nav-item"><a href="#" class="nav-link"
+                                                style="color: #05436b">Support</a>
                                         </li>
-                                    </ul> --}}
-                                </div>
-                            </div>
+                                    </ul>
+                                </div> --}}
+                            {{-- </div> --}}
                             <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                                 <div class="header-right-info">
                                     <ul class="nav navbar-nav mai-top-nav header-right-menu">
@@ -46,19 +63,22 @@
                                                 aria-expanded="false" class="nav-link dropdown-toggle">
                                                 <i class="fa fa-user adminpro-user-rounded header-riht-inf"
                                                     aria-hidden="true" style="color: #05436b"></i>
-                                                <span class="admin-name" style="color: #05436b">{{ Auth::user()->nom ?? 'Utilisateur' }}</span>
+                                                <span class="admin-name"
+                                                    style="color: #05436b">{{ Auth::user()->nom ?? 'Utilisateur' }}</span>
                                                 <i class="fa fa-angle-down adminpro-icon adminpro-down-arrow"></i>
                                             </a>
                                             <ul role="menu"
-                                                class="dropdown-header-top author-log dropdown-menu animated zoomIn">
-                                                
+                                                class="dropdown-header-top author-log dropdown-menu animated zoomIn"
+                                                style="background-color: white;border:1px solid #05436b;border-radius:5px">
+
                                                 <li>
                                                     @if (session('module_id'))
                                                         <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
                                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                            <i class="fa fa-sign-out"
+                                                            <i class="fa fa-sign-out text-primary"
                                                                 style="font-size: 17px;margin-right:6px"></i>
-                                                            <span style="font-size: 15px">Déconnexion</span>
+                                                            <span class=" text-primary"
+                                                                style="font-size: 15px">Déconnexion</span>
                                                         </a>
 
                                                         <form id="logout-form"
@@ -69,9 +89,10 @@
                                                     @else
                                                         <a href="{{ route('logout') }}"
                                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                            <i class="fa fa-sign-out"
+                                                            <i class="fa fa-sign-out text-primary"
                                                                 style="font-size: 17px;margin-right:6px"></i>
-                                                            <span style="font-size: 15px">Déconnexion</span>
+                                                            <span style="font-size: 15px"
+                                                                class=" text-primary">Déconnexion</span>
                                                         </a>
 
                                                         <form id="logout-form" action="{{ route('logout') }}"
@@ -80,7 +101,55 @@
                                                         </form>
                                                     @endif
                                                 </li>
+
                                             </ul>
+                                        </li>
+                                        <li class="nav-item nav-setting-open"><a href="#" data-toggle="dropdown"
+                                                role="button" aria-expanded="false" class="nav-link dropdown-toggle"><i
+                                                    class=" fa fa-th-large" style="color: #05436b"></i></a>
+
+                                            <div role="menu"
+                                                class="admintab-wrap menu-setting-wrap menu-setting-wrap-bg dropdown-menu animated zoomIn"
+                                                style="background-color: white;border:1px solid #05436b;border-radius:5px">
+                                                <div class="tab-content custom-bdr-nt">
+                                                    <div id="Notes" class="tab-pane fade in active">
+                                                        <div class="notes-area-wrap">
+                                                            <div class="note-heading-indicate">
+                                                                <h2 class="text-primary"><i class="fa fa-tasks"></i>
+                                                                    Liste des modules NedCore.
+                                                                </h2>
+                                                                <p class="text-primary">Nombre de modules disponibles :
+                                                                    {{ count($mesModules['modules']) }}.</p>
+                                                            </div>
+                                                            <div class="notes-list-area notes-menu-scrollbar">
+                                                                <ul class="notes-menu-list"
+                                                                    style="max-height: 1000px; overflow-y: auto;">
+                                                                    @foreach ($mesModules['modules'] as $module)
+                                                                        <li
+                                                                            style="margin-bottom: 10px;margin-top:10px;margin-left:4px;">
+                                                                            <a
+                                                                                href="{{ route('dashboard', $module->id) }}">
+                                                                                <div class="notes-list-flow">
+                                                                                    <div class="notes-img"
+                                                                                        style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border:1px solid #05436b;border-radius:5px; transition: transform 0.3s ease;">
+                                                                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                                            alt="" />
+                                                                                    </div>
+                                                                                    <style>
+                                                                                        .notes-img:hover {
+                                                                                            transform: scale(1.1);
+                                                                                        }
+                                                                                    </style>
+                                                                                </div>
+                                                                            </a>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
@@ -251,7 +320,7 @@
         }
     </style>
     <!-- Mobile Menu end -->
-    @if (request()->routeIs('yodirh.dashboard'))
+    @if (request()->routeIs('dashboard'))
         <div class="breadcome-area">
             <div class="top-section container-fluid">
                 <div class="row">

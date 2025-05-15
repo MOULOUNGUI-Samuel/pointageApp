@@ -1,11 +1,10 @@
 <div class="left-sidebar-pro">
     @php
         $dossier_info = \App\Helpers\DateHelper::dossier_info();
-
     @endphp
     <nav id="sidebar" class="">
         <div class="sidebar-header">
-            <a href="{{ route('yodirh.dashboard') }}">
+            <a href="{{ route('dashboard', $module_id) }}">
                 <img class="main-logo" src="{{ asset('storage/' . $module_logo) }}" alt="" width="100" />
             </a>
             <strong><img src="{{ asset('storage/' . $module_logo) }}" alt="" /></strong>
@@ -14,8 +13,8 @@
             <nav class="sidebar-nav left-sidebar-menu-pro">
                 <ul class="metismenu" id="menu1">
                     <li>
-                        <a href="{{ route('yodirh.dashboard') }}"
-                            class="{{ request()->routeIs('yodirh.dashboard') ? 'bg-primary' : '' }}">
+                        <a href="{{ route('dashboard', $module_id) }}"
+                            class="{{ request()->routeIs('dashboard') ? 'bg-primary' : '' }}">
                             <i class="fa big-icon fa-home icon-wrap"></i>
                             <span class="mini-click-non">Tableau de bord</span>
                         </a>
@@ -41,7 +40,8 @@
 
                     {{-- Gestion Documentaire --}}
                     <li class="{{ request()->routeIs('document.index') ? 'active' : '' }}">
-                        <a class="has-arrow {{ request()->routeIs('document.index') ? 'bg-primary' : '' }}" aria-expanded="false">
+                        <a class="has-arrow {{ request()->routeIs('document.index') ? 'bg-primary' : '' }}"
+                            aria-expanded="false">
                             <i class="fa fa-folder icon-wrap"></i>
                             <span class="mini-click-non">Gestion Documentaire</span>
                         </a>
@@ -52,21 +52,25 @@
                                         class="mini-sub-pro">Cycle de vie des documents</span></a></li>
                             <li><a href="#distribution"><i class="fa fa-share-alt sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Diffusion et consultation</span></a></li>
-                            <li><a href="{{ route('document.index') }}" class="{{ request()->routeIs('document.index') ? 'bg-primary2' : '' }}"><i class="fa fa-cloud-download sub-icon-mg"></i> <span
+                            <li><a href="{{ route('document.index') }}"
+                                    class="{{ request()->routeIs('document.index') ? 'bg-primary2' : '' }}"><i
+                                        class="fa fa-cloud-download sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Documentation externe</span></a></li>
                         </ul>
                     </li>
 
                     {{-- Processus & Procédures --}}
                     <li class="{{ request()->routeIs('indexprocedure') ? 'active' : '' }}">
-                        <a class="has-arrow" aria-expanded="false" class="{{ request()->routeIs('indexprocedure') ? 'bg-primary' : '' }}">
+                        <a class="has-arrow" aria-expanded="false"
+                            class="{{ request()->routeIs('indexprocedure') ? 'bg-primary' : '' }}">
                             <i class="fa fa-cogs icon-wrap"></i>
                             <span class="mini-click-non">Processus & Procédures</span>
                         </a>
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a href="#mapping"><i class="fa fa-map sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Cartographie des processus</span></a></li>
-                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'procedures']) }}" class="{{ request()->routeIs('indexprocedure') ? 'bg-primary2' : '' }}"><i
+                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'procedures']) }}"
+                                    class="{{ request()->routeIs('indexprocedure') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-list-alt sub-icon-mg"></i> <span class="mini-sub-pro">Procédures
                                         opérationnelles</span></a></li>
                             <li><a href="#optimization"><i class="fa fa-line-chart sub-icon-mg"></i> <span

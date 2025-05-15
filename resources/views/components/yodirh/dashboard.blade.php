@@ -96,9 +96,77 @@
             </div>
         </div>
     </div>
+    <div class="container">
+        <div class="row">
+            
+        </div>
+    </div>
     <div class="product-sales-area mg-tb-30">
         <div class="container-fluid">
             <div class="row">
+      
+                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                    <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877)">Employés sans trace de présence</h4>
+                        <div class="recent-items-inn">
+                            <table class="table table-inner table-vmiddle">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom(s) et prenoms(s)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($users_non_existants as $absent)
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
+                                                    alt="" width="30"
+                                                    style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px" />
+                                            </td>
+                                            <td>{{ $absent->nom }} {{ $absent->prenom }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                    <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:green">Employés déjà presents</h4>
+                        <div class="recent-items-inn">
+                            <table class="table table-inner table-vmiddle">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom(s) et prenoms(s)</th>
+                                        <th style="width: 60px">Heure</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($pointages_oui as $present)
+                                        <tr>
+                                            <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
+                                                    alt="" width="30"
+                                                    style="border: 1px solid green;border-radius:50px" /></td>
+                                            <td>{{ $present->user->nom }} {{ $present->user->prenom }}</td>
+                                            <td class="f-500 c-cyan">{{ $present->heure_arriver }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="recent-post-signle">
+                                <a href="#">
+                                    <div class="recent-post-flex rc-ps-vw">
+                                        <div class="recent-post-line rct-pt-mg">
+                                            <a href="{{ route('liste_presence') }}" style="color:green">Voir plus</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
                         <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Statut des employés</h4>

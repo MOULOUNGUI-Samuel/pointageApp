@@ -25,7 +25,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('module_nom', Session::get('module_nom'));
             $view->with('module_logo', Session::get('module_logo'));
             $view->with('module_id', Session::get('module_id'));
-            $view->with('nom_lien', Session::get('nom_lien'));
+            $view->with('entreprise_nom', Session::get('entreprise_nom'));
+            $view->with('entreprise_logo', Session::get('entreprise_logo'));
+            $view->with('entreprise_id', Session::get('entreprise_id'));
         });
     }
 }

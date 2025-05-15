@@ -1,166 +1,19 @@
-@extends('layouts.master')
+@extends('layouts.master2')
 @section('content')
-    <!-- Mobile Menu end -->
-    <!-- Main Menu area start-->
-    <!-- Main Menu area End-->
-    <!-- Start Status area -->
-    <div class="notika-status-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">{{ count($employes) }}</span></h2>
-                            <p>Nombre d'employés</p>
-                        </div>
-                        <i class="icon-users" style="font-size: 40px; margin-left: auto;"></i>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30">
-                        <div class="website-traffic-ctn">
+    @php
+        $moduleNom = strtolower($module_nom);
+    @endphp
+    @switch($moduleNom)
+        @case('smi')
+            @include('components/smi/dashboard')
+        @break
 
-                            <h2><span class="counter">{{ count($pointages_oui) }}</span></h2>
-                            <p>Employés présents</p>
-                        </div>
-                        <i class="icon-user-check" style="font-size: 40px; margin-left: auto;"></i>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">{{ count($pointage_intermediaires) }}</span></h2>
-                            <p>Sorties intermediaires</p>
-                        </div>
-                        <i class="icon-hour-glass" style="font-size: 35px; margin-left: auto;"></i>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="wb-traffic-inner notika-shadow sm-res-mg-t-30 tb-res-mg-t-30 dk-res-mg-t-30">
-                        <div class="website-traffic-ctn">
-                            <h2><span class="counter">{{ count($users_non_existants) }}</span></h2>
-                            <p>Employés absences</p>
-                        </div>
-                        <i class="icon-user-minus" style="font-size: 40px; margin-left: auto;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Status area-->
+        @case('rh')
+            @include('components/yodirh/dashboard')
+        @break
 
-    <!-- Start Email Statistic area-->
-    <div class="notika-email-post-area mg-t-30">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                    <div class="email-statis-inner notika-shadow">
-                        <div class="email-ctn-round">
-                            <div class="email-rdn-hd">
-                                <h2>Évolution des absences</h2>
-                            </div>
-                            <div class="email-round-gp">
-                                <div class="email-round-pro">
-                                    <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="{{count($users_non_existants)/count($employes)*100}}"
-                                            data-linecap="round" data-width="90" data-bgcolor="#E4E4E4"
-                                            data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
-                                    </div>
-                                    <div class="email-ctn-nock">
-                                        <p>Taux d' <strong>absence de la semaine</strong></p>
-                                    </div>
-                                </div>
-                                <div class="email-round-pro">
-                                    <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="{{count($users_non_existants)/count($employes)*100}}"
-                                            data-linecap="round" data-width="90" data-bgcolor="#E4E4E4"
-                                            data-fgcolor="#0384ca" data-thickness=".10" data-readonly="true" disabled>
-                                    </div>
-                                    <div class="email-ctn-nock">
-                                        <p>Taux d' <strong>absence du mois</strong></p>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                    <div class="recent-items-wp notika-shadow sm-res-mg-t-30">
-                        <div class="rc-it-ltd">
-                            <div class="recent-items-ctn">
-                                <div class="recent-items-title">
-                                    <h2 style="color:rgba(196, 12, 12, 0.877)">Employés sans trace de présence</h2>
-                                </div>
-                            </div>
-                            <div class="recent-items-inn">
-                                <table class="table table-inner table-vmiddle">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Nom(s) et prenoms(s)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($users_non_existants as $absent)
-                                            <tr>
-                                                <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
-                                                        alt="" width="30"
-                                                        style="border: 1px solid rgba(196, 12, 12, 0.877);border-radius:50px" />
-                                                </td>
-                                                <td>{{ $absent->nom }} {{ $absent->prenom }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                    <div class="recent-items-wp notika-shadow sm-res-mg-t-30">
-                        <div class="rc-it-ltd">
-                            <div class="recent-items-ctn">
-                                <div class="recent-items-title">
-                                    <h2 style="color:green">Employés déjà presents</h2>
-                                </div>
-                            </div>
-                            <div class="recent-items-inn">
-                                <table class="table table-inner table-vmiddle">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Nom(s) et prenoms(s)</th>
-                                            <th style="width: 60px">Heure</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($pointages_oui as $present)
-                                            <tr>
-                                                <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
-                                                        alt="" width="30"
-                                                        style="border: 1px solid green;border-radius:50px" /></td>
-                                                <td>{{ $present->user->nom }} {{ $present->user->prenom }}</td>
-                                                <td class="f-500 c-cyan">{{ $present->heure_arriver }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                <div class="recent-post-signle">
-                                    <a href="#">
-                                        <div class="recent-post-flex rc-ps-vw">
-                                            <div class="recent-post-line rct-pt-mg">
-                                                <a href="{{ route('liste_presence') }}" style="color:green">Voir plus</a>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Email Statistic area-->
+        @default
+            @include('components/yodirh/dashboard')
+    @endswitch
+
 @endsection
