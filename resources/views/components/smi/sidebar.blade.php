@@ -39,8 +39,8 @@
                     </li>
 
                     {{-- Gestion Documentaire --}}
-                    <li class="{{ request()->routeIs('document.index') ? 'active' : '' }}">
-                        <a class="has-arrow {{ request()->routeIs('document.index') ? 'bg-primary' : '' }}"
+                    <li class="">
+                        <a class="has-arrow "
                             aria-expanded="false">
                             <i class="fa fa-folder icon-wrap"></i>
                             <span class="mini-click-non">Gestion Documentaire</span>
@@ -52,8 +52,8 @@
                                         class="mini-sub-pro">Cycle de vie des documents</span></a></li>
                             <li><a href="#distribution"><i class="fa fa-share-alt sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Diffusion et consultation</span></a></li>
-                            <li><a href="{{ route('document.index') }}"
-                                    class="{{ request()->routeIs('document.index') ? 'bg-primary2' : '' }}"><i
+                            <li><a href="#"
+                                    class=""><i
                                         class="fa fa-cloud-download sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Documentation externe</span></a></li>
                         </ul>
@@ -150,6 +150,13 @@
                             <li><a href="#certification"><i class="fa fa-certificate sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Évaluation & Certification</span></a></li>
                         </ul>
+                    </li>
+                    <li>
+                        <a href="{{ route('document.index') }}"
+                            class="{{ request()->routeIs('document.index') ? 'bg-primary' : '' }}">
+                            <i class="fa big-icon fa-home icon-wrap"></i>
+                            <span class="mini-click-non">Gestion des projets</span>
+                        </a>
                     </li>
                 </ul>
             </nav>
