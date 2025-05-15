@@ -270,7 +270,9 @@ class AuthenticatedSessionController extends Controller
                         } else {
                             $request->session()->invalidate();
                             $request->session()->regenerateToken();
-                            return redirect()->back()->with('error', 'Code entréprise invaide.')->withInput($request->only('matricule', 'code_entreprise'));
+                            return redirect()->back()
+                                ->withInput($request->only('matricule', 'code_entreprise'))
+                                ->with('error', 'Le code de l\'entreprise est incorrect. Veuillez vérifier et réessayer.');
                         }
                     }
                     // Redirection pour RH et Admin
