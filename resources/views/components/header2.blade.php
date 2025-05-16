@@ -42,8 +42,7 @@
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="fa fa-sign-out text-primary"
                                                 style="font-size: 20px;margin-right:6px"></i>
-                                            <span class=" text-primary"
-                                                style="font-size: 20px">Déconnexion</span>
+                                            <span class=" text-primary" style="font-size: 20px">Déconnexion</span>
                                         </a>
 
                                         <form id="logout-form"
@@ -56,12 +55,11 @@
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="fa fa-sign-out text-primary"
                                                 style="font-size: 20px;margin-right:6px"></i>
-                                            <span style="font-size: 20px"
-                                                class=" text-primary">Déconnexion</span>
+                                            <span style="font-size: 20px" class=" text-primary">Déconnexion</span>
                                         </a>
 
-                                        <form id="logout-form" action="{{ route('logout') }}"
-                                            method="POST" style="display: none;">
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                         </form>
                                     @endif
@@ -178,10 +176,14 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <a href="{{route('components.liste_module')}}" class="btn btn-primary btn-block"
+                                                        style="margin-bottom: 10px;color:white">
+                                                        LISTE DE MODULES
+                                                    </a>
                                                 </div>
                                             </div>
                                         </li>
-                                        
+
                                     </ul>
                                 </div>
                             </div>

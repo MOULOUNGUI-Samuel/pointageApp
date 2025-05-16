@@ -27,7 +27,7 @@
         <div class="container-fluid" style="margin-left: 50px;margin-right: 50px;">
 
             <div class="row">
-                @if ($lienDocuments)
+                @if (count($lienDocuments) > 0)
                     @if (session('success') || isset($success))
                         <div class="col-md-4"></div>
 
