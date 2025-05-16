@@ -89,13 +89,14 @@
                                         class="mini-sub-pro">Évaluations et entretiens <br> annuels</span></a></li>
                         </ul>
                     </li>
-                    <li class="active">
+                    {{--  <li class="active">
                         <a href="{{ route('document.index') }}">
                             <i class="fa fa-folder sub-icon-mg" aria-hidden="true"></i>
                             <span class="mini-click-non">Gestion des documents</span>
                         </a>
 
                     </li>
+                    --}}
                     <li
                         class="{{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'active' : '' }}">
                         <a class="has-arrow {{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'bg-primary' : '' }}"

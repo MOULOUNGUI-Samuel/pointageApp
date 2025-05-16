@@ -11,7 +11,7 @@ class LienDoc extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['user_id', 'module_id', 'nom_lien', 'lien'];
+    protected $fillable = ['user_id', 'entreprise_id', 'module_id', 'nom_lien', 'lien'];
 
     protected static function boot()
     {
@@ -31,5 +31,9 @@ class LienDoc extends Model
     public function module()
     {
         return $this->belongsTo(Module::class);
+    }
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class);
     }
 }

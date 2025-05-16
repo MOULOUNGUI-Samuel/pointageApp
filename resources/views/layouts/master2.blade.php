@@ -142,7 +142,7 @@
             document.body.appendChild(popup);
 
             setTimeout(() => {
-                window.location.href = "/loginGroupe";
+                window.location.href = "/liste_modules";
             }, 3000);
         }
 

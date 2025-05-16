@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('lien_docs', function (Blueprint $table) {
             $table->uuid('id')->primary(); // UUID comme clé primaire
+            $table->uuid('entreprise_id')->nullable();
             $table->uuid('user_id');
             $table->uuid('module_id');
             $table->string('nom_lien');
@@ -22,6 +23,8 @@ return new class extends Migration
             // Clés étrangères
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
+            $table->foreign('entreprise_id')->references('id')->on('entreprises')->onDelete('cascade');
+
         });
     }
     /**

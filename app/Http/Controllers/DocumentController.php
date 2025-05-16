@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use ZipArchive;
+use Normalizer;
 
 class DocumentController extends Controller
 {
@@ -53,33 +54,42 @@ class DocumentController extends Controller
     {
 
         if ($nom_lien == 'procedures') {
-            $basePath = resource_path('views/components/smi/procedures');
+            $basePath = resource_path('views/components/yodirh/imported');
         } else {
-            $basePath = resource_path('views/components/smi/procedures/' . $nom_lien);
+            $basePath = resource_path('views/components/yodirh/imported/' . $nom_lien);
         }
-        session()->put('nom_lien', $nom_lien);
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
 
         $procedures = [];
+        $baseImportedPath = resource_path('views/components/yodirh/imported');
 
-        if (File::exists($basePath)) {
+        $Dossiers = LienDoc::where('entreprise_id', session('entreprise_id'))->get()->filter(function ($doc) use ($baseImportedPath) {
+            $path = $baseImportedPath . '/' . $doc->nom_lien;
+            return File::isDirectory($path) && collect(File::allFiles($path))->contains(function ($file) {
+                return $file->getExtension() === 'php';
+            });
+        })->values(); // Réindexer proprement
+
+        foreach ($Dossiers as $doc) {
+            $nom_lien = $doc->nom_lien;
+            $basePath = $baseImportedPath . '/' . $nom_lien;
+
             $files = File::allFiles($basePath);
 
             foreach ($files as $file) {
                 if ($file->getExtension() !== 'php') continue;
 
-                // Extrait la partie relative du chemin
                 $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getPathname());
-
-                // Convertit en nom de vue : HTML/autre_contenu.blade.php => HTML.autre_contenu
-                $viewName = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+                $viewName = $nom_lien . '.' . str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
 
                 $procedures[] = $viewName;
             }
         }
 
-        $lienDocuments=LienDoc::All();
 
-        return view('components.smi.procedureOperationnelles', compact('procedures','lienDocuments'))->with('procedures', $procedures);
+        return view('components.smi.procedureOperationnelles', compact('procedures', 'lienDocuments'))
+            ->with('procedures', $procedures)
+            ->with('success', 'Les données ont été chargées avec succès.');
     }
 
     // public function import(Request $request)
@@ -168,13 +178,27 @@ class DocumentController extends Controller
     //     return back()->withErrors(['Erreur lors de l\'extraction du fichier ZIP.']);
     // }
 
+    /**
+     * Nettoie une chaîne en supprimant les accents.
+     */
+    private function removeAccents($string)
+    {
+        if (!class_exists('Normalizer')) {
+            return $string; // fallback au cas où intl n'est pas installé
+        }
+
+        // Normalisation unicode (NFD) + suppression des diacritiques
+        $string = Normalizer::normalize($string, Normalizer::FORM_D);
+        return preg_replace('/[\p{Mn}]/u', '', $string);
+    }
+
 
 
     public function importFromOwncloud(Request $request)
     {
 
         $url = $request->input('cloud_url');
-        
+
         $zipContent = @file_get_contents($url . '/download');
 
         if ($zipContent === false) {
@@ -244,20 +268,23 @@ class DocumentController extends Controller
     }
     public function importFromOwncloudProcedure(Request $request)
     {
+
         $url = $request->input('cloud_url');
+        $nomLien = trim($request->input('nom_lien')) ?: trim($request->input('nom_lien_existant'));
+
+        // 1. Télécharger le fichier ZIP depuis OwnCloud
         $zipContent = @file_get_contents($url . '/download');
 
         if ($zipContent === false) {
             return back()->withErrors(['Impossible de récupérer les fichiers depuis le lien.']);
         }
 
-        // 1. Télécharger l'archive ZIP temporaire
+        // 2. Enregistrer le ZIP temporairement
         $tmpZipPath = storage_path('app/tmp_owncloud_import.zip');
         File::put($tmpZipPath, $zipContent);
 
-        // 2. Extraire le ZIP temporairement
+        // 3. Extraire le contenu dans un dossier temporaire
         $extractPath = storage_path('app/tmp_owncloud_extracted');
-
         File::deleteDirectory($extractPath);
         File::makeDirectory($extractPath, 0755, true);
 
@@ -266,63 +293,63 @@ class DocumentController extends Controller
             $zip->extractTo($extractPath);
             $zip->close();
         } else {
-            return back()->withErrors(['Erreur lors de l\'extraction du fichier ZIP.']);
+            return back()->withErrors(['Erreur lors de l\'extraction de l\'archive.']);
         }
 
-        // 3. Préparer le dossier cible
-        $baseViewPath = resource_path('views/components/smi/procedures/' . $request->input('nom_lien'));
-        File::deleteDirectory($baseViewPath);
+        // 4. Déterminer le chemin cible du dossier dynamique
+        $baseViewPath = resource_path('views/components/yodirh/imported/' . $nomLien);
+
+        // Supprimer le dossier s’il existe déjà pour écrasement propre
+        if (File::exists($baseViewPath)) {
+            File::deleteDirectory($baseViewPath);
+        }
         File::makeDirectory($baseViewPath, 0755, true, true);
-        // Stocker 'nom_lien' dans la session
 
-
-        // 4. Parcourir les fichiers HTML extraits
+        // 5. Parcourir et enregistrer les fichiers HTML extraits
         $htmlFiles = File::allFiles($extractPath);
         $procedures = [];
 
         foreach ($htmlFiles as $file) {
             if ($file->getExtension() !== 'html') continue;
 
-            // Ex: "Support/HTML Help Update/file.html"
             $relativePath = ltrim(str_replace($extractPath, '', $file->getPathname()), DIRECTORY_SEPARATOR);
-            $relativeDir = dirname($relativePath); // Ex: "Support/HTML Help Update"
-
+            $relativeDir = dirname($relativePath);
             $originalName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-            $safeName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $originalName); // Sécurité des noms
+
+            $normalizedName = $this->removeAccents($originalName); // -> 'autreee contenu'
+            $safeName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $normalizedName); // -> 'autreee_contenu'
+
             $targetDir = $baseViewPath . '/' . $relativeDir;
 
-            // Supprimer le fichier existant s’il existe
-            $bladePath = $targetDir . '/' . $safeName . '.blade.php';
-            if (File::exists($bladePath)) {
-                File::delete($bladePath);
-            }
-
-            // Supprimer tout le dossier si on traite un dossier complet (optionnel)
             if (!File::exists($targetDir)) {
                 File::makeDirectory($targetDir, 0755, true, true);
             }
 
-            // Copier le nouveau fichier
+            $bladePath = $targetDir . '/' . $safeName . '.blade.php';
+
             File::put($bladePath, File::get($file->getRealPath()));
 
-            // Construction du nom de vue
             $viewName = str_replace(['/', '\\'], '.', trim($relativeDir . '/' . $safeName, '/\\'));
             $procedures[] = $viewName;
         }
 
-        // 5. Nettoyer les fichiers temporaires
+        // 6. Nettoyer les fichiers temporaires
         File::delete($tmpZipPath);
         File::deleteDirectory($extractPath);
 
-        if ($request->input('nom_lien')) {
-            $lien = new LienDoc();
-            $lien->nom_lien = $request->input('nom_lien');
-            $lien->lien =  $url;
-            $lien->user_id = $request->input('user_id');
-            $lien->module_id = $request->input('module_id');
-            $lien->save();
-        }
-
-        return redirect()->route('indexprocedure', ['nom_lien' => $request->input('nom_lien')]);
+        // 7. Enregistrer le lien dans la base
+        LienDoc::updateOrCreate(
+            [
+                'nom_lien' => $nomLien,
+                'user_id' => $request->input('user_id'),
+                'entreprise_id' => session('entreprise_id'),
+                'module_id' => $request->input('module_id'),
+            ],
+            [
+                'lien' => $url,
+            ]
+        );
+        // 8. Redirection
+        return redirect()->route('indexprocedure', ['nom_lien' => $nomLien]);
     }
 }

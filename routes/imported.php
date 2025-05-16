@@ -37,31 +37,35 @@ if (File::exists($importBase)) {
     }
 }
 
-$nom_lien = session('nom_lien', 'procedures'); // valeur par défaut
 
-if($nom_lien=='procedures'){
-    $importBaseProcedure = resource_path('views/components/smi/procedures');
-}else{
-    $importBaseProcedure = resource_path('views/components/smi/procedures/'.$nom_lien);
-}
-// $importBaseProcedure = resource_path('views/components/smi/procedures');
 
-if (File::exists($importBaseProcedure)) {
-    $files = File::allFiles($importBaseProcedure);
 
-    foreach ($files as $file) {
-        if ($file->getExtension() !== 'php') continue;
+$importedBasePath = resource_path('views/components/yodirh/imported');
 
-        // Obtenir le chemin relatif depuis le dossier imported
-        $relativePath = str_replace($importBaseProcedure . DIRECTORY_SEPARATOR, '', $file->getPathname());
+// Parcourt chaque dossier dans /imported
+if (File::isDirectory($importedBasePath)) {
+    $dossierModules = File::directories($importedBasePath);
 
-        // Nettoyer et transformer en nom de vue
-        $viewNameProcedure = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+    foreach ($dossierModules as $dossierPath) {
+        $nom_lien = basename($dossierPath); // Ex: "Dossierteste"
 
-        // Générer la route avec URL utilisant des slashes
-        Route::get('/importedProcedure/' . str_replace('.', '/', $viewNameProcedure), function () use ($viewNameProcedure) {
-            return view('components.smi.procedures.' . $viewNameProcedure);
-        })->name('procedures.' . $viewNameProcedure);
+        $importBaseProcedure = $importedBasePath . '/' . $nom_lien;
+
+        $files = File::allFiles($importBaseProcedure);
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'php') continue;
+
+            $relativePath = str_replace($importBaseProcedure . DIRECTORY_SEPARATOR, '', $file->getPathname());
+
+            $viewNameProcedure = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+            $urlPath = 'importedProcedure/' . $nom_lien . '/' . str_replace('.', '/', $viewNameProcedure);
+            $viewPath = 'components.yodirh.imported.' . $nom_lien . '.' . $viewNameProcedure;
+
+            Route::get($urlPath, function () use ($viewPath) {
+                return view($viewPath);
+            })->name('imported.' . $nom_lien . '.' . $viewNameProcedure);
+        }
     }
 }
 

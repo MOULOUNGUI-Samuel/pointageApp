@@ -254,7 +254,7 @@ class AuthenticatedSessionController extends Controller
                 $role_user = User::where('id', $user->id)->with('role')->first();
 
                 if ($request->mobileforme) {
-                    return redirect()->intended(route('index_employer', [], false));
+                    return redirect()->route('index_employer');
                 }
                 if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
                     // dd($request->module_id);
@@ -276,12 +276,11 @@ class AuthenticatedSessionController extends Controller
                         }
                     }
                     // Redirection pour RH et Admin
-                    return redirect()->intended(route('components.liste_module', [], false));
-                    // return redirect()->intended(route('dashboard', [], false));
+                    return redirect()->route('components.liste_module');
                 } else {
 
                     // Redirection pour Employer
-                    return redirect()->intended(route('index_employer', [], false));
+                    return redirect()->route('index_employer');
                 }
             }
         } catch (\Exception $e) {
@@ -302,6 +301,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+        // Supprime toute URL "intended" stockée
+        $request->session()->forget('url.intended');
 
         return redirect('/loginGroupe');
     }
@@ -312,6 +313,9 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
+        // Supprime toute URL "intended" stockée
+        $request->session()->forget('url.intended');
 
         return redirect('/loginGroupe');
     }

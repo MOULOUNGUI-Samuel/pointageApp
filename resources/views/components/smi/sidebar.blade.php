@@ -69,7 +69,7 @@
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a href="#mapping"><i class="fa fa-map sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Cartographie des processus</span></a></li>
-                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'procedures']) }}"
+                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'imported']) }}"
                                     class="{{ request()->routeIs('indexprocedure') ? 'bg-primary2' : '' }}"><i
                                         class="fa fa-list-alt sub-icon-mg"></i> <span class="mini-sub-pro">Procédures
                                         opérationnelles</span></a></li>
@@ -151,13 +151,15 @@
                                         class="mini-sub-pro">Évaluation & Certification</span></a></li>
                         </ul>
                     </li>
+                    {{-- 
                     <li>
                         <a href="{{ route('document.index') }}"
                             class="{{ request()->routeIs('document.index') ? 'bg-primary' : '' }}">
-                            <i class="fa big-icon fa-home icon-wrap"></i>
+                            <i class="fa fa-folder-open icon-wrap"></i>
                             <span class="mini-click-non">Gestion des projets</span>
                         </a>
                     </li>
+                    --}}
                 </ul>
             </nav>
         </div>
