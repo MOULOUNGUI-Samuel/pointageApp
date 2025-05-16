@@ -36,6 +36,36 @@
                                 </div>
                                 <h3 style="margin-left: 15px;margin-top: 15px;color: #05426bce">{{ $entreprise_nom }}
                                 </h3>
+                                <div style="margin-left: 30px;margin-top: 20px">
+                                    @if (session('module_id'))
+                                        <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fa fa-sign-out text-primary"
+                                                style="font-size: 20px;margin-right:6px"></i>
+                                            <span class=" text-primary"
+                                                style="font-size: 20px">Déconnexion</span>
+                                        </a>
+
+                                        <form id="logout-form"
+                                            action="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    @else
+                                        <a href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fa fa-sign-out text-primary"
+                                                style="font-size: 20px;margin-right:6px"></i>
+                                            <span style="font-size: 20px"
+                                                class=" text-primary">Déconnexion</span>
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout') }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    @endif
+                                </div>
                             </div>
                             {{-- <div class="col-lg- col-md-7 col-sm-6 col-xs-12"> --}}
                             {{-- <div class="header-top-menu tabl-d-n">
@@ -151,6 +181,7 @@
                                                 </div>
                                             </div>
                                         </li>
+                                        
                                     </ul>
                                 </div>
                             </div>
