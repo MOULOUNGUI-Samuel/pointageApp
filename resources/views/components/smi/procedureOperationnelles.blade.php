@@ -27,19 +27,22 @@
         <div class="container-fluid" style="margin-left: 50px;margin-right: 50px;">
 
             <div class="row">
-                @if (session('success') || isset($success))
-                    <div class="col-md-4"></div>
+                @if ($lienDocuments)
+                    @if (session('success') || isset($success))
+                        <div class="col-md-4"></div>
 
-                    <div class="col-lg-4 text-center" style="margin-top: 20px;">
-                        <div class="alert alert-success" style="font-size: 20px">
-                            {{ session('success') ?? $success }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="col-lg-4 text-center" style="margin-top: 20px;">
+                            <div class="alert alert-success" style="font-size: 20px">
+                                {{ session('success') ?? $success }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4"></div>
+                        <div class="col-md-4"></div>
+                    @endif
                 @endif
+
             </div>
             <div class="row">
                 <div class="col-md-3 col-md-3 col-sm-3 col-xs-12">
