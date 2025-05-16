@@ -139,15 +139,15 @@ color: #fff;">
                 <!-- Bloc Entrée -->
                 <div class="col-lg-2 col-sm-12 mb-4">
                     <a href="{{ route('dashboard', $module->id) }}" class="text-decoration-none shadow-sm">
-                        <div class="card card-hover-zoom shadow-lg px-2">
-                            <div class="card-body">
+                        <div class="card card-hover-zoom shadow-lg px-2" style="background-color: transparent;">
+                            <div class="card-body" >
                                 @if (!empty($module->logo))
                                     <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo du module"
-                                        style="max-width: 100px; height: auto;">
+                                        style="max-width: 100px; height: auto;border-radius: 7px">
                                 @else
                                     <i class="icon-user" style="font-size: 45px"></i>
                                 @endif
-                                <h3 class="fw-bold my-2">Gestion : {{ $module->nom_module ?? '' }}</h3>
+                                <h3 class="fw-bold my-2" style="color:#fafbfb ">Gestion : {{ $module->nom_module ?? '' }}</h3>
                             </div>
                         </div>
                     </a>
