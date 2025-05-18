@@ -153,11 +153,8 @@ color: #fff;">
         <a href="{{ route('dashboard', $module->id) }}" class="text-decoration-none">
           <div class="border rounded p-2 text-center shadow-sm card-hover-zoom" style="background-color: #f8f9fa;">
           @if (!empty($module->logo))
-        <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo"
+        <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="rounded"
         style="width: 100%; height: 50px; object-fit: contain; border-radius: 5px;">
-
-      @else
-        <i class="icon-user" style="font-size: 30px; color: #333;"></i>
       @endif
           </div>
         </a>
@@ -173,7 +170,7 @@ color: #fff;">
         <div class="container-fluid px-4">
 
           <!-- Présentation NedCore -->
-          <div class="nedcore-intro mb-5">
+          <div class="nedcore-intro mb-4">
             <h2 class="mb-3">Bienvenue sur la plateforme NedCore</h2>
             <p>
               <strong>NedCore</strong> est la solution numérique centralisée du <strong>Groupe NedCo</strong>,
