@@ -56,13 +56,14 @@ class AdminController extends Controller
     public function formulaire()
     {
         //
+        $entreprise_id = session('entreprise_id');
         $entreprises = Entreprise::all();
-        $services = Service::all();
+        $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $roles = Role::all();
         $users = User::all();
         $pays = Pays::all();
         $villes = Ville::all();
-        $categorie_professionelles = CategorieProfessionnelle::all();
+        $categorie_professionelles = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
             ->get();
