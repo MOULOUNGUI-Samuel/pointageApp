@@ -35,6 +35,7 @@
     </div>
     @php
         $moduleNom = strtolower($module_nom);
+
     @endphp
     @switch($moduleNom)
         @case('smi')
@@ -43,6 +44,9 @@
 
         @case('rh')
             @include('components/yodirh/sidebar')
+        @break
+        @case('documents owncloud')
+            @include('components/cloudDoc/sidebar')
         @break
 
         @default

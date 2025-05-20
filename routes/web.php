@@ -84,8 +84,9 @@ Route::middleware('auth')->group(
 
         // Gestion des documents
         Route::get('/indexcartographie', [DocumentController::class, 'indexcartographie'])->name('document.indexcartographie');
-        Route::get('/indexprocedure/{nom_lien}', [DocumentController::class, 'indexprocedure'])->name('indexprocedure');
-        Route::post('/import-html/from-owncloudProcedure', [DocumentController::class, 'importFromOwncloudProcedure'])->name('html.import.owncloudProcedure');
+        Route::get('/dashboard_doc/{nom_lien}', [DocumentController::class, 'dashboard'])->name('dashboard_doc');
+        // Route::get('/indexprocedure/{nom_lien}', [DocumentController::class, 'indexprocedure'])->name('indexprocedure');
+        Route::post('/import-html/from-owncloudProcedure', [DocumentController::class, 'importFromOwncloudDoument'])->name('html.import.owncloudProcedure');
 
         // Import HTML local
         // Route::get('/import-html', [DocumentController::class, 'import_affiche'])->name('html.import.affiche');

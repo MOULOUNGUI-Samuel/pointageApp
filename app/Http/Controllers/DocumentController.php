@@ -12,21 +12,7 @@ use Normalizer;
 class DocumentController extends Controller
 {
     //
-    // public function index()
-    // {
-    //     $targetPath = resource_path('views/components/yodirh/imported');
-    //     $imported = [];
 
-    //     if (File::exists($targetPath)) {
-    //         $files = File::files($targetPath);
-
-    //         foreach ($files as $file) {
-    //             $fileName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-    //             $imported[] = $fileName;
-    //         }
-    //     }
-    //     return view('components.yodirh.documents', compact('imported'));
-    // }
     public function index()
     {
         $basePath = resource_path('views/components/yodirh/imported');
@@ -49,6 +35,45 @@ class DocumentController extends Controller
         }
 
         return view('components.yodirh.documents', compact('imported'));
+    }
+    public function dashboard($nom_lien)
+    {
+
+     
+            $basePath = resource_path('views/components/yodirh/imported/' . $nom_lien);
+        
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
+
+        $procedures = [];
+        $baseImportedPath = resource_path('views/components/yodirh/imported');
+
+        $Dossiers = LienDoc::where('entreprise_id', session('entreprise_id'))->get()->filter(function ($nom_lien) use ($baseImportedPath) {
+            $path = $baseImportedPath . '/' . $nom_lien;
+            return File::isDirectory($path) && collect(File::allFiles($path))->contains(function ($file) {
+                return $file->getExtension() === 'php';
+            });
+        })->values(); // Réindexer proprement
+
+        // foreach ($Dossiers as $doc) {
+        //     $nom_lien = $doc->nom_lien;
+            $basePath = $baseImportedPath . '/' . $nom_lien;
+
+            $files = File::allFiles($basePath);
+
+            foreach ($files as $file) {
+                if ($file->getExtension() !== 'php') continue;
+
+                $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+                $viewName = $nom_lien . '.' . str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+
+                $procedures[] = $viewName;
+            }
+        // }
+
+
+        return view('components.cloudDoc.dashboard', compact('procedures', 'lienDocuments'))
+            ->with('procedures', $procedures)
+            ->with('success', 'Les données ont été chargées avec succès.');
     }
     public function indexprocedure($nom_lien)
     {
@@ -266,7 +291,7 @@ class DocumentController extends Controller
 
         return redirect()->back()->with('success', 'Importation réussie')->with('imported', $imported);
     }
-    public function importFromOwncloudProcedure(Request $request)
+    public function importFromOwncloudDoument(Request $request)
     {
 
         $url = $request->input('cloud_url');
@@ -337,19 +362,18 @@ class DocumentController extends Controller
         File::delete($tmpZipPath);
         File::deleteDirectory($extractPath);
 
-        // 7. Enregistrer le lien dans la base
-        LienDoc::updateOrCreate(
-            [
-                'nom_lien' => $nomLien,
-                'user_id' => $request->input('user_id'),
-                'entreprise_id' => session('entreprise_id'),
-                'module_id' => $request->input('module_id'),
-            ],
-            [
-                'lien' => $url,
-            ]
-        );
+        if ($request->input('nom_lien')) {
+            // 7. Enregistrer le lien dans la base
+            $Doc = new LienDoc();
+            $Doc->nom_lien = $nomLien;
+            $Doc->user_id = $request->input('user_id');
+            $Doc->entreprise_id = session('entreprise_id');
+            $Doc->module_id = $request->input('module_id');
+            $Doc->lien = $url;
+            $Doc->save();
+        }
+
         // 8. Redirection
-        return redirect()->route('indexprocedure', ['nom_lien' => $nomLien]);
+        return redirect()->route('dashboard_doc', ['nom_lien' => $nomLien]);
     }
 }

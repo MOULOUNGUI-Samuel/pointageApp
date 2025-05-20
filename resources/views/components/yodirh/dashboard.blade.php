@@ -98,16 +98,17 @@
     </div>
     <div class="container">
         <div class="row">
-            
+
         </div>
     </div>
     <div class="product-sales-area mg-tb-30">
         <div class="container-fluid">
             <div class="row">
-      
+
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877)">Employés sans trace de présence</h4>
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877)">
+                            Employés sans trace de présence</h4>
                         <div class="recent-items-inn">
                             <table class="table table-inner table-vmiddle">
                                 <thead>
@@ -133,7 +134,8 @@
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:green">Employés déjà presents</h4>
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:green">Employés déjà presents
+                        </h4>
                         <div class="recent-items-inn">
                             <table class="table table-inner table-vmiddle">
                                 <thead>
@@ -169,47 +171,50 @@
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Statut des employés</h4>
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Statut des employés
+                        </h4>
                         <div class="">
                             <div class="row">
                                 <div class="col-md-8 text-left">
                                     <span>Actifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    <span>60%</span>
+                                    <span>{{ (count($employesActifs) * 100) / count($employes) }}</span>
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                <div style="width: 60%;" class="progress-bar bg-green"></div>
+                                <div style="width: {{ (count($employesActifs) * 100) / count($employes) }}%;" class="progress-bar bg-green"></div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8 text-left">
                                     <span>En congé</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    <span>30%</span>
+                                    <span>0%</span>
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                <div style="width: 30%;" class="progress-bar bg-orange" style="background-color:orange"></div>
+                                <div style="width: 0%;" class="progress-bar bg-orange" style="background-color:orange">
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8 text-left">
                                     <span>Inactifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    <span>10%</span>
+                                    <span>{{ (count($employesInactifs) * 100) / count($employes) }}%</span>
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                <div style="width: 10%;" class="progress-bar bg-red"></div>
+                                <div style="width: {{ (count($employesInactifs) * 100) / count($employes) }}%;" class="progress-bar bg-red"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Types de contrats</h4>
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Types de contrats
+                        </h4>
                         <div class="">
                             <div class="row">
                                 <div class="col-md-8 text-left">
@@ -221,17 +226,6 @@
                             </div>
                             <div class="progress progress-mini">
                                 <div style="width: 60%;" class="progress-bar bg-green"></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>En congé</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span>30%</span>
-                                </div>
-                            </div>
-                            <div class="progress progress-mini">
-                                <div style="width: 30%;" class="progress-bar bg-orange" style="background-color:orange"></div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8 text-left">
@@ -247,7 +241,8 @@
                         </div>
                     </div>
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#f8ac59">Contrats à renouveler</h4>
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#f8ac59">Contrats à renouveler
+                        </h4>
                         <div class="">
                             <div class="row">
                                 <div class="col-md-8 text-left">
@@ -276,46 +271,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                    <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Congés par service</h4>
-                        <div class="">
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>Informatique</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span>12 jours</span>
-                                </div>
-                            </div>
-                            <div class="progress progress-mini">
-                                <div style="width: 30%;" class="progress-bar bg-green"></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>RH</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span>8 jours</span>
-                                </div>
-                            </div>
-                            <div class="progress progress-mini">
-                                <div style="width: 90%;" class="progress-bar bg-orange" style="background-color:orange"></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>Finance</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span>15 jours</span>
-                                </div>
-                            </div>
-                            <div class="progress progress-mini">
-                                <div style="width: 50%;" class="progress-bar bg-red"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>

@@ -25,14 +25,14 @@ class DateHelper
     public static function dossier_info()
     {
 
-        $dossier = LienDoc::first();
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
         // $PermissionUsers = PermissionUser::with('permission')
         // ->where('user_id', Auth::id())
         // ->get();
         // // dd($PermissionUsers);
         $modules = Module::where('statut', 1)->get();
         return [
-            'dossier' => $dossier,
+            'lienDocuments' => $lienDocuments,
             'modules' => $modules,
         ];
     }

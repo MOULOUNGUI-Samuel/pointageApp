@@ -1,7 +1,5 @@
 <div class="left-sidebar-pro">
-    @php
-        $dossier_info = \App\Helpers\DateHelper::dossier_info();
-    @endphp
+   
     <nav id="sidebar" class="">
         <div class="sidebar-header">
             <a href="{{ route('dashboard', $module_id) }}">
@@ -69,8 +67,8 @@
                         <ul class="submenu-angle" aria-expanded="false">
                             <li><a href="#mapping"><i class="fa fa-map sub-icon-mg"></i> <span
                                         class="mini-sub-pro">Cartographie des processus</span></a></li>
-                            <li><a href="{{ route('indexprocedure', ['nom_lien' => $dossier_info['dossier']->nom_lien ?? 'imported']) }}"
-                                    class="{{ request()->routeIs('indexprocedure') ? 'bg-primary2' : '' }}"><i
+                            <li><a href="#"
+                                    class=""><i
                                         class="fa fa-list-alt sub-icon-mg"></i> <span class="mini-sub-pro">Procédures
                                         opérationnelles</span></a></li>
                             <li><a href="#optimization"><i class="fa fa-line-chart sub-icon-mg"></i> <span
