@@ -108,6 +108,44 @@
                     </div>
                 @else
                     <div class="col-md-3">
+                        <div class="hpanel responsive-mg-b-30" id="afficheAJoutLien" style="display: none">
+                            <div class="panel-body">
+                                <h3 class="text-primary">Ajoute un lien OwnCloud</h3>
+                                <form action="{{ route('html.import.owncloudProcedure') }}" method="POST">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Nom du dossier :</label>
+                                            <input type="text" name="nom_lien" placeholder="Nom du dossier" required
+                                                class="form-control mb-3">
+                                            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}" required
+                                                class="form-control mb-3">
+                                            <input type="hidden" name="module_id" value="{{ $module_id }}" required
+                                                class="form-control mb-3">
+                                        </div>
+                                        <div class="col-md-12" style="margin-top: 5px">
+                                            <label>Lien du OwnCloud :</label>
+                                            <input type="text" name="cloud_url"
+                                                placeholder="Collez ici votre lien public" required
+                                                class="form-control mb-3">
+                                        </div>
+                                        <div class="col-md-12 text-center" style="margin-top:23px">
+
+                                            <button type="button" class="btn btn-dark text-left"
+                                                onclick="document.getElementById('afficheAJoutLien').style.display = 'none';"
+                                                style="margin-right: 50px">
+                                                Annuler
+                                            </button>
+
+                                            <button type="submit" class="btn btn-primary text-right">Importer
+                                                depuis le
+                                                cloud</button>
+
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class=" text-center" style="margin-top: 20px;">
