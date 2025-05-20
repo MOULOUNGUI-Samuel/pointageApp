@@ -58,11 +58,11 @@ class AdminController extends Controller
         //
         $entreprise_id = session('entreprise_id');
         $entreprises = Entreprise::all();
-        $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $roles = Role::all();
         $users = User::all();
         $pays = Pays::all();
         $villes = Ville::all();
+        $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $categorie_professionelles = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
@@ -73,13 +73,14 @@ class AdminController extends Controller
 
     public function edit(Request $request, string $id)
     {
+        $entreprise_id = session('entreprise_id');
         $entreprises = Entreprise::all();
-        $services = Service::all();
         $roles = Role::all();
         $users = User::all();
         $pays = Pays::all();
         $villes = Ville::all();
-        $categorie_professionelles = CategorieProfessionnelle::all();
+        $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
+        $categorie_professionelles = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
             ->get();

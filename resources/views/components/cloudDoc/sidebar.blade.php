@@ -4,8 +4,8 @@
 <div class="left-sidebar-pro">
     <nav id="sidebar" class="">
         <div class="sidebar-header">
-            <a href="{{ route('dashboard', $module_id) }}"><img class="main-logo"
-                    src="{{ asset('storage/' . $module_logo) }}" alt="" width="100" /></a>
+            <a href="{{ route('dashboard', $module_id) }}"><img class="main-logo rounded"
+                    src="{{ asset('storage/' . $module_logo) }}" alt="" width="100" style="height: 90px" /></a>
             <strong><img src="{{ asset('storage/' . $module_logo) }}" alt="" /></strong>
             <div style="margin-left: 8px;margin-right:8px;margin-top:8px">
                 <a class="btn btn-primary btn-block" style="margin-bottom: 10px;color:white"
