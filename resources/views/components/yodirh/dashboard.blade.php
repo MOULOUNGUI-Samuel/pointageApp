@@ -179,11 +179,21 @@
                                     <span>Actifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    <span>{{ (count($employesActifs) * 100) / count($employes) }}</span>
+                                    @if (isset($employes) && $employes > 0)
+                                        <span>{{ (count($employesActifs) * 100) / count($employes) }}</span>
+                                    @else
+                                        <span>0</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                <div style="width: {{ (count($employesActifs) * 100) / count($employes) }}%;" class="progress-bar bg-green"></div>
+                                @if (isset($employes) && $employes > 0)
+                                    <div style="width: {{ (count($employesActifs) * 100) / count($employes) }}%;"
+                                        class="progress-bar bg-green"></div>
+                                @else
+                                    <div style="width: 0%;" class="progress-bar bg-green">0</div>
+                                @endif
+
                             </div>
                             <div class="row">
                                 <div class="col-md-8 text-left">
@@ -202,11 +212,20 @@
                                     <span>Inactifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    <span>{{ (count($employesInactifs) * 100) / count($employes) }}%</span>
+                                    @if (isset($employes) && $employes > 0)
+                                        <span>{{ (count($employesInactifs) * 100) / count($employes) }}</span>
+                                    @else
+                                        <span>0</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                <div style="width: {{ (count($employesInactifs) * 100) / count($employes) }}%;" class="progress-bar bg-red"></div>
+                                @if (isset($employes) && $employes > 0)
+                                    <div style="width: {{ (count($employesInactifs) * 100) / count($employes) }}%;"
+                                        class="progress-bar bg-green"></div>
+                                @else
+                                    <div style="width: 0%;" class="progress-bar bg-green">0</div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -271,7 +290,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
