@@ -179,7 +179,7 @@
                                     <span>Actifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    @if (isset($employes) && $employes > 0)
+                                    @if (isset($employes) && count($employes) > 0)
                                         <span>{{ (count($employesActifs) * 100) / count($employes) }}</span>
                                     @else
                                         <span>0</span>
@@ -187,7 +187,7 @@
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                @if (isset($employes) && $employes > 0)
+                                @if (isset($employes) && count($employes) > 0)
                                     <div style="width: {{ (count($employesActifs) * 100) / count($employes) }}%;"
                                         class="progress-bar bg-green"></div>
                                 @else
@@ -212,7 +212,7 @@
                                     <span>Inactifs</span>
                                 </div>
                                 <div class="col-md-4 text-right">
-                                    @if (isset($employes) && $employes > 0)
+                                    @if (isset($employes) && count($employes) > 0)
                                         <span>{{ (count($employesInactifs) * 100) / count($employes) }}</span>
                                     @else
                                         <span>0</span>
@@ -220,7 +220,7 @@
                                 </div>
                             </div>
                             <div class="progress progress-mini">
-                                @if (isset($employes) && $employes > 0)
+                                @if (isset($employes) && count($employes) > 0)
                                     <div style="width: {{ (count($employesInactifs) * 100) / count($employes) }}%;"
                                         class="progress-bar bg-green"></div>
                                 @else
