@@ -1,3 +1,33 @@
+<script>
+    let dotCount = 1;
+    let dotInterval;
+
+    function startDotsAnimation() {
+        const dot = document.getElementById('dot');
+        dotCount = 1;
+
+        dotInterval = setInterval(() => {
+            dot.textContent = '.'.repeat(dotCount);
+            dotCount = dotCount >= 3 ? 1 : dotCount + 1;
+        }, 500); // vitesse de l'animation
+    }
+
+    function stopDotsAnimation() {
+        clearInterval(dotInterval);
+        document.getElementById('dot').textContent = '';
+    }
+
+    // Exemple : démarrer quand le loader s'affiche
+    function showLoader() {
+        document.getElementById('loadingIndicator').style.display = 'block';
+        startDotsAnimation();
+    }
+
+    function hideLoader() {
+        document.getElementById('loadingIndicator').style.display = 'none';
+        stopDotsAnimation();
+    }
+</script>
 <!-- jQuery -->
 <script src="{{ asset('src2/js/vendor/jquery-1.11.3.min.js') }}"></script>
 
@@ -99,4 +129,3 @@
 <!-- Plugins & Main -->
 <script src="{{ asset('src2/js/plugins.js') }}"></script>
 <script src="{{ asset('src2/js/main.js') }}"></script>
-

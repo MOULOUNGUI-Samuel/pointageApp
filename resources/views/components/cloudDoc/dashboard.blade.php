@@ -29,7 +29,7 @@
         <div class="container-fluid" style="margin-left: 50px;margin-right: 50px;">
 
             <div class="row">
-                @if (count($dossier_info['lienDocuments']) > 0)
+                @if (isset($dossier_info['lienDocuments']) && !$errors->any())
                     @if (session('success') || isset($success))
                         <div class="col-md-4"></div>
 
@@ -44,7 +44,28 @@
                         <div class="col-md-4"></div>
                     @endif
                 @endif
-
+            </div>
+            <div class="row">
+                @if ($errors->any())
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li style="display: flex; justify-content: space-between;">
+                                        <span><i class="icon-warning" style="font-size: 20px"></i>
+                                            <p>{!! $error !!}</p>
+                                        </span>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                @endif
             </div>
             <div class="row">
                 @if (isset($procedures))
@@ -94,8 +115,46 @@
                             <input type="text" id="searchInput" class="form-control"
                                 placeholder="🔍 Rechercher un dossier ou fichier...">
                         </div>
-                        <div class="text-center">
+                        @php
+                            $currentDossier = request()->segment(count(request()->segments()));
+                        @endphp
+                        <div class="text-center d-flex-justify-content-between">
                             <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
+                            <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
+                                onsubmit="return confirm('');" class="ms-2" style="margin-right: 5px">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" data-toggle="modal" data-target="#floatingLabelsModal"
+                                    class="btn btn-sm btn-danger" style="font-size:15px;margin-top:5px">
+                                    <i class="fa fa-trash"></i> Supprimer le dossier
+                                </button>
+                            </form>
+                        </div>
+                        <div class="modal fade" id="floatingLabelsModal" tabindex="-1" role="dialog"
+                            aria-labelledby="floatingLabelsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color:rgba(152, 15, 15, 0.898)">
+                                        <h4 class="modal-title" id="floatingLabelsModal" style="color: white">
+                                             Suppresion du dossier
+                                        </h4>
+                                    </div>
+                                    <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
+                                        class="ms-2" style="margin-right: 5px">
+                                        @csrf
+                                        @method('DELETE')
+                                        <div class="modal-body text-center">
+                                            <h4 class="text-danger">Êtes-vous sûr de vouloir supprimer ce dossier ?</h4>
+                                            <h3><i class="fa fa-folder text-warning " style="margin-right: 5px"></i>{{ $currentDossier }}</h3>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                         <ul id="file-tree" class="tree" style="font-size: 25px;margin-top: 10px;">
                             {!! \App\Helpers\FileTreeHelper::afficherArborescence($procedures) !!}
@@ -104,7 +163,7 @@
 
                     </div>
                     <div class="col-md-3">
-                        
+
                     </div>
                 @else
                     <div class="col-md-3">

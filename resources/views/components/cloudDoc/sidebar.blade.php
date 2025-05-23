@@ -24,13 +24,22 @@
         @endphp
         <div class="left-custom-menu-adp-wrap comment-scrollbar">
             <nav class="sidebar-nav left-sidebar-menu-pro">
+                {{-- Loader d'écran --}}
                 <ul class="metismenu" id="menu1">
+
+                    <div id="loadingIndicator" class="text-center my-3" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden text-info" id="loadingText" style="font-size: 20px">Chargement<span id="dot">.</span>
+                        </div>
+                        <div class="mt-2" >Chargement en cours.</span></div>
+                    </div>
+
                     @foreach ($dossier_info['lienDocuments'] as $index => $lienDocument)
                         <li class="active">
                             <a href="#"
                                 class="{{ $lienDocument->nom_lien == $currentDossier ? 'bg-primary2' : '' }}"
-                                onclick="event.preventDefault(); document.getElementById('owncloudProcedure{{ $index }}').submit();">
-                                <i class="fa fa-folder text-warning" style="margin-right: 8px"></i>
+                                onclick="event.preventDefault(); showLoader(); document.getElementById('owncloudProcedure{{ $index }}').submit();">
+                                <i class="fa fa-folder text-warning me-2"></i>
                                 {{ $lienDocument->nom_lien }}
                             </a>
 
@@ -47,6 +56,8 @@
                     @endforeach
                 </ul>
             </nav>
+            
+
         </div>
     </nav>
 </div>
