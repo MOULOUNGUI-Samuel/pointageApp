@@ -163,7 +163,7 @@
             </aside>
 
             <!-- MAIN CONTENT (scrollable) -->
-            <main class="flex-grow-1 p-4" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"">
+            <main class="flex-grow-1 p-4" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
                 <div class=" bg-white rounded shadow-sm p-4">
                     <div class="container-fluid px-4">
 
