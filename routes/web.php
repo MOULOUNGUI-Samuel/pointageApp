@@ -96,6 +96,7 @@ Route::middleware('auth')->group(
         // Import depuis OwnCloud
         Route::get('/documents', [DocumentController::class, 'index'])->name('document.index');
         Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])->name('html.import.owncloud');
+        Route::post('/partageFichier', [DocumentController::class, 'partageFichier'])->name('partageFichier');
 
         // Chargement des vues importées dynamiques
         $importedRoutesPath = base_path('routes/imported.php');

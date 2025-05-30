@@ -120,15 +120,21 @@
                         @endphp
                         <div class="text-center d-flex-justify-content-between">
                             <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
-                            <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
-                                onsubmit="return confirm('');" class="ms-2" style="margin-right: 5px">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" data-toggle="modal" data-target="#floatingLabelsModal"
-                                    class="btn btn-sm btn-danger" style="font-size:15px;margin-top:5px">
-                                    <i class="fa fa-trash"></i> Supprimer le dossier
+                            <div class="text-center d-flex-justify-content-between">
+                                <button type="button" data-toggle="modal" data-target="#partageLabelsModal"
+                                    class="btn btn-sm btn-primary" style="font-size:15px;margin-right:5px;margin-top:-10px">
+                                    <i class="fa fa-share-alt"></i> Partager le dossier
                                 </button>
-                            </form>
+                                <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
+                                    onsubmit="return confirm('');" class="ms-2" style="margin-right: 5px">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" data-toggle="modal" data-target="#floatingLabelsModal"
+                                        class="btn btn-sm btn-danger" style="font-size:15px;margin-top:5px">
+                                        <i class="fa fa-trash"></i> Supprimer le dossier
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                         <div class="modal fade" id="floatingLabelsModal" tabindex="-1" role="dialog"
                             aria-labelledby="floatingLabelsModalLabel" aria-hidden="true">
@@ -158,6 +164,85 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="partageLabelsModal" tabindex="-1" role="dialog"
+                            aria-labelledby="partageLabelsModal" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary">
+                                        <h4 class="modal-title" id="partageLabelsModal" style="color: white">
+                                            Partager le dossier
+                                        </h4>
+                                    </div>
+                                    <form action="{{route('partageFichier')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="nom_lien" value="{{ $currentDossier }}">
+                                        <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                                            <div class="mb-3" style="margin-bottom: 10px;">
+                                                <div class="mb-2" style="display: flex; align-items: center;justify-content: space-between;">
+                                                    <label>Rechercher un utilisateur</label>
+                                                    <span id="checkedCount" class="badge ml-2"
+                                                        style="font-size:16px;background-color:lightslategrey">0 sélectionné(s)</span>
+                                                </div>
+
+                                                <input type="text" id="searchInputUtilisateur"
+                                                    class="form-control shadow rounded"
+                                                    placeholder="🔍 Rechercher un utilisateur...">
+                                            </div>
+                                            <table id="data-table-basic" class="table table-striped">
+                                                <thead>
+                                                    <tr class="bg-primary" style="color: white">
+                                                        <th data-field="state" data-checkbox="true"></th>
+                                                        {{-- <th>ID</th> --}}
+                                                        <th>Nom</th>
+                                                        <th>Prénom</th>
+                                                        <th>Entreprise</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="approbationsTable2">
+                                                    @foreach ($utilisateurs as $user)
+                                                        <tr style="cursor:pointer;"
+                                                            onclick="this.querySelector('input[type=checkbox]').click();">
+                                                            <td></td>
+                                                            {{-- <td>{{ $user->id }}</td> --}}
+                                                            <td>{{ $user->nom }}</td>
+                                                            <td>{{ $user->prenom }}</td>
+                                                            <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
+                                                            <td>
+                                                                <input type="checkbox" name="created_at[]"
+                                                                    value="{{ $user->created_at }}" class="form-check-input"
+                                                                    onclick="event.stopPropagation();">
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    const input = document.getElementById('searchInputUtilisateur');
+                                                    input.addEventListener('input', function() {
+                                                        const query = this.value.toLowerCase();
+                                                        document.querySelectorAll('#approbationsTable2 tr').forEach(row => {
+                                                            const text = row.textContent.toLowerCase();
+                                                            row.style.display = text.includes(query) ? '' : 'none';
+                                                        });
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Partager le dossier</button>
+                                        </div>
+                                    </form>
+
+
+                                </div>
+                            </div>
+                        </div>
+
                         <ul id="file-tree" class="tree" style="font-size: 25px;margin-top: 10px;">
                             {!! \App\Helpers\FileTreeHelper::afficherArborescence($procedures) !!}
                         </ul>
@@ -220,21 +305,32 @@
         </div>
     </div>
     <script>
-        function openInModal(url) {
-    const modal = new bootstrap.Modal(document.getElementById('importedModal'));
-    document.getElementById('importedModalContent').innerHTML = 'Chargement...';
-
-    fetch(url)
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('importedModalContent').innerHTML = html;
-            modal.show();
-        })
-        .catch(err => {
-            document.getElementById('importedModalContent').innerHTML = 'Erreur de chargement.';
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateCheckedCount() {
+                const count = document.querySelectorAll('#approbationsTable2 input[type=checkbox]:checked').length;
+                document.getElementById('checkedCount').textContent = count + ' sélectionné(s)';
+            }
+            document.querySelectorAll('#approbationsTable2 input[type=checkbox]').forEach(cb => {
+                cb.addEventListener('change', updateCheckedCount);
+            });
+            updateCheckedCount();
         });
-}
+    </script>
+    <script>
+        function openInModal(url) {
+            const modal = new bootstrap.Modal(document.getElementById('importedModal'));
+            document.getElementById('importedModalContent').innerHTML = 'Chargement...';
 
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('importedModalContent').innerHTML = html;
+                    modal.show();
+                })
+                .catch(err => {
+                    document.getElementById('importedModalContent').innerHTML = 'Erreur de chargement.';
+                });
+        }
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
