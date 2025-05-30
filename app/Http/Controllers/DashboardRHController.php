@@ -39,7 +39,21 @@ class DashboardRHController extends Controller
             }
         }
         $entreprise_id = session('entreprise_id');
+        $deuxSemainesPlusTard = now()->addWeeks(2)->endOfDay();
+
+        $utilisateursFinContrats = User::where('entreprise_id', $entreprise_id)
+            ->whereNotNull('date_fin_contrat')
+            ->whereBetween('date_fin_contrat', [now()->startOfDay(), $deuxSemainesPlusTard])
+            ->get()
+            ->map(function ($user) {
+                $user->jours_restant = now()->diffInDays(\Carbon\Carbon::parse($user->date_fin_contrat), false);
+                return $user;
+            });
+            
         $role_user = User::where('id', auth()->user()->id)->with('role')->first();
+        if (!$role_user) {
+            return redirect()->back()->with('error', 'Utilisateur non trouvé.');
+        }
 
 
         $employes = User::where('entreprise_id', $entreprise_id)->get();
@@ -66,7 +80,8 @@ class DashboardRHController extends Controller
             'users_non_existants',
             'pointage_intermediaires',
             'employesActifs',
-            'employesInactifs'
+            'employesInactifs',
+            'utilisateursFinContrats',
         ));
     }
 }

@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-9">
                         <div class="mb-3" style="margin-bottom: 10px">
                             <label>Rechercher un dossier ou fichier</label>
                             <input type="text" id="searchInput" class="form-control"
@@ -136,7 +136,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header" style="background-color:rgba(152, 15, 15, 0.898)">
                                         <h4 class="modal-title" id="floatingLabelsModal" style="color: white">
-                                             Suppresion du dossier
+                                            Suppresion du dossier
                                         </h4>
                                     </div>
                                     <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
@@ -145,12 +145,14 @@
                                         @method('DELETE')
                                         <div class="modal-body text-center">
                                             <h4 class="text-danger">Êtes-vous sûr de vouloir supprimer ce dossier ?</h4>
-                                            <h3><i class="fa fa-folder text-warning " style="margin-right: 5px"></i>{{ $currentDossier }}</h3>
+                                            <h3><i class="fa fa-folder text-warning "
+                                                    style="margin-right: 5px"></i>{{ $currentDossier }}</h3>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                                            <button type="submit" class="btn btn-danger">Confirmer la
+                                                suppression</button>
                                         </div>
                                     </form>
                                 </div>
@@ -160,9 +162,6 @@
                             {!! \App\Helpers\FileTreeHelper::afficherArborescence($procedures) !!}
                         </ul>
 
-
-                    </div>
-                    <div class="col-md-3">
 
                     </div>
                 @else

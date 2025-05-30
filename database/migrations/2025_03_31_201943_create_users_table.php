@@ -36,6 +36,7 @@ return new class extends Migration
         $table->string('password');
         $table->date('date_naissance')->nullable();
         $table->date('date_embauche')->nullable();
+        $table->date('date_fin_contrat')->nullable();
         $table->string('lieu_naissance')->nullable();
         $table->string('nationalite')->nullable();
         $table->string('numero_securite_sociale')->nullable();

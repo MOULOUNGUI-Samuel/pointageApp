@@ -109,7 +109,7 @@
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
                         <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877)">
                             Employés sans trace de présence</h4>
-                        <div class="recent-items-inn">
+                        <div class="recent-items-inn" style="overflow-y: auto; max-height: 400px;">
                             <table class="table table-inner table-vmiddle">
                                 <thead>
                                     <tr>
@@ -262,32 +262,86 @@
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
                         <h4 class="box-title badge" style="font-size: 15px;background-color:#f8ac59">Contrats à renouveler
                         </h4>
-                        <div class="">
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>CDD-Assistante...</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span class="text-danger">3 jrs</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h5>Sophie Bernard</h5>
-                            </div>
+                        <!-- Barre de recherche -->
+                        <div class="mb-3" style="margin-bottom: 10px;">
+                            <input type="text" class="form-control shadow border border-dark rounded"
+                                id="searchContrat" placeholder="Rechercher un employé...">
                         </div>
-                        <div class="">
-                            <div class="row">
-                                <div class="col-md-8 text-left">
-                                    <span>CDD-Développe...</span>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <span class="text-warning">15 jrs</span>
+                        @foreach ($utilisateursFinContrats as $dateFinContrat)
+                            @php
+                                $dateFin = \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat);
+                                $dateActuelle = \Carbon\Carbon::now();
+                                $joursRestants = $dateFin->diffInDays($dateActuelle);
+                                $dateFinContrat->jours_restants = $joursRestants;
+                                $dateFinContrat->contrat = $dateFin->format('d/m/Y');
+
+                                // ✅ Nouvelle logique d'affichage
+                                if ($joursRestants == 0) {
+                                    $periodeContrat = "Aujourd'hui";
+                                } elseif ($joursRestants == 1) {
+                                    $periodeContrat = 'Hier';
+                                } elseif ($joursRestants < 7) {
+                                    $periodeContrat = "$joursRestants jours";
+                                } elseif ($joursRestants < 30) {
+                                    // Gestion des semaines + jours
+                                    $weeks = floor($joursRestants / 7);
+                                    $remainingDays = $joursRestants % 7;
+                                    $periodeContrat = "$weeks semaine" . ($weeks > 1 ? 's' : '');
+                                    if ($remainingDays > 0) {
+                                        $periodeContrat .= " , $remainingDays jour" . ($remainingDays > 1 ? 's' : '');
+                                    }
+                                } else {
+                                    // Gestion des mois + semaines + jours
+                                    $months = floor($joursRestants / 30);
+                                    $remainingDays = $joursRestants % 30;
+                                    $weeks = floor($remainingDays / 7);
+                                    $extraDays = $remainingDays % 7;
+
+                                    $periodeContrat = "$months mois";
+                                    if ($weeks > 0) {
+                                        $periodeContrat .= " , $weeks semaine" . ($weeks > 1 ? 's' : '');
+                                    }
+                                    if ($extraDays > 0) {
+                                        $periodeContrat .= " , $extraDays jour" . ($extraDays > 1 ? 's' : '');
+                                                                    }
+                                                                }
+                            @endphp
+
+                            <div id="contratsList">
+                                <div class="mb-3 contrat-item">
+                                    <div>
+                                        <h5 style="font-size: 14px;">
+                                            {{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}
+                                        </h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 text-left">
+                                            <span
+                                                style="font-size: 14px;">{{ \Illuminate\Support\Str::limit($dateFinContrat->type_contrat, 20, '...') }}</span>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <span class="text-warning" style="font-size: 14px;">
+                                                {{ $periodeContrat }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <hr>
                                 </div>
                             </div>
-                            <div>
-                                <h5>Thomas Petit</h5>
-                            </div>
-                        </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const searchInput = document.getElementById('searchContrat');
+                                    const items = document.querySelectorAll('#contratsList .contrat-item');
+                                    searchInput.addEventListener('keyup', function() {
+                                        const value = this.value.toLowerCase();
+                                        items.forEach(function(item) {
+                                            const text = item.textContent.toLowerCase();
+                                            item.style.display = text.includes(value) ? '' : 'none';
+                                        });
+                                    });
+                                });
+                            </script>
+                        @endforeach
                     </div>
                 </div>
 

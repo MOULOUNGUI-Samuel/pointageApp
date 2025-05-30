@@ -66,6 +66,7 @@
                                 </div>
                             </div>
                         </div>
+                       
                         <div class="form-group col-md-4">
                             <label class="form-label">Lieu de naissance(<span style="color: red;font-size:12px">***</span>) </label>
                             <input type="text" name="lieu_naissance" class="form-control" autocomplete="false"
@@ -206,6 +207,17 @@
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input type="text" class="form-control" name="date_embauche"
                                         value="{{ old('date_embauche') }}" required data-mask="99/99/9999"
+                                        autocomplete="false">
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="form-group" id="data_2">
+                                <label class="form-label">Date de fin de contrat(<span style="color: red;font-size:12px">***</span>) </label>
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" class="form-control" name="date_fin_contrat"
+                                        value="{{ old('date_fin_contrat') }}" required data-mask="99/99/9999"
                                         autocomplete="false">
                                 </div>
                             </div>

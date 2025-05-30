@@ -97,6 +97,7 @@ class AdminController extends Controller
                 'nom' => 'required|string|max:100',
                 'prenom' => 'required|string|max:100',
                 'date_naissance' => 'required|date_format:d/m/Y',
+                'date_fin_contrat' => 'required|date_format:d/m/Y',
                 'adresse' => 'required|string|max:255',
                 'telephone' => 'required|string|max:20',
                 'matricule' => 'required|string|max:50|unique:users,matricule',
@@ -118,6 +119,7 @@ class AdminController extends Controller
                 'nom.required' => 'Le nom est obligatoire.',
                 'prenom.required' => 'Le prénom est obligatoire.',
                 'date_naissance.required' => 'La date de naissance est obligatoire.',
+                'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
                 'matricule.required' => 'Le matricule est obligatoire.',
                 'matricule.unique' => 'Ce matricule est déjà utilisé.',
                 'pays_id.required' => 'Le pays est obligatoire.',
@@ -154,6 +156,7 @@ class AdminController extends Controller
             $user->email_professionnel = $request->input('email_professionnel');
             $user->telephone_professionnel = $request->input('telephone_professionnel');
             $user->date_embauche = $request->input('date_embauche') ? Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d') : null;
+            $user->date_fin_contrat = $request->input('date_fin_contrat') ? Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d') : null;
             $user->fonction = $request->input('fonction');
             $user->matricule = $request->input('matricule');
             $user->superieur_hierarchique = $request->input('superieur_hierarchique');
@@ -203,6 +206,7 @@ class AdminController extends Controller
                 'nom' => 'required|string|max:100',
                 'prenom' => 'required|string|max:100',
                 'date_naissance' => 'required|date_format:d/m/Y',
+                'date_fin_contrat' => 'required|date_format:d/m/Y',
                 'adresse' => 'required|string|max:255',
                 'telephone' => 'required|string|max:20',
                 'matricule' => 'required|string|max:50|unique:users,matricule,' . $id,
@@ -223,6 +227,7 @@ class AdminController extends Controller
                 'nom.required' => 'Le nom est obligatoire.',
                 'prenom.required' => 'Le prénom est obligatoire.',
                 'date_naissance.required' => 'La date de naissance est obligatoire.',
+                'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
                 'matricule.required' => 'Le matricule est obligatoire.',
                 'matricule.unique' => 'Ce matricule est déjà utilisé.',
                 'pays_id.required' => 'Le pays est obligatoire.',
@@ -274,6 +279,7 @@ class AdminController extends Controller
             if ($request->filled('date_embauche')) {
                 $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
             }
+            $user->date_fin_contrat = Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d');
             $user->fonction = $request->input('fonction') ?? $user->fonction;
             $user->matricule = $request->input('matricule') ?? $user->matricule;
             $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;

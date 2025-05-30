@@ -31,6 +31,7 @@ class User extends Authenticatable
         'email_professionnel',
         'date_naissance',
         'date_embauche',
+        'date_fin_contrat',
         'service_id',
         'role_id',
         'lieu_naissance',

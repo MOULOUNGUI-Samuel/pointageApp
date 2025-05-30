@@ -205,6 +205,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group" id="data_2">
+                                <label class="form-label">Date de fin de contrat(<span style="color: red;font-size:12px">***</span>) </label>
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" class="form-control" name="date_fin_contrat"
+                                        value="{{ old('date_fin_contrat',\Carbon\Carbon::parse($utilisateur->date_fin_contrat)->format('d/m/Y')) }}" required data-mask="99/99/9999"
+                                        autocomplete="false">
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">Rôle</label>
                             <select class="select2_demo_3 form-control" name="role_id" style="width: 100%;">
