@@ -47,8 +47,8 @@ class FileTreeHelper
                               </li>
                               <script>
                                 function ' . $popupFunction . '() {
-                                    const width = 1500;
-                                    const height = 750;
+                                    const width = 1400;
+                                    const height = 680;
                                     const left = (window.screen.width / 2) - (width / 2);
                                     const top = (window.screen.height / 2) - (height / 2);
                                     window.open("' . $url . '", "popupWindow", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left + ",scrollbars=yes,resizable=no");
