@@ -16,26 +16,26 @@ use Illuminate\Support\Facades\File;
 
 
 
-$importBase = resource_path('views/components/yodirh/imported');
+// $importBase = resource_path('views/components/yodirh/imported');
 
-if (File::exists($importBase)) {
-    $files = File::allFiles($importBase);
+// if (File::exists($importBase)) {
+//     $files = File::allFiles($importBase);
 
-    foreach ($files as $file) {
-        if ($file->getExtension() !== 'php') continue;
+//     foreach ($files as $file) {
+//         if ($file->getExtension() !== 'php') continue;
 
-        // Obtenir le chemin relatif depuis le dossier imported
-        $relativePath = str_replace($importBase . DIRECTORY_SEPARATOR, '', $file->getPathname());
+//         // Obtenir le chemin relatif depuis le dossier imported
+//         $relativePath = str_replace($importBase . DIRECTORY_SEPARATOR, '', $file->getPathname());
 
-        // Nettoyer et transformer en nom de vue
-        $viewName = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+//         // Nettoyer et transformer en nom de vue
+//         $viewName = str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
 
-        // Générer la route avec URL utilisant des slashes
-        Route::get('/imported/' . str_replace('.', '/', $viewName), function () use ($viewName) {
-            return view('components.yodirh.imported.' . $viewName);
-        })->name('imported.' . $viewName);
-    }
-}
+//         // Générer la route avec URL utilisant des slashes
+//         Route::get('/imported/' . str_replace('.', '/', $viewName), function () use ($viewName) {
+//             return view('components.yodirh.imported.' . $viewName);
+//         })->name('imported.' . $viewName);
+//     }
+// }
 
 
 

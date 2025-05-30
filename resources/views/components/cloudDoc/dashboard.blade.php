@@ -220,6 +220,23 @@
         </div>
     </div>
     <script>
+        function openInModal(url) {
+    const modal = new bootstrap.Modal(document.getElementById('importedModal'));
+    document.getElementById('importedModalContent').innerHTML = 'Chargement...';
+
+    fetch(url)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('importedModalContent').innerHTML = html;
+            modal.show();
+        })
+        .catch(err => {
+            document.getElementById('importedModalContent').innerHTML = 'Erreur de chargement.';
+        });
+}
+
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleBtn = document.getElementById('toggleTreeBtn');
             const formSection = document.getElementById('afficheAJoutLien');

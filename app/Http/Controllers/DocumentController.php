@@ -36,6 +36,7 @@ class DocumentController extends Controller
 
         return view('components.yodirh.documents', compact('imported'));
     }
+    
     public function dashboard($nom_lien)
     {
 
