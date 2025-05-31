@@ -107,7 +107,7 @@
                                 <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30" style="margin-top: 10px;">
                                     <h4 class="box-title badge"
                                         style="font-size: 15px;background-color:#05436b;padding: 5px;border-radius: 5px;">
-                                        Liste des personnes associer au dossier</h4>
+                                        Liste des personnes associées au dossier</h4>
                                     <div class="mb-3" style="margin-bottom: 10px;">
                                         <input type="text" class="form-control shadow border border-dark rounded"
                                             id="search" placeholder="Rechercher...">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CategorieProfessionnelle;
+use App\Models\Entreprise;
 use App\Models\Module;
 use App\Models\Pointage;
 use App\Models\PointagesIntermediaire;
@@ -39,7 +40,12 @@ class DashboardRHController extends Controller
             }
         }
         $entreprise_id = session('entreprise_id');
+
         $deuxSemainesPlusTard = now()->addWeeks(2)->endOfDay();
+        $entreprises = Entreprise::All();
+        $modules = Module::All();
+        $services = Service::where('entreprise_id', $entreprise_id)->get();
+        $categories = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->get();
 
         $utilisateursFinContrats = User::where('entreprise_id', $entreprise_id)
             ->whereNotNull('date_fin_contrat')
@@ -49,7 +55,7 @@ class DashboardRHController extends Controller
                 $user->jours_restant = now()->diffInDays(\Carbon\Carbon::parse($user->date_fin_contrat), false);
                 return $user;
             });
-            
+
         $role_user = User::where('id', auth()->user()->id)->with('role')->first();
         if (!$role_user) {
             return redirect()->back()->with('error', 'Utilisateur non trouvé.');
@@ -82,6 +88,10 @@ class DashboardRHController extends Controller
             'employesActifs',
             'employesInactifs',
             'utilisateursFinContrats',
+            'entreprises',
+            'modules',
+            'services',
+            'categories',
         ));
     }
 }

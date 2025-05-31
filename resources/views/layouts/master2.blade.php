@@ -45,8 +45,13 @@
         @case('rh')
             @include('components/yodirh/sidebar')
         @break
+
         @case('documents owncloud')
             @include('components/cloudDoc/sidebar')
+        @break
+
+        @case('configurations')
+            @include('components/configuration/sidebar')
         @break
 
         @default

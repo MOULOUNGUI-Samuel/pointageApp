@@ -14,6 +14,9 @@
         @case('documents owncloud')
             @include('components/cloudDoc/dashboard')
         @break
+        @case('configurations')
+            @include('components/configuration/dashboard')
+        @break
 
         @default
             @include('components/yodirh/dashboard')

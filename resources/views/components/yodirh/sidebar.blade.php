@@ -88,42 +88,7 @@
                                         class="fa fa-check-circle sub-icon-mg" aria-hidden="true"></i> <span
                                         class="mini-sub-pro">Évaluations et entretiens <br> annuels</span></a></li>
                         </ul>
-                    </li>
-                    {{--  <li class="active">
-                        <a href="{{ route('document.index') }}">
-                            <i class="fa fa-folder sub-icon-mg" aria-hidden="true"></i>
-                            <span class="mini-click-non">Gestion des documents</span>
-                        </a>
-
-                    </li>
-                    --}}
-                    <li
-                        class="{{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'active' : '' }}">
-                        <a class="has-arrow {{ request()->routeIs('liste_entreprise', 'ModuleAdmin', 'services', 'categorieprofessionel') ? 'bg-primary' : '' }}"
-                            href="#" aria-expanded="false"><i class="fa big-icon fa-cogs icon-wrap"></i> <span
-                                class="mini-click-non">Paramètre</span></a>
-                        <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Gestion entreprise" href="{{ route('liste_entreprise') }}"
-                                    class="{{ request()->routeIs('liste_entreprise') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-building sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Gestion entreprise</span></a></li>
-                            <li><a title="Gestion des modules" href="{{ route('ModuleAdmin') }}"
-                                    class="{{ request()->routeIs('ModuleAdmin') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-cubes sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Gestion des modules</span></a></li>
-                            <li><a title="Gestion des services" href="{{ route('services') }}"
-                                    class="{{ request()->routeIs('services') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-briefcase sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Gestion des services</span></a></li>
-                            <li><a title="Gestion des catégories professionnelles"
-                                    href="{{ route('categorieprofessionel') }}"
-                                    class="{{ request()->routeIs('categorieprofessionel') ? 'bg-primary2' : '' }}"><i
-                                        class="fa fa-users sub-icon-mg" aria-hidden="true"></i> <span
-                                        class="mini-sub-pro">Gestion des catégorie <br> professionnelle</span></a></li>
-
-                        </ul>
-                    </li>
-                    
+                    </li>                                 
                 </ul>
             </nav>
         </div>
