@@ -16,66 +16,53 @@ class DocumentController extends Controller
 {
     public function dashboard($nom_lien)
     {
-        $datetime = Auth::user()->created_at;
-        if (!$datetime) {
-            return redirect()->back()->withErrors(['Impossible de récupérer la date de création de l\'utilisateur.']);
-        }
 
-        // 🔹 Fonction pour générer le code à partir de la date
-        function extraireCodeTemps($datetime)
-        {
-            $dt = new DateTime($datetime);
-            return $dt->format('dHis'); // Exemple : 02172016
-        }
-
-        // 🔹 Fonction pour vérifier si le nom du dossier contient un nombre
-        function contientNombreDansDossier($nom_lien, $nombre)
-        {
-            preg_match_all('/\\d+/', $nom_lien, $matches);
-            return in_array((string)$nombre, $matches[0]);
-        }
-
-        // ✅ Code utilisateur
-        $code = extraireCodeTemps($datetime);
         $baseImportedPath = resource_path('views/components/yodirh/imported');
 
-        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->first();
+
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
             ->get();
-        // 🔍 Filtrer les dossiers de l’entreprise qui contiennent le code
-        $Dossiers = LienDoc::All()->filter(function ($doc) use ($baseImportedPath, $code) {
-            $nom_lien = $doc->nom_lien;
-            $path = $baseImportedPath . '/' . $nom_lien;
 
-            return contientNombreDansDossier($nom_lien, $code) &&
-                File::isDirectory($path) &&
-                collect(File::allFiles($path))->contains(function ($file) {
-                    return $file->getExtension() === 'php';
-                });
-        })->values(); // Réindexe proprement
+        // Filtrer ceux dont le code dHis est dans le nom du document
+        $utilisateursAssocies = $utilisateurs->filter(function ($user) use ($nom_lien) {
+            $code = (new DateTime($user->created_at))->format('dHis');
+            return strpos($nom_lien, $code) !== false;
+        })->values(); // Réindexe le tableau
+        $utilisateursNonAssocies = $utilisateurs->filter(function ($user) use ($nom_lien) {
+            $code = (new DateTime($user->created_at))->format('dHis');
+            return strpos($nom_lien, $code) === false;
+        })->values(); // Réindexe le tableau
 
-        // 📁 Charger les fichiers PHP pour chaque dossier filtré
+
+
         $procedures = [];
+        $Dossiers = LienDoc::All()->filter(function ($nom_lien) use ($baseImportedPath) {
+            $path = $baseImportedPath . '/' . $nom_lien;
+            return File::isDirectory($path) && collect(File::allFiles($path))->contains(function ($file) {
+                return $file->getExtension() === 'php';
+            });
+        })->values(); // Réindexer proprement
 
-        foreach ($Dossiers as $doc) {
-            $nom_lien = $doc->nom_lien;
-            $basePath = $baseImportedPath . '/' . $nom_lien;
+        // foreach ($Dossiers as $doc) {
+        //     $nom_lien = $doc->nom_lien;
+        $basePath = $baseImportedPath . '/' . $nom_lien;
 
-            $files = File::allFiles($basePath);
+        $files = File::allFiles($basePath);
 
-            foreach ($files as $file) {
-                if ($file->getExtension() !== 'php') continue;
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'php') continue;
 
-                $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getPathname());
-                $viewName = $nom_lien . '.' . str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
-                $procedures[] = $viewName;
-            }
+            $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $viewName = $nom_lien . '.' . str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+
+            $procedures[] = $viewName;
         }
         // }
 
 
-        return view('components.cloudDoc.dashboard', compact('procedures', 'lienDocuments', 'utilisateurs'))
+        return view('components.cloudDoc.dashboard', compact('procedures', 'lienDocuments', 'utilisateursAssocies', 'utilisateursNonAssocies'))
             ->with('procedures', $procedures)
             ->with('success', 'Les données ont été chargées avec succès.');
     }
@@ -102,6 +89,23 @@ class DocumentController extends Controller
 
         $url = $request->input('cloud_url');
         $nomLien = trim($request->input('nom_lien')) ?: trim($request->input('nom_lien_existant'));
+        if ($request->input('nom_lien')) {
+            $datetime = Auth::user()->created_at;
+            if (!$datetime) {
+                return redirect()->back()->withErrors(['Impossible de récupérer la date de création de l\'utilisateur.']);
+            }
+            function extraireCodeTemps($datetime)
+            {
+                $dt = new DateTime($datetime);
+                return $dt->format('dHis'); // d = jour, H = heure, i = minute, s = seconde
+            }
+            // Extraire le code temps à partir de la date
+            $code = extraireCodeTemps($datetime);
+            $nouveauNomLien = $nomLien . '-' . $code;
+        } else {
+            $nouveauNomLien = $nomLien;
+        }
+
 
         // 1. Télécharger le fichier ZIP depuis OwnCloud
         $zipContent = @file_get_contents($url . '/download');
@@ -128,7 +132,7 @@ class DocumentController extends Controller
         }
 
         // 4. Déterminer le chemin cible du dossier dynamique
-        $baseViewPath = resource_path('views/components/yodirh/imported/' . $nomLien);
+        $baseViewPath = resource_path('views/components/yodirh/imported/' . $nouveauNomLien);
 
         // Supprimer le dossier s’il existe déjà pour écrasement propre
         if (File::exists($baseViewPath)) {
@@ -169,11 +173,11 @@ class DocumentController extends Controller
         File::deleteDirectory($extractPath);
 
         if ($request->filled('nom_lien')) {
-            $nomLien = trim($request->input('nom_lien'));
-
+            // Enregistrement si aucun doublon
             // Vérification si le nom_lien existe déjà pour cette entreprise
-            $existe = LienDoc::where('nom_lien', $nomLien)
+            $existe = LienDoc::where('nom_lien', 'like', $nouveauNomLien . '-%')
                 ->where('entreprise_id', session('entreprise_id'))
+                ->where('user_id', Auth::user()->id)
                 ->exists();
 
             if ($existe) {
@@ -181,20 +185,8 @@ class DocumentController extends Controller
                     'Un dossier portant ce nom existe déjà. Veuillez choisir un nom différent.'
                 ])->withInput();
             }
-            $datetime = Auth::user()->created_at;
-            if (!$datetime) {
-                return redirect()->back()->withErrors(['Impossible de récupérer la date de création de l\'utilisateur.']);
-            }
-            function extraireCodeTemps($datetime)
-            {
-                $dt = new DateTime($datetime);
-                return $dt->format('dHis'); // d = jour, H = heure, i = minute, s = seconde
-            }
-            // Extraire le code temps à partir de la date
-            $code = extraireCodeTemps($datetime);
-            // Enregistrement si aucun doublon
             $Doc = new LienDoc();
-            $Doc->nom_lien = $nomLien . '-' . $code; // Ajout du code temps pour éviter les doublons
+            $Doc->nom_lien = $nouveauNomLien; // Ajout du code temps pour éviter les doublons
             $Doc->user_id = $request->input('user_id');
             $Doc->entreprise_id = session('entreprise_id');
             $Doc->module_id = $request->input('module_id');
@@ -204,39 +196,111 @@ class DocumentController extends Controller
 
 
         // 8. Redirection
-        return redirect()->route('dashboard_doc', ['nom_lien' => $nomLien]);
+        return redirect()->route('dashboard_doc', ['nom_lien' => $nouveauNomLien]);
     }
 
     public function partageFichier(Request $request)
     {
         $nomDossier = $request->input('nom_lien');
-        $created_at = $request->input('created_at');
+        $created_at_list = $request->input('created_at'); // tableau de dates
+        $email = $request->input('email'); // Assure-toi qu'un champ 'email' est présent
+
+        if (!is_array($created_at_list) || empty($created_at_list)) {
+            return back()->withErrors(['Aucune date fournie pour générer le code.']);
+        }
+
+        // if (empty($email)) {
+        //     return back()->withErrors(['Adresse email non spécifiée.']);
+        // }
+
+        // Fonction pour générer le code à partir de la date
+        function extraireCodeTemps2($date)
+        {
+            $dt = new DateTime($date);
+            return $dt->format('dHis'); // Exemple : 02172016
+        }
+
+        // Génération du tableau des codes
+        $codeTab = array_map(fn($date) => extraireCodeTemps2($date), $created_at_list);
+        $codeConcat = implode('-', $codeTab);
+
+        // dd($codeConcat);
 
         // Vérification de l'existence du dossier
         $lienDoc = LienDoc::where('nom_lien', $nomDossier)
-            ->where('entreprise_id', session('entreprise_id'))
             ->first();
-
+        // ->where('entreprise_id', session('entreprise_id'))
+        // ->where('module_id', session('module_id'))
         if (!$lienDoc) {
             return back()->withErrors(['Le dossier spécifié n\'existe pas.']);
         }
+        $lienDoc->nom_lien = $nomDossier . '-' . $codeConcat; // Ajout du code concaténé
+        $lienDoc->save();
 
-        // Envoi de l'email
-        try {
-            \Mail::to($email)->send(new \App\Mail\PartageFichierMail($lienDoc));
-            return back()->with('success', 'Le fichier a été partagé avec succès.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['Erreur lors de l\'envoi de l\'email : ' . $e->getMessage()]);
+        $nouveauNomLien = $nomDossier . '-' . $codeConcat;
+        $ancienPath = resource_path('views/components/yodirh/imported/' . $nomDossier);
+        $nouveauPath = resource_path('views/components/yodirh/imported/' . $nouveauNomLien);
+        // Vérifie si le dossier original existe et effectue le renommage
+        if (File::exists($ancienPath)) {
+            File::move($ancienPath, $nouveauPath);
+        } else {
+            return back()->withErrors(['Le dossier d\'origine est introuvable.']);
         }
+
+        $baseImportedPath = resource_path('views/components/yodirh/imported');
+
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
+        $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
+            ->orderBy('id', 'desc')
+            ->get();
+        // Filtrer ceux dont le code dHis est dans le nom du document
+        $utilisateursAssocies = $utilisateurs->filter(function ($user) use ($nouveauNomLien) {
+            $code = (new DateTime($user->created_at))->format('dHis');
+            return strpos($nouveauNomLien, $code) !== false;
+        })->values(); // Réindexe le tableau
+        $utilisateursNonAssocies = $utilisateurs->filter(function ($user) use ($nouveauNomLien) {
+            $code = (new DateTime($user->created_at))->format('dHis');
+            return strpos($nouveauNomLien, $code) === false;
+        })->values(); // Réindexe le tableau
+
+        $procedures = [];
+        $Dossiers = LienDoc::All()->filter(function ($nouveauNomLien) use ($baseImportedPath) {
+            $path = $baseImportedPath . '/' . $nouveauNomLien;
+            return File::isDirectory($path) && collect(File::allFiles($path))->contains(function ($file) {
+                return $file->getExtension() === 'php';
+            });
+        })->values(); // Réindexer proprement
+
+        // foreach ($Dossiers as $doc) {
+        //     $nom_lien = $doc->nom_lien;
+        $basePath = $baseImportedPath . '/' . $nouveauNomLien;
+
+        $files = File::allFiles($basePath);
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'php') continue;
+
+            $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $viewName = $nouveauNomLien . '.' . str_replace(['/', '\\'], '.', str_replace('.blade.php', '', $relativePath));
+
+            $procedures[] = $viewName;
+        }
+        // }
+
+
+        return view('components.cloudDoc.dashboard', compact('procedures', 'lienDocuments', 'utilisateursAssocies', 'utilisateursNonAssocies'))
+            ->with('procedures', $procedures)
+            ->with('success', 'Dossier partagé avec succès.');
     }
-   
+
+
     public function lienDoc_destroy($nom_dossier)
     {
         $entrepriseId = session('entreprise_id');
 
         // Recherche du lien à supprimer
         $lienDoc = LienDoc::where('nom_lien', $nom_dossier)
-            ->where('entreprise_id', $entrepriseId)
+            ->where('user_id', Auth::user()->id)
             ->first();
 
         if ($lienDoc) {
@@ -251,6 +315,9 @@ class DocumentController extends Controller
             $lienDoc->delete();
 
             return redirect()->route('dashboard', ['id' => session('module_id')]);
+        } else {
+            // Si le lien n'existe pas, rediriger avec un message d'erreur
+            return back()->withErrors(['Vous n\'avez pas le droit de supprimer ce dossier,car vous avez été invité .']);
         }
 
         return back()->withErrors(['Ce dossier n\'existe pas ou a déjà été supprimé.']);

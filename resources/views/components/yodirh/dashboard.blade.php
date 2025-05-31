@@ -107,8 +107,12 @@
 
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877)">
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:rgba(196, 12, 12, 0.877);padding: 5px;border-radius: 5px;">
                             Employés sans trace de présence</h4>
+                            <div class="mb-3" style="margin-bottom: 10px;">
+                                <input type="text" class="form-control shadow border border-dark rounded"
+                                    id="search" placeholder="Rechercher...">
+                            </div>
                         <div class="recent-items-inn" style="overflow-y: auto; max-height: 400px;">
                             <table class="table table-inner table-vmiddle">
                                 <thead>
@@ -117,7 +121,7 @@
                                         <th>Nom(s) et prenoms(s)</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="absentTable">
                                     @foreach ($users_non_existants as $absent)
                                         <tr>
                                             <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
@@ -130,13 +134,31 @@
                                 </tbody>
                             </table>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const searchInput = document.getElementById('search');
+                                const absentTable = document.getElementById('absentTable');
+
+                                searchInput.addEventListener('input', function() {
+                                    const query = this.value.toLowerCase();
+                                    absentTable.querySelectorAll('tr').forEach(row => {
+                                        const text = row.textContent.toLowerCase();
+                                        row.style.display = text.includes(query) ? '' : 'none';
+                                    });
+                                });
+                            });
+                        </script>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:green">Employés déjà presents
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:green;padding: 5px;border-radius: 5px;">Employés déjà presents
                         </h4>
-                        <div class="recent-items-inn">
+                        <div class="mb-3" style="margin-bottom: 10px;">
+                            <input type="text" class="form-control shadow border border-dark rounded"
+                                id="searchpresent" placeholder="Rechercher...">
+                        </div>
+                        <div class="recent-items-inn"  style="overflow-y: auto; max-height: 400px;">
                             <table class="table table-inner table-vmiddle">
                                 <thead>
                                     <tr>
@@ -145,7 +167,7 @@
                                         <th style="width: 60px">Heure</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="presentTable">
                                     @foreach ($pointages_oui as $present)
                                         <tr>
                                             <td class="f-500 c-cyan"><img src="{{ asset('src/images/user.jpg') }}"
@@ -167,11 +189,25 @@
                                 </a>
                             </div>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const searchpresent = document.getElementById('searchpresent');
+                                const presentTable = document.getElementById('presentTable');
+
+                                searchpresent.addEventListener('input', function() {
+                                    const query = this.value.toLowerCase();
+                                    presentTable.querySelectorAll('tr').forEach(row => {
+                                        const text = row.textContent.toLowerCase();
+                                        row.style.display = text.includes(query) ? '' : 'none';
+                                    });
+                                });
+                            });
+                        </script>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Statut des employés
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b;padding: 5px;border-radius: 5px;">Statut des employés
                         </h4>
                         <div class="">
                             <div class="row">
@@ -232,7 +268,7 @@
                 </div>
                 <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b">Types de contrats
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#05436b;padding: 5px;border-radius: 5px;">Types de contrats
                         </h4>
                         <div class="">
                             <div class="row">
@@ -260,7 +296,7 @@
                         </div>
                     </div>
                     <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30">
-                        <h4 class="box-title badge" style="font-size: 15px;background-color:#f8ac59">Contrats à renouveler
+                        <h4 class="box-title badge" style="font-size: 15px;background-color:#f8ac59;padding: 5px;border-radius: 5px;">Contrats à renouveler
                         </h4>
                         <!-- Barre de recherche -->
                         <div class="mb-3" style="margin-bottom: 10px;">
@@ -308,7 +344,7 @@
                             @endphp
 
                             <div id="contratsList">
-                                <div class="mb-3 contrat-item">
+                                <div class="mb-3 contrat-item"  style="overflow-y: auto; max-height: 400px;">
                                     <div>
                                         <h5 style="font-size: 14px;">
                                             {{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}

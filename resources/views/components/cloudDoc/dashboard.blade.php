@@ -31,47 +31,43 @@
             <div class="row">
                 @if (isset($dossier_info['lienDocuments']) && !$errors->any())
                     @if (session('success') || isset($success))
-                        <div class="col-md-4"></div>
+                        <div class="col-md-3"></div>
 
-                        <div class="col-lg-4 text-center" style="margin-top: 20px;">
-                            <div class="alert alert-success" style="font-size: 20px">
+                        <div class="col-lg-6 text-left" style="margin-top: 20px;">
+                            <div class="alert alert-success" style="font-size: 25px">
                                 {{ session('success') ?? $success }}
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true" style="font-size: 35px">&times;</span>
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-4"></div>
+                        <div class="col-md-3"></div>
                     @endif
                 @endif
             </div>
-            <div class="row">
-                @if ($errors->any())
-                    <div class="col-md-2"></div>
-                    <div class="col-md-8">
-                        <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li style="display: flex; justify-content: space-between;">
-                                        <span><i class="icon-warning" style="font-size: 20px"></i>
-                                            <p>{!! $error !!}</p>
-                                        </span>
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+            @if ($errors->any())
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        @foreach ($errors->all() as $error)
+                            <div class="alert alert-danger text-left" style="font-size: 20px" role="alert">
+                                <span><i class="icon-warning" style="font-size: 35px"></i>
+                                    {!! $error !!}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true" style="font-size:35px">&times;</span>
+                                    </button>
+                                </span>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="col-md-2"></div>
-                @endif
-            </div>
+                    <div class="col-md-3"></div>
+                </div>
+            @endif
             <div class="row">
                 @if (isset($procedures))
                     <div class="col-md-3">
-                        <div class="hpanel responsive-mg-b-30" id="afficheAJoutLien" style="display: none">
-                            <div class="panel-body">
+                        <div class="hpanel responsive-mg-b-30">
+                            <div class="panel-body" id="afficheAJoutLien" style="display: none">
                                 <h3 class="text-primary">Ajoute un lien OwnCloud</h3>
                                 <form action="{{ route('html.import.owncloudProcedure') }}" method="POST">
                                     @csrf
@@ -107,22 +103,70 @@
                                     </div>
                                 </form>
                             </div>
+                            @if (isset($utilisateursAssocies) && count($utilisateursAssocies) > 0)
+                                <div class="white-box analytics-info-cs mg-b-10 res-mg-t-30" style="margin-top: 10px;">
+                                    <h4 class="box-title badge"
+                                        style="font-size: 15px;background-color:#05436b;padding: 5px;border-radius: 5px;">
+                                        Liste des personnes associer au dossier</h4>
+                                    <div class="mb-3" style="margin-bottom: 10px;">
+                                        <input type="text" class="form-control shadow border border-dark rounded"
+                                            id="search" placeholder="Rechercher...">
+                                    </div>
+                                    <div class="recent-items-inn" style="overflow-y: auto; max-height: 400px;">
+                                        <table class="table table-inner table-vmiddle">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Nom(s) et prenoms(s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="participantsTable">
+                                                @foreach ($utilisateursAssocies as $participant)
+                                                    <tr>
+                                                        <td class="f-500 c-cyan"><img
+                                                                src="{{ asset('src/images/user.jpg') }}" alt=""
+                                                                width="30"
+                                                                style="border: 1px solid #05436b;border-radius:50px" />
+                                                        </td>
+                                                        <td>{{ $participant->nom }} {{ $participant->prenom }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const searchInput = document.getElementById('search');
+                                            const participantsTable = document.getElementById('participantsTable');
+
+                                            searchInput.addEventListener('input', function() {
+                                                const query = this.value.toLowerCase();
+                                                participantsTable.querySelectorAll('tr').forEach(row => {
+                                                    const text = row.textContent.toLowerCase();
+                                                    row.style.display = text.includes(query) ? '' : 'none';
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="col-md-9">
                         <div class="mb-3" style="margin-bottom: 10px">
                             <label>Rechercher un dossier ou fichier</label>
-                            <input type="text" id="searchInput" class="form-control"
+                            <input type="text" id="searchInput" class="form-control py-2 border border-dark rounded"
                                 placeholder="🔍 Rechercher un dossier ou fichier...">
                         </div>
                         @php
                             $currentDossier = request()->segment(count(request()->segments()));
                         @endphp
                         <div class="text-center d-flex-justify-content-between">
-                            <span class="text-danger">Double-cliquez pour ouvrir un dossier</span>
+                            <span class="text-danger">Cliquez 2 fois pour ouvrir un dossier</span>
                             <div class="text-center d-flex-justify-content-between">
                                 <button type="button" data-toggle="modal" data-target="#partageLabelsModal"
-                                    class="btn btn-sm btn-primary" style="font-size:15px;margin-right:5px;margin-top:-10px">
+                                    class="btn btn-sm btn-primary"
+                                    style="font-size:15px;margin-right:5px;margin-top:-10px">
                                     <i class="fa fa-share-alt"></i> Partager le dossier
                                 </button>
                                 <form action="{{ route('lienDoc.destroy', $currentDossier) }}" method="POST"
@@ -152,7 +196,8 @@
                                         <div class="modal-body text-center">
                                             <h4 class="text-danger">Êtes-vous sûr de vouloir supprimer ce dossier ?</h4>
                                             <h3><i class="fa fa-folder text-warning "
-                                                    style="margin-right: 5px"></i>{{ $currentDossier }}</h3>
+                                                    style="margin-right: 5px"></i>{{ preg_replace('/-\\d{8}(-\\d+)*$/', '', $currentDossier) }}
+                                            </h3>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
@@ -173,15 +218,17 @@
                                             Partager le dossier
                                         </h4>
                                     </div>
-                                    <form action="{{route('partageFichier')}}" method="POST">
+                                    <form action="{{ route('partageFichier') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="nom_lien" value="{{ $currentDossier }}">
                                         <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                                             <div class="mb-3" style="margin-bottom: 10px;">
-                                                <div class="mb-2" style="display: flex; align-items: center;justify-content: space-between;">
+                                                <div class="mb-2"
+                                                    style="display: flex; align-items: center;justify-content: space-between;">
                                                     <label>Rechercher un utilisateur</label>
                                                     <span id="checkedCount" class="badge ml-2"
-                                                        style="font-size:16px;background-color:lightslategrey">0 sélectionné(s)</span>
+                                                        style="font-size:16px;background-color:lightslategrey">0
+                                                        sélectionné(s)</span>
                                                 </div>
 
                                                 <input type="text" id="searchInputUtilisateur"
@@ -200,7 +247,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="approbationsTable2">
-                                                    @foreach ($utilisateurs as $user)
+                                                    @foreach ($utilisateursNonAssocies as $user)
                                                         <tr style="cursor:pointer;"
                                                             onclick="this.querySelector('input[type=checkbox]').click();">
                                                             <td></td>
@@ -210,7 +257,8 @@
                                                             <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
                                                             <td>
                                                                 <input type="checkbox" name="created_at[]"
-                                                                    value="{{ $user->created_at }}" class="form-check-input"
+                                                                    value="{{ $user->created_at }}"
+                                                                    class="form-check-input"
                                                                     onclick="event.stopPropagation();">
                                                             </td>
                                                         </tr>

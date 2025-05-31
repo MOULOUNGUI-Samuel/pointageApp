@@ -59,7 +59,7 @@ class FileTreeHelper
             } else {
                 $html .= '<li class="folder-item">
                         <span class="folder-toggle">
-                            <i class="fa fa-folder text-warning"></i> ' . htmlspecialchars($cle) . '
+                            <i class="fa fa-folder text-warning"></i> ' . htmlspecialchars(preg_replace('/-\\d{8}(-\\d+)*$/', '',$cle)) . '
                         </span>';
                 $html .= self::afficherNiveau($valeur);
                 $html .= '</li>';

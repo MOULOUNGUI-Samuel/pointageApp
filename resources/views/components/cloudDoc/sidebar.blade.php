@@ -37,7 +37,7 @@
                                 class="{{ $lienDocument->nom_lien == $currentDossier ? 'bg-primary2' : '' }}"
                                 onclick="event.preventDefault(); showLoader(); document.getElementById('owncloudProcedure{{ $index }}').submit();">
                                 <i class="fa fa-folder text-warning me-2"></i>
-                                {{ $lienDocument->nom_lien }}
+                                {{  preg_replace('/-\\d{8}(-\\d+)*$/', '', $lienDocument->nom_lien) }}
                             </a>
 
                             <form id="owncloudProcedure{{ $index }}"

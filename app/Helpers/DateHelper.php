@@ -21,16 +21,27 @@ use Illuminate\Support\Facades\Auth;
 
 class DateHelper
 {
+    private static function extraireCodeTemps($datetime)
+    {
+        // Extract day, hour, minute, and second as a unique code
+        return $datetime->format('dHis');
+    }
 
     public static function dossier_info()
     {
+        $datetime = Auth::user()->created_at;
 
-        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))->get();
-        // $PermissionUsers = PermissionUser::with('permission')
-        // ->where('user_id', Auth::id())
-        // ->get();
-        // // dd($PermissionUsers);
+        // Generate the code using the private method
+        $code = self::extraireCodeTemps(new DateTime($datetime));
+
+        // Retrieve documents containing the code
+        $lienDocuments = LienDoc::where('entreprise_id', session('entreprise_id'))
+            ->where('nom_lien', 'LIKE', '%' . $code . '%')
+            ->get();
+
+        // Retrieve active modules
         $modules = Module::where('statut', 1)->get();
+
         return [
             'lienDocuments' => $lienDocuments,
             'modules' => $modules,
