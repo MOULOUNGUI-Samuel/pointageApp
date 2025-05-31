@@ -16,13 +16,13 @@ class ParamettreController extends Controller
      */
     public function listemodules()
     {
-        $modules = Module::orderBy('created_at', 'desc')->get();
+        $modules = Module::orderBy('created_at', 'asc')->get();
         return view('components.liste_modules', compact('modules'));
     }
     public function modules()
     {
         //
-        $modules = Module::orderBy('created_at', 'desc')->get();
+        $modules = Module::orderBy('created_at', 'asc')->get();
 
         return view("components.modul_admin", compact('modules'));
     }
