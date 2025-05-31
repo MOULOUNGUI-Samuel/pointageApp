@@ -16,19 +16,19 @@ class ParamettreController extends Controller
      */
     public function listemodules()
     {
-        $modules = Module::All();
+        $modules = Module::orderBy('created_at', 'desc')->get();
         return view('components.liste_modules', compact('modules'));
     }
     public function modules()
     {
         //
-        $modules = Module::All();
+        $modules = Module::orderBy('created_at', 'desc')->get();
 
         return view("components.modul_admin", compact('modules'));
     }
     public function liste_entreprise()
     {
-        $entreprises = Entreprise::All();
+        $entreprises = Entreprise::orderBy('created_at', 'desc')->get();
         return view('components.yodirh.liste_entreprise', compact('entreprises'));
     }
 
