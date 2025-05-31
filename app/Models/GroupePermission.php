@@ -17,10 +17,14 @@ class GroupePermission extends Model
         static::creating(fn ($model) => $model->id = $model->id ?? (string) Str::uuid());
     }
 
-    protected $fillable = ['nom', 'description'];
+    protected $fillable = ['nom','module_id', 'description'];
 
     public function permissions()
     {
         return $this->hasMany(Permission::class, 'groupe_id');
+    }
+    public function module()
+    {
+        return $this->belongsTo(Module::class, 'module_id');
     }
 }

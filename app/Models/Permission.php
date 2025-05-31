@@ -17,7 +17,7 @@ class Permission extends Model
         static::creating(fn ($model) => $model->id = $model->id ?? (string) Str::uuid());
     }
 
-    protected $fillable = ['libelle', 'description', 'groupe_id'];
+    protected $fillable = ['libelle','entreprise_id', 'description', 'groupe_id'];
 
     public function groupe()
     {
@@ -27,6 +27,10 @@ class Permission extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'permissions_users');
+    }
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'entreprise_id');
     }
 
     public function roles()

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardRHController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ParamettreController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +104,14 @@ Route::middleware('auth')->group(
         if (File::exists($importedRoutesPath)) {
             require $importedRoutesPath;
         }
+
+        Route::get('/paramettre', [PermissionController::class, 'paramettre'])->name('paramettre');
+        Route::post('/enregistre_permissions', [PermissionController::class, 'permissions'])->name('enregistre_permissions');
+        Route::delete('/supprimer_groupe/{id}', [PermissionController::class, 'supprimer_groupe'])->name('supprimer_groupe');
+        Route::delete('/supprimer_permission/{id}', [PermissionController::class, 'supprimer_permission'])->name('supprimer_permission');
+        Route::put('/groupe_permissions/{id}', [PermissionController::class, 'groupe_permissions'])->name('groupe_permissions');
+        Route::put('/modif_permissions/{id}', [PermissionController::class, 'modif_permissions'])->name('modif_permissions');
+        Route::post('/permissions', [PermissionController::class, 'permission'])->name('permission');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

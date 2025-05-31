@@ -32,6 +32,11 @@
                             class="{{ request()->routeIs('categorieprofessionel') ? 'bg-primary' : '' }}"><i
                                 class="fa fa-users sub-icon-mg" aria-hidden="true"></i> <span
                                 class="mini-sub-pro">Gestion des catégorie <br> professionnelle</span></a></li>
+                    <li><a title="Gestion des permissions" href="{{ route('paramettre') }}"
+                            class="{{ request()->routeIs('paramettre') ? 'bg-primary' : '' }}"><i
+                                class="fa fa-key sub-icon-mg" aria-hidden="true"></i> <span
+                                class="mini-sub-pro">Gestion des permissions</span></a></li>
+
 
                 </ul>
             </nav>
