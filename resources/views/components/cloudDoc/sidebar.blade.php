@@ -33,14 +33,19 @@
                     </div>
                     @foreach ($dossier_info['lienDocuments'] as $index => $lienDocument)
                         <li class="active">
-                            <a href="#"
+                            {{-- <a href="#"
                                 class="{{ $lienDocument->nom_lien == $currentDossier ? 'bg-primary2' : '' }}"
                                 onclick="event.preventDefault(); showLoader(); document.getElementById('owncloudProcedure{{ $index }}').submit();">
                                 <i class="fa fa-folder text-warning me-2"></i>
                                 {{  preg_replace('/-\\d{8}(-\\d+)*$/', '', $lienDocument->nom_lien) }}
+                            </a> --}}
+                            <a href="{{route('dashboard_doc', ['nom_lien' => $lienDocument->nom_lien])}}"
+                                class="{{ $lienDocument->nom_lien == $currentDossier ? 'bg-primary2' : '' }}">
+                                <i class="fa fa-folder text-warning me-2"></i>
+                                {{  preg_replace('/-\\d{8}(-\\d+)*$/', '', $lienDocument->nom_lien) }}
                             </a>
 
-                            <form id="owncloudProcedure{{ $index }}"
+                            {{-- <form id="owncloudProcedure{{ $index }}"
                                 action="{{ route('html.import.owncloudProcedure') }}" method="POST"
                                 style="display: none;">
                                 @csrf
@@ -48,7 +53,7 @@
                                 <input type="hidden" name="module_id" value="{{ $module_id }}">
                                 <input type="hidden" name="cloud_url" value="{{ $lienDocument->lien }}">
                                 <input type="hidden" name="nom_lien_existant" value="{{ $lienDocument->nom_lien }}">
-                            </form>
+                            </form> --}}
                         </li>
                     @endforeach
                 </ul>

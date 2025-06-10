@@ -114,8 +114,8 @@
                                                                 src="{{ asset('storage/' . $module->logo) }}"
                                                                 alt=""
                                                                 style="width: 45px;
-  min-width: 36px;
-  height: 36px;" />
+                                                                min-width: 36px;
+                                                                height: 36px;" />
                                                             {{-- <img src="{{ asset('storage/' . $module->logo) }}"
                                                                 alt="" width="100" /> --}}
                                                         </span>
