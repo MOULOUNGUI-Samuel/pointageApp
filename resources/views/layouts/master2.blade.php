@@ -59,9 +59,11 @@
     @endswitch
 
     <!-- Ajout de l'ID requis pour le script -->
-    <div id="main-content" class="all-content-wrapper">
-        @include('components/header2')
+    <div id="main-content" class="page-wrapper all-content-wrapper">
+        <div class="content">
+            @include('components/header2')
         @yield('content2')
+        </div>
         {{-- @include('components/footer') --}}
     </div>
 

@@ -28,104 +28,40 @@
         stopDotsAnimation();
     }
 </script>
-<!-- jQuery -->
-<script src="{{ asset('src2/js/vendor/jquery-1.11.3.min.js') }}"></script>
 
-<!-- Bootstrap -->
-<script src="{{ asset('src2/js/bootstrap.min.js') }}"></script>
+    <!-- jQuery -->
+    <script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
 
-<!-- Plugins principaux -->
-<script src="{{ asset('src2/js/wow.min.js') }}"></script>
-<script src="{{ asset('src2/js/jquery-price-slider.js') }}"></script>
-<script src="{{ asset('src2/js/jquery.meanmenu.js') }}"></script>
-<script src="{{ asset('src2/js/owl.carousel.min.js') }}"></script>
-<script src="{{ asset('src2/js/jquery.sticky.js') }}"></script>
-<script src="{{ asset('src2/js/jquery.scrollUp.min.js') }}"></script>
+    <!-- Feather Icon JS -->
+    <script src="{{ asset('assets/js/feather.min.js') }}" type="text/javascript"></script>
 
-<!-- Custom Scrollbar -->
-<script src="{{ asset('src2/js/scrollbar/jquery.mCustomScrollbar.concat.min.js') }}"></script>
-<script src="{{ asset('src2/js/scrollbar/mCustomScrollbar-active.js') }}"></script>
+    <!-- Owl Carousel -->
+    <script src="{{ asset('assets/js/owl.carousel.min.js') }}" type="text/javascript"></script>
 
-<!-- MetisMenu -->
-<script src="{{ asset('src2/js/metisMenu/metisMenu.min.js') }}"></script>
-<script src="{{ asset('src2/js/metisMenu/metisMenu-active.js') }}"></script>
+    <!-- Slimscroll JS -->
+    <script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
 
-<!-- MorrisJS -->
-<script src="{{ asset('src2/js/morrisjs/raphael-min.js') }}"></script>
-<script src="{{ asset('src2/js/morrisjs/morris.js') }}"></script>
-<script src="{{ asset('src2/js/morrisjs/morris-active.js') }}"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 
-<!-- Sparkline -->
-<script src="{{ asset('src2/js/sparkline/jquery.sparkline.min.js') }}"></script>
-<script src="{{ asset('src2/js/sparkline/jquery.charts-sparkline.js') }}"></script>
+    <!-- Select2 JS -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}" type="text/javascript"></script>
 
-<!-- Calendar -->
-<script src="{{ asset('src2/js/calendar/moment.min.js') }}"></script>
-<script src="{{ asset('src2/js/calendar/fullcalendar.min.js') }}"></script>
-<script src="{{ asset('src2/js/calendar/fullcalendar-active.js') }}"></script>
+    <!-- Sticky-sidebar -->
+    <script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}" type="text/javascript">
+    </script>
 
-<!-- Touchspin -->
-<script src="{{ asset('src2/js/touchspin/jquery.bootstrap-touchspin.min.js') }}"></script>
-<script src="{{ asset('src2/js/touchspin/touchspin-active.js') }}"></script>
+    <!-- Color Picker JS -->
+    <script src="{{ asset('assets/plugins/@simonwep/pickr/pickr.es5.min.js') }}" type="text/javascript"></script>
 
-<!-- Colorpicker -->
-<script src="{{ asset('src2/js/colorpicker/jquery.spectrum.min.js') }}"></script>
-<script src="{{ asset('src2/js/colorpicker/color-picker-active.js') }}"></script>
+    <!-- Custom JS -->
+    <script src="{{ asset('assets/js/theme-colorpicker.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
 
-<!-- Datepicker -->
-<script src="{{ asset('src2/js/datapicker/bootstrap-datepicker.js') }}"></script>
-<script src="{{ asset('src2/js/datapicker/datepicker-active.js') }}"></script>
-
-<!-- Input Mask -->
-<script src="{{ asset('src2/js/input-mask/jasny-bootstrap.min.js') }}"></script>
-
-<!-- Chosen -->
-<script src="{{ asset('src2/js/chosen/chosen.jquery.js') }}"></script>
-<script src="{{ asset('src2/js/chosen/chosen-active.js') }}"></script>
-
-<!-- Select2 -->
-<script src="{{ asset('src2/js/select2/select2.full.min.js') }}"></script>
-<script src="{{ asset('src2/js/select2/select2-active.js') }}"></script>
-
-<!-- Ion Range Slider -->
-<script src="{{ asset('src2/js/ionRangeSlider/ion.rangeSlider.min.js') }}"></script>
-<script src="{{ asset('src2/js/ionRangeSlider/ion.rangeSlider.active.js') }}"></script>
-
-<!-- Range Slider -->
-<script src="{{ asset('src2/js/rangle-slider/jquery-ui-1.10.4.custom.min.js') }}"></script>
-<script src="{{ asset('src2/js/rangle-slider/jquery-ui-touch-punch.min.js') }}"></script>
-<script src="{{ asset('src2/js/rangle-slider/rangle-active.js') }}"></script>
-
-<!-- Knob -->
-<script src="{{ asset('src2/js/knob/jquery.knob.js') }}"></script>
-<script src="{{ asset('src2/js/knob/knob-active.js') }}"></script>
-
-<!-- Tabs -->
-<script src="{{ asset('src2/js/tab.js') }}"></script>
-
-<!-- Data Tables -->
-<script src="{{ asset('src2/js/data-table/bootstrap-table.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/tableExport.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/data-table-active.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/bootstrap-table-editable.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/bootstrap-editable.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/bootstrap-table-resizable.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/colResizable-1.5.source.js') }}"></script>
-<script src="{{ asset('src2/js/data-table/bootstrap-table-export.js') }}"></script>
-
-<!-- Editable -->
-<script src="{{ asset('src2/js/editable/jquery.mockjax.js') }}"></script>
-<script src="{{ asset('src2/js/editable/mock-active.js') }}"></script>
-<script src="{{ asset('src2/js/editable/select2.js') }}"></script>
-<script src="{{ asset('src2/js/editable/moment.min.js') }}"></script>
-<script src="{{ asset('src2/js/editable/bootstrap-datetimepicker.js') }}"></script>
-<script src="{{ asset('src2/js/editable/bootstrap-editable.js') }}"></script>
-<script src="{{ asset('src2/js/editable/xediable-active.js') }}"></script>
-
-<!-- Charts -->
-<script src="{{ asset('src2/js/chart/jquery.peity.min.js') }}"></script>
-<script src="{{ asset('src2/js/peity/peity-active.js') }}"></script>
-
-<!-- Plugins & Main -->
-<script src="{{ asset('src2/js/plugins.js') }}"></script>
-<script src="{{ asset('src2/js/main.js') }}"></script>
+    <!-- Cloudflare Rocket Loader -->
+    <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
+        integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
+        data-cf-beacon='{"rayId":"94a720077e49e3c0","version":"2025.5.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}'
+        crossorigin="anonymous"></script>

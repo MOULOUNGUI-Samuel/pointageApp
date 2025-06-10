@@ -1,66 +1,51 @@
 <head>
     <meta charset="utf-8">
+    <html lang="fr">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>NedCore</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- favicon
-  ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src/images/Logo_Nedco.png') }}">
-    <!-- Google Fonts
-        ============================================ -->
-    <link href="https://fonts.googleapis.com/css?family=Play:400,700" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/font-awesome.min.css') }}">
-    <!-- owl.carousel CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/owl.carousel.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/owl.theme.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/owl.transitions.css') }}">
-    <!-- animate CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/animate.css') }}">
-    <!-- normalize CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/normalize.css') }}">
-    <!-- meanmenu icon CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/meanmenu.min.css') }}">
-    <!-- main CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/main.css') }}">
-    <!-- modals CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src2/css/modals.css') }}">
-    <!-- morrisjs CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/morrisjs/morris.css') }}">
-    <!-- mCustomScrollbar CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/scrollbar/jquery.mCustomScrollbar.min.css') }}">
-    <!-- metisMenu CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/metisMenu/metisMenu.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/metisMenu/metisMenu-vertical.css') }}">
-    <!-- calendar CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/calendar/fullcalendar.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/calendar/fullcalendar.print.min.css') }}">
-    <!-- touchspin CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/touchspin/jquery.bootstrap-touchspin.min.css') }}">
-    <!-- datapicker CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/datapicker/datepicker3.css') }}">
-    <!-- forms CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/form/themesaller-forms.css') }}">
-    <!-- colorpicker CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/colorpicker/colorpicker.css') }}">
-    <!-- select2 CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/select2/select2.min.css') }}">
-    <!-- chosen CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/chosen/bootstrap-chosen.css') }}">
-    <!-- ionRangeSlider CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/ionRangeSlider/ion.rangeSlider.css') }}">
-    <link rel="stylesheet" href="{{ asset('src2/css/ionRangeSlider/ion.rangeSlider.skinFlat.css') }}">
-    <!-- style CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/style.css') }}">
+
+      <!-- Apple Touch Icon -->
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/apple-touch-icon.png') }}">
+
+      <!-- Favicon -->
+      <link rel="icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon">
+      <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
+  
+      <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+      <!-- Tabler Icon CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/plugins/tabler-icons/tabler-icons.css') }}">
+  
+      <!-- Fontawesome CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
+      <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+  
+      <!-- Datetimepicker CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
+  
+      <!-- Animation CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/css/animate.css') }}">
+  
+      <!-- Select2 CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
+  
+      <!-- Owl Carousel -->
+      <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
+  
+      <!-- Color Picker CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/plugins/flatpickr/flatpickr.min.css') }}">
+      <link rel="stylesheet" href="{{ asset('assets/plugins/@simonwep/pickr/themes/nano.min.css') }}">
+  
+      <!-- Main CSS -->
+      <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+
     <!-- Preloader CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/preloader/preloader-style.css') }}">
-    <!-- responsive CSS -->
-    <link rel="stylesheet" href="{{ asset('src2/css/responsive.css') }}">
-    <!-- modernizr JS -->
-    <script src="{{ asset('src2/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+ 
 </head>
 <style>
     .text-primary {

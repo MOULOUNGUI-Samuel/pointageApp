@@ -1,377 +1,187 @@
-<!doctype html>
-<html class="no-js" lang="">
+<!DOCTYPE html>
+<html lang="fr">
 
 <head>
+
+    <!-- Meta Tags -->
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="NedCore est la solution numérique centralisée du Groupe NedCo, dédiée à la gestion intégrée de toutes les entités du groupe. Grâce à une interface moderne et intuitive, chaque collaborateur accède aux modules essentiels : gestion RH, finances, projets, documents et reporting stratégique">
+    <meta name="keywords"
+        content="NedCore, solution numérique, Groupe NedCo, gestion intégrée, gestion RH, finances, projets, documents, reporting stratégique, interface moderne, outils d'entreprise">
+    <meta name="author" content="Dreams Technologies">
+    <meta name="robots" content="index, follow">
+
+    <!-- Title -->
     <title>NedCore</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- favicon
-  ============================================ -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('src/images/Logo_Nedco.png') }}">
-    <!-- Google Fonts
-  ============================================ -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('icomoon/style.css') }}">
-    <!-- font awesome CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/font-awesome.min.css') }}">
-    <!-- owl.carousel CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/owl.carousel.css') }}">
-    <link rel="stylesheet" href="{{ asset('src/css/owl.theme.css') }}">
-    <link rel="stylesheet" href="{{ asset('src/css/owl.transitions.css') }}">
-    <!-- animate CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/animate.css') }}">
-    <!-- normalize CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/normalize.css') }}">
-    <!-- mCustomScrollbar CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/scrollbar/jquery.mCustomScrollbar.min.css') }}">
-    <!-- wave CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/wave/waves.min.css') }}">
-    <!-- Notika icon CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/notika-custom-icon.css') }}">
-    <!-- main CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/main.css') }}">
-    <!-- style CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/style.css') }}">
-    <!-- responsive CSS
-  ============================================ -->
-    <link rel="stylesheet" href="{{ asset('src/css/responsive.css') }}">
-    <!-- modernizr JS
-  ============================================ -->
-    <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+    <!-- Tabler Icon CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/tabler-icons/tabler-icons.css') }}">
+
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
 </head>
-<style>
-    .center-container {
-        display: flex;
-        justify-content: center;
-        /* Centre horizontalement */
-        align-items: center;
-        /* Centre verticalement */
-        height: 100vh;
-        /* Prend toute la hauteur de l'écran */
-    }
 
-    .btn-gradient {
-        background: linear-gradient(135deg, #3f81b3d8, #d0d7db);
-        border: none;
-        border-radius: 10px;
-        padding: 10px 24px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        transition: all 0.3s ease-in-out;
-        /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.4); Grand shadow blanc */
-    }
+<body class="account-page">
 
-    .btn-gradient1 {
-        background: linear-gradient(135deg, #7a785ad8, #d0d6db);
-        border: none;
-        border-radius: 10px;
-        padding: 10px 24px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        transition: all 0.3s ease-in-out;
-        /* box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.26);  */
-    }
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
 
-    .btn-gradient:hover {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-
-    .btn {
-        position: relative;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        margin: 10px;
-    }
-
-    .btn[disabled] {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .spinner {
-        display: none;
-        position: absolute;
-        right: 45%;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 30px;
-        height: 30px;
-        border: 5px solid white;
-        border-top: 3px solid transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    .btn.loading .spinner {
-        display: inline-block;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: translateY(-50%) rotate(0deg);
-        }
-
-        100% {
-            transform: translateY(-50%) rotate(360deg);
-        }
-    }
-</style>
-
-<body
-    style="background: linear-gradient(rgba(0, 0, 0, 0.795), rgba(0, 0, 0, 0.836)),
-url('{{ asset('src/images/admin.jpg') }}') no-repeat center center;
-background-size: cover;
-background-attachment: fixed;
-color: #fff;">
-    <!-- Login Register area Start-->
-    <div class="d-none d-md-block">
-        <div class="center-container d-flex justify-content-center align-items-center">
-
-            <div class="container px-5">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="text-center mb-1">
-                            <img src="{{ asset('src/images/Logo_Nedco.png') }}" alt="Logo" class="mb-4 rounded"
-                                style="max-width: 150px;">
-                            <h4>Bienvenue ! Veuillez vous connecter pour continuer.
-                            </h4>
-                        </div>
-
-                    </div>
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col"></div>
-                            <div class="col-md-6">
-                                @if ($errors->any())
-                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                        <ul class="mb-0">
-                                            @foreach ($errors->all() as $error)
-                                                <li style="display: flex; justify-content: space-between;">
-                                                    <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                        {{ $error }}</span>
-                                                    <button type="button" class="close" data-dismiss="alert"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-
-                                {{-- @if (request()->has('expired'))
-                                    <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                        Votre session a expiré. Veuillez vous reconnecter.
+        <div class="account-content">
+            <div class="d-flex flex-wrap w-100 vh-100 overflow-hidden account-bg-01">
+                <div
+                    class="d-flex align-items-center justify-content-center flex-wrap vh-100 overflow-auto p-4 w-50 bg-backdrop">
+                    <form action="{{ route('login') }}" method="POST" class="needs-validation" novalidate>
+                        @csrf
+                        {{-- <div class="d-block d-lg-none">
+                            <input type="text" name="mobileforme" value="1">
+                        </div> --}}
+                        <div class="mx-auto w-100" style="max-width: 600px;">
+                            <div class="text-center mb-4">
+                                <img src="{{ asset('assets/img/authentication/logo_nedcore.png') }}" class="img-fluid"
+                                    alt="Logo" style="max-width: 200px;">
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="mb-2 fs-20">Se connecter</h4>
+                                <p>Accédez à NedCore en utilisant votre code entreprise,votre identifiant et votre mot
+                                    de passe.</p>
+                            </div>
+                            @if (session('error'))
+                                <div class="mb-3">
+                                    <div class="alert alert-danger text-center mb-3" style="font-size: 16px">
+                                        <i class="fas fa-exclamation-circle mr-2" style="font-size: 18px;"></i>
+                                        {{ session('error') }}
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
-                                @endif --}}
-
-                            </div>
-                            <div class="col"></div>
-                        </div>
-                        <form action="{{ route('login') }}" method="post">
-                            @csrf
-                            <div class="row p-3">
-                                <div class="col">
-                                    {{-- <input class="text-primary" type="hidden" name="module_id"
-                                    value="{{ $module->id }}"> --}}
                                 </div>
-                                <div class="col-md-6 col-sm-12">
-                                    @if (session('error'))
-                                        <div class="alert alert-danger text-center mb-3" style="font-size: 16px">
-                                            {{ session('error') }}
-                                            <button type="button" class="close" data-dismiss="alert"
-                                                aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                    @endif
-                                    <div class="input-group shadow-sm rounded mt-4"
-                                        style="background: none;border-bottom: 1px solid #fff">
-                                        <span class="input-group-addon nk-ic-st-pro">XX</span>
-                                        <input type="text" class="form-control text-white" name="code_entreprise"
-                                            value="{{ old('code_entreprise') }}" placeholder="Code entreprise"
-                                            style="border:none;padding: 20px;background: transparent" required>
-                                    </div>
-                                    <div class="input-group shadow-sm rounded mt-4"
-                                        style="background: none;border-bottom: 1px solid #fff">
-                                        <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                                style="font-size: 25px"></i></span>
-                                        <input type="text" class="form-control text-white" name="matricule"
-                                            value="{{ old('matricule') }}" placeholder="Votre identifiant"
-                                            style="border:none;padding: 20px;background: transparent" required>
-                                    </div>
-
-                                    <div class="input-group mt-3 shadow-sm rounded"
-                                        style="background: none; border-bottom: 1px solid #fff">
-                                        <span class="input-group-addon nk-ic-st-pro">
-                                            <i class="icon-key" style="font-size: 25px"></i>
-                                        </span>
-                                        <div class="nk-int-st">
-                                            <input type="password" id="passwordField" name="password"
-                                                class="form-control text-white" placeholder="Mot de passe"
-                                                style="border: none; padding: 20px; background: transparent" required>
-                                        </div>
-                                        <!-- Icône pour afficher/masquer -->
-                                        <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
-                                            <i id="toggleIcon" class="icon-eye"
-                                                style="font-size: 25px; cursor: pointer;"></i>
-                                        </span>
-                                    </div>
-
-
-                                    {{-- <button type="button" class="btn btn-primary loading-btn">
-                                    Valider 3
-                                    <span class="spinner"></span>
-                                </button> --}}
-                                    <div class="text-center mt-5">
-                                        <button type="submit" class="btn btn-gradient w-50 loading-btn">
-                                            Se Connecter
-                                            <span class="spinner"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-copyright-area d-none d-lg-block" style="position: fixed; bottom: 0; width: 100%;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="footer-copy-right">
-                            <p>Copyright © 2025. Tous droits réservés. YodIngenierie Gabon</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid d-block d-lg-none">
-        {{-- <div class="row">
-            <div class="col-6 text-left" style="margin-top: 80px;">
-                <a href="{{ route('components.liste_module') }}">
-                    <i class="fa fa-arrow-left text-white" style="font-size: 2rem;"></i>
-                </a>
-            </div>
-        </div> --}}
-        <div class="row" style="margin-top: 80px;">
-            <div class="col-md-12">
-                <div class="text-center my-1">
-                    {{-- <img src="{{ asset('storage/' . $module->logo) }}" alt="Logo" class="mb-4 rounded"
-                        style="max-width: 150px;"> --}}
-                    <h4>Bienvenue ! Veuillez vous connecter pour continuer.</h4>
-                </div>
-
-            </div>
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col"></div>
-                    <div class="col-md-6">
-                        @if ($errors->any())
-                            <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li style="display: flex; justify-content: space-between;">
-                                            <span><i class="icon-warning" style="font-size: 20px"></i>
-                                                {{ $error }}</span>
-                                            <button type="button" class="btn-close" data-dismiss="alert"
-                                                aria-label="Close"></button>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        {{-- @if (request()->has('expired'))
-                            <div class="alert alert-danger text-left" style="font-size: 16px" role="alert">
-                                Votre session a expiré. Veuillez vous reconnecter.
-                                <button type="button" class="btn-close" data-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif --}}
-
-                    </div>
-                    <div class="col"></div>
-                </div>
-                <form action="{{ route('login') }}" method="post">
-                    @csrf
-                    <div class="row p-3">
-                        <input type="hidden" name="mobileforme" value="1">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="input-group shadow-sm rounded mt-4"
-                                style="background: none;border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
-                                        style="font-size: 25px"></i></span>
-                                <input type="text" class="form-control text-white" name="matricule"
-                                    value="{{ old('matricule') }}" placeholder="Votre identifiant"
-                                    style="border:none;padding: 20px;background: transparent" required>
-                            </div>
-
-                            <div class="input-group mt-4 shadow-sm rounded"
-                                style="background: none; border-bottom: 1px solid #fff">
-                                <span class="input-group-addon nk-ic-st-pro">
-                                    <i class="icon-key" style="font-size: 25px"></i>
-                                </span>
-                                <div class="nk-int-st">
-                                    <input type="password" id="passwordField1" name="password"
-                                        class="form-control text-white" placeholder="Mot de passe"
-                                        style="border: none; padding: 20px; background: transparent" required>
-                                </div>
-                                <!-- Icône pour afficher/masquer -->
-                                <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword1()">
-                                    <i id="toggleIcon1" class="icon-eye"
-                                        style="font-size: 25px; cursor: pointer;"></i>
-                                </span>
-                            </div>
-
-                            @if (session('error'))
-                                <div class="alert alert-danger text-center mt-3">
-                                    {{ session('error') }}
+                            @endif
+                            @if ($errors->any())
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                                    style="background-color: #f8d7da; color: #d8000c; border: 1px solid #f5c6cb; border-radius: 6px; font-size: 16px;">
+                                    <ul class="mb-0" style="list-style: none; padding-left: 0;">
+                                        @foreach ($errors->all() as $error)
+                                            <li
+                                                style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span>
+                                                    <i class="fas fa-exclamation-circle mr-2"
+                                                        style="font-size: 18px;"></i>
+                                                    {{ $error }}
+                                                </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Fermer"
+                                        style="position: absolute; top: 8px; right: 12px; background-color: white; border: 1px solid #000; border-radius: 4px; width: 24px; height: 24px; line-height: 12px; padding: 0;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                             @endif
 
-                            <div class="text-center mt-5">
-                                <button type="submit" class="btn btn-gradient w-100 loading-btn">
-                                    Se Connecter
-                                    <span class="spinner"></span>
-                                </button>
+                            <div class="mb-3">
+                                <label class="col-form-label">Code entreprise</label>
+                                <div class="position-relative">
+                                    <span class="input-icon-addon">
+                                        <i class="ti ti-building"></i>
+                                    </span>
+                                    <input type="text" name="code_entreprise" id="validationCustom01"
+                                        value="{{ old('code_entreprise') }}" class="form-control form-control-lg"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        Veuillez renseigner le code entreprise.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="col-form-label">Identifiant</label>
+                                <div class="position-relative">
+                                    <span class="input-icon-addon">
+                                        <i class="ti ti-mail"></i>
+                                    </span>
+                                    <input type="text" name="matricule" value="{{ old('matricule') }}"
+                                        id="validationCustom02" class="form-control form-control-lg" required>
+                                    <div class="invalid-feedback">
+                                        Veuillez renseigner votre identifiant.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="col-form-label">Mot de passe</label>
+                                <div class="pass-group">
+                                    <input type="password" id="validationCustom03" name="password"
+                                        value="{{ old('password') }}" autocomplete="current-password"
+                                        class="pass-input form-control form-control-lg" required>
+                                    <span class="ti toggle-password ti-eye-off"></span>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Veuillez renseigner votre mot de passe.
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="form-check form-check-md d-flex align-items-center">
+                                    <input class="form-check-input form-control-md" type="checkbox" value=""
+                                        id="checkebox-md" checked="">
+                                    <label class="form-check-label" for="checkebox-md">
+                                        Souviens-toi de moi
+                                    </label>
+                                </div>
+                                <div class="text-end">
+                                    <a href="forgot-password.html" class="text-primary fw-medium link-hover">Mot de
+                                        passe oublié ?</a>
+                                </div>
+                            </div>
+                            <div class="mb-5">
+                                <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                            </div>
+                            {{-- <div class="mb-3">
+                                <h6>Nouveau sur notre plateforme ?</h6>
+                            </div> --}}
+                            {{-- <div class="form-set-login or-text mb-3">
+                                <h4>OU</h4>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center flex-wrap mb-3">
+                                <div class="text-center me-2 flex-fill">
+                                    <a href="javascript:void(0);"
+                                        class="br-10 p-2 px-4 btn bg-pending  d-flex align-items-center justify-content-center">
+                                        <img class="img-fluid m-1"
+                                            src="{{ asset('assets/img/icons/facebook-logo.svg') }}" alt="Facebook">
+                                    </a>
+                                </div>
+                                <div class="text-center me-2 flex-fill">
+                                    <a href="javascript:void(0);"
+                                        class="br-10 p-2 px-4 btn bg-white d-flex align-items-center justify-content-center">
+                                        <img class="img-fluid  m-1"
+                                            src="{{ asset('assets/img/icons/google-logo.svg') }}" alt="Google">
+                                    </a>
+                                </div>
+                            </div> --}}
+                            <div class="text-center">
+                                <p class="fw-medium text-gray">Copyright © 2025. Tous droits réservés. YodIngenierie
+                                    Gabon</p>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-
         </div>
     </div>
+    <!-- /Main Wrapper -->
 
     <script>
         // 🔌 GESTION CONNEXION PERDUE
@@ -480,145 +290,30 @@ color: #fff;">
         setInterval(checkSessionExpired, 60000); // Vérifie expiration session toutes les 60s
     </script>
 
+    <!-- jQuery -->
+    <script src="{{asset('assets/js/jquery-3.7.1.min.js')}}" type="f5900ce986c61fa82aeb3155-text/javascript"></script>
 
+    <!-- Bootstrap Core JS -->
+    <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}" type="f5900ce986c61fa82aeb3155-text/javascript"></script>
 
+    <!-- Feather Icon JS -->
+    <script src="{{asset('assets/js/feather.min.js')}}" type="f5900ce986c61fa82aeb3155-text/javascript"></script>
 
-    <script>
-        function togglePassword1() {
-            let passwordField = document.getElementById("passwordField1");
-            let toggleIcon = document.getElementById("toggleIcon1");
+    <!-- Slimscroll JS -->
+    <script src="{{asset('assets/js/jquery.slimscroll.min.js')}}" type="f5900ce986c61fa82aeb3155-text/javascript"></script>
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text"; // Affiche le mot de passe
-                toggleIcon.classList.remove("icon-eye");
-                toggleIcon.classList.add("icon-eye-blocked"); // Change l'icône
-            } else {
-                passwordField.type = "password"; // Masque le mot de passe
-                toggleIcon.classList.remove("icon-eye-blocked");
-                toggleIcon.classList.add("icon-eye");
-            }
-        }
-    </script>
-    <script>
-        function togglePassword() {
-            let passwordField = document.getElementById("passwordField");
-            let toggleIcon = document.getElementById("toggleIcon");
+    <!-- Custom JS -->
+    <script src="{{asset('assets/js/script.js')}}" type="f5900ce986c61fa82aeb3155-text/javascript"></script>
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text"; // Affiche le mot de passe
-                toggleIcon.classList.remove("icon-eye");
-                toggleIcon.classList.add("icon-eye-blocked"); // Change l'icône
-            } else {
-                passwordField.type = "password"; // Masque le mot de passe
-                toggleIcon.classList.remove("icon-eye-blocked");
-                toggleIcon.classList.add("icon-eye");
-            }
-        }
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const buttons = document.querySelectorAll('.loading-btn');
-
-            buttons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    const form = button.closest('form');
-                    const type = button.getAttribute('type') || 'submit';
-
-                    // Si le bouton est de type submit et qu'il est dans un formulaire
-                    if (type === 'submit' && form) {
-                        // Si formulaire invalide, bloquer la soumission pour afficher les erreurs natives
-                        if (!form.checkValidity()) {
-                            event.preventDefault();
-                            form
-                                .reportValidity(); // affiche les erreurs HTML5 (required, pattern, etc.)
-                            return;
-                        }
-                        // Si valide : laisser faire la soumission, mais activer le loading
-                        button.classList.add('loading');
-                        // button.disabled = true;
-                    }
-
-                    // Si c’est un bouton normal (type="button"), on le désactive directement
-                    if (type === 'button') {
-                        button.classList.add('loading');
-                        button.disabled = true;
-                        // ... tu peux faire une action JS ici (ex: AJAX, etc.)
-                    }
-                });
-            });
-        });
-    </script>
-
-
-    <!-- Login Register area End-->
-    <!-- jquery
-  ============================================ -->
-    <script src="{{ asset('src/js/vendor/jquery-1.12.4.min.js') }}"></script>
-    <!-- bootstrap JS
-  ============================================ -->
-    <script src="{{ asset('src/js/bootstrap.min.js') }}"></script>
-    <!-- wow JS
-  ============================================ -->
-    <script src="{{ asset('src/js/wow.min.js') }}"></script>
-    <!-- price-slider JS
-  ============================================ -->
-    <script src="{{ asset('src/js/jquery-price-slider.js') }}"></script>
-    <!-- owl.carousel JS
-  ============================================ -->
-    <script src="{{ asset('src/js/owl.carousel.min.js') }}"></script>
-    <!-- scrollUp JS
-  ============================================ -->
-    <script src="{{ asset('src/js/jquery.scrollUp.min.js') }}"></script>
-    <!-- meanmenu JS
-  ============================================ -->
-    <script src="{{ asset('src/js/meanmenu/jquery.meanmenu.js') }}"></script>
-    <!-- counterup JS
-  ============================================ -->
-    <script src="{{ asset('src/js/counterup/jquery.counterup.min.js') }}"></script>
-    <script src="{{ asset('src/js/counterup/waypoints.min.js') }}"></script>
-    <script src="{{ asset('src/js/counterup/counterup-active.js') }}"></script>
-    <!-- mCustomScrollbar JS
-  ============================================ -->
-    <script src="{{ asset('src/js/scrollbar/jquery.mCustomScrollbar.concat.min.js') }}"></script>
-    <!-- sparkline JS
-  ============================================ -->
-    <script src="{{ asset('src/js/sparkline/jquery.sparkline.min.js') }}"></script>
-    <script src="{{ asset('src/js/sparkline/sparkline-active.js') }}"></script>
-    <!-- flot JS
-  ============================================ -->
-    <script src="{{ asset('src/js/flot/jquery.flot.js') }}"></script>
-    <script src="{{ asset('src/js/flot/jquery.flot.resize.js') }}"></script>
-    <script src="{{ asset('src/js/flot/flot-active.js') }}"></script>
-    <!-- knob JS
-  ============================================ -->
-    <script src="{{ asset('src/js/knob/jquery.knob.js') }}"></script>
-    <script src="{{ asset('src/js/knob/jquery.appear.js') }}"></script>
-    <script src="{{ asset('src/js/knob/knob-active.js') }}"></script>
-    <!--  Chat JS
-  ============================================ -->
-    <script src="{{ asset('src/js/chat/jquery.chat.js') }}"></script>
-    <!--  wave JS
-  ============================================ -->
-    <script src="{{ asset('src/js/wave/waves.min.js') }}"></script>
-    <script src="{{ asset('src/js/wave/wave-active.js') }}"></script>
-    <!-- icheck JS
-  ============================================ -->
-    <script src="{{ asset('src/js/icheck/icheck.min.js') }}"></script>
-    <script src="{{ asset('src/js/icheck/icheck-active.js') }}"></script>
-    <!--  todo JS
-  ============================================ -->
-    <script src="{{ asset('src/js/todo/jquery.todo.js') }}"></script>
-    <!-- Login JS
-  ============================================ -->
-    <script src="{{ asset('src/js/login/login-action.js') }}"></script>
-    <!-- plugins JS
-  ============================================ -->
-    <script src="{{ asset('src/js/plugins.js') }}"></script>
-    <!-- main JS
-  ============================================ -->
-    <script src="{{ asset('src/js/main.js') }}"></script>
-
+    <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}"
+        data-cf-settings="f5900ce986c61fa82aeb3155-|49" defer></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
+        integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
+        data-cf-beacon='{"rayId":"94a720077e49e3c0","version":"2025.5.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}'
+        crossorigin="anonymous"></script>
 </body>
+
+
+<!-- Mirrored from crms.dreamstechnologies.com/html/template/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Jun 2025 11:36:40 GMT -->
 
 </html>
