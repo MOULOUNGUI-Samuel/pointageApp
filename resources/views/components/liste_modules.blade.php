@@ -143,8 +143,7 @@
                                                     <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                                         style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
                                                         <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}"
-                                                            class="img-fluid rounded"
+                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
                                                             style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
                                                     </div>
                                                     <small class="fw-medium d-block text-truncate"
@@ -157,6 +156,7 @@
                                             .card-hover-zoom {
                                                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                                             }
+
                                             .card-hover-zoom:hover {
                                                 transform: scale(1.15);
                                                 z-index: 2;
@@ -197,20 +197,74 @@
 
             <!-- Mobile Menu -->
             <div class="dropdown mobile-user-menu">
-                <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">
-                        <i class="ti ti-user-pin"></i> Mon Profil
-                    </a>
-                    <a class="dropdown-item" href="#">
-                        <i class="ti ti-lock"></i> Déconnexion
-                    </a>
+                <a href="javascript:void(0);" class="btn btn-header-list" data-bs-toggle="dropdown">
+                    <i class="ti ti-layout-grid-add" style="font-size: 30px"></i>
+                </a>
+                <div class="dropdown-menu p-3"
+                    style="width: 280px; max-height: 80vh; overflow-y: auto; border-radius: 12px;border: 3px solid #05426b60;">
+                    @php
+                        $mesModules = \App\Helpers\DateHelper::dossier_info();
+                    @endphp
+
+                    <div class="row row-cols-3 g-1">
+                        @foreach ($mesModules['modules'] as $module)
+                            <div class="col text-center  card-hover-zoom">
+                                <a href="{{ route('dashboard', $module->id) }}"
+                                    class="text-decoration-none text-dark d-block">
+                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        style="width: 50px;height: 40px; transition: transform 0.3s;border-radius: 5px;">
+                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                            style="width: 45px;height: 30px; object-fit: contain;border-radius: 5px;">
+                                    </div>
+                                    <small class="fw-medium d-block text-truncate" title="{{ $module->nom_module }}"
+                                        style="font-size: 10px">{{ $module->nom_module }}</small>
+                                </a>
+                            </div>
+                        @endforeach
+
+                        <style>
+                            .card-hover-zoom {
+                                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            }
+
+                            .card-hover-zoom:hover {
+                                transform: scale(1.15);
+                                z-index: 2;
+                            }
+                        </style>
+                    </div>
                 </div>
             </div>
             <!-- /Mobile Menu -->
+            {{-- <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-inner slimscroll">
+                    <div id="sidebar-menu" class="sidebar-menu">
+                        <ul>
+                            <li class="clinicdropdown">
+                                <a href="profile.html">
+                                    <img src="assets/img/profiles/avatar-14.jpg" class="img-fluid" alt="Profile" />
+                                    <div class="user-names">
+                                        <h5>Adrian Davies</h5>
+                                        <h6>Tech Lead</h6>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <h6 class="submenu-hdr"> ESPACE UTILITAIRES
+                                </h6>
 
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /Sidebar --> --}}
         </div>
+
         <div class="notes-page-wrapper">
             <div class="content">
 

@@ -62,12 +62,19 @@
     <div id="main-content" class="page-wrapper all-content-wrapper">
         <div class="content">
             @include('components/header2')
-        @yield('content2')
+            @yield('content2')
         </div>
         {{-- @include('components/footer') --}}
     </div>
 
     @include('components/script2')
+    <script>
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 8000);
+    </script>
     <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {
