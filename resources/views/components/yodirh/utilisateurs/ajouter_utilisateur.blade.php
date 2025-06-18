@@ -66,6 +66,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group" id="data_1">
+                                <label class="form-label">Date de naissance(<span style="color: red;font-size:12px">***</span>) </label>
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" class="form-control" name="date_naissance"
+                                        value="{{ old('date_naissance') }}" required data-mask="99/99/9999"
+                                        autocomplete="false">
+                                </div>
+                            </div>
+                        </div>
                        
                         <div class="form-group col-md-4">
                             <label class="form-label">Lieu de naissance(<span style="color: red;font-size:12px">***</span>) </label>

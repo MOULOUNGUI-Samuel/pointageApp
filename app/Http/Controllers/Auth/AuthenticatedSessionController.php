@@ -55,8 +55,9 @@ class AuthenticatedSessionController extends Controller
 
             $request->authenticate();
             $request->session()->regenerate();
-
             $user = Auth::user();
+
+
             $heure_actuelle = Carbon::now('Africa/Libreville')->format('H:i:s');
             if ($request->pointage_entrer) {
                 $entreprise = Entreprise::find($user->entreprise_id);
