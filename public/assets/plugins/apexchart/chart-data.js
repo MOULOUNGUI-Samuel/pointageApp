@@ -1650,20 +1650,16 @@ if ($('#plan-overview').length > 0) {
     chart: {
       height: 240,
       type: 'donut',
-      toolbar: {
-        show: false,
-      }
+      toolbar: { show: false }
     },
-    colors: ['#FFC107', '#1B84FF', '#F26522'],
-    series: [20, 60, 20],
-    labels: ['Enterprise', 'Premium', 'Basic'],
+    colors: chartData.colors,
+    series: chartData.series,
+    labels: chartData.labels,
     plotOptions: {
       pie: {
         donut: {
           size: '50%',
-          labels: {
-            show: false
-          },
+          labels: { show: false },
           borderRadius: 30
         }
       }
@@ -1671,25 +1667,19 @@ if ($('#plan-overview').length > 0) {
     stroke: {
       lineCap: 'round',
       show: true,
-      width: 0,    // Space between donut sections
+      width: 0,
       colors: '#fff'
     },
-    dataLabels: {
-      enabled: false
-    },
+    dataLabels: { enabled: false },
     legend: { show: false },
     responsive: [{
       breakpoint: 480,
       options: {
-        chart: {
-          height: 180,
-        },
-        legend: {
-          position: 'bottom'
-        }
+        chart: { height: 180 },
+        legend: { position: 'bottom' }
       }
     }]
-  }
+  };
 
   var donut = new ApexCharts(
     document.querySelector("#plan-overview"),
@@ -1698,6 +1688,51 @@ if ($('#plan-overview').length > 0) {
 
   donut.render();
 }
+
+if ($('#plan-overview2').length > 0) {
+  var donutChart = {
+    chart: {
+      height: 240,
+      type: 'donut',
+      toolbar: { show: false }
+    },
+    colors: chartData2.colors,
+    series: chartData2.series,
+    labels: chartData2.labels,
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '50%',
+          labels: { show: false },
+          borderRadius: 30
+        }
+      }
+    },
+    stroke: {
+      lineCap: 'round',
+      show: true,
+      width: 0,
+      colors: '#fff'
+    },
+    dataLabels: { enabled: false },
+    legend: { show: false },
+    responsive: [{
+      breakpoint: 480,
+      options: {
+        chart: { height: 180 },
+        legend: { position: 'bottom' }
+      }
+    }]
+  };
+
+  var donut = new ApexCharts(
+    document.querySelector("#plan-overview2"),
+    donutChart
+  );
+
+  donut.render();
+}
+
 
   
 });

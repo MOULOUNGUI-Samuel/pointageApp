@@ -80,6 +80,17 @@ class DashboardRHController extends Controller
             ->whereHas('pointage', fn($query) => $query->where('date_arriver', now()->format('Y-m-d')))
             ->get();
 
+        $total = count($employes);
+        $pourcentages = [
+            'actifs' => $total > 0 ? round((count($employesActifs) * 100) / $total, 2) : 0,
+            'conges' => 0, // adapte ici si tu veux un vrai calcul
+            'inactifs' => $total > 0 ? round((count($employesInactifs) * 100) / $total, 2) : 0,
+        ];
+        $pourcentagesContrats = [
+            'Contrats actifs' => $total > 0 ? 90 : 0,
+            'Contrats inactifs' => $total > 0 ? 10 : 0,
+        ];
+
         return view("dashboard", compact(
             'employes',
             'pointages_oui',
@@ -87,6 +98,8 @@ class DashboardRHController extends Controller
             'pointage_intermediaires',
             'employesActifs',
             'employesInactifs',
+            'pourcentages',
+            'pourcentagesContrats',
             'utilisateursFinContrats',
             'entreprises',
             'modules',
