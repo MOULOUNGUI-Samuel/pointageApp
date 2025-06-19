@@ -22,10 +22,16 @@
 
     <!-- Welcome Wrap -->
     <div class="welcome-wrap mb-4 bg-primary shadow">
-        <div class=" d-flex align-items-center justify-content-between flex-wrap">
-            <div class="mb-3">
-                <h2 class="mb-1 text-white">Bienvenue, {{ Auth::user()->prenom ?? '' }}</h2>
-                <p class="text-light">Prêt à faire avancer votre équipe aujourd'hui ?</p>
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+            <div class="d-flex">
+                <div class="d-flex align-items-center justify-content-center me-3">
+                    <img src="{{ asset('storage/' . $module_logo) }}" alt="Profile"
+                        style="width: 90px; height: 90px; object-fit: cover; border-radius: 12px; box-shadow: 0 5px 8px rgba(243, 239, 239, 0.508); background: #fff; border: 1px solid #e5e7eb;" />
+                </div>
+                <div class="mb-3">
+                    <h2 class="mb-1 text-white">Bienvenue, {{ Auth::user()->prenom ?? '' }}</h2>
+                    <p class="text-light">Prêt à faire avancer votre équipe aujourd'hui ?</p>
+                </div>
             </div>
             <div class="d-flex align-items-center flex-wrap mb-1">
                 <a href="{{ route('yodirh.utilisateurs') }}" class="btn btn-dark btn-md me-2 mb-2">Employers</a>
@@ -36,6 +42,7 @@
     <!-- /Welcome Wrap -->
 
     <div class="row">
+       
         <div class="col-xl-3 col-sm-6 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-body">
@@ -144,33 +151,40 @@
                         <input type="text" class="form-control shadow" id="search1" placeholder="Rechercher...">
                     </div>
                 </div>
-                <div class="card-body pb-2" id="absentTable1">
-                    @foreach ($users_non_existants as $absent)
-                        <div class="absent-item">
-                            <div class="d-sm-flex justify-content-between flex-wrap mb-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <a href="javascript:void(0);" class="avatar avatar-sm border flex-shrink-0">
-                                        <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid w-auto h-auto"
-                                            alt="img">
-                                    </a>
-                                    <div class="ms-2 flex-fill">
-                                        {{-- Le nom est ici --}}
-                                        <h6 class="fs-medium text-truncate mb-1"><a
-                                                href="javascript:void(0);">{{ $absent->nom . ' ' . $absent->prenom }}</a>
+                <div class="card-body pb-2" id="absentTable1" style="max-height: 300px; overflow-y: auto;">
+                    @if (count($users_non_existants) > 0)
+                        @foreach ($users_non_existants as $absent)
+                            <div class="absent-item">
+                                <div class="d-sm-flex justify-content-between flex-wrap mb-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <a href="javascript:void(0);" class="avatar avatar-sm border flex-shrink-0">
+                                            <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid w-auto h-auto"
+                                                alt="img">
+                                        </a>
+                                        <div class="ms-2 flex-fill">
+                                            {{-- Le nom est ici --}}
+                                            <h6 class="fs-medium text-truncate mb-1"><a
+                                                    href="javascript:void(0);">{{ $absent->nom . ' ' . $absent->prenom }}</a>
+                                            </h6>
+                                            {{-- La fonction est dans le span .text-info --}}
+                                            <p class="fs-13 d-inline-flex align-items-center"><span
+                                                    class="text-info">{{ $absent->fonction }}</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm-end mb-2">
+                                        <h6 class="mb-1">
+                                            {{ \Carbon\Carbon::parse($absent->date_embauche)->format('d M Y') }}
                                         </h6>
-                                        {{-- La fonction est dans le span .text-info --}}
-                                        <p class="fs-13 d-inline-flex align-items-center"><span
-                                                class="text-info">{{ $absent->fonction }}</span></p>
+                                        <p class="fs-13">Date d'embauche</p>
                                     </div>
                                 </div>
-                                <div class="text-sm-end mb-2">
-                                    <h6 class="mb-1">{{ \Carbon\Carbon::parse($absent->date_embauche)->format('d M Y') }}
-                                    </h6>
-                                    <p class="fs-13">Date d'embauche</p>
-                                </div>
                             </div>
+                        @endforeach
+                    @else
+                        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 200px;">
+                            Aucun employé absent trouvé aujourd'hui.
                         </div>
-                    @endforeach
+                    @endif
                 </div>
             </div>
 
@@ -185,33 +199,39 @@
                             width="50">
                     </div>
                 </div>
-                <div class="card-body pb-2" id="absentTable2">
-                    @foreach ($pointages_oui as $present)
-                        <div class="absent-item">
-                            <div class="d-sm-flex justify-content-between flex-wrap mb-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <a href="javascript:void(0);" class="avatar avatar-sm border flex-shrink-0">
-                                        <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid w-auto h-auto"
-                                            alt="img">
-                                    </a>
-                                    <div class="ms-2 flex-fill">
-                                        {{-- Le nom est ici --}}
-                                        <h6 class="fs-medium text-truncate mb-1"><a
-                                                href="javascript:void(0);">{{ $present->nom . ' ' . $present->prenom }}</a>
-                                        </h6>
-                                        {{-- La fonction est dans le span .text-info --}}
-                                        <p class="fs-13 d-inline-flex align-items-center"><span
-                                                class="text-info">{{ $present->fonction }}</span></p>
+                <div class="card-body pb-2" id="absentTable2" style="max-height: 300px; overflow-y: auto;">
+                    @if (count($pointages_oui) > 0)
+                        @foreach ($pointages_oui as $present)
+                            <div class="absent-item">
+                                <div class="d-sm-flex justify-content-between flex-wrap mb-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <a href="javascript:void(0);" class="avatar avatar-sm border flex-shrink-0">
+                                            <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid w-auto h-auto"
+                                                alt="img">
+                                        </a>
+                                        <div class="ms-2 flex-fill">
+                                            {{-- Le nom est ici --}}
+                                            <h6 class="fs-medium text-truncate mb-1"><a
+                                                    href="javascript:void(0);">{{ $present->nom . ' ' . $present->prenom }}</a>
+                                            </h6>
+                                            {{-- La fonction est dans le span .text-info --}}
+                                            <p class="fs-13 d-inline-flex align-items-center"><span
+                                                    class="text-info">{{ $present->fonction }}</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm-end mb-2">
+                                        <h6 class="mb-1">
+                                            {{ \Carbon\Carbon::parse($present->date_embauche)->format('d M Y') }}</h6>
+                                        <p class="fs-13">Date d'embauche</p>
                                     </div>
                                 </div>
-                                <div class="text-sm-end mb-2">
-                                    <h6 class="mb-1">
-                                        {{ \Carbon\Carbon::parse($absent->date_embauche)->format('d M Y') }}</h6>
-                                    <p class="fs-13">Date d'embauche</p>
-                                </div>
                             </div>
+                        @endforeach
+                    @else
+                        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 200px;">
+                            Aucun employé présent trouvé.
                         </div>
-                    @endforeach
+                    @endif
                 </div>
             </div>
         </div>
@@ -226,75 +246,80 @@
                         <input type="text" class="form-control shadow" id="search3" placeholder="Rechercher...">
                     </div>
                 </div>
-                <div class="card-body pb-2" id="absentTable3">
+                <div class="card-body pb-2" id="absentTable3" style="max-height: 300px; overflow-y: auto;">
+                    @if (count($utilisateursFinContrats) > 0)
+                        @foreach ($utilisateursFinContrats as $dateFinContrat)
+                            @php
+                                $dateFin = \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat);
+                                $dateActuelle = \Carbon\Carbon::now();
+                                $joursRestants = $dateActuelle->startOfDay()->diffInDays($dateFin->startOfDay(), false);
+                                $dateFinContrat->jours_restants = $joursRestants;
+                                $dateFinContrat->contrat = $dateFin->format('d/m/Y');
 
-                    @foreach ($utilisateursFinContrats as $dateFinContrat)
-                        @php
-                            $dateFin = \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat);
-    $dateActuelle = \Carbon\Carbon::now();
-   $joursRestants = $dateActuelle->startOfDay()->diffInDays($dateFin->startOfDay(), false);
-    $dateFinContrat->jours_restants = $joursRestants;
-    $dateFinContrat->contrat = $dateFin->format('d/m/Y');
+                                if ($joursRestants < 0) {
+                                    $periodeContrat = 'Expiré';
+                                } elseif ($joursRestants == 0) {
+                                    $periodeContrat = "Aujourd'hui";
+                                } elseif ($joursRestants == 1) {
+                                    $periodeContrat = 'Demain'; // 💡 plus logique que 'Hier' ici
+                                } elseif ($joursRestants < 7) {
+                                    $periodeContrat = "$joursRestants jours";
+                                } elseif ($joursRestants < 30) {
+                                    $weeks = floor($joursRestants / 7);
+                                    $remainingDays = $joursRestants % 7;
+                                    $periodeContrat = "$weeks semaine" . ($weeks > 1 ? 's' : '');
+                                    if ($remainingDays > 0) {
+                                        $periodeContrat .= " , $remainingDays jour" . ($remainingDays > 1 ? 's' : '');
+                                    }
+                                } else {
+                                    $months = floor($joursRestants / 30);
+                                    $remainingDays = $joursRestants % 30;
+                                    $weeks = floor($remainingDays / 7);
+                                    $extraDays = $remainingDays % 7;
 
-    if ($joursRestants < 0) {
-        $periodeContrat = 'Expiré';
-    } elseif ($joursRestants == 0) {
-        $periodeContrat = "Aujourd'hui";
-    } elseif ($joursRestants == 1) {
-        $periodeContrat = 'Demain'; // 💡 plus logique que 'Hier' ici
-    } elseif ($joursRestants < 7) {
-        $periodeContrat = "$joursRestants jours";
-    } elseif ($joursRestants < 30) {
-        $weeks = floor($joursRestants / 7);
-        $remainingDays = $joursRestants % 7;
-        $periodeContrat = "$weeks semaine" . ($weeks > 1 ? 's' : '');
-        if ($remainingDays > 0) {
-            $periodeContrat .= " , $remainingDays jour" . ($remainingDays > 1 ? 's' : '');
-        }
-    } else {
-        $months = floor($joursRestants / 30);
-        $remainingDays = $joursRestants % 30;
-        $weeks = floor($remainingDays / 7);
-        $extraDays = $remainingDays % 7;
-
-        $periodeContrat = "$months mois";
-        if ($weeks > 0) {
-            $periodeContrat .= " , $weeks semaine" . ($weeks > 1 ? 's' : '');
-        }
-        if ($extraDays > 0) {
-            $periodeContrat .= " , $extraDays jour" . ($extraDays > 1 ? 's' : '');
-        }
-    }
-                        @endphp
-                        <div class="absent-item">
-                            <div>
-                                <div class="d-sm-flex justify-content-between flex-wrap mb-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <a href="javscript:void(0);" class="avatar avatar-sm border flex-shrink-0">
-                                            <img src="{{ asset('src/images/user.jpg') }}" class="img-fluid w-auto h-auto"
-                                                alt="img">
-                                        </a>
-                                        <div class="ms-2 flex-fill">
-                                            <h6 class="fs-medium text-truncate mb-1"><a
-                                                    href="javscript:void(0);">{{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}</a>
-                                            </h6>
-                                            <p class="fs-13">Date fin contrat :
-                                                {{ \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat)->format('d M Y') }}
+                                    $periodeContrat = "$months mois";
+                                    if ($weeks > 0) {
+                                        $periodeContrat .= " , $weeks semaine" . ($weeks > 1 ? 's' : '');
+                                    }
+                                    if ($extraDays > 0) {
+                                        $periodeContrat .= " , $extraDays jour" . ($extraDays > 1 ? 's' : '');
+                                    }
+                                }
+                            @endphp
+                            <div class="absent-item">
+                                <div>
+                                    <div class="d-sm-flex justify-content-between flex-wrap mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <a href="javscript:void(0);" class="avatar avatar-sm border flex-shrink-0">
+                                                <img src="{{ asset('src/images/user.jpg') }}"
+                                                    class="img-fluid w-auto h-auto" alt="img">
+                                            </a>
+                                            <div class="ms-2 flex-fill">
+                                                <h6 class="fs-medium text-truncate mb-1"><a
+                                                        href="javscript:void(0);">{{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}</a>
+                                                </h6>
+                                                <p class="fs-13">Date fin contrat :
+                                                    {{ \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat)->format('d M Y') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="text-sm-end mb-2">
+                                            <h6
+                                                class="mb-1 {{ $periodeContrat == "Aujourd'hui" || $periodeContrat == 'Expiré' ? 'text-danger' : 'text-warning' }}">
+                                                {{ $periodeContrat }}</h6>
+                                            <p class="fs-13">Date d'embauche :
+                                                {{ \Carbon\Carbon::parse($dateFinContrat->date_embauche)->format('d M Y') }}
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="text-sm-end mb-2">
-                                        <h6
-                                            class="mb-1 {{ ($periodeContrat == "Aujourd'hui" || $periodeContrat == "Expiré") ? 'text-danger' : 'text-warning' }}">
-                                            {{ $periodeContrat }}</h6>
-                                        <p class="fs-13">Date d'embauche :
-                                            {{ \Carbon\Carbon::parse($dateFinContrat->date_embauche)->format('d M Y') }}
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
+                        @endforeach
+                    @else
+                        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 200px;">
+                            Aucun contrat à renouveler pour le moment.
                         </div>
-                    @endforeach
+                    @endif
                 </div>
             </div>
         </div>
@@ -367,38 +392,6 @@
         };
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fonction de recherche générique pour tous les couples searchX / absentTableX
-            function setupSearchFilter(searchIdPrefix, tableIdPrefix) {
-                let i = 1;
-                while (true) {
-                    const searchInput = document.getElementById(`${searchIdPrefix}${i}`);
-                    const absentContainer = document.getElementById(`${tableIdPrefix}${i}`);
-                    if (!searchInput || !absentContainer) break;
 
-                    searchInput.addEventListener('input', function() {
-                        const query = this.value.toLowerCase().trim();
-                        const absentItems = absentContainer.querySelectorAll('.absent-item');
-
-                        absentItems.forEach(item => {
-                            const nameElement = item.querySelector('h6 a');
-                            const functionElement = item.querySelector('.text-info');
-                            const name = nameElement ? nameElement.textContent.toLowerCase() : '';
-                            const func = functionElement ? functionElement.textContent
-                                .toLowerCase() : '';
-                            const searchableText = name + ' ' + func;
-                            item.style.display = searchableText.includes(query) ? '' : 'none';
-                        });
-                    });
-
-                    i++;
-                }
-            }
-
-            // Appel pour tous les search/absentTable indexés (search1, search2, ...)
-            setupSearchFilter('search', 'absentTable');
-        });
-    </script>
     <!-- End Email Statistic area-->
 @endsection

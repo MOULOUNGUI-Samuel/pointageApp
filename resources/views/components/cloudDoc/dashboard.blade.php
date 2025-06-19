@@ -26,21 +26,25 @@
         $dossier_info = \App\Helpers\DateHelper::dossier_info();
     @endphp
     <div class="file-manager-area mg-tb-15">
-        <div class="container">
-            <div class="page-header page-add-notes d-flex align-items-center justify-content-between">
-                <div class="add-item d-flex align-items-center">
-                    <div class="page-title">
-                        <h4>Gestion des documents</h4>
-                        <p>Gérez vos fichiers et dossiers</p>
+        <div class="container-fluid">
+            <div class="welcome-wrap mb-4 bg-primary shadow">
+                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div class="d-flex">
+                        <div class="d-flex align-items-center justify-content-center me-3">
+                            <img src="{{ asset('storage/' . $module_logo) }}" alt="Profile"
+                                style="width: 90px; height: 90px; object-fit: cover; border-radius: 12px; box-shadow: 0 5px 8px rgba(243, 239, 239, 0.508); background: #fff; border: 1px solid #e5e7eb;" />
+                        </div>
+                        <div class="">
+                            <h2 class="mb-1 text-white">Bienvenue, {{ Auth::user()->prenom ?? '' }}</h2>
+                            <p class="text-light">Prêt à explorer votre bibliothèque aujourd'hui&nbsp;?</p>
+                            <h6 class="text-white">Gérez vos fichiers et dossiers</h6>
+                        </div>
                     </div>
-                    <a id="toggle_btn2" class="notes-tog" href="javascript:void(0);">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                </div>
-                <div class="d-sm-flex align-items-center">
-                    <a href="#" class="btn btn-primary btn-added" data-bs-toggle="modal"
-                        data-bs-target="#upload-file"><span class="me-1 d-flex align-items-center"><i data-feather="upload"
-                                class="feather-16"></i></span> AJOUTER UN LIEN CLOUD</a>
+                    <div class="d-flex align-items-center flex-wrap mb-1">
+                        <a href="#" class="btn btn-light btn-added w-100" data-bs-toggle="modal"
+                        data-bs-target="#upload-file"><i data-feather="upload"
+                                class="feather-16"></i> AJOUTER UN LIEN CLOUD</a>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
@@ -49,7 +53,7 @@
                         <div class="col-md-3"></div>
 
                         <div class="col-lg-6 text-left" style="margin-top: 20px;">
-                            <div class="alert alert-success" style="font-size: 25px">
+                            <div class="alert alert-success alertMasque" style="font-size: 25px">
                                 {{ session('success') ?? $success }}
                             </div>
                         </div>
@@ -62,12 +66,11 @@
                     <div class="col-md-3"></div>
                     <div class="col-md-6">
                         @foreach ($errors->all() as $error)
-                            <div class="alert alert-danger text-left" style="font-size: 20px" role="alert">
+                            <div class="alert alert-danger alertMasque text-left" style="font-size: 20px" role="alert">
                                 <span><i class="icon-warning" style="font-size: 35px"></i>
                                     {!! $error !!}
                                 </span>
                             </div>
-                            
                         @endforeach
                     </div>
                     <div class="col-md-3"></div>
@@ -153,8 +156,8 @@
                         <div class="text-center d-flex-justify-content-between">
                             <span class="text-danger">Cliquez 2 fois pour ouvrir un dossier</span>
                         </div>
-                        <div class="modal fade custom-modal file-manager-modal upload-modal" id="floatingLabelsModal" tabindex="-1" role="dialog"
-                            aria-labelledby="floatingLabelsModalLabel" aria-hidden="true">
+                        <div class="modal fade custom-modal file-manager-modal upload-modal" id="floatingLabelsModal"
+                            tabindex="-1" role="dialog" aria-labelledby="floatingLabelsModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header" style="background-color:rgba(152, 15, 15, 0.898)">
@@ -183,8 +186,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal" tabindex="-1" role="dialog"
-                            aria-labelledby="partageLabelsModal" aria-hidden="true">
+                        <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal"
+                            tabindex="-1" role="dialog" aria-labelledby="partageLabelsModal" aria-hidden="true">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary">
@@ -203,8 +206,8 @@
                                                 <div class="mb-2"
                                                     style="display: flex; align-items: center;justify-content: space-between;">
                                                     <label>Rechercher un utilisateur</label>
-                                                    <span id="checkedCount" class="badge ml-2"
-                                                        style="font-size:16px;background-color:lightslategrey">0
+                                                    <span id="checkedCount" class="badge ml-2 text-light"
+                                                        style="font-size:16px;background-color:#05436b">0
                                                         sélectionné(s)</span>
                                                 </div>
 
@@ -212,8 +215,8 @@
                                                     class="form-control shadow rounded"
                                                     placeholder="🔍 Rechercher un utilisateur...">
                                             </div>
-                                            <div class="" style="max-height: 500px; overflow-y: auto;">
-                                                <table class="table datatable">
+                                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                                                <table id="data-table-basic" class="table table-striped">
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th data-field="state" data-checkbox="true"></th>
@@ -280,8 +283,8 @@
 
                     </div>
                     <div class="col-md-6">
-                        <div class=" text-center" style="margin-top: 20px;">
-                            <div class="alert alert-info" style="font-size: 20px">
+                        <div class="text-center" style="margin-top: 20px;">
+                            <div class="alert alert-primary" style="font-size: 20px">
                                 Veuillez choisir un dossier !
                             </div>
                         </div>

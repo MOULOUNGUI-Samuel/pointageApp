@@ -147,7 +147,14 @@
                                 </div>
                             </div>
                             <div class="mb-5">
-                                <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                                <button type="submit" class="btn-action btn btn-primary w-100"
+                                    data-loader-target="connecter">Se connecter</button>
+                                <!-- Bouton initial -->
+                                <!-- Bouton de chargement (caché au départ) -->
+                                <button type="button" id="connecter" class="btn btn-outline-primary w-100"
+                                    style="display: none;" disabled>
+                                    <i class="fa fa-spinner fa-spin me-2"></i>Chargement...
+                                </button>
                             </div>
                             {{-- <div class="mb-3">
                                 <h6>Nouveau sur notre plateforme ?</h6>
@@ -182,7 +189,39 @@
         </div>
     </div>
     <!-- /Main Wrapper -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cible tous les boutons ayant l'attribut data-loader-target
+        document.querySelectorAll('.btn-action[data-loader-target]').forEach(function(btn) {
+            
+            btn.addEventListener('click', function(event) {
+                // Récupérez les champs du formulaire par leur ID
+                const validationCustom01 = document.getElementById('validationCustom01');
+                const validationCustom02 = document.getElementById('validationCustom02');
+                const validationCustom03 = document.getElementById('validationCustom03');
 
+                // Vérifiez si l'un des champs est vide (après avoir retiré les espaces)
+                if (validationCustom01.value.trim() === '' || validationCustom03.value.trim() === '' || validationCustom03.value.trim() === '') {
+                    // 1. Empêche la soumission du formulaire
+                    // 3. On arrête l'exécution ici, le bouton ne sera pas masqué
+                    return; 
+                }
+
+                // Si les champs sont remplis, on exécute le code original
+                const targetId = btn.getAttribute('data-loader-target');
+                const loaderBtn = document.getElementById(targetId);
+
+                if (loaderBtn) {
+                    btn.style.display = 'none';
+                    loaderBtn.style.display = 'inline-block';
+                }
+
+                // Note : si vous ne voulez pas que le formulaire se soumette immédiatement
+                // et attendez une réponse AJAX, vous devriez aussi ajouter event.preventDefault() ici.
+            });
+        });
+    });
+</script>
     <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {

@@ -70,10 +70,10 @@
     @include('components/script2')
     <script>
         setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
+            document.querySelectorAll('.alertMasque').forEach(function(alert) {
                 alert.style.display = 'none';
             });
-        }, 8000);
+        }, 1200);
     </script>
     <script>
         // 🔌 GESTION CONNEXION PERDUE
@@ -182,6 +182,42 @@
         setInterval(checkSessionExpired, 60000); // Vérifie expiration session toutes les 60s
     </script>
 
+    <script>
+        // Assurez-vous que ce code est placé après l'inclusion des bibliothèques ci-dessus
+
+        $(document).ready(function() {
+
+            // 1. Initialisation des Datepickers (calendriers)
+            // On cible tous les conteneurs qui ont la classe 'js-datepicker'
+            $('.js-datepicker .input-group.date').datepicker({
+                format: 'dd/mm/yyyy', // Format de date français
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true,
+                language: 'fr' // Assurez-vous d'inclure le fichier de langue si nécessaire
+            });
+
+
+            // 2. Initialisation de Select2 (listes déroulantes améliorées)
+            // On cible toutes les listes qui ont la classe 'js-select2'
+            $('.js-select2').select2({
+                placeholder: "Sélectionnez une option",
+                allowClear: true // Ajoute une croix pour vider la sélection
+            });
+
+
+            // 3. Initialisation des masques de saisie (avec IMask.js)
+            // On cible tous les champs qui ont un attribut 'data-mask'
+            document.querySelectorAll('[data-mask]').forEach(input => {
+                IMask(input, {
+                    mask: input.dataset.mask // On récupère le masque depuis l'attribut data-mask
+                });
+            });
+
+        });
+    </script>
 
     <script>
         // Nombre de tâches de chargement en cours

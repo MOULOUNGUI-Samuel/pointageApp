@@ -152,7 +152,7 @@
                 <a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
                     <span class="user-info">
                         <span class="user-letter">
-                            <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile" />
+                            <img src="{{ asset('storage/' . $module_logo) }}" alt="Profile" />
                         </span>
                         <span class="badge badge-success rounded-pill"></span>
                     </span>

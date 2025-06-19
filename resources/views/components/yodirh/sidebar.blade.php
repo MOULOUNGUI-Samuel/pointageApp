@@ -17,21 +17,23 @@
                     <h6 class="submenu-hdr">Menu Ned&Co RH</h6>
                     <ul>
                         <li>
-                            <a href="{{ route('dashboard', $module_id) }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard', $module_id) }}"
+                                class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
                                 <i class="fa fa-home"></i><span>Tableau de bord </span>
                             </a>
                         </li>
-                        <li
-                            class="submenu">
-                            <a href="javascript:void(0);" class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence') ? 'active show' : '' }}"><i class="fa fa-users"></i><span>Gestion du
-                                    personnel</span><span class="menu-arrow"></span></a>
-                            <ul class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence') ? 'show' : '' }}">
+                        <li class="submenu">
+                            <a href="javascript:void(0);"
+                                class="subdrop {{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','modif_affiche_utilisateur','yodirh.formulaire_utilisateurs','Suivi_profil') ? 'active' : '' }}">
+                                <i class="fa fa-users"></i><span>Gestion du personnel</span><span
+                                    class="menu-arrow"></span></a>
+                            <ul>
                                 <li><a href="{{ route('yodirh.utilisateurs') }}"
-                                        class="{{ request()->routeIs('yodirh.utilisateurs') ? 'active' : '' }}">Gestion
-                                        des employés</a></li>
+                                        class="{{ request()->routeIs('yodirh.utilisateurs','modif_affiche_utilisateur','yodirh.formulaire_utilisateurs') ? 'active' : '' }}">
+                                        Dossiers des employés</a></li>
                                 <li><a href="#">Contrats de travail</a></li>
                                 <li><a href="{{ route('liste_presence') }}"
-                                        class="{{ request()->routeIs('liste_presence') ? 'active' : '' }}">Suivi des
+                                        class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'active' : '' }}">Suivi des
                                         absences et congés</a></li>
                                 <li><a href="#">Organigramme</a></li>
                             </ul>

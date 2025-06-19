@@ -7,13 +7,10 @@
                 <div class="data-table-list">
                     <div class="d-flex-justify-content-between mb-3 mt-3" style="margin-top: 10px">
                         <h2 class="card-title text-primary">Liste des presences</h2>
-
-
-
                         <!-- Modal -->
                         <div class="modal fade" id="sortiesIntermediairesModal" tabindex="-1" role="dialog"
                             aria-labelledby="sortiesIntermediairesModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                            <div class="modal-dialog  modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary">
                                         <h4 class="modal-title text-white" id="sortiesIntermediairesModalLabel">Sorties
@@ -48,30 +45,16 @@
                                                             </script>
                                                         </div>
                                                         <div class="col-md-4 mb-2">
-                                                            <div class="d-flex align-items-center">
-                                                                <label for="filtre-date2" class="me-2 mb-0">Date début
-                                                                    :</label>
-                                                                <input type="date" id="filtre-date2" name="date_debut2"
-                                                                    class="form-control">
-                                                            </div>
+                                                            <label for="filtre-date2" class="me-2 mb-0">Date début :</label>
+                                                            <input type="date" id="filtre-date2" name="date_debut2"
+                                                                class="form-control">
                                                         </div>
 
                                                         <div class="col-md-4 mb-2">
-                                                            <div class="d-flex align-items-center">
-                                                                <label for="filtre-date3" class="me-2 mb-0">Date fin
-                                                                    :</label>
-                                                                <input type="date" id="filtre-date3" name="date_fin2"
-                                                                    class="form-control">
-                                                            </div>
+                                                            <label for="filtre-date3" class="me-2 mb-0">Date fin :</label>
+                                                            <input type="date" id="filtre-date3" name="date_fin2"
+                                                                class="form-control">
                                                         </div>
-
-                                                        {{-- <div class="col-md-3 mt-2">
-                                                                    <select class="form-select form-control  shadow-sm" id="filterStatus">
-                                                                        <option value="">Tous les statuts</option>
-                                                                        <option value="a_heure">Entrées</option>
-                                                                        <option value="en_retard">Sorties</option>
-                                                                    </select>
-                                                                </div> --}}
                                                     </div>
 
                                                     <div class="table-responsive2">
@@ -142,9 +125,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Fermer</button>
-                                        <button type="button" class="btn btn-primary">Enregistrer</button>
+                                        <button type="button" class="btn btn-primary"
+                                            data-bs-dismiss="modal">Fermer</button>
                                     </div>
                                 </div>
                             </div>
@@ -164,10 +146,8 @@
                                 <div class="col-sm-8">
                                     <div class="d-flex align-items-center flex-wrap row-gap-2 justify-content-sm-end">
                                         <div class="">
-                                            <a href="{{ route('yodirh.utilisateurs') }}"
-                                                class="btn-action btn btn-primary"
-                                                data-loader-target="liste-utilisateur"><i
-                                                    class="fas fa-list me-2"></i>Liste
+                                            <a href="{{ route('yodirh.utilisateurs') }}" class="btn-action btn btn-primary"
+                                                data-loader-target="liste-utilisateur"><i class="fas fa-list me-2"></i>Liste
                                                 des utilisateurs</a>
                                             <!-- Bouton de chargement (caché au départ) -->
                                             <button type="button" id="liste-utilisateur" class="btn btn-outline-primary"
@@ -200,16 +180,14 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-2 mb-4">
                                 <div class="d-flex align-items-center flex-wrap row-gap-2">
                                     <div class="dropdown me-2">
-                                        
-                                            <label for="filtre-date" class="me-2 mb-0">Date début :</label>
-                                            <input type="date" id="filtre-date" name="date_debut"
-                                                class="form-control">
+
+                                        <label for="filtre-date" class="me-2 mb-0">Date début :</label>
+                                        <input type="date" id="filtre-date" name="date_debut" class="form-control">
 
                                     </div>
                                     <div class="icon-form">
-                                            <label for="filtre-date1" class="me-2 mb-0">Date fin :</label>
-                                            <input type="date" id="filtre-date1" name="date_fin"
-                                                class="form-control">
+                                        <label for="filtre-date1" class="me-2 mb-0">Date fin :</label>
+                                        <input type="date" id="filtre-date1" name="date_fin" class="form-control">
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center flex-wrap row-gap-2 mt-4">
@@ -222,22 +200,22 @@
                                     </div>
                                     <div class="form-sorts dropdown">
                                         <a href="javascript:void(0);" class="dropdown-toggle"
-                                                data-bs-toggle="dropdown"><i
-                                                    class="ti ti-package-export me-2"></i>Exporter</a>
-                                            <div class="dropdown-menu  dropdown-menu-end">
-                                                <ul>
-                                                    <li>
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i
-                                                                class="ti ti-file-type-pdf text-danger me-1"></i>Exporter
-                                                            en PDF</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i
-                                                                class="ti ti-file-type-xls text-green me-1"></i>Exporter
-                                                            en Excel </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                            data-bs-toggle="dropdown"><i
+                                                class="ti ti-package-export me-2"></i>Exporter</a>
+                                        <div class="dropdown-menu  dropdown-menu-end">
+                                            <ul>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item"><i
+                                                            class="ti ti-file-type-pdf text-danger me-1"></i>Exporter
+                                                        en PDF</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item"><i
+                                                            class="ti ti-file-type-xls text-green me-1"></i>Exporter
+                                                        en Excel </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -292,13 +270,14 @@
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('Suivi_profil', $pointage->user->id) }}"
-                                                        class="btn-action btn btn-primary btn-reco-mg btn-button-mg" data-loader-target="profile{{$pointage->user->id}}">
+                                                        class="btn-action btn btn-primary btn-reco-mg btn-button-mg"
+                                                        data-loader-target="profile{{ $pointage->user->id }}">
                                                         <i class="fa fa-eye"
                                                             style="font-size: 15px; margin-right: 10px"></i>
                                                         <span>Profil</span>
                                                     </a>
-                                                            <button type="button" id="profile{{$pointage->user->id}}" class="btn btn-outline-primary"
-                                                        style="display: none;" disabled>
+                                                    <button type="button" id="profile{{ $pointage->user->id }}"
+                                                        class="btn btn-outline-primary" style="display: none;" disabled>
                                                         <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
                                                     </button>
                                                 </td>

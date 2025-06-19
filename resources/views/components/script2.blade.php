@@ -44,6 +44,40 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fonction de recherche générique pour tous les couples searchX / absentTableX
+        function setupSearchFilter(searchIdPrefix, tableIdPrefix) {
+            let i = 1;
+            while (true) {
+                const searchInput = document.getElementById(`${searchIdPrefix}${i}`);
+                const absentContainer = document.getElementById(`${tableIdPrefix}${i}`);
+                if (!searchInput || !absentContainer) break;
+
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    const absentItems = absentContainer.querySelectorAll('.absent-item');
+
+                    absentItems.forEach(item => {
+                        const nameElement = item.querySelector('h6 a');
+                        const functionElement = item.querySelector('.text-info');
+                        const name = nameElement ? nameElement.textContent.toLowerCase() : '';
+                        const func = functionElement ? functionElement.textContent
+                            .toLowerCase() : '';
+                        const searchableText = name + ' ' + func;
+                        item.style.display = searchableText.includes(query) ? '' : 'none';
+                    });
+                });
+
+                i++;
+            }
+        }
+
+        // Appel pour tous les search/absentTable indexés (search1, search2, ...)
+        setupSearchFilter('search', 'absentTable');
+    });
+</script>
+<!-- jQuery -->
 <!-- jQuery -->
 <script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
 
@@ -86,8 +120,11 @@
 
 <!-- Sticky-sidebar -->
 <script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}" type="text/javascript">
-</script>
+<script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}" type="text/javascript"></script>
+
+<!-- Masked Input JS -->
+<script src="{{ asset('assets/js/jquery.maskedinput.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/js/mask.js') }}" type="text/javascript"></script>
 
 <!-- Color Picker JS -->
 <script src="{{ asset('assets/plugins/@simonwep/pickr/pickr.es5.min.js') }}" type="text/javascript"></script>
