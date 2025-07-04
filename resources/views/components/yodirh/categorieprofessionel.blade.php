@@ -71,8 +71,8 @@
                         </div>
                         <div class="col-md-2 mt-2">
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary" data-toggle="modal"
-                                data-target="#floatingLabelsModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#floatingLabelsModal">
                                 Ajouter une catégorie professionnelle
                             </button>
                         </div>
@@ -105,7 +105,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-12">
+                                                <div class="col-md-12 mt-3">
                                                     <div class="form-group ic-cmp-int float-lb floating-lb">
                                                         <div class="form-ic-cmp">
                                                             <i class="icon-info"></i>
@@ -117,7 +117,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Fermer</button>
+                                                        data-bs-dismiss="modal">Fermer</button>
                                                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                                                 </div>
                                             </div>
@@ -139,10 +139,10 @@
                             <p class="text-muted">{{ $categorieprofessionel->description }}</p>
                         @endif
                         <div class="dropdown-trig-sgn" style="margin-bottom: 10px;">
-                            <button class="btn triger-bounceIn btn-primary" data-toggle="dropdown">Actions</button>
+                            <button class="btn triger-bounceIn btn-primary" data-bs-toggle="dropdown">Actions</button>
                             <ul class="dropdown-menu triger-bounceIn-dp">
-                                <li><a href="#" data-toggle="modal"
-                                        data-target="#editserviceModal-{{ $categorieprofessionel->id }}">Modifier</a></li>
+                                <li><a href="#" data-bs-toggle="modal"
+                                        data-bs-target="#editserviceModal-{{ $categorieprofessionel->id }}">Modifier</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">Supprimer</a></li>
                             </ul>
@@ -179,7 +179,7 @@
                                         </div>
 
 
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 mt-3">
                                             <div class="form-group ic-cmp-int float-lb floating-lb">
                                                 <div class="form-ic-cmp">
                                                     <i class="icon-info"></i>
@@ -192,7 +192,7 @@
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                                             style="color: black">Fermer</button>
                                         <button type="submit" class="btn btn-primary">Modifier</button>
                                     </div>

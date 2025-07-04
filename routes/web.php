@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardRHController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ParamettreController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\pointeController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,7 @@ Route::middleware('auth')->group(
     function () {
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
         // Route::get('/', [AdminController::class, 'dashboard']);
+        Route::get('/change_entreprise/{id}', [DashboardRHController::class, 'change_entreprise'])->name('change_entreprise');
         Route::get('/modules', [ParamettreController::class, 'modules'])->name('ModuleAdmin');
         Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
         Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
@@ -115,3 +117,7 @@ Route::middleware('auth')->group(
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 Route::post('/logout_module/{id}', [AuthenticatedSessionController::class, 'logout_module'])->name('logout_module');
+
+// Gestion des routes API
+// Cette seule ligne crée les routes pour index, show, store, update, destroy
+Route::apiResource('users', UserController::class)->middleware('auth:sanctum');

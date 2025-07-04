@@ -9,6 +9,7 @@ use App\Models\RegimeAssurance;
 use App\Models\Pays;
 use App\Models\Ville;
 use App\Models\Beneficiaire;
+use App\Models\Entreprise;
 use App\Models\LienDoc;
 use App\Models\Module;
 use App\Models\Permission;
@@ -41,10 +42,14 @@ class DateHelper
 
         // Retrieve active modules
         $modules = Module::where('statut', 1)->get();
+        $entreprise = Entreprise::where('statut', 1)->get();
+
 
         return [
             'lienDocuments' => $lienDocuments,
             'modules' => $modules,
+            'entreprise' => $entreprise,
+
         ];
     }
     public static function convertirDateFormat($date)

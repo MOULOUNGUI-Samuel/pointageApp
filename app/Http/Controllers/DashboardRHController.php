@@ -107,4 +107,13 @@ class DashboardRHController extends Controller
             'categories',
         ));
     }
+
+    public function change_entreprise($entreprise_id)
+    { 
+        session()->put('entreprise_id', $entreprise_id);
+        $entreprise = Entreprise::find($entreprise_id);
+        session()->put('entreprise_nom', $entreprise->nom_entreprise);
+        session()->put('entreprise_logo', $entreprise->logo);
+        return redirect()->back();
+    }
 }

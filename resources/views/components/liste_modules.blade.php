@@ -175,7 +175,7 @@
                         <a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
                             <span class="user-info">
                                 <span class="user-letter">
-                                    <img src="{{ asset('assets/img/user.jpg') }}" alt="Profile">
+                                    <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile">
                                 </span>
                                 <span class="badge badge-success rounded-pill"></span>
                             </span>
@@ -293,7 +293,7 @@
                                             <p class="d-flex align-items-center">
                                                 <span class="text-info">@yoding</span>
                                                 <i class="ti ti-circle-filled fs-5 mx-2"></i>
-                                                Célébration
+                                                Actualités
                                             </p>
                                         </div>
                                     </div>
@@ -305,28 +305,31 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     <p class="text-dark fw-medium">
-                                        🎉 Aujourd’hui, nous célébrons l’anniversaire du grand baobab du Groupe Ned&Co :
-                                        notre Président !
+                                        🚀 <strong>Nouvelle version de l'application disponible !</strong>
                                         <br><br>
-                                        🌟 Toute la famille <strong>Ned&Co</strong> lui souhaite un <strong>joyeux
-                                            anniversaire</strong> plein de santé, de sagesse et d’inspiration continue.
+                                        Nous sommes ravis de vous présenter les dernières améliorations de notre plateforme :
+                                        <br>
+                                        • Interface utilisateur modernisée pour une meilleure expérience
+                                        <br>
+                                        • Temps de chargement optimisé
+                                        <br>
+                                        • Nouvelles fonctionnalités de reporting
                                         <br><br>
-                                        Vous êtes notre repère, notre visionnaire, et notre force motrice.
-                                        <a href="#"
-                                            class="text-info link-hover">#JoyeuxAnniversairePrésident</a>
-                                        <a href="#" class="text-info link-hover">#FiertéNedCo</a>
+                                        N'hésitez pas à nous faire part de vos retours !
+                                        <a href="#" class="text-info link-hover">#Nouveauté</a>
+                                        <a href="#" class="text-info link-hover">#Innovation</a>
                                     </p>
                                 </div>
                                 <div class="card shadow-none mb-3">
                                     <div class="card-img card-img-hover rounded-0">
-                                        <img src="{{ asset('src2/img/President1.png') }}" class="rounded-top w-100"
-                                            alt="Anniversaire Président">
+                                        <img src="{{ asset('src/images/annonce.PNG') }}" class="rounded w-100 shadow-sm"
+                                            alt="Nouvelle Interface">
                                     </div>
                                     <div class="card-body p-2">
                                         <h6 class="mb-1 text-truncate">
-                                            Un hommage vibrant au leadership et à l'humanité de notre Président 🙌
+                                            Découvrez la nouvelle interface utilisateur plus intuitive et performante 🎯
                                         </h6>
-                                        <a href="javascript:void(0);">YodIngénierie</a>
+                                        <a href="javascript:void(0);">Équipe Technique</a>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
@@ -358,11 +361,10 @@
                                     </a>
                                     <div class="bg-light rounded flex-fill p-2">
                                         <div class="d-flex align-items-center mb-1">
-                                            <h5><a href="javascript:void(0);">Fatou B.</a></h5>
+                                            <h5><a href="javascript:void(0);"> MBADINGA Joelle.</a></h5>
                                             <span class="ms-2">09:15</span>
                                         </div>
-                                        <p class="mb-1">Joyeux anniversaire Président 🎂 Que Dieu vous comble encore
-                                            de sagesse et de réussite !</p>
+                                        <p class="mb-1">La nouvelle interface est vraiment intuitive. La navigation est beaucoup plus fluide maintenant ! 👍</p>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);"
                                                 class="btn btn-icon btn-sm rounded-circle"><i
@@ -385,11 +387,10 @@
                                     </a>
                                     <div class="bg-light rounded flex-fill p-2">
                                         <div class="d-flex align-items-center mb-1">
-                                            <h5><a href="javascript:void(0);">Kevin M.</a></h5>
+                                            <h5><a href="javascript:void(0);">NDZIGHE ONGONE FREDDY.</a></h5>
                                             <span class="ms-2">09:33</span>
                                         </div>
-                                        <p class="mb-1">Merci pour votre vision et votre humanité. Un modèle pour
-                                            nous tous 🙏</p>
+                                        <p class="mb-1">Les nouveaux rapports sont très complets. Ça va nous faire gagner un temps précis ! 💯</p>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);"
                                                 class="btn btn-icon btn-sm rounded-circle"><i
@@ -413,11 +414,10 @@
                                     </a>
                                     <div class="bg-light rounded flex-fill p-2">
                                         <div class="d-flex align-items-center mb-1">
-                                            <h5><a href="javascript:void(0);">Nadine A.</a></h5>
+                                            <h5><a href="javascript:void(0);">MAGNI BALLA LAURE NAIKE</a></h5>
                                             <span class="ms-2">09:46</span>
                                         </div>
-                                        <p class="mb-1">Bon anniversaire Chef 🎉 Que cette année vous apporte encore
-                                            plus de succès !</p>
+                                        <p class="mb-1">L'application est plus rapide, c'est vraiment agréable à utiliser maintenant. Bon travail l'équipe ! 👏</p>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-start">
@@ -428,7 +428,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        {{-- <div>
                             <div class="card shadow-sm">
                                 <div class="card-header border-0 pb-0">
                                     <div
@@ -578,7 +578,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
 
                     </div>
@@ -610,11 +610,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MBADINGA MBADINGA joelle">
                                                     </a>
                                                     <div>
-                                                        <h6 class="fw-medium mb-1">Esther Mavoungou</h6>
-                                                        <span class="fs-12 d-block">Service RH</span>
+                                                        <h6 class="fw-medium mb-1">MBADINGA MBADINGA Joelle</h6>
+                                                        <span class="fs-12 d-block">Responsable Santé</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -622,11 +622,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MBENGA EPSE MAGHAGHA AIMERIE C">
                                                     </a>
                                                     <div>
-                                                        <h6 class="fw-medium mb-1">Yvan Obame</h6>
-                                                        <span class="fs-12 d-block">Département Finance</span>
+                                                        <h6 class="fw-medium mb-1">MBENGA EPSE MAGHAGHA AIMERIE C</h6>
+                                                        <span class="fs-12 d-block">Dame de Ménage</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -634,11 +634,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="ELANIE NDONG">
                                                     </a>
                                                     <div>
-                                                        <h6 class="fw-medium mb-1">Céline Nzamba</h6>
-                                                        <span class="fs-12 d-block">Direction Juridique</span>
+                                                        <h6 class="fw-medium mb-1">ELANIE NDONG</h6>
+                                                        <span class="fs-12 d-block">Commercial</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -652,11 +652,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="NDZIGHE ONGONE FREDDY">
                                                     </a>
                                                     <div>
-                                                        <h6 class="fw-medium mb-1">Président Ned&Co</h6>
-                                                        <span class="fs-12 d-block">Direction Générale</span>
+                                                        <h6 class="fw-medium mb-1">NDZIGHE ONGONE FREDDY</h6>
+                                                        <span class="fs-12 d-block">Chef Comptable</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -664,11 +664,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MAGNI BALLA LAURE NAIKE">
                                                     </a>
                                                     <div>
-                                                        <h6 class="fw-medium mb-1">Lucie Moussavou</h6>
-                                                        <span class="fs-12 d-block">Directrice Générale Adjointe</span>
+                                                        <h6 class="fw-medium mb-1">MAGNI BALLA LAURE NAIKE</h6>
+                                                        <span class="fs-12 d-block">Responsable Technique</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -707,11 +707,11 @@
                                     <a href="javascript:void(0);"
                                         class="text-info d-inline-flex link-hover">#NedCore</a>
                                     <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#AnniversairePresident</a>
+                                        class="text-info d-inline-flex link-hover">#TransformationDigitale</a>
                                     <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#ExcellenceNedCo</a>
+                                        class="text-info d-inline-flex link-hover">#EquipeNedCo</a>
                                     <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#FamilleNed</a>
+                                        class="text-info d-inline-flex link-hover">#Excellence</a>
                                 </div>
                             </div>
                         </div>

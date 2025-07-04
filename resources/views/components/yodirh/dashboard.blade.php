@@ -212,16 +212,16 @@
                                         <div class="ms-2 flex-fill">
                                             {{-- Le nom est ici --}}
                                             <h6 class="fs-medium text-truncate mb-1"><a
-                                                    href="javascript:void(0);">{{ $present->nom . ' ' . $present->prenom }}</a>
+                                                    href="javascript:void(0);">{{ $present->user->nom . ' ' . $present->user->prenom }}</a>
                                             </h6>
                                             {{-- La fonction est dans le span .text-info --}}
                                             <p class="fs-13 d-inline-flex align-items-center"><span
-                                                    class="text-info">{{ $present->fonction }}</span></p>
+                                                    class="text-info">{{ $present->user->fonction }}</span></p>
                                         </div>
                                     </div>
                                     <div class="text-sm-end mb-2">
                                         <h6 class="mb-1">
-                                            {{ \Carbon\Carbon::parse($present->date_embauche)->format('d M Y') }}</h6>
+                                            {{ \Carbon\Carbon::parse($present->user->date_embauche)->format('d M Y') }}</h6>
                                         <p class="fs-13">Date d'embauche</p>
                                     </div>
                                 </div>

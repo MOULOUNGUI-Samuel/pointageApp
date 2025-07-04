@@ -97,12 +97,20 @@
                             <div class="mb-3">
                                 <label class="col-form-label">Code entreprise</label>
                                 <div class="position-relative">
-                                    <span class="input-icon-addon">
-                                        <i class="ti ti-building"></i>
-                                    </span>
-                                    <input type="text" name="code_entreprise" id="validationCustom01"
-                                        value="{{ old('code_entreprise') }}" class="form-control form-control-lg"
-                                        required>
+                                    <div class="input-group">
+                                        <input type="text" name="code_entreprise" id="validationCustom01"
+                                            value="{{ old('code_entreprise') }}" class="form-control form-control-lg"
+                                            required>
+                                        <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">Choisir</button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            @foreach ($entreprises as $entreprise)
+                                                <li><a class="dropdown-item" id="code_entreprise"
+                                                        href="#">{{ $entreprise->code_entreprise }}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                     <div class="invalid-feedback">
                                         Veuillez renseigner le code entreprise.
                                     </div>
@@ -190,38 +198,44 @@
     </div>
     <!-- /Main Wrapper -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Cible tous les boutons ayant l'attribut data-loader-target
-        document.querySelectorAll('.btn-action[data-loader-target]').forEach(function(btn) {
-            
-            btn.addEventListener('click', function(event) {
-                // Récupérez les champs du formulaire par leur ID
-                const validationCustom01 = document.getElementById('validationCustom01');
-                const validationCustom02 = document.getElementById('validationCustom02');
-                const validationCustom03 = document.getElementById('validationCustom03');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la sélection du code entreprise
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const codeEntreprise = this.textContent.trim();
+                    document.getElementById('validationCustom01').value = codeEntreprise;
+                });
+            });
 
-                // Vérifiez si l'un des champs est vide (après avoir retiré les espaces)
-                if (validationCustom01.value.trim() === '' || validationCustom03.value.trim() === '' || validationCustom03.value.trim() === '') {
-                    // 1. Empêche la soumission du formulaire
-                    // 3. On arrête l'exécution ici, le bouton ne sera pas masqué
-                    return; 
-                }
+            // Cible tous les boutons ayant l'attribut data-loader-target
+            document.querySelectorAll('.btn-action[data-loader-target]').forEach(function(btn) {
+                btn.addEventListener('click', function(event) {
+                    // Récupérez les champs du formulaire par leur ID
+                    const validationCustom01 = document.getElementById('validationCustom01');
+                    const validationCustom02 = document.getElementById('validationCustom02');
+                    const validationCustom03 = document.getElementById('validationCustom03');
 
-                // Si les champs sont remplis, on exécute le code original
-                const targetId = btn.getAttribute('data-loader-target');
-                const loaderBtn = document.getElementById(targetId);
+                    // Vérifiez si l'un des champs est vide (après avoir retiré les espaces)
+                    if (validationCustom01.value.trim() === '' || validationCustom03.value
+                        .trim() === '' || validationCustom03.value.trim() === '') {
+                        // 1. Empêche la soumission du formulaire
+                        // 3. On arrête l'exécution ici, le bouton ne sera pas masqué
+                        return;
+                    }
 
-                if (loaderBtn) {
-                    btn.style.display = 'none';
-                    loaderBtn.style.display = 'inline-block';
-                }
+                    // Si les champs sont remplis, on exécute le code original
+                    const targetId = btn.getAttribute('data-loader-target');
+                    const loaderBtn = document.getElementById(targetId);
 
-                // Note : si vous ne voulez pas que le formulaire se soumette immédiatement
-                // et attendez une réponse AJAX, vous devriez aussi ajouter event.preventDefault() ici.
+                    if (loaderBtn) {
+                        btn.style.display = 'none';
+                        loaderBtn.style.display = 'inline-block';
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
     <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {

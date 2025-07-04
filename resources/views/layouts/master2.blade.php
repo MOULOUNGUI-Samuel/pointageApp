@@ -61,6 +61,59 @@
     <!-- Ajout de l'ID requis pour le script -->
     <div id="main-content" class="page-wrapper all-content-wrapper">
         <div class="content">
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWithBackdrop"
+                aria-labelledby="offcanvasWithBackdropLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel"
+                        style="border-left: 5px solid #05436b; color: #333;">
+                        Actuellement sur : {{ Str::limit($entreprise_nom, 15, '...') }} 
+                    </h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div> <!-- end offcanvas-header-->
+                @php
+                    $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
+                @endphp  
+                <div class="offcanvas-body">
+                    <div class="p-3" style="overflow-y: auto;">
+                        <div class="row row-cols-3 g-2">
+                            @foreach ($lesEntreprises['entreprise'] as $entreprise)
+                                <div class="col text-center  card-hover-zoom">
+                                    <a href="{{ route('change_entreprise', $entreprise->id) }}"
+                                        class="text-decoration-none text-dark d-block">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 80px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                                alt="{{ $entreprise->nom_entreprise }}" class="img-fluid rounded"
+                                                style="width: 80px;height: 70px; object-fit: contain;border-radius: 5px;border-radius: 20px">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate"
+                                            title="{{ $entreprise->nom_entreprise }}">{{ $entreprise->nom_entreprise }}</small>
+                                    </a>
+                                </div>
+                            @endforeach
+                            <style>
+                                .card-hover-zoom {
+                                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                }
+
+                                .card-hover-zoom:hover {
+                                    transform: scale(1.15);
+                                    z-index: 2;
+                                }
+                            </style>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{{ route('components.liste_module') }}"
+                                class="btn btn-outline-primary btn-sm w-100 btn-block"
+                                style="margin-bottom: 10px;color:white;font-size: 12px">
+                                <i class="ti ti-arrow-left"></i>
+                                Retour sur la page d'actualité
+                            </a>
+                        </div>
+                    </div>
+                </div> <!-- end offcanvas-body-->
+            </div>
             @include('components/header2')
             @yield('content2')
         </div>

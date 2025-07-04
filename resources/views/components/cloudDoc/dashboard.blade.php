@@ -126,6 +126,9 @@
                         @endif
                     </div>
                     <div class="col-md-9">
+                        @php
+                            $currentDossier = request()->segment(count(request()->segments()));
+                        @endphp
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3" style="margin-bottom: 10px">
@@ -139,20 +142,18 @@
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#partageLabelsModal"
                                     class="btn btn-md btn-primary shadow"
                                     style="font-size:15px;margin-right:5px;margin-top:20px">
-                                    <i class="fa fa-share-alt me-2"></i> Partager le dossier
+                                    <i class="fa fa-share-alt me-2"></i> Partager {{ preg_replace('/-\\d{8}(-\\d+)*$/', '', $currentDossier) }}
                                 </button>
                             </div>
                             <div class="col-md-3">
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#floatingLabelsModal"
                                     class="btn btn-md btn-danger shadow" style="font-size:15px;margin-top:20px">
-                                    <i class="fa fa-trash me-2"></i> Supprimer le dossier
+                                    <i class="fa fa-trash me-2"></i> Supprimer {{ preg_replace('/-\\d{8}(-\\d+)*$/', '', $currentDossier) }}
                                 </button>
                             </div>
                         </div>
 
-                        @php
-                            $currentDossier = request()->segment(count(request()->segments()));
-                        @endphp
+                        
                         <div class="text-center d-flex-justify-content-between">
                             <span class="text-danger">Cliquez 2 fois pour ouvrir un dossier</span>
                         </div>
@@ -192,7 +193,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary">
                                         <h4 class="modal-title" id="partageLabelsModal" style="color: white">
-                                            Partager le dossier
+                                            Partager le dossier : {{ preg_replace('/-\\d{8}(-\\d+)*$/', '', $currentDossier) }}
                                         </h4>
                                         <button class="btn-close btn-lg" data-bs-dismiss="modal" aria-label="Close">
                                             <i class="ti ti-x"></i>

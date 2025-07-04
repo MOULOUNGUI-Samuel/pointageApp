@@ -29,8 +29,8 @@ class AdminController extends Controller
     public function loginGroupe()
     {
         //
-
-        return view('auth.loginGroupe');
+        $entreprises = Entreprise::all();
+        return view('auth.loginGroupe', compact('entreprises'));
     }
 
     public function index()

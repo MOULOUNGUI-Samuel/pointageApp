@@ -46,8 +46,10 @@
                             <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile" />
                         </span>
                     </span> --}}
-                    <h4 style="margin-top: 8px;">{{ $entreprise_nom }}
-                    </h4>
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasWithBackdrop"
+                        aria-controls="offcanvasWithBackdrop">{{ $entreprise_nom }}</button>
+                    
                     <div style="margin-left: 30px;margin-top: 5px">
                         @if (session('module_id'))
                             <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
@@ -96,49 +98,42 @@
                         <a href="javascript:void(0);" class="btn btn-header-list" data-bs-toggle="dropdown">
                             <i class="ti ti-layout-grid-add"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end menus-info">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h4 class="text-primary pt-2"><i class="fa fa-tasks"></i>
-                                        Liste des modules NedCore.
-                                    </h4>
-                                </div>
+                        <div class="dropdown-menu  p-3"
+                            style="width: 380px; max-height: 80vh; overflow-y: auto; border-radius: 12px;border: 3px solid #bebdbdd7;">
+                            <div class="row row-cols-4 g-3">
                                 @foreach ($mesModules['modules'] as $module)
-                                    <div class="col-md-6">
-                                        <ul class="menu-list">
-                                            <li>
-                                                <a href="{{ route('dashboard', $module->id) }}">
-                                                    <div class="menu-details">
-                                                        <span class="menu-list-icon me-3">
-                                                            <img class="shadow"
-                                                                src="{{ asset('storage/' . $module->logo) }}"
-                                                                alt=""
-                                                                style="width: 45px;
-                                                                min-width: 36px;
-                                                                height: 36px;" />
-                                                            {{-- <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                alt="" width="100" /> --}}
-                                                        </span>
-                                                        <div class="menu-details-content">
-                                                            <p>{{ $module->nom_module }}</p>
-                                                            <span>Module Actif</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        </ul>
+                                    <div class="col text-center  card-hover-zoom">
+                                        <a href="{{ route('dashboard', $module->id) }}"
+                                            class="text-decoration-none text-dark d-block">
+                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                    alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                            </div>
+                                            <small class="fw-medium d-block text-truncate"
+                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                        </a>
                                     </div>
                                 @endforeach
-                                
+                                <style>
+                                    .card-hover-zoom {
+                                        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                    }
+
+                                    .card-hover-zoom:hover {
+                                        transform: scale(1.15);
+                                        z-index: 2;
+                                    }
+                                </style>
                             </div>
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col-md-4 mt-3">
-                                    <a href="{{ route('components.liste_module') }}" class="btn btn-primary btn-sm w-100 btn-block"
-                                        style="margin-bottom: 10px;color:white;font-size: 12px">
-                                        Liste des modules
-                                    </a>
-                                </div>
+                            <div class="mt-4">
+                                <a href="{{ route('components.liste_module') }}"
+                                    class="btn btn-outline-primary btn-sm w-100 btn-block"
+                                    style="margin-bottom: 10px;color:white;font-size: 12px">
+                                    <i class="ti ti-arrow-left"></i>
+                                    Retour sur la page d'actualité
+                                </a>
                             </div>
                         </div>
                     </li>
@@ -152,7 +147,7 @@
                 <a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
                     <span class="user-info">
                         <span class="user-letter">
-                            <img src="{{ asset('storage/' . $module_logo) }}" alt="Profile" />
+                            <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile" />
                         </span>
                         <span class="badge badge-success rounded-pill"></span>
                     </span>
