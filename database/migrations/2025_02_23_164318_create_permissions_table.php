@@ -14,14 +14,12 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('groupe_id');
-            $table->uuid('entreprise_id');
             $table->string('libelle');
             $table->text('description')->nullable();
             $table->timestamps();
             $table->foreignUuid('entreprise_id')->constrained('entreprises')->onDelete('cascade');
 
-            $table->foreign('groupe_id')->references('id')->on('groupe_permissions')->onDelete('cascade');
+            $table->foreignUuid('groupe_id')->references('id')->on('groupe_permissions')->onDelete('cascade');
         });
     }
     /**
