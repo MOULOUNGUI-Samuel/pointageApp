@@ -23,6 +23,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'entreprise_id',
+        'openproject_api_token',
         'nom',
         'prenom',
         'matricule',

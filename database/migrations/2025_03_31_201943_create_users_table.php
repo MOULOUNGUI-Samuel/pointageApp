@@ -21,6 +21,7 @@ return new class extends Migration
         $table->uuid('ville_id')->nullable();
         $table->uuid('pays_id')->nullable();
         $table->uuid('categorie_professionel_id')->nullable();
+        $table->string('openproject_api_token')->nullable();
         $table->string('photo')->nullable();
         $table->string('niveau_etude')->nullable();
         $table->string('telephone')->nullable();

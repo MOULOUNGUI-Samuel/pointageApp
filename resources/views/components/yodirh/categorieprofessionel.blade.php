@@ -73,7 +73,7 @@
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#floatingLabelsModal">
-                                Ajouter une catégorie professionnelle
+                                <i class="ti ti-plus me-2" style="font-size: 16px;"></i> Catégorie professionnelle
                             </button>
                         </div>
 
@@ -84,11 +84,12 @@
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary">
                                         <h4 class="modal-title text-white" id="floatingLabelsModal">
-                                            <i class="bi bi-calendar-event"></i> Enregistrement d'une  catégorie professionnelle
+                                            <i class="bi bi-calendar-event"></i> Enregistrement d'une catégorie
+                                            professionnelle
                                         </h4>
                                     </div>
-                                    <form action="{{ route('Ajoutcategorieprofessionels') }}" method="POST" enctype="multipart/form-data"
-                                        style="display:inline-block;">
+                                    <form action="{{ route('Ajoutcategorieprofessionels') }}" method="POST"
+                                        enctype="multipart/form-data" style="display:inline-block;">
                                         @csrf
                                         <div class="modal-body">
                                             <div class="row">
@@ -98,7 +99,8 @@
                                                             <i class="icon-library"></i>
                                                         </div>
                                                         <div class="nk-int-st">
-                                                            <input type="text" class="form-control" name="nom_categorie_professionnelle"
+                                                            <input type="text" class="form-control"
+                                                                name="nom_categorie_professionnelle"
                                                                 placeholder="Nom du service"
                                                                 value="{{ old('nom_categorie_professionnelle') }}">
                                                         </div>
@@ -128,27 +130,62 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             @foreach ($categorieprofessionels as $categorieprofessionel)
                 <!-- Bloc Entrée -->
-                <div class="col-lg-3 col-sm-12" style="margin-top: 20px;">
-                    <div class="card-body shadow-lg px-2"
-                        style="background-color: white; border-radius: 10px;text-align: center;padding-top: 20px;padding-bottom: 20px;">
-
-                        <h3 class="text-success fw-bold">{{ $categorieprofessionel->nom_categorie_professionnelle ?? 'YODIRH' }}</h3>
-                        @if (!empty($categorieprofessionel->description))
-                            <p class="text-muted">{{ $categorieprofessionel->description }}</p>
-                        @endif
-                        <div class="dropdown-trig-sgn" style="margin-bottom: 10px;">
-                            <button class="btn triger-bounceIn btn-primary" data-bs-toggle="dropdown">Actions</button>
-                            <ul class="dropdown-menu triger-bounceIn-dp">
-                                <li><a href="#" data-bs-toggle="modal"
-                                        data-bs-target="#editserviceModal-{{ $categorieprofessionel->id }}">Modifier</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Supprimer</a></li>
-                            </ul>
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card shadow-sm">
+                        <h5 class="card-header">
+                            {{ $categorieprofessionel->nom_categorie_professionnelle ?? 'YODIRH' }}
+                        </h5>
+                        <div class="card-body">
+                            <div class="collapse" id="collapseExample-{{ $categorieprofessionel->id }}" style="max-height: 80px; overflow-y: auto;">
+                                <p class="card-text">{!! nl2br(e($categorieprofessionel->description)) !!}</p>
+                            </div>
+                            <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample-{{ $categorieprofessionel->id }}" aria-expanded="false" aria-controls="collapseExample-{{ $categorieprofessionel->id }}">
+                                <span class="more">Détails</span>
+                            </button>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editserviceModal-{{ $categorieprofessionel->id }}">Modifier</button>
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#supprserviceModal-{{ $categorieprofessionel->id }}">Supprimer</button>
                         </div>
                     </div>
                 </div>
+                
+                <div class="modal fade" id="supprserviceModal-{{ $categorieprofessionel->id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="supprserviceModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <h4 class="modal-title text-white" id="supprserviceModalLabel">
+                                    <i class="bi bi-trash-fill"></i> Suppression de la catégorie professionnelle :
+                                    
+                                </h4>
+                            </div>
+                            <form action="{{ route('supprimer_categorieprofessionel', $categorieprofessionel->id) }}"
+                                method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="text-center">
+                                                <h3>{{ $categorieprofessionel->nom_categorie_professionnelle }}</h3>
+                                                <p> Etes-vous sûr de vouloir supprimer cette catégorie professionnelle ? </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Annuler</button>
+                                    <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal fade" id="editserviceModal-{{ $categorieprofessionel->id }}" tabindex="-1" role="dialog"
                     aria-labelledby="editserviceModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -159,8 +196,8 @@
                                     {{ $categorieprofessionel->nom_categorie_professionnelle }}
                                 </h4>
                             </div>
-                            <form action="{{ route('modifier_categorieprofessionel', $categorieprofessionel->id) }}" method="POST"
-                                enctype="multipart/form-data" style="display:inline-block;">
+                            <form action="{{ route('modifier_categorieprofessionel', $categorieprofessionel->id) }}"
+                                method="POST" enctype="multipart/form-data" style="display:inline-block;">
                                 @csrf
                                 @method('PUT')
                                 <div class="modal-body">
@@ -171,7 +208,8 @@
                                                     <i class="icon-library"></i>
                                                 </div>
                                                 <div class="nk-int-st">
-                                                    <input type="text" class="form-control" name="nom_categorie_professionnelle"
+                                                    <input type="text" class="form-control"
+                                                        name="nom_categorie_professionnelle"
                                                         placeholder="Nom de la catégorie professionnelle"
                                                         value="{{ old('nom_categorie_professionnelle', $categorieprofessionel->nom_categorie_professionnelle) }}">
                                                 </div>
@@ -203,16 +241,18 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+        <div class="row">
             @if ($categorieprofessionels->isEmpty())
-            <div class="col-md-3"></div>
+                <div class="col-md-3"></div>
 
-            <div class="col-lg-6 text-center" style="margin-top: 20px;">
-                <div class="alert alert-info" style="font-size: 20px">
-                    Aucun élément trouvé dans les catégories professionnelles.
+                <div class="col-lg-6 text-center" style="margin-top: 20px;">
+                    <div class="alert alert-info" style="font-size: 20px">
+                        Aucun élément trouvé dans les catégories professionnelles.
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3"></div>
-        @endif
+                <div class="col-md-3"></div>
+            @endif
         </div>
     </div>
 

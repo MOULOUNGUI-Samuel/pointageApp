@@ -47,7 +47,7 @@
 
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="data-table-list">
+                <div class="data-bs-table-list">
                     <div class="row mx-3" style="margin-top: 20px;">
                         <div class="col-md-3 mt-2">
                             <div class="basic-tb-hd">
@@ -71,8 +71,8 @@
                         </div>
                         <div class="col-md-2 mt-2">
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary" data-toggle="modal"
-                                data-target="#floatingLabelsModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#floatingLabelsModal">
                                 Ajouter un module
                             </button>
                         </div>
@@ -91,45 +91,39 @@
                                         style="display:inline-block;">
                                         @csrf
                                         <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                                    <div class="form-group ic-cmp-int float-lb floating-lb">
-                                                        <div class="form-ic-cmp">
-                                                            <i class="icon-library"></i>
-                                                        </div>
-                                                        <div class="nk-int-st">
-                                                            <input type="text" class="form-control" name="nom_module"
-                                                                placeholder="Nom de l'entreprise"
-                                                                value="{{ old('nom_module') }}">
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-
-                                                <div class="row">
-                                                    <div class="col-md-7">
-                                                        <div class="upload-container text-center">
-                                                            <label for="file-upload" class="upload-box">
-                                                                <i class="fa fa-cloud-upload"></i>
-                                                                <p>Cliquez ici pour choisir le logo</p>
-                                                                <input id="file-upload" type="file" name="logo"
-                                                                    accept="image/*" hidden>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-5">
-                                                        <div class="preview-container">
-                                                            <img id="preview-image" src="" alt="Aperçu de l'image"
-                                                                style="display: none;">
-                                                        </div>
-                                                    </div>
+                                            <div class="form-group mb-3">
+                                                <div class="nk-int-st">
+                                                    <input type="text" class="form-control" name="nom_module"
+                                                        placeholder="Nom de l'entreprise" value="{{ old('nom_module') }}">
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Fermer</button>
-                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            <div class="form-group mb-3">
+                                                <div class="nk-int-st">
+                                                    <input type="text" class="form-control" name="lien_externe"
+                                                        placeholder="lien du module" value="{{ old('lien_externe') }}">
+                                                </div>
                                             </div>
+
+                                            <div class="upload-container text-center">
+                                                <label for="file-upload" class="upload-box">
+                                                    <i class="fa fa-cloud-upload"></i>
+                                                    <p>Cliquez ici pour choisir le logo</p>
+                                                    <input id="file-upload" type="file" name="logo" accept="image/*"
+                                                        hidden>
+                                                </label>
+                                            </div>
+
+                                            <div class="preview-container">
+                                                <img id="preview-image" src="" alt="Aperçu de l'image"
+                                                    style="display: none;">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Fermer</button>
+                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        </div>
                                     </form>
 
                                 </div>
@@ -156,10 +150,10 @@
                         <h3 class="text-success fw-bold">{{ $module->nom_module ?? '' }}</h3>
 
                         <div class="dropdown-trig-sgn" style="margin-bottom: 10px;">
-                            <button class="btn triger-bounceIn btn-primary" data-toggle="dropdown">Actions</button>
+                            <button class="btn triger-bounceIn btn-primary" data-bs-toggle="dropdown">Actions</button>
                             <ul class="dropdown-menu triger-bounceIn-dp">
-                                <li><a href="#" data-toggle="modal"
-                                        data-target="#editModuleModal-{{ $module->id }}">Modifier</a></li>
+                                <li><a href="#" data-bs-toggle="modal"
+                                        data-bs-target="#editModuleModal-{{ $module->id }}">Modifier</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">Supprimer</a></li>
                             </ul>
@@ -215,7 +209,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                                                 style="color: black">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Modifier</button>
                                         </div>

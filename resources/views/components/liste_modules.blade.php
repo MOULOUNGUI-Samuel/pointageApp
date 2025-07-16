@@ -13,7 +13,7 @@
         content="NedCore, solution numérique, Groupe NedCo, gestion intégrée, gestion RH, finances, projets, documents, reporting stratégique, interface moderne, outils d'entreprise">
     <meta name="author" content="Dreams Technologies">
     <meta name="robots" content="index, follow">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Title -->
     <title>NedCore</title>
 
@@ -64,12 +64,12 @@
 
             <!-- Logo -->
             <div class="header-left active">
-                <a href="index.html" class="logo logo-normal">
+                <a href="#" class="logo logo-normal">
                     <img src="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" alt="Logo">
                     <img src="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" class="white-logo"
                         alt="Logo">
                 </a>
-                <a href="index.html" class="logo-small">
+                <a href="#" class="logo-small">
                     <img src="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" alt="Logo">
                 </a>
 
@@ -185,9 +185,16 @@
                                 <a class="dropdown-item" href="#">
                                     <i class="ti ti-user-pin"></i> Mon Profil
                                 </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="ti ti-lock"></i> Déconnexion
+                                <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fa fa-sign-out" style="font-size: 20px;margin-right:6px"></i>
+                                    <span style="font-size: 20px" class="">Déconnexion</span>
                                 </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                </form>
                             </div>
                         </div>
                     </li>
@@ -276,6 +283,98 @@
                                 <h4 class="mb-0">ESPACE UTILITAIRES</h4>
                             </div>
                         </div>
+
+                        <div class="p-3" style="width: 400px; max-height: 85vh; overflow-y: auto;">
+
+
+                            <div class="row row-cols-2 g-1">
+                                <div class="col text-center  card-hover-zoom">
+                                    <a href="https://tache.groupenedco.com/"
+                                        class="text-decoration-none text-dark d-block" target="_blank">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('assets/img/OpenProject-1.jpg') }}" alt="OpenProject"
+                                                class="img-fluid rounded"
+                                                style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
+                                            style="font-size: 13px">Gestion de projets</small>
+                                    </a>
+                                </div>
+                                <div class="col text-center  card-hover-zoom">
+                                    <a data-bs-toggle="modal" data-bs-target="#generateTasksModal"
+                                        class="text-decoration-none text-dark d-block">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('assets/img/tache.png') }}" alt="OpenProject"
+                                                class="img-fluid rounded"
+                                                style="width: 170px;height: 70px; object-fit: contain;border-radius: 5px;">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
+                                            style="font-size: 13px">Créer des tâches avec IA</small>
+                                    </a>
+                                </div>
+
+                                <style>
+                                    .card-hover-zoom {
+                                        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                    }
+
+                                    .card-hover-zoom:hover {
+                                        transform: scale(1.09);
+                                        z-index: 2;
+                                    }
+                                </style>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="generateTasksModal" tabindex="-1"
+                        aria-labelledby="generateTasksModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="generateTasksModalLabel">Générateur de tâches
+                                        IA - OpenProject</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <!-- Le jeton API n'est plus un champ ! -->
+
+                                    <div class="mb-3">
+                                        <label for="project" class="form-label">Choisissez un projet</label>
+                                        <select id="project" class="form-select">
+                                            <option value="">-- Chargement des projets... --</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="prompt" class="form-label">Description / prompt</label>
+                                        <textarea id="prompt" rows="5" class="form-control"
+                                            placeholder="Décrivez votre projet ici pour générer les tâches..."></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre de tâches à
+                                            générer</label>
+                                        <input type="number" id="nombre" class="form-control" min="1"
+                                            max="20" placeholder="Ex: 5" value="5">
+                                    </div>
+
+                                    <div class="result" id="result"></div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fermer</button>
+                                    <button type="button" class="btn btn-primary" onclick="genererTaches()">Générer
+                                        et créer les tâches</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-6 mt-5">
                         <div class="card shadow-sm">
@@ -307,7 +406,8 @@
                                     <p class="text-dark fw-medium">
                                         🚀 <strong>Nouvelle version de l'application disponible !</strong>
                                         <br><br>
-                                        Nous sommes ravis de vous présenter les dernières améliorations de notre plateforme :
+                                        Nous sommes ravis de vous présenter les dernières améliorations de notre
+                                        plateforme :
                                         <br>
                                         • Interface utilisateur modernisée pour une meilleure expérience
                                         <br>
@@ -322,8 +422,8 @@
                                 </div>
                                 <div class="card shadow-none mb-3">
                                     <div class="card-img card-img-hover rounded-0">
-                                        <img src="{{ asset('src/images/annonce.PNG') }}" class="rounded w-100 shadow-sm"
-                                            alt="Nouvelle Interface">
+                                        <img src="{{ asset('src/images/annonce.PNG') }}"
+                                            class="rounded w-100 shadow-sm" alt="Nouvelle Interface">
                                     </div>
                                     <div class="card-body p-2">
                                         <h6 class="mb-1 text-truncate">
@@ -364,7 +464,8 @@
                                             <h5><a href="javascript:void(0);"> MBADINGA Joelle.</a></h5>
                                             <span class="ms-2">09:15</span>
                                         </div>
-                                        <p class="mb-1">La nouvelle interface est vraiment intuitive. La navigation est beaucoup plus fluide maintenant ! 👍</p>
+                                        <p class="mb-1">La nouvelle interface est vraiment intuitive. La navigation
+                                            est beaucoup plus fluide maintenant ! 👍</p>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);"
                                                 class="btn btn-icon btn-sm rounded-circle"><i
@@ -390,7 +491,8 @@
                                             <h5><a href="javascript:void(0);">NDZIGHE ONGONE FREDDY.</a></h5>
                                             <span class="ms-2">09:33</span>
                                         </div>
-                                        <p class="mb-1">Les nouveaux rapports sont très complets. Ça va nous faire gagner un temps précis ! 💯</p>
+                                        <p class="mb-1">Les nouveaux rapports sont très complets. Ça va nous faire
+                                            gagner un temps précis ! 💯</p>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);"
                                                 class="btn btn-icon btn-sm rounded-circle"><i
@@ -417,7 +519,8 @@
                                             <h5><a href="javascript:void(0);">MAGNI BALLA LAURE NAIKE</a></h5>
                                             <span class="ms-2">09:46</span>
                                         </div>
-                                        <p class="mb-1">L'application est plus rapide, c'est vraiment agréable à utiliser maintenant. Bon travail l'équipe ! 👏</p>
+                                        <p class="mb-1">L'application est plus rapide, c'est vraiment agréable à
+                                            utiliser maintenant. Bon travail l'équipe ! 👏</p>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-start">
@@ -610,7 +713,8 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MBADINGA MBADINGA joelle">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}"
+                                                            alt="MBADINGA MBADINGA joelle">
                                                     </a>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">MBADINGA MBADINGA Joelle</h6>
@@ -622,7 +726,8 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MBENGA EPSE MAGHAGHA AIMERIE C">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}"
+                                                            alt="MBENGA EPSE MAGHAGHA AIMERIE C">
                                                     </a>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">MBENGA EPSE MAGHAGHA AIMERIE C</h6>
@@ -634,7 +739,8 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="ELANIE NDONG">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}"
+                                                            alt="ELANIE NDONG">
                                                     </a>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">ELANIE NDONG</h6>
@@ -652,7 +758,8 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="NDZIGHE ONGONE FREDDY">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}"
+                                                            alt="NDZIGHE ONGONE FREDDY">
                                                     </a>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">NDZIGHE ONGONE FREDDY</h6>
@@ -664,7 +771,8 @@
                                                 <div class="d-flex align-items-center">
                                                     <a href="javascript:void(0);"
                                                         class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="MAGNI BALLA LAURE NAIKE">
+                                                        <img src="{{ asset('assets/img/user.jpg') }}"
+                                                            alt="MAGNI BALLA LAURE NAIKE">
                                                     </a>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">MAGNI BALLA LAURE NAIKE</h6>
@@ -730,7 +838,103 @@
         </div>
     </div>
     <!-- /Main Wrapper -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Configuration pour les requêtes AJAX avec le token CSRF de Laravel
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
+        const projectSelect = document.getElementById('project');
+        const resultDiv = document.getElementById('result');
+        const generateTasksModal = document.getElementById('generateTasksModal');
+
+        // Écouteur d'événement pour charger les projets à l'ouverture de la modale
+        generateTasksModal.addEventListener('show.bs.modal', async function() {
+            projectSelect.innerHTML = '<option>Chargement en cours...</option>';
+            resultDiv.innerHTML = ''; // Nettoyer les anciens résultats
+
+            try {
+                const response = await fetch("{{ route('projects') }}");
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    projectSelect.innerHTML =
+                        `<option value=''>Erreur: ${errorData.error || 'Jeton invalide ou manquant.'}</option>`;
+                    return;
+                }
+
+                const data = await response.json();
+                if (data._embedded.elements.length === 0) {
+                    projectSelect.innerHTML = `<option value=''>-- Aucun projet trouvé --</option>`;
+                    return;
+                }
+
+                const options = data._embedded.elements.map(proj => `
+          <option value="${proj.identifier}">${proj.name} (${proj.identifier})</option>
+        `).join('');
+                projectSelect.innerHTML = options;
+
+            } catch (error) {
+                console.error('Erreur lors du chargement des projets:', error);
+                projectSelect.innerHTML = '<option>Erreur de connexion.</option>';
+            }
+        });
+
+        async function genererTaches() {
+            const project = projectSelect.value;
+            const prompt = document.getElementById('prompt').value.trim();
+            const nombre = parseInt(document.getElementById('nombre').value);
+
+            if (!project || !prompt || isNaN(nombre)) {
+                resultDiv.innerHTML = '<div class="alert alert-danger">Veuillez remplir tous les champs.</div>';
+                return;
+            }
+
+            resultDiv.innerHTML =
+                '<div class="alert alert-info">⏳ Génération et création en cours... Veuillez patienter.</div>';
+
+            try {
+                const res = await fetch("{{ route('tasks.create') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content') // Important pour Laravel
+                    },
+                    body: JSON.stringify({
+                        project,
+                        prompt,
+                        nombre
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    resultDiv.innerHTML =
+                        `<div class="alert alert-danger">❌ Erreur côté serveur: ${data.error || data.message}</div>`;
+                    return;
+                }
+
+                let htmlResult = '<b>Résultat :</b><br><br>';
+                data.forEach((t, i) => {
+                    const statusClass = t.ok ? "text-success" : "text-danger";
+                    const icon = t.ok ? "✅" : "❌";
+                    const message = t.message ? `- ${t.message}` : "";
+                    htmlResult += `<div class="${statusClass}">${icon} ${i + 1}. ${t.titre} ${message}</div>`;
+                });
+                resultDiv.innerHTML = htmlResult;
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                resultDiv.innerHTML = '<div class="alert alert-danger">❌ Une erreur inattendue est survenue.</div>';
+            }
+        }
+    </script>
     <!-- jQuery -->
     <script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
 

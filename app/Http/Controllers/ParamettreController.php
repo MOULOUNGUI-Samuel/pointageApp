@@ -14,6 +14,7 @@ class ParamettreController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function listemodules()
     {
         $modules = Module::orderBy('created_at', 'asc')->get();
@@ -319,12 +320,10 @@ class ParamettreController extends Controller
 
         return redirect()->back()->with('success', 'Catégorie modifiée avec succès');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function supprimer_categorieprofessionel($id)
     {
-        //
+        $categories = CategorieProfessionnelle::findOrFail($id);
+        $categories->delete();
+        return redirect()->back()->with('success', 'Catégorie supprimée avec succès');
     }
 }

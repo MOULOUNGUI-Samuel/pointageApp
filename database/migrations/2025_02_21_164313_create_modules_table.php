@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('nom_module');
             $table->string('logo')->nullable();
+            $table->string('lien_externe')->nullable();
             $table->text('description')->nullable();
             $table->boolean('statut')->default(1);
             $table->timestamps();

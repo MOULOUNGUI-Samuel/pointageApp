@@ -17,7 +17,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-'api_key' => env('API_SECRET_KEY'), // <-- Ajoutez cette ligne
+    'api_key' => env('API_SECRET_KEY'), // <-- Ajoutez cette ligne
+    'sso_secret_key' => env('SSO_SECRET_KEY'), // <-- Ajoutez cette ligne
     /*
     |--------------------------------------------------------------------------
     | Application Environment

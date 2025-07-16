@@ -50,7 +50,7 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-   /**
+    /**
      * @OA\Get(
      *      path="/users/{id}",
      *      operationId="getUserById",

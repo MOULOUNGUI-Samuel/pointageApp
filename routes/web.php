@@ -8,6 +8,7 @@ use App\Http\Controllers\ParamettreController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\pointeController;
+use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,11 @@ Route::get(
 Route::middleware('auth')->group(
     function () {
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
+        // La route que le JavaScript va appeler pour peupler la modale
+        Route::get('/projects', [OpenProjectController::class, 'fetchProjects'])->name('projects');
+        // La route que le JavaScript va appeler pour créer les tâches
+        Route::post('/tasks', [OpenProjectController::class, 'generateAndCreateTasks'])->name('tasks.create');
+
         // Route::get('/', [AdminController::class, 'dashboard']);
         Route::get('/change_entreprise/{id}', [DashboardRHController::class, 'change_entreprise'])->name('change_entreprise');
         Route::get('/modules', [ParamettreController::class, 'modules'])->name('ModuleAdmin');
@@ -65,6 +71,7 @@ Route::middleware('auth')->group(
         Route::get('/categorieprofessionel', [ParamettreController::class, 'categorieprofessionel'])->name('categorieprofessionel');
         Route::post('/Ajoutcategorieprofessionels', [ParamettreController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
         Route::put('/modifier_categorieprofessionel/{id}', [ParamettreController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
+        Route::delete('/supprimer_categorieprofessionel/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_categorieprofessionel');
 
         Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
         Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');
@@ -91,9 +98,8 @@ Route::middleware('auth')->group(
         // Route::get('/indexprocedure/{nom_lien}', [DocumentController::class, 'indexprocedure'])->name('indexprocedure');
         Route::post('/import-html/from-owncloudProcedure', [DocumentController::class, 'importFromOwncloudDoument'])->name('html.import.owncloudProcedure');
 
-        // Import HTML local
-        // Route::get('/import-html', [DocumentController::class, 'import_affiche'])->name('html.import.affiche');
-        // Route::post('/import-html', [DocumentController::class, 'import'])->name('html.import');
+        // Routes pour l'intégration OpenProject
+
 
         // Import depuis OwnCloud
         Route::get('/documents', [DocumentController::class, 'index'])->name('document.index');

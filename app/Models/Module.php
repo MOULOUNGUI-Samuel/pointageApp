@@ -24,6 +24,7 @@ class Module extends Model
     protected $fillable = [
         'nom_module',
         'logo',
+        'lien_externe',
         'description',
         'statut',
     ];
