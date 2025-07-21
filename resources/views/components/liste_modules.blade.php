@@ -428,7 +428,8 @@
                                                         <th>Entreprise</th>
                                                         <th>Contact professionnel</th>
                                                         <th>Email professionnel</th>
-                                                        <th>Action</th>
+                                                        <th>Code</th>
+                                                        {{-- <th>Action</th> --}}
                                                     </tr>
                                                 </thead>
                                                 <tbody id="approbationsTable2">
@@ -442,12 +443,13 @@
                                                             <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
                                                             <td>{{ $user->telephone }}</td>
                                                             <td>{{ $user->email_professionnel ?? '-----------' }}</td>
-                                                            <td>
+                                                            <td>{{ $user->entreprise->code_entreprise }}</td>
+                                                            {{-- <td>
                                                                 <input type="checkbox" name="created_at[]"
                                                                     value="{{ $user->created_at }}"
                                                                     class="form-check-input"
                                                                     onclick="event.stopPropagation();">
-                                                            </td>
+                                                            </td> --}}
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -472,7 +474,7 @@
                                     <button type="submit" class="btn btn-primary">Partager le dossier</button>
                                 </div> --}}
                                 </form>
-                                <script>
+                                {{-- <script>
                                     document.addEventListener('DOMContentLoaded', function() {
                                         function updateCheckedCount() {
                                             const count = document.querySelectorAll('#approbationsTable2 input[type=checkbox]:checked').length;
@@ -483,7 +485,7 @@
                                         });
                                         updateCheckedCount();
                                     });
-                                </script>
+                                </script> --}}
 
                             </div>
                         </div>
