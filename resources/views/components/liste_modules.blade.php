@@ -314,6 +314,19 @@
                                             style="font-size: 13px">Créer des tâches avec IA</small>
                                     </a>
                                 </div>
+                                <div class="col text-center  card-hover-zoom">
+                                    <a data-bs-toggle="modal" data-bs-target="#partageLabelsModal"
+                                        class="text-decoration-none text-dark d-block">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('assets/img/annuaires.png') }}" alt="OpenProject"
+                                                class="img-fluid rounded py-1"
+                                                style="width: 170px;height: 70px; object-fit: contain;border-radius: 5px;">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
+                                            style="font-size: 13px">Annuaire Nedcore</small>
+                                    </a>
+                                </div>
 
                                 <style>
                                     .card-hover-zoom {
@@ -376,6 +389,106 @@
                             </div>
                         </div>
                     </div>
+                    <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal"
+                    tabindex="-1" role="dialog" aria-labelledby="partageLabelsModal" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                <h4 class="modal-title" id="partageLabelsModal" style="color: white">
+                                    Annuaire Nedcore
+                                </h4>
+                                <button class="btn-close btn-lg" data-bs-dismiss="modal" aria-label="Close">
+                                    <i class="ti ti-x"></i>
+                                </button>
+                            </div>
+                            <form action="#" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="mb-3" style="margin-bottom: 10px;">
+                                        <div class="mb-2"
+                                            style="display: flex; align-items: center;justify-content: space-between;">
+                                            <label>Rechercher un utilisateur</label>
+                                            <span id="checkedCount" class="badge ml-2 text-light"
+                                                style="font-size:16px;background-color:#05436b">0
+                                                sélectionné(s)</span>
+                                        </div>
+
+                                        <input type="text" id="searchInputUtilisateur"
+                                            class="form-control shadow rounded"
+                                            placeholder="🔍 Rechercher un utilisateur...">
+                                    </div>
+                                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                                        <table id="data-table-basic" class="table table-striped">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th data-field="state" data-checkbox="true"></th>
+                                                    {{-- <th>ID</th> --}}
+                                                    <th>Nom</th>
+                                                    <th>Prénom</th>
+                                                    <th>Entreprise</th>
+                                                    <th>Contact professionnel</th>
+                                                    <th>Email professionnel</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="approbationsTable2">
+                                                @foreach ($utilisateurs as $user)
+                                                    <tr style="cursor:pointer;"
+                                                        onclick="this.querySelector('input[type=checkbox]').click();">
+                                                        <td></td>
+                                                        {{-- <td>{{ $user->id }}</td> --}}
+                                                        <td>{{ $user->nom }}</td>
+                                                        <td>{{ $user->prenom }}</td>
+                                                        <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
+                                                        <td>{{ $user->telephone }}</td>
+                                                        <td>{{ $user->email_professionnel ?? '-----------' }}</td>
+                                                        <td>
+                                                            <input type="checkbox" name="created_at[]"
+                                                                value="{{ $user->created_at }}"
+                                                                class="form-check-input"
+                                                                onclick="event.stopPropagation();">
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const input = document.getElementById('searchInputUtilisateur');
+                                            input.addEventListener('input', function() {
+                                                const query = this.value.toLowerCase();
+                                                document.querySelectorAll('#approbationsTable2 tr').forEach(row => {
+                                                    const text = row.textContent.toLowerCase();
+                                                    row.style.display = text.includes(query) ? '' : 'none';
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                                {{-- <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Partager le dossier</button>
+                                </div> --}}
+                            </form>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    function updateCheckedCount() {
+                                        const count = document.querySelectorAll('#approbationsTable2 input[type=checkbox]:checked').length;
+                                        document.getElementById('checkedCount').textContent = count + ' sélectionné(s)';
+                                    }
+                                    document.querySelectorAll('#approbationsTable2 input[type=checkbox]').forEach(cb => {
+                                        cb.addEventListener('change', updateCheckedCount);
+                                    });
+                                    updateCheckedCount();
+                                });
+                            </script>
+
+                        </div>
+                    </div>
+                </div>
+
                     <div class="col-xl-6 mt-5">
                         <div class="card shadow-sm">
                             <div class="card-header border-0 pb-0">

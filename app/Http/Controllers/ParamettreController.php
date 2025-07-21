@@ -18,7 +18,8 @@ class ParamettreController extends Controller
     public function listemodules()
     {
         $modules = Module::orderBy('created_at', 'asc')->get();
-        return view('components.liste_modules', compact('modules'));
+        $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')->get();
+        return view('components.liste_modules', compact('modules', 'utilisateurs'));
     }
     public function modules()
     {
@@ -263,7 +264,7 @@ class ParamettreController extends Controller
 
         return redirect()->back()->with('success', 'Service modifié avec succès');
     }
-      public function categorieprofessionel(Request $request)
+    public function categorieprofessionel(Request $request)
     {
         $entreprise_id = session('entreprise_id');
         $categorieprofessionels = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
@@ -285,7 +286,7 @@ class ParamettreController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $entreprise_id = session('entreprise_id');
-        
+
         $categories = new CategorieProfessionnelle();
         $categories->entreprise_id = $entreprise_id;
         $categories->nom_categorie_professionnelle = $request->nom_categorie_professionnelle;
