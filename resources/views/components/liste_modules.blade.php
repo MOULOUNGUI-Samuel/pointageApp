@@ -422,7 +422,7 @@
                                 </div>
                                 <div class="card shadow-none mb-3">
                                     <div class="card-img card-img-hover rounded-0">
-                                        <img src="{{ asset('src/images/annonce.PNG') }}"
+                                        <img src="{{ asset('src/images/annonce.png') }}"
                                             class="rounded w-100 shadow-sm" alt="Nouvelle Interface">
                                     </div>
                                     <div class="card-body p-2">
