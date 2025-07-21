@@ -67,7 +67,7 @@
                                         <th>Nom</th>
                                         <th>Prénom</th>
                                         <th>Matricule</th>
-                                        <th>Email</th>
+                                        <th>Email professionnel</th>
                                         <th>Entreprise</th>
                                         <th>Fonction</th>
                                         <th>Action</th>
@@ -80,7 +80,7 @@
                                             <td>{{ $user->nom }}</td>
                                             <td>{{ $user->prenom }}</td>
                                             <td>{{ $user->matricule }}</td>
-                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->email_professionnel }}</td>
                                             <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
                                             <td>{{ $user->fonction }}</td>
                                             <td>
@@ -199,8 +199,8 @@
                                                             :</strong><br><span>{{ $user->telephone }}</span></div>
                                                 @endif
                                                 @if ($user->email_professionnel)
-                                                    <div class="col-md-6"><strong>Email professionnel
-                                                            :</strong><br><span>{{ $user->email_professionnel }}</span>
+                                                    <div class="col-md-6"><strong>Email 
+                                                            :</strong><br><span>{{ $user->email }}</span>
                                                     </div>
                                                 @endif
                                                 @if ($user->nationalite)
