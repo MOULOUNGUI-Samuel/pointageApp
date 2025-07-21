@@ -28,7 +28,9 @@ Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
 
-
+Route::get('/', function () {
+    return redirect('/loginGroupe');
+});
 Route::get('/loginGroupe', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 

@@ -89,4 +89,26 @@ class UserController extends Controller
         // si l'ID n'est pas trouvé, Laravel renverra automatiquement une erreur 404.
         return response()->json($user);
     }
+
+    public function __construct()
+        {
+            $cleApiFournie = request()->header('X-API-KEY');
+            $cleApiValide = env('Nedcore_API_KEY');
+            if (!$cleApiFournie || $cleApiFournie !== $cleApiValide) {
+            abort(401, 'Accès non autorisé.');
+            }
+        }
+
+        /**
+        * API n°1: Lister les inscriptions.
+        * La réponse ne contient que les données, pas de token CSRF.
+        */
+        public function UserInfo()
+        {
+        $utilisateurs = User::select('id', 'telephone', 'nom', 'prenom', 'email', 'created_at')
+        ->latest()
+        ->paginate(25);
+
+        return response()->json($utilisateurs);
+        }
 }
