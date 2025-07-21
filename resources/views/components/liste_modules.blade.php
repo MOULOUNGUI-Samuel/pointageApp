@@ -408,9 +408,9 @@
                                             <div class="mb-2"
                                                 style="display: flex; align-items: center;justify-content: space-between;">
                                                 <label>Rechercher un utilisateur</label>
-                                                <span id="checkedCount" class="badge ml-2 text-light"
+                                                {{-- <span id="checkedCount" class="badge ml-2 text-light"
                                                     style="font-size:16px;background-color:#05436b">0
-                                                    sélectionné(s)</span>
+                                                    sélectionné(s)</span> --}}
                                             </div>
 
                                             <input type="text" id="searchInputUtilisateur"
