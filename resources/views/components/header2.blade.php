@@ -123,7 +123,7 @@
                                                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                                             </form>
                                         @else
-                                            @if ($module->nom_module === 'CaisseNedcore')
+                                            @if ($module->nom_module === 'GestionCaissePro')
                                                 <a type="button" data-bs-toggle="offcanvas"
                                                     data-bs-target="#offcanvasWithBackdrop2"
                                                     aria-controls="offcanvasWithBackdrop2"
