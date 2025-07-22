@@ -2,10 +2,17 @@
 
 namespace App\Helpers;
 
+use App\Models\CaisseAuthentification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use SoapClient;
+use SoapFault;
 
 class FileTreeHelper
 {
+    
+
     public static function afficherArborescence($files)
     {
         $tree = [];
@@ -59,7 +66,7 @@ class FileTreeHelper
             } else {
                 $html .= '<li class="folder-item">
                         <span class="folder-toggle">
-                            <i class="fa fa-folder text-warning"></i> ' . htmlspecialchars(preg_replace('/-\\d{8}(-\\d+)*$/', '',$cle)) . '
+                            <i class="fa fa-folder text-warning"></i> ' . htmlspecialchars(preg_replace('/-\\d{8}(-\\d+)*$/', '', $cle)) . '
                         </span>';
                 $html .= self::afficherNiveau($valeur);
                 $html .= '</li>';

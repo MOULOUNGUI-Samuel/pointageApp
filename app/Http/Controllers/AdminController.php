@@ -140,6 +140,7 @@ class AdminController extends Controller
             $user->pays_id = $request->input('pays_id');
             $user->ville_id = $request->input('ville_id');
             $user->categorie_professionel_id = $request->input('categorie_professionel_id');
+            $user->openproject_api_token = null;
             $user->nom = $request->input('nom');
             $user->prenom = $request->input('prenom');
             $user->date_naissance = Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');

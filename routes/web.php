@@ -11,6 +11,7 @@ use App\Http\Controllers\pointeController;
 use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CaisseWebController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +122,11 @@ Route::middleware('auth')->group(
         Route::put('/groupe_permissions/{id}', [PermissionController::class, 'groupe_permissions'])->name('groupe_permissions');
         Route::put('/modif_permissions/{id}', [PermissionController::class, 'modif_permissions'])->name('modif_permissions');
         Route::post('/permissions', [PermissionController::class, 'permission'])->name('permission');
+
+        Route::post('/login-caisse', [CaisseWebController::class, 'handleLogin'])->name('caisse.login');
+        Route::get('/caisse-dashboard', function () {
+            return view('dashboard');
+        })->name('caisse.dashboard');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

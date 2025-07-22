@@ -66,14 +66,14 @@
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel"
                         style="border-left: 5px solid #05436b; color: #333;">
-                        Actuellement sur : {{ Str::limit($entreprise_nom, 15, '...') }} 
+                        Actuellement sur : {{ Str::limit($entreprise_nom, 15, '...') }}
                     </h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                         aria-label="Close"></button>
                 </div> <!-- end offcanvas-header-->
                 @php
                     $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
-                @endphp  
+                @endphp
                 <div class="offcanvas-body">
                     <div class="p-3" style="overflow-y: auto;">
                         <div class="row row-cols-3 g-2">
@@ -114,6 +114,108 @@
                     </div>
                 </div> <!-- end offcanvas-body-->
             </div>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWithBackdrop2"
+                aria-labelledby="offcanvasWithBackdropLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel"
+                        style="border-left: 5px solid #05436b; color: #333;">
+                        Gestion des caisses
+                    </h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div> <!-- end offcanvas-header-->
+                {{-- @php
+                    $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
+                @endphp   --}}
+                <div class="offcanvas-body">
+                    <div class="p-3" style="overflow-y: auto;">
+                        <div class="input-group mb-3">
+                            <input type="text" id="search-caisse" class="form-control"
+                                placeholder="🔍 Rechercher une caisse..." aria-label="Recherche intelligente">
+                            <span class="input-group-text"><i class="ti ti-search"></i></span>
+                        </div>
+                        <div class="row row-cols-3 g-2">
+                            <div class="col text-center card-hover-zoom2">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#login-modal"
+                                    class="text-decoration-none text-dark d-block">
+                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        style="width: 80px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                        <img src="{{ asset('assets/img/yodigest.png') }}" alt="YODIGEST"
+                                            class="img-fluid rounded"
+                                            style="width: 80px;height: 70px; object-fit: contain;border-radius: 5px;border-radius: 20px">
+                                    </div>
+                                    <small class="fw-medium d-block text-truncate" title="YODIGEST">YODIGEST</small>
+                                </a>
+                            </div>
+                            <style>
+                                .card-hover-zoom2 {
+                                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                }
+
+                                .card-hover-zoom2:hover {
+                                    transform: scale(1.10);
+                                    z-index: 2;
+                                }
+                            </style>
+                            <script>
+                                document.getElementById('search-caisse').addEventListener('input', function() {
+                                    const input = this.value.toLowerCase();
+                                    const items = document.querySelectorAll('.card-hover-zoom2');
+
+                                    items.forEach(function(item) {
+                                        const text = item.innerText.toLowerCase();
+                                        item.style.display = text.includes(input) ? 'block' : 'none';
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div> <!-- end offcanvas-body-->
+            </div>
+            <div id="login-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="text-center mt-2 mb-4">
+                                <div class="auth-logo">
+                                    <a href="#" class="logo logo-dark">
+                                        <span class="logo-lg">
+                                            <img src="{{ asset('assets/img/yodigest.png') }}" alt="Logo"
+                                                height="42">
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <form id="login-caisse-form" action="{{ route('caisse.login') }}" method="POST"
+                                class="px-3">
+                                @csrf
+
+                                <input type="hidden" name="codesociete" value="YOD"> {{-- à adapter dynamiquement si nécessaire --}}
+                                <div id="login-error" class="text-danger text-center mt-2" style="display:none;">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="login" class="form-label">Identifiant</label>
+                                    <input class="form-control" type="text" id="login" required
+                                        name="login" placeholder="Identifiant">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="mdp" class="form-label">Mot de passe</label>
+                                    <input class="form-control" type="password" id="mdp"
+                                        name="mdp" placeholder="Mot de passe">
+                                </div>
+
+                                <div class="mb-2 text-center">
+                                    <button class="btn rounded-pill btn-primary" type="submit">Se connecter</button>
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @include('components/header2')
             @yield('content2')
         </div>
@@ -128,6 +230,28 @@
             });
         }, 1200);
     </script>
+    <script>
+        $('#login-caisse-form').on('submit', function(e) {
+            e.preventDefault();
+            $('#login-error').hide().text('');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
+                },
+                error: function(xhr) {
+                    let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
+                    $('#login-error').text(message).show();
+                }
+            });
+        });
+    </script>
+
     <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {
