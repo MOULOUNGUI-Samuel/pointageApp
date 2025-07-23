@@ -30,8 +30,9 @@ class CaisseWebController extends Controller
 
         if ($success) {
             return response()->json([
-                'redirect' => route('dashboard') // redirige vers la page souhaitée
-            ]);
+                // 'redirect' => route('dashboard') // redirige vers la page souhaitée
+                 'message' => '✅ Connexion réussie.'
+            ], 401);
         }
 
         return response()->json([

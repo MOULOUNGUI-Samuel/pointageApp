@@ -108,7 +108,8 @@ Route::middleware('auth')->group(
         Route::get('/documents', [DocumentController::class, 'index'])->name('document.index');
         Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])->name('html.import.owncloud');
         Route::post('/partageFichier', [DocumentController::class, 'partageFichier'])->name('partageFichier');
-
+        Route::get('/annuaire', [DocumentController::class, 'annuaire'])->name('annuaire');
+        
         // Chargement des vues importées dynamiques
         $importedRoutesPath = base_path('routes/imported.php');
         if (File::exists($importedRoutesPath)) {
@@ -127,6 +128,7 @@ Route::middleware('auth')->group(
         Route::get('/caisse-dashboard', function () {
             return view('dashboard');
         })->name('caisse.dashboard');
+
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

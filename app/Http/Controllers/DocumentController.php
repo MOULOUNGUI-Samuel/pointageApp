@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entreprise;
 use App\Models\LienDoc;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -322,4 +324,17 @@ class DocumentController extends Controller
 
         return back()->withErrors(['Ce dossier n\'existe pas ou a déjà été supprimé.']);
     }
+
+    public function annuaire()
+    {
+         $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
+        ->with('entreprise')
+        ->with('service')
+        ->get();
+
+        $entreprises=Entreprise::all();
+        $services=Service::all();
+        return view('components.annuaire', compact('utilisateurs', 'entreprises', 'services'));
+    }
+
 }

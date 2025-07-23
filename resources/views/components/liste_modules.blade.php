@@ -136,59 +136,64 @@
                                     @endphp
 
                                     <div class="row row-cols-4 g-3">
-                                          @foreach ($mesModules['modules'] as $module)
-                                    <div class="col text-center  card-hover-zoom">
-                                        @if ($module->lien_externe)
-                                            <a href="{{ $module->lien_externe }}"
-                                                onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
-                                                class="text-decoration-none text-dark d-block">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                </div>
-                                                <small class="fw-medium d-block text-truncate"
-                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                            </a>
+                                        @foreach ($mesModules['modules'] as $module)
+                                            <div class="col text-center  card-hover-zoom">
+                                                @if ($module->lien_externe)
+                                                    <a href="{{ $module->lien_externe }}"
+                                                        onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
+                                                        class="text-decoration-none text-dark d-block">
+                                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                            style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                            <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                alt="{{ $module->nom_module }}"
+                                                                class="img-fluid rounded"
+                                                                style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                        </div>
+                                                        <small class="fw-medium d-block text-truncate"
+                                                            title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                    </a>
 
-                                            <form id="{{ $module->id }}" action="{{ $module->lien_externe }}"
-                                                method="POST" style="display: none;">
-                                                @csrf
-                                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                            </form>
-                                        @else
-                                            @if ($module->nom_module === 'GestionCaissePro')
-                                                <a type="button" data-bs-toggle="offcanvas"
-                                                    data-bs-target="#offcanvasWithBackdrop2"
-                                                    aria-controls="offcanvasWithBackdrop2"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            @else
-                                                <a href="{{ route('dashboard', $module->id) }}"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            @endif
-                                        @endif
+                                                    <form id="{{ $module->id }}"
+                                                        action="{{ $module->lien_externe }}" method="POST"
+                                                        style="display: none;">
+                                                        @csrf
+                                                        <input type="hidden" name="user_id"
+                                                            value="{{ Auth::user()->id }}">
+                                                    </form>
+                                                @else
+                                                    @if ($module->nom_module === 'GestionCaissePro')
+                                                        <a type="button" data-bs-toggle="offcanvas"
+                                                            data-bs-target="#offcanvasWithBackdrop2"
+                                                            aria-controls="offcanvasWithBackdrop2"
+                                                            class="text-decoration-none text-dark d-block">
+                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                    alt="{{ $module->nom_module }}"
+                                                                    class="img-fluid rounded"
+                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                            </div>
+                                                            <small class="fw-medium d-block text-truncate"
+                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('dashboard', $module->id) }}"
+                                                            class="text-decoration-none text-dark d-block">
+                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                    alt="{{ $module->nom_module }}"
+                                                                    class="img-fluid rounded"
+                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                            </div>
+                                                            <small class="fw-medium d-block text-truncate"
+                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                        </a>
+                                                    @endif
+                                                @endif
 
-                                    </div>
-                                @endforeach
+                                            </div>
+                                        @endforeach
 
                                         <style>
                                             .card-hover-zoom {
@@ -252,59 +257,59 @@
                     @endphp
 
                     <div class="row row-cols-3 g-1">
-                         @foreach ($mesModules['modules'] as $module)
-                                    <div class="col text-center  card-hover-zoom">
-                                        @if ($module->lien_externe)
-                                            <a href="{{ $module->lien_externe }}"
-                                                onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
-                                                class="text-decoration-none text-dark d-block">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                </div>
-                                                <small class="fw-medium d-block text-truncate"
-                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                            </a>
+                        @foreach ($mesModules['modules'] as $module)
+                            <div class="col text-center  card-hover-zoom">
+                                @if ($module->lien_externe)
+                                    <a href="{{ $module->lien_externe }}"
+                                        onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
+                                        class="text-decoration-none text-dark d-block">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('storage/' . $module->logo) }}"
+                                                alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate"
+                                            title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                    </a>
 
-                                            <form id="{{ $module->id }}" action="{{ $module->lien_externe }}"
-                                                method="POST" style="display: none;">
-                                                @csrf
-                                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                            </form>
-                                        @else
-                                            @if ($module->nom_module === 'GestionCaissePro')
-                                                <a type="button" data-bs-toggle="offcanvas"
-                                                    data-bs-target="#offcanvasWithBackdrop2"
-                                                    aria-controls="offcanvasWithBackdrop2"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            @else
-                                                <a href="{{ route('dashboard', $module->id) }}"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            @endif
-                                        @endif
+                                    <form id="{{ $module->id }}" action="{{ $module->lien_externe }}"
+                                        method="POST" style="display: none;">
+                                        @csrf
+                                        <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                                    </form>
+                                @else
+                                    @if ($module->nom_module === 'GestionCaissePro')
+                                        <a type="button" data-bs-toggle="offcanvas"
+                                            data-bs-target="#offcanvasWithBackdrop2"
+                                            aria-controls="offcanvasWithBackdrop2"
+                                            class="text-decoration-none text-dark d-block">
+                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                    alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                            </div>
+                                            <small class="fw-medium d-block text-truncate"
+                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('dashboard', $module->id) }}"
+                                            class="text-decoration-none text-dark d-block">
+                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                    alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                            </div>
+                                            <small class="fw-medium d-block text-truncate"
+                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                        </a>
+                                    @endif
+                                @endif
 
-                                    </div>
-                                @endforeach
+                            </div>
+                        @endforeach
 
                         <style>
                             .card-hover-zoom {
@@ -378,7 +383,7 @@
                     </div>
                 </div> <!-- end offcanvas-body-->
             </div>
-            
+
             <!-- /Mobile Menu -->
             {{-- <!-- Sidebar -->
             <div class="sidebar" id="sidebar">
@@ -451,7 +456,7 @@
                                     </a>
                                 </div>
                                 <div class="col text-center  card-hover-zoom">
-                                    <a data-bs-toggle="modal" data-bs-target="#partageLabelsModal"
+                                    <a href="#" onclick="ModaleAnnuaire(event)"
                                         class="text-decoration-none text-dark d-block">
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
@@ -474,6 +479,27 @@
                                         z-index: 2;
                                     }
                                 </style>
+                                {{-- Script pour le popup mobile money --}}
+                                <script>
+                                    function ModaleAnnuaire(event) {
+                                        event.preventDefault(); // Empêche le lien de naviguer
+
+                                        const url = "{{ route('annuaire') }}";
+                                        const width = 1450;
+                                        const height = 700;
+
+                                        // Calcul de la position centrée
+                                        const left = (window.screen.width / 2) - (width / 2);
+                                        const top = (window.screen.height / 2) - (height / 2);
+
+                                        // Ouverture de la popup centrée
+                                        window.open(
+                                            url,
+                                            'annuaire',
+                                            `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
+                                        );
+                                    }
+                                </script>
                             </div>
 
                         </div>
@@ -522,107 +548,6 @@
                                     <button type="button" class="btn btn-primary" onclick="genererTaches()">Générer
                                         et créer les tâches</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal"
-                        tabindex="-1" role="dialog" aria-labelledby="partageLabelsModal" aria-hidden="true">
-                        <div class="modal-dialog modal-xl" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary">
-                                    <h4 class="modal-title" id="partageLabelsModal" style="color: white">
-                                        Annuaire Nedcore
-                                    </h4>
-                                    <button class="btn-close btn-lg" data-bs-dismiss="modal" aria-label="Close">
-                                        <i class="ti ti-x"></i>
-                                    </button>
-                                </div>
-                                <form action="#" method="POST">
-                                    @csrf
-                                    <div class="modal-body">
-                                        <div class="mb-3" style="margin-bottom: 10px;">
-                                            <div class="mb-2"
-                                                style="display: flex; align-items: center;justify-content: space-between;">
-                                                <label>Rechercher un utilisateur</label>
-                                                {{-- <span id="checkedCount" class="badge ml-2 text-light"
-                                                    style="font-size:16px;background-color:#05436b">0
-                                                    sélectionné(s)</span> --}}
-                                            </div>
-
-                                            <input type="text" id="searchInputUtilisateur"
-                                                class="form-control shadow rounded"
-                                                placeholder="🔍 Rechercher un utilisateur...">
-                                        </div>
-                                        <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
-                                            <table id="data-table-basic" class="table table-striped">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th data-field="state" data-checkbox="true"></th>
-                                                        {{-- <th>ID</th> --}}
-                                                        <th>Nom</th>
-                                                        <th>Prénom</th>
-                                                        <th>Entreprise</th>
-                                                        <th>Contact professionnel</th>
-                                                        <th>Email professionnel</th>
-                                                        <th>Code</th>
-                                                        {{-- <th>Action</th> --}}
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="approbationsTable2">
-                                                    @foreach ($utilisateurs as $user)
-                                                        <tr style="cursor:pointer;"
-                                                            onclick="this.querySelector('input[type=checkbox]').click();">
-                                                            <td></td>
-                                                            {{-- <td>{{ $user->id }}</td> --}}
-                                                            <td>{{ $user->nom }}</td>
-                                                            <td>{{ $user->prenom }}</td>
-                                                            <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
-                                                            <td>{{ $user->telephone }}</td>
-                                                            <td>{{ $user->email_professionnel ?? '-----------' }}</td>
-                                                            <td>{{ $user->entreprise->code_entreprise }}</td>
-                                                            {{-- <td>
-                                                                <input type="checkbox" name="created_at[]"
-                                                                    value="{{ $user->created_at }}"
-                                                                    class="form-check-input"
-                                                                    onclick="event.stopPropagation();">
-                                                            </td> --}}
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                                const input = document.getElementById('searchInputUtilisateur');
-                                                input.addEventListener('input', function() {
-                                                    const query = this.value.toLowerCase();
-                                                    document.querySelectorAll('#approbationsTable2 tr').forEach(row => {
-                                                        const text = row.textContent.toLowerCase();
-                                                        row.style.display = text.includes(query) ? '' : 'none';
-                                                    });
-                                                });
-                                            });
-                                        </script>
-                                    </div>
-                                    {{-- <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Partager le dossier</button>
-                                </div> --}}
-                                </form>
-                                {{-- <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        function updateCheckedCount() {
-                                            const count = document.querySelectorAll('#approbationsTable2 input[type=checkbox]:checked').length;
-                                            document.getElementById('checkedCount').textContent = count + ' sélectionné(s)';
-                                        }
-                                        document.querySelectorAll('#approbationsTable2 input[type=checkbox]').forEach(cb => {
-                                            cb.addEventListener('change', updateCheckedCount);
-                                        });
-                                        updateCheckedCount();
-                                    });
-                                </script> --}}
-
                             </div>
                         </div>
                     </div>
@@ -1085,7 +1010,7 @@
 
             </div>
             <!-- /Content -->
-<div id="login-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div id="login-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
@@ -1115,8 +1040,8 @@
 
                                 <div class="mb-3">
                                     <label for="mdp" class="form-label">Mot de passe</label>
-                                    <input class="form-control" type="password" id="mdp"
-                                        name="mdp" placeholder="Mot de passe">
+                                    <input class="form-control" type="password" id="mdp" name="mdp"
+                                        placeholder="Mot de passe">
                                 </div>
 
                                 <div class="mb-2 text-center">
