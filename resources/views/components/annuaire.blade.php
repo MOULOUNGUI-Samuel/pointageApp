@@ -892,7 +892,9 @@
                             <div class="list-item" data-company="{{ $user->entreprise->code_entreprise }}"
                                 data-department="{{ $user->service->nom_service }}" data-status="online">
                                 <div class="list-employee">
-                                    <div class="list-avatar">JN</div>
+                                <div class="list-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
                                     <div class="list-info">
                                         <h4>{{ $user->nom }} {{ $user->prenom }}</h4>
                                         <p>{{ $user->fonction ?? '------' }}</p>
@@ -902,7 +904,7 @@
                                 <div class="list-contact">
                                     <span class="detail-item">
                                         <i class="fas fa-phone detail-icon"></i>
-                                        <span class="detail-text">+241 {{ $user->telephone ?? '------' }}</span>
+                                        <span class="detail-text">{{ $user->telephone ?? '------' }}</span>
                                     </span>
                                     <span class="detail-item">
                                         <i class="fas fa-envelope detail-icon"></i>
