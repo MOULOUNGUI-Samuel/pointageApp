@@ -57,6 +57,24 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
+            if ($request->filled('code_entreprise')) {
+                $code_entreprise = trim($request->code_entreprise);
+
+                // Recherche de l'entreprise liée au code saisi
+                $entreprise = Entreprise::where('code_entreprise', $code_entreprise)->first();
+
+                // Vérifie si l’entreprise existe et si c’est bien celle du user connecté
+                $isSameEntreprise = $entreprise && $user->entreprise_id === $entreprise->id;
+
+                if (!$isSameEntreprise && $user->statut_vue_entreprise === 0) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect()->back()
+                        ->withInput($request->only('matricule', 'code_entreprise'))
+                        ->with('error', 'Le code de l\'entreprise ne correspond pas à votre compte.');
+                }
+            }
 
             $heure_actuelle = Carbon::now('Africa/Libreville')->format('H:i:s');
             if ($request->pointage_entrer) {

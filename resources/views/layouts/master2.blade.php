@@ -202,8 +202,8 @@
 
                                 <div class="mb-3">
                                     <label for="mdp" class="form-label">Mot de passe</label>
-                                    <input class="form-control" type="password" id="mdp"
-                                        name="mdp" placeholder="Mot de passe">
+                                    <input class="form-control" type="password" id="mdp" name="mdp"
+                                        placeholder="Mot de passe">
                                 </div>
 
                                 <div class="mb-2 text-center">
@@ -231,22 +231,37 @@
         }, 1200);
     </script>
     <script>
+        // On utilise jQuery car votre code l'utilise déjà
         $('#login-caisse-form').on('submit', function(e) {
-            e.preventDefault();
-            $('#login-error').hide().text('');
+            e.preventDefault(); // Empêche le rechargement de la page
+            const form = $(this);
+            const errorDiv = $('#login-error');
+            const submitButton = form.find('button[type="submit"]');
+
+            // Cacher les erreurs et désactiver le bouton pour éviter les double-clics
+            errorDiv.hide().text('');
+            submitButton.prop('disabled', true).text('Connexion...');
 
             $.ajax({
-                url: $(this).attr('action'),
+                url: form.attr('action'),
                 type: 'POST',
-                data: $(this).serialize(),
+                data: form.serialize(),
                 success: function(response) {
-                    if (response.redirect) {
-                        window.location.href = response.redirect;
+                    // Si la réponse contient une 'redirect_url', on y va !
+                    if (response.success && response.redirect_url) {
+                        window.location.href = response.redirect_url;
+                    } else {
+                        // Cas d'erreur inattendu où success=true mais pas d'URL
+                        errorDiv.text(response.message || 'Une erreur de redirection est survenue.')
+                            .show();
+                        submitButton.prop('disabled', false).text('Se connecter');
                     }
                 },
                 error: function(xhr) {
+                    // Gérer les erreurs (401, 500, etc.)
                     let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
-                    $('#login-error').text(message).show();
+                    errorDiv.text(message).show();
+                    submitButton.prop('disabled', false).text('Se connecter');
                 }
             });
         });

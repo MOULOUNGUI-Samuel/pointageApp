@@ -1060,26 +1060,40 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-        $('#login-caisse-form').on('submit', function(e) {
-            e.preventDefault();
-            $('#login-error').hide().text('');
+    // On utilise jQuery car votre code l'utilise déjà
+    $('#login-caisse-form').on('submit', function(e) {
+        e.preventDefault(); // Empêche le rechargement de la page
+        const form = $(this);
+        const errorDiv = $('#login-error');
+        const submitButton = form.find('button[type="submit"]');
 
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    if (response.redirect) {
-                        window.location.href = response.redirect;
-                    }
-                },
-                error: function(xhr) {
-                    let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
-                    $('#login-error').text(message).show();
+        // Cacher les erreurs et désactiver le bouton pour éviter les double-clics
+        errorDiv.hide().text('');
+        submitButton.prop('disabled', true).text('Connexion...');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // Si la réponse contient une 'redirect_url', on y va !
+                if (response.success && response.redirect_url) {
+                    window.location.href = response.redirect_url;
+                } else {
+                    // Cas d'erreur inattendu où success=true mais pas d'URL
+                    errorDiv.text(response.message || 'Une erreur de redirection est survenue.').show();
+                    submitButton.prop('disabled', false).text('Se connecter');
                 }
-            });
+            },
+            error: function(xhr) {
+                // Gérer les erreurs (401, 500, etc.)
+                let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
+                errorDiv.text(message).show();
+                submitButton.prop('disabled', false).text('Se connecter');
+            }
         });
-    </script>
+    });
+</script>
 
     <script>
         // Configuration pour les requêtes AJAX avec le token CSRF de Laravel

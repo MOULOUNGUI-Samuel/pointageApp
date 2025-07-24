@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'passport', // <-- CETTE LIGNE EST TRÈS IMPORTANTE
+            'provider' => 'users',
+        ],
     ],
 
     /*

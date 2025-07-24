@@ -67,6 +67,7 @@ class User extends Authenticatable
         'diplome',
         'certificat_travail',
         'statu_user',
+        'statut_vue_entreprise',
         'statut',
         'nom_completaire',
         'lien_completaire',
@@ -143,5 +144,16 @@ class User extends Authenticatable
     public function pointage()
     {
         return $this->hasMany(Pointage::class);
+    }
+
+     public function toOpenIdClaims()
+    {
+        return [
+            'sub' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'given_name' => $this->name, // Adaptez si vous avez 'firstname'
+            'family_name' => '',       // Adaptez si vous avez 'lastname'
+        ];
     }
 }

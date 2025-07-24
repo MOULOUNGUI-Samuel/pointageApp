@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
-use Jeremy379\OpenIdConnect\OpenIdConnectServiceProvider;
 
 return [
 
@@ -161,8 +160,6 @@ return [
         /*
          * Package Service Providers...
          */
-        // Jeremy379\OpenIdConnect\OpenIdConnectServiceProvider::class,
-
         /*
          * Application Service Providers...
          */
@@ -171,6 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
     ])->toArray(),
 
     /*

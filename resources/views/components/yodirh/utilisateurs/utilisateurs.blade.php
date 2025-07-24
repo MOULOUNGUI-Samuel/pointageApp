@@ -68,7 +68,8 @@
                                         <th>Prénom</th>
                                         <th>Matricule</th>
                                         <th>Email professionnel</th>
-                                        <th>Entreprise</th>
+                                        <th>Date d'embauche</th>
+                                        <th>Date de fin de contrat</th>
                                         <th>Fonction</th>
                                         <th>Action</th>
                                     </tr>
@@ -81,7 +82,8 @@
                                             <td>{{ $user->prenom }}</td>
                                             <td>{{ $user->matricule }}</td>
                                             <td>{{ $user->email_professionnel }}</td>
-                                            <td>{{ $user->entreprise->nom_entreprise ?? '-' }}</td>
+                                            <td>{{ $user->date_embauche }}</td>
+                                            <td>{{ $user->date_fin_contrat }}</td>
                                             <td>{{ $user->fonction }}</td>
                                             <td>
                                                 <!-- Bouton initial -->
@@ -98,6 +100,17 @@
                                                 <!-- Bouton de chargement (caché au départ) -->
                                                 <button type="button" id="loader-like{{ $user->id }}"
                                                     class="btn btn-outline-primary" style="display: none;" disabled>
+                                                    <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                                </button>
+
+                                                <a href="{{ route('modif_affiche_utilisateur', $user->id) }}" type="button" class="btn-action btn btn-warning"
+                                                    data-loader-target="loader-like{{ $user->id }}">
+                                                    <i class="fas fa-edit me-2"></i>Archiver
+                                                </a>
+
+                                                <!-- Bouton de chargement (caché au départ) -->
+                                                <button type="button" id="loader-like{{ $user->id }}"
+                                                    class="btn btn-outline-warning" style="display: none;" disabled>
                                                     <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
                                                 </button>
 

@@ -12,7 +12,9 @@ use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaisseWebController;
-
+use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -70,12 +72,15 @@ Route::middleware('auth')->group(
         Route::get('/services', [ParamettreController::class, 'services'])->name('services');
         Route::post('/Ajoutservices', [ParamettreController::class, 'Ajoutservices'])->name('Ajoutservices');
         Route::put('/modifier_service/{id}', [ParamettreController::class, 'modifier_service'])->name('modifier_service');
-
+        Route::delete('/supprimer_service/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_service');
+        Route::post('/affecter_service', [ParamettreController::class, 'affecter_service'])->name('affecter_service');
+        
         Route::get('/categorieprofessionel', [ParamettreController::class, 'categorieprofessionel'])->name('categorieprofessionel');
         Route::post('/Ajoutcategorieprofessionels', [ParamettreController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
         Route::put('/modifier_categorieprofessionel/{id}', [ParamettreController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
         Route::delete('/supprimer_categorieprofessionel/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_categorieprofessionel');
-
+        Route::post('/affecter_categorie', [ParamettreController::class, 'affecter_categorie'])->name('affecter_categorie');
+        
         Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
         Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
@@ -109,7 +114,31 @@ Route::middleware('auth')->group(
         Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])->name('html.import.owncloud');
         Route::post('/partageFichier', [DocumentController::class, 'partageFichier'])->name('partageFichier');
         Route::get('/annuaire', [DocumentController::class, 'annuaire'])->name('annuaire');
-        
+
+
+        Route::get('/auto-login', function (Request $request) {
+            $token = $request->query('token');
+
+            if (!$token) {
+                return redirect('/login')->withErrors('Token manquant.');
+            }
+
+            // On trouve le token dans la base de données
+            $accessToken = PersonalAccessToken::findToken($token);
+
+            if (!$accessToken || !$user = $accessToken->tokenable) {
+                return redirect('/login')->withErrors('Token invalide ou expiré.');
+            }
+
+            // On connecte l'utilisateur associé à ce token
+            Auth::login($user);
+
+            // On supprime le token pour qu'il ne soit utilisé qu'une seule fois (sécurité)
+            $accessToken->delete();
+
+            // On redirige l'utilisateur vers son tableau de bord
+            return redirect('/dashboard');
+        })->name('auto-login');
         // Chargement des vues importées dynamiques
         $importedRoutesPath = base_path('routes/imported.php');
         if (File::exists($importedRoutesPath)) {
@@ -128,7 +157,6 @@ Route::middleware('auth')->group(
         Route::get('/caisse-dashboard', function () {
             return view('dashboard');
         })->name('caisse.dashboard');
-
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

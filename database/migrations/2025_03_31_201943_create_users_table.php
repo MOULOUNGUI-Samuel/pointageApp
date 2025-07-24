@@ -59,6 +59,7 @@ return new class extends Migration
         $table->string('nom_banque')->nullable();
         $table->string('nom_agence')->nullable();
         $table->boolean('statu_user')->default(1);
+        $table->boolean('statut_vue_entreprise')->default(0);
         $table->boolean('statut')->default(1);
         $table->string('nom_completaire')->nullable();
         $table->string('lien_completaire')->nullable();

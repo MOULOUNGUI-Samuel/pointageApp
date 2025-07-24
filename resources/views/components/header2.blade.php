@@ -46,9 +46,11 @@
                             <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile" />
                         </span>
                     </span> --}}
-                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas"
+                    <button class="btn btn-outline-primary" type="button" @if (Auth::user()->statut_vue_entreprise===1)
+                        data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasWithBackdrop"
-                        aria-controls="offcanvasWithBackdrop">{{ $entreprise_nom }}</button>
+                        aria-controls="offcanvasWithBackdrop"
+                    @endif >{{ $entreprise_nom }}</button>
 
                     <div style="margin-left: 30px;margin-top: 5px">
                         @if (session('module_id'))

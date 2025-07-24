@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+
 class Entreprise extends Model
 {
     protected $table = 'entreprises';
@@ -32,4 +33,17 @@ class Entreprise extends Model
         'rayon_autorise',
         'statut',
     ];
+
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
+    public function categorieProfessionels()
+    {
+        return $this->hasMany(CategorieProfessionnelle::class);
+    }
+    public function employes()
+    {
+        return $this->hasMany(User::class);
+    }
 }

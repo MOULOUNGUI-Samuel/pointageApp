@@ -19,8 +19,8 @@ class ParamettreController extends Controller
     {
         $modules = Module::orderBy('created_at', 'asc')->get();
         $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
-        ->with('entreprise')
-        ->get();
+            ->with('entreprise')
+            ->get();
         return view('components.liste_modules', compact('modules', 'utilisateurs'));
     }
     public function modules()
@@ -211,8 +211,34 @@ class ParamettreController extends Controller
     public function services(Request $request)
     {
         $entreprise_id = session('entreprise_id');
-        $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
-        return view('components.yodirh.services', compact('services'));
+        $services = Service::where('entreprise_id', $entreprise_id)->get();
+        $entreprisesSansCeService = [];
+
+        foreach ($services as $service) {
+            $entreprisesSansCeService[$service->id] = Entreprise::whereDoesntHave('services', function ($query) use ($service) {
+                $query->where('nom_service', $service->nom_service);
+            })->get();
+        }
+
+        return view('components.yodirh.services', compact('services', 'entreprisesSansCeService'));
+    }
+    public function affecter_service(Request $request)
+    {
+        $request->validate([
+            'entreprise_id' => 'required|exists:entreprises,id',
+            'service_id' => 'required|exists:services,id',
+        ]);
+
+        $sourceService = Service::findOrFail($request->service_id);
+
+        // Création d’un nouveau service pour l’entreprise cible
+        $nouveauService = new Service();
+        $nouveauService->nom_service = $sourceService->nom_service;
+        $nouveauService->description = $sourceService->description;
+        $nouveauService->entreprise_id = $request->entreprise_id;
+        $nouveauService->save();
+
+        return redirect()->back()->with('success', 'Le service a été intégré avec succès dans l\'entreprise sélectionnée.');
     }
     public function Ajoutservices(Request $request)
     {
@@ -266,11 +292,27 @@ class ParamettreController extends Controller
 
         return redirect()->back()->with('success', 'Service modifié avec succès');
     }
+    public function supprimer_service($id)
+    {
+        $categories = Service::findOrFail($id);
+        $categories->delete();
+        return redirect()->back()->with('success', 'Service supprimée avec succès');
+    }
     public function categorieprofessionel(Request $request)
     {
         $entreprise_id = session('entreprise_id');
         $categorieprofessionels = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
-        return view('components.yodirh.categorieprofessionel', compact('categorieprofessionels'));
+
+         $entreprisesSansCategorie = [];
+
+        foreach ($categorieprofessionels as $categorieprofessionel) {
+            $entreprisesSansCategorie
+            [$categorieprofessionel->id] = Entreprise::whereDoesntHave('categorieProfessionels', function ($query) use ($categorieprofessionel) {
+                $query->where('nom_categorie_professionnelle', $categorieprofessionel->nom_categorie_professionnelle);
+            })->get();
+        }
+
+        return view('components.yodirh.categorieprofessionel', compact('categorieprofessionels', 'entreprisesSansCategorie'));
     }
     public function Ajoutcategorieprofessionels(Request $request)
     {
@@ -328,5 +370,24 @@ class ParamettreController extends Controller
         $categories = CategorieProfessionnelle::findOrFail($id);
         $categories->delete();
         return redirect()->back()->with('success', 'Catégorie supprimée avec succès');
+    }
+
+    public function affecter_categorie(Request $request)
+    {
+        $request->validate([
+            'entreprise_id' => 'required|exists:entreprises,id',
+            'categorie_id' => 'required|exists:categorie_professionnelles,id',
+        ]);
+
+        $sourceCategorie = CategorieProfessionnelle::findOrFail($request->categorie_id);
+
+        // Création d’un nouveau service pour l’entreprise cible
+        $nouveauCategorie = new CategorieProfessionnelle();
+        $nouveauCategorie->nom_categorie_professionnelle = $sourceCategorie->nom_categorie_professionnelle;
+        $nouveauCategorie->description = $sourceCategorie->description;
+        $nouveauCategorie->entreprise_id = $request->entreprise_id;
+        $nouveauCategorie->save();
+
+        return redirect()->back()->with('success', 'La Catégorie a été intégré avec succès dans l\'entreprise sélectionnée.');
     }
 }
