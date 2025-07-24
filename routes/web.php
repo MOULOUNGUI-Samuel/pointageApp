@@ -88,6 +88,7 @@ Route::middleware('auth')->group(
         Route::put('/modifier_utilisateur/{id}', [AdminController::class, 'update'])->name('modifier_utilisateur');
         Route::put('/updateCompteUser/{id}', [AdminController::class, 'updateCompteUser'])->name('updateCompteUser');
         Route::get('/index_employer', [pointeController::class, 'index_employer'])->name('index_employer');
+        Route::put('/index_employer/{id}', [AdminController::class, 'desactiver_user'])->name('desactiver_user');
 
         Route::get('/pointage_compte', [pointeController::class, 'pointage_compte'])->name('pointage_compte');
         Route::get('/historique_pointage', [pointeController::class, 'historique_pointage'])->name('historique_pointage');

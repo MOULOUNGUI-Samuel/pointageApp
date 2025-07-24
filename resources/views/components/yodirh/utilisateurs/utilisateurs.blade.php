@@ -47,23 +47,24 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <a href="{{ route('yodirh.formulaire_utilisateurs') }}" class="btn-action btn btn-primary" data-loader-target="ajout-utilisateur"><i
+                                    <a href="{{ route('yodirh.formulaire_utilisateurs') }}"
+                                        class="btn-action btn btn-primary" data-loader-target="ajout-utilisateur"><i
                                             class="ti ti-square-rounded-plus me-2"></i>Ajouter un utilisateur</a>
-                                                <!-- Bouton de chargement (caché au départ) -->
-                                                <button type="button" id="ajout-utilisateur"
-                                                    class="btn btn-outline-primary" style="display: none;" disabled>
-                                                    <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
-                                                </button>
+                                    <!-- Bouton de chargement (caché au départ) -->
+                                    <button type="button" id="ajout-utilisateur" class="btn btn-outline-primary"
+                                        style="display: none;" disabled>
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <!-- /Search -->
                     </div>
                     <div class="card-body">
-                         <div class="table-responsive">
-                                <table id="data-table-basic" class="table table-striped">
-                                    <thead>
-                                        <tr>
+                        <div class="table-responsive">
+                            <table id="data-table-basic" class="table table-striped">
+                                <thead>
+                                    <tr>
                                         <th>Nom</th>
                                         <th>Prénom</th>
                                         <th>Matricule</th>
@@ -87,12 +88,14 @@
                                             <td>{{ $user->fonction }}</td>
                                             <td>
                                                 <!-- Bouton initial -->
-                                                <button type="button" class="btn-action btn btn-dark" data-bs-toggle="modal"
-                                                        data-bs-target="#detailsMondale{{ $user->id }}">
+                                                <button type="button" class="btn-action btn btn-dark"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#detailsMondale{{ $user->id }}">
                                                     <i class="fas fa-eye me-2"></i>Détails
                                                 </button>
                                                 <!-- Bouton initial -->
-                                                <a href="{{ route('modif_affiche_utilisateur', $user->id) }}" type="button" class="btn-action btn btn-primary"
+                                                <a href="{{ route('modif_affiche_utilisateur', $user->id) }}"
+                                                    type="button" class="btn-action btn btn-primary"
                                                     data-loader-target="loader-like{{ $user->id }}">
                                                     <i class="fas fa-edit me-2"></i>Modifier
                                                 </a>
@@ -103,15 +106,11 @@
                                                     <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
                                                 </button>
 
-                                                <a href="{{ route('modif_affiche_utilisateur', $user->id) }}" type="button" class="btn-action btn btn-warning"
-                                                    data-loader-target="loader-like{{ $user->id }}">
-                                                    <i class="fas fa-edit me-2"></i>Archiver
-                                                </a>
-
-                                                <!-- Bouton de chargement (caché au départ) -->
-                                                <button type="button" id="loader-like{{ $user->id }}"
-                                                    class="btn btn-outline-warning" style="display: none;" disabled>
-                                                    <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                                <button type="button" class="btn-action btn btn-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#archiver-{{ $user->id }}">
+                                                    <i class="fas fa-archive me-2"></i>
+                                                    Archiver
                                                 </button>
 
 
@@ -137,8 +136,44 @@
                                             </div> --}}
                                             </td>
                                         </tr>
+                                        <div class="modal fade" id="archiver-{{ $user->id }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="archiver"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger">
+                                                        <h4 class="modal-title text-white" id="archiver">
+                                                            <i class="bi bi-trash-fill"></i> Archiver un utilisateur
+                                                        </h4>
+                                                    </div>
+                                                    <form action="{{ route('desactiver_user', $user->id) }}"
+                                                        method="POST" style="display:inline-block;">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                    <div class="text-center">
+                                                                        <h3>{{ $user->nom }} {{ $user->prenom }}</h3>
+                                                                        </h3>
+                                                                        <p>Êtes-vous sûr de vouloir archiver cet utilisateur ?</p>
+                                                                        <p class="text-danger">Cette action est irréversible.</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Annuler</button>
+                                                            <button type="submit" class="btn btn-danger">Oui,
+                                                                archiver</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endforeach
-                                    
+
 
                                 </tbody>
                             </table>
@@ -212,7 +247,7 @@
                                                             :</strong><br><span>{{ $user->telephone }}</span></div>
                                                 @endif
                                                 @if ($user->email_professionnel)
-                                                    <div class="col-md-6"><strong>Email 
+                                                    <div class="col-md-6"><strong>Email
                                                             :</strong><br><span>{{ $user->email }}</span>
                                                     </div>
                                                 @endif

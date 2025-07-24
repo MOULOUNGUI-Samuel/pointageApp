@@ -57,6 +57,14 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
+            if ($user->statut == 0) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->back()
+                    ->withInput($request->only('matricule', 'code_entreprise'))
+                    ->with('error', 'Votre compte a été désactivé.');
+            }
+
             if ($request->filled('code_entreprise')) {
                 $code_entreprise = trim($request->code_entreprise);
 

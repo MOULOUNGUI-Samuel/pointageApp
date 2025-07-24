@@ -48,6 +48,7 @@ class AdminController extends Controller
         $entreprise_id = session('entreprise_id');
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
+            ->where('statut', 1)
             ->where('entreprise_id', $entreprise_id)
             ->get();
 
@@ -317,6 +318,18 @@ class AdminController extends Controller
             }
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
+        }
+    }
+    public function desactiver_user(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->statut = 0; // Désactiver l'utilisateur
+            $user->save();
+
+            return redirect()->back()->with('success', 'Utilisateur désactivé avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.']);
         }
     }
 
