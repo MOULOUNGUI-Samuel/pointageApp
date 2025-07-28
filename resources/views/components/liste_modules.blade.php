@@ -432,7 +432,7 @@
                                 <div class="col text-center card-hover-zoom">
                                     <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                     <a href="https://tache.groupenedco.com/"
-                                        class="text-decoration-none text-dark d-block">
+                                        class="text-decoration-none text-dark d-block" target="_blank">
 
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
