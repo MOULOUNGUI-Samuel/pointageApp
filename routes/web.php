@@ -158,6 +158,11 @@ Route::middleware('auth')->group(
         Route::get('/caisse-dashboard', function () {
             return view('dashboard');
         })->name('caisse.dashboard');
+
+Route::post('/openproject/test-connection', [OpenProjectController::class, 'testConnection'])->name('openproject.test');
+// NOUVELLE ROUTE POUR LA REDIRECTION VERS LE DASHBOARD
+    Route::get('/openproject/redirect', [OpenProjectController::class, 'redirectToDashboard'])->name('openproject.redirect');
+         Route::patch('/profile/api-key', [OpenProjectController::class, 'updateApiKey'])->name('profile.update.apikey');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

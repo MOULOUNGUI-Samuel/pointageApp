@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use OpenAI\Factory; // <--- VÉRIFIEZ QUE CETTE LIGNE EST PRÉSENTE !
+use App\Services\OpenProjectService;
+use Illuminate\Http\JsonResponse; // Important
+use Illuminate\Http\Client\RequestException; // Important pour gérer les erreurs API
 
 class OpenProjectController extends Controller
 {
@@ -163,5 +166,22 @@ class OpenProjectController extends Controller
             'ok' => $creationResponse->successful(),
             'message' => $creationResponse->created() ? 'Créé avec succès' : 'Erreur lors de la création (' . $creationResponse->status() . ')'
         ];
+    }
+
+
+
+    public function updateApiKey(Request $request)
+    {
+        $request->validate(
+            [
+                'openproject_api_token' => ['required', 'string', 'min:40'], // Validez la clé
+            ],
+        );
+
+        $user = $request->user();
+        $user->openproject_api_token = $request->openproject_api_token;
+        $user->save();
+
+        return redirect()->back()->with('status', 'Clé API OpenProject mise à jour !');
     }
 }

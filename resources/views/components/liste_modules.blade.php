@@ -429,9 +429,11 @@
 
 
                             <div class="row row-cols-2 g-1">
-                                <div class="col text-center  card-hover-zoom">
+                                <div class="col text-center card-hover-zoom">
+                                    <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                     <a href="https://tache.groupenedco.com/"
-                                        class="text-decoration-none text-dark d-block" target="_blank">
+                                        class="text-decoration-none text-dark d-block">
+
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/OpenProject-1.jpg') }}" alt="OpenProject"
@@ -443,7 +445,17 @@
                                     </a>
                                 </div>
                                 <div class="col text-center  card-hover-zoom">
-                                    <a data-bs-toggle="modal" data-bs-target="#generateTasksModal"
+                                    <a
+                                    @if (Auth::user()->openproject_api_token) 
+                                            href="{{ route('openproject.redirect') }}" 
+                                            target="_blank" 
+                                    @else
+                                            href="#"
+                                            data-bs-toggle="offcanvas" 
+                                            data-bs-target="#offcanvasWithBackdrop3" 
+                                            aria-controls="offcanvasWithBackdrop3"
+                                    @endif
+                                    data-bs-toggle="modal" data-bs-target="#generateTasksModal"
                                         class="text-decoration-none text-dark d-block">
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
@@ -1055,45 +1067,75 @@
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWithBackdrop3"
+            aria-labelledby="offcanvasWithBackdropLabel1">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel1"
+                    style="border-left: 5px solid #05436b; color: #333;">
+                    Clé API OpenProject 
+                </h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div> <!-- end offcanvas-header-->
+            <div class="offcanvas-body">
+                <!-- Dans votre vue Blade, par exemple resources/views/profile/edit.blade.php -->
+
+                <!-- Formulaire pour enregistrer la clé (vous l'avez déjà) -->
+                <form method="post" action="{{ route('profile.update.apikey') }}">
+                    @csrf
+                    @method('patch')
+                    <!-- ... champ input pour la clé ... -->
+                    <div class="mb-3">
+                        <label for="api_key" class="form-label">Clé API OpenProject</label>
+                        <input type="text" class="form-control mb-3" id="api_key" name="openproject_api_token"
+                            value="{{ old('openproject_api_token') }}" placeholder="Entrez votre clé API OpenProject">
+                        <button type="submit" class="btn btn-primary text-center">Enregistrer la
+                            clé</button>
+                </form>
+
+            </div> <!-- end offcanvas-body-->
+        </div>
     </div>
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <!-- À la fin de votre fichier Blade, avant </body> -->
+    
     <script>
-    // On utilise jQuery car votre code l'utilise déjà
-    $('#login-caisse-form').on('submit', function(e) {
-        e.preventDefault(); // Empêche le rechargement de la page
-        const form = $(this);
-        const errorDiv = $('#login-error');
-        const submitButton = form.find('button[type="submit"]');
+        // On utilise jQuery car votre code l'utilise déjà
+        $('#login-caisse-form').on('submit', function(e) {
+            e.preventDefault(); // Empêche le rechargement de la page
+            const form = $(this);
+            const errorDiv = $('#login-error');
+            const submitButton = form.find('button[type="submit"]');
 
-        // Cacher les erreurs et désactiver le bouton pour éviter les double-clics
-        errorDiv.hide().text('');
-        submitButton.prop('disabled', true).text('Connexion...');
+            // Cacher les erreurs et désactiver le bouton pour éviter les double-clics
+            errorDiv.hide().text('');
+            submitButton.prop('disabled', true).text('Connexion...');
 
-        $.ajax({
-            url: form.attr('action'),
-            type: 'POST',
-            data: form.serialize(),
-            success: function(response) {
-                // Si la réponse contient une 'redirect_url', on y va !
-                if (response.success && response.redirect_url) {
-                    window.location.href = response.redirect_url;
-                } else {
-                    // Cas d'erreur inattendu où success=true mais pas d'URL
-                    errorDiv.text(response.message || 'Une erreur de redirection est survenue.').show();
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    // Si la réponse contient une 'redirect_url', on y va !
+                    if (response.success && response.redirect_url) {
+                        window.location.href = response.redirect_url;
+                    } else {
+                        // Cas d'erreur inattendu où success=true mais pas d'URL
+                        errorDiv.text(response.message || 'Une erreur de redirection est survenue.')
+                            .show();
+                        submitButton.prop('disabled', false).text('Se connecter');
+                    }
+                },
+                error: function(xhr) {
+                    // Gérer les erreurs (401, 500, etc.)
+                    let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
+                    errorDiv.text(message).show();
                     submitButton.prop('disabled', false).text('Se connecter');
                 }
-            },
-            error: function(xhr) {
-                // Gérer les erreurs (401, 500, etc.)
-                let message = xhr.responseJSON?.message || 'Une erreur est survenue.';
-                errorDiv.text(message).show();
-                submitButton.prop('disabled', false).text('Se connecter');
-            }
+            });
         });
-    });
-</script>
+    </script>
 
     <script>
         // Configuration pour les requêtes AJAX avec le token CSRF de Laravel
