@@ -75,7 +75,7 @@
                     </div>
                 @endif
                 <form method="POST" action="{{ route('ajoute_utilisateur') }}" enctype="multipart/form-data"
-                    class="px-4 card border rounded shadow-sm bg-light">
+                    class="px-4 card border rounded shadow-sm bg-light needs-validation" novalidate>
                     @csrf
                     <h4 class="mb-3 text-primary">Informations personnelles</h4>
                     <div class="row g-3">
@@ -174,11 +174,10 @@
                             </div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">Téléphone personel(<span
-                                    style="color: red;font-size:12px">***</span>)</label>
+                            <label class="form-label">Téléphone personel</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-phone"></i></span>
-                                <input type="text" name="telephone" class="form-control mask-phone-fr" required
+                                <input type="text" name="telephone" class="form-control"
                                     autocomplete="off" value="{{ old('telephone') }}">
                             </div>
                         </div>
@@ -293,7 +292,7 @@
                             <label class="form-label">Téléphone professionnel</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-phone-square"></i></span>
-                                <input type="text" name="telephone_professionnel" class="form-control mask-phone-fr"
+                                <input type="text" name="telephone_professionnel" class="form-control"
                                     autocomplete="off" value="{{ old('telephone_professionnel') }}">
                             </div>
                         </div>

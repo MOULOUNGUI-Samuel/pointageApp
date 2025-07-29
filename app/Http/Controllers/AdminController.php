@@ -98,9 +98,9 @@ class AdminController extends Controller
                 'nom' => 'required|string|max:100',
                 'prenom' => 'required|string|max:100',
                 'date_naissance' => 'required|date_format:d/m/Y',
-                'date_fin_contrat' => 'required|date_format:d/m/Y',
+                'date_fin_contrat' => 'nullable',
                 'adresse' => 'required|string|max:255',
-                'telephone' => 'required|string|max:20',
+                'telephone' => 'required|string|max:30',
                 'matricule' => 'required|string|max:50|unique:users,matricule',
                 'email' => 'nullable|email|unique:users,email',
                 'email_professionnel' => 'nullable|email|unique:users,email_professionnel',
@@ -120,7 +120,7 @@ class AdminController extends Controller
                 'nom.required' => 'Le nom est obligatoire.',
                 'prenom.required' => 'Le prénom est obligatoire.',
                 'date_naissance.required' => 'La date de naissance est obligatoire.',
-                'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
+                // 'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
                 'matricule.required' => 'Le matricule est obligatoire.',
                 'matricule.unique' => 'Ce matricule est déjà utilisé.',
                 'pays_id.required' => 'Le pays est obligatoire.',
@@ -208,9 +208,9 @@ class AdminController extends Controller
                 'nom' => 'required|string|max:100',
                 'prenom' => 'required|string|max:100',
                 'date_naissance' => 'required|date_format:d/m/Y',
-                'date_fin_contrat' => 'required|date_format:d/m/Y',
+                'date_fin_contrat' => 'nullable',
                 'adresse' => 'required|string|max:255',
-                'telephone' => 'required|string|max:20',
+                'telephone' => 'nullable',
                 'matricule' => 'required|string|max:50|unique:users,matricule,' . $id,
                 'email' => 'nullable|email|unique:users,email,' . $id,
                 'email_professionnel' => 'nullable|email|unique:users,email_professionnel,' . $id,
@@ -229,7 +229,7 @@ class AdminController extends Controller
                 'nom.required' => 'Le nom est obligatoire.',
                 'prenom.required' => 'Le prénom est obligatoire.',
                 'date_naissance.required' => 'La date de naissance est obligatoire.',
-                'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
+                // 'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
                 'matricule.required' => 'Le matricule est obligatoire.',
                 'matricule.unique' => 'Ce matricule est déjà utilisé.',
                 'pays_id.required' => 'Le pays est obligatoire.',
@@ -281,7 +281,9 @@ class AdminController extends Controller
             if ($request->filled('date_embauche')) {
                 $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
             }
-            $user->date_fin_contrat = Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d');
+            if ($request->filled('date_fin_contrat')) {
+                $user->date_fin_contrat = Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d')? $user->telephone_professionnel : null;
+            }
             $user->fonction = $request->input('fonction') ?? $user->fonction;
             $user->matricule = $request->input('matricule') ?? $user->matricule;
             $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;

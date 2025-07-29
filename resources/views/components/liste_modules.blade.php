@@ -433,7 +433,6 @@
                                     <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                     <a href="https://tache.groupenedco.com/"
                                         class="text-decoration-none text-dark d-block" target="_blank">
-
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/OpenProject-1.jpg') }}" alt="OpenProject"
@@ -445,8 +444,7 @@
                                     </a>
                                 </div>
                                 <div class="col text-center  card-hover-zoom">
-                                    <a
-                                    @if (Auth::user()->openproject_api_token) 
+                                    <a  @if (Auth::user()->openproject_api_token) 
                                             href="{{ route('openproject.redirect') }}" 
                                             target="_blank" 
                                     @else
@@ -454,8 +452,7 @@
                                             data-bs-toggle="offcanvas" 
                                             data-bs-target="#offcanvasWithBackdrop3" 
                                             aria-controls="offcanvasWithBackdrop3"
-                                    @endif
-                                    data-bs-toggle="modal" data-bs-target="#generateTasksModal"
+                                    @endif  data-bs-toggle="modal" data-bs-target="#generateTasksModal"
                                         class="text-decoration-none text-dark d-block">
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
