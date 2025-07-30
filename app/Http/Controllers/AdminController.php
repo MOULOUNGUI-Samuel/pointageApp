@@ -82,7 +82,7 @@ class AdminController extends Controller
         $villes = Ville::all();
         $services = Service::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
         $categorie_professionelles = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
-        $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
+        $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville', 'categorieProfessionnelle'])
             ->orderBy('id', 'desc')
             ->get();
         $utilisateur = User::findOrFail($id);

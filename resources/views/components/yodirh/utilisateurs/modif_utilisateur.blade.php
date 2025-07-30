@@ -218,7 +218,7 @@
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($categorie_professionelles as $categorie_professionel)
                                         <option value="{{ $categorie_professionel->id }}"
-                                            {{ old('categorie_professionel_id', $utilisateur->categorie_professionel_id) == $categorie_professionel->id ? 'selected' : '' }}>
+                                             @selected(old('categorie_professionel_id', $utilisateur->categorie_professionel_id) == $categorie_professionel->id)>
                                             {{ $categorie_professionel->nom_categorie_professionnelle }}</option>
                                     @endforeach
                                 </select>
@@ -410,7 +410,7 @@
                                     📷 Voir la photo actuelle
                                 </a>
                             @endif
-                            
+
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">CV</label>
@@ -434,8 +434,11 @@
                                 <input type="file" name="permis_conduire" class="form-control">
                             </div>
                             @if ($utilisateur->permis_conduire)
-                                <a href="{{ asset('storage/' . $utilisateur->permis_conduire) }}" target="_blank"
-                                    class="mt-1 d-block">Voir le permis actuel</a>
+                                <a  onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->permis_conduire) }}')"
+                                href="{{ asset('storage/' . $utilisateur->permis_conduire) }}"
+                                    class="mt-1 d-block">
+                                    <i class="fas fa-car me-1"></i>
+                                    Voir le permis actuel</a>
                             @endif
                         </div>
                         <div class="form-group col-md-4">
@@ -445,8 +448,11 @@
                                 <input type="file" name="piece_identite" class="form-control">
                             </div>
                             @if ($utilisateur->piece_identite)
-                                <a href="{{ asset('storage/' . $utilisateur->piece_identite) }}" target="_blank"
-                                    class="mt-1 d-block">Voir la pièce actuelle</a>
+                                <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->piece_identite) }}')"
+                                href="{{ asset('storage/' . $utilisateur->piece_identite) }}"
+                                    class="mt-1 d-block">
+                                    <i class="fas fa-id-card me-1"></i>
+                                    Voir la pièce actuelle</a>
                             @endif
                         </div>
                         <div class="form-group col-md-4">
@@ -456,8 +462,11 @@
                                 <input type="file" name="diplome" class="form-control">
                             </div>
                             @if ($utilisateur->diplome)
-                                <a href="{{ asset('storage/' . $utilisateur->diplome) }}" target="_blank"
-                                    class="mt-1 d-block">Voir le diplôme actuel</a>
+                                <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->diplome) }}')"
+                                href="{{ asset('storage/' . $utilisateur->diplome) }}" 
+                                    class="mt-1 d-block">
+                                    <i class="fas fa-certificate me-1"></i>
+                                    Voir le diplôme actuel</a>
                             @endif
                         </div>
                         <div class="form-group col-md-4">
@@ -467,8 +476,11 @@
                                 <input type="file" name="certificat_travail" class="form-control">
                             </div>
                             @if ($utilisateur->certificat_travail)
-                                <a href="{{ asset('storage/' . $utilisateur->certificat_travail) }}" target="_blank"
-                                    class="mt-1 d-block">Voir le certificat actuel</a>
+                                <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->certificat_travail) }}')"
+                                href="{{ asset('storage/' . $utilisateur->certificat_travail) }}"
+                                    class="mt-1 d-block">
+                                    <i class="fas fa-file-word me-1"></i>
+                                    Voir le certificat actuel</a>
                             @endif
                         </div>
                     </div>
@@ -542,7 +554,13 @@
     </div> --}}
                     <div class="modal-footer">
                         <a href="{{ url()->previous() }}" class="btn btn-secondary me-2">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Modifier les informations</button>
+                        <button type="submit" class="btn btn-primary" data-loader-target="loader-modif">Modifier les
+                            informations</button>
+                        <!-- Bouton de chargement (caché au départ) -->
+                        <button type="button" id="loader-modif" class="btn btn-outline-primary" style="display: none;"
+                            disabled>
+                            <i class="fas fa-spinner fa-spin me-2"></i>Modification en cours...
+                        </button>
                     </div>
                 </form>
             </div>
@@ -550,24 +568,24 @@
         </div>
     </div>
     <script>
-                                function ouvrirPopup(event, url) {
-                                    event.preventDefault(); // Empêche le lien de s'ouvrir normalement
+        function ouvrirPopup(event, url) {
+            event.preventDefault(); // Empêche le lien de s'ouvrir normalement
 
-                                    const width = 800; // largeur de la popup
-                                    const height = 900; // hauteur de la popup
+            const width = 800; // largeur de la popup
+            const height = 900; // hauteur de la popup
 
-                                    // Calcul pour centrer la popup
-                                    const left = (window.screen.width / 2) - (width / 2);
-                                    const top = (window.screen.height / 2) - (height / 2);
+            // Calcul pour centrer la popup
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
 
-                                    // Ouvrir la popup centrée
-                                    window.open(
-                                        url,
-                                        'popupDocument',
-                                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
-                                    );
-                                }
-                            </script>
+            // Ouvrir la popup centrée
+            window.open(
+                url,
+                'popupDocument',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+            );
+        }
+    </script>
     {{-- <script>
         // Script to toggle password visibility
         document.getElementById('togglePasswordModif').addEventListener('click', function() {
