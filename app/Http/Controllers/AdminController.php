@@ -202,7 +202,7 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
 
-        try {
+        // try {
             // Validation
             $validator = Validator::make($request->all(), [
                 'nom' => 'required|string|max:100',
@@ -281,9 +281,9 @@ class AdminController extends Controller
             if ($request->filled('date_embauche')) {
                 $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
             }
-            if ($request->filled('date_fin_contrat')) {
-                $user->date_fin_contrat = Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d')? $user->telephone_professionnel : null;
-            }
+            $user->date_fin_contrat = $request->filled('date_fin_contrat')
+    ? Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d')
+    : null;
             $user->fonction = $request->input('fonction') ?? $user->fonction;
             $user->matricule = $request->input('matricule') ?? $user->matricule;
             $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;
@@ -318,9 +318,9 @@ class AdminController extends Controller
             } else {
                 return redirect()->route('yodirh.utilisateurs')->with('success', 'Utilisateur modifié avec succès.');
             }
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
-        }
+        // } catch (\Exception $e) {
+        //     return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
+        // }
     }
     public function desactiver_user(Request $request, $id)
     {

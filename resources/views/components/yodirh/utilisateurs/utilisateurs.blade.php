@@ -107,8 +107,7 @@
                                                 </button>
 
                                                 <button type="button" class="btn-action btn btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#archiver-{{ $user->id }}">
+                                                    data-bs-toggle="modal" data-bs-target="#archiver-{{ $user->id }}">
                                                     <i class="fas fa-archive me-2"></i>
                                                     Archiver
                                                 </button>
@@ -136,9 +135,8 @@
                                             </div> --}}
                                             </td>
                                         </tr>
-                                        <div class="modal fade" id="archiver-{{ $user->id }}"
-                                            tabindex="-1" role="dialog" aria-labelledby="archiver"
-                                            aria-hidden="true">
+                                        <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="archiver" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-danger">
@@ -146,8 +144,8 @@
                                                             <i class="bi bi-trash-fill"></i> Archiver un utilisateur
                                                         </h4>
                                                     </div>
-                                                    <form action="{{ route('desactiver_user', $user->id) }}"
-                                                        method="POST" style="display:inline-block;">
+                                                    <form action="{{ route('desactiver_user', $user->id) }}" method="POST"
+                                                        style="display:inline-block;">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
@@ -156,8 +154,10 @@
                                                                     <div class="text-center">
                                                                         <h3>{{ $user->nom }} {{ $user->prenom }}</h3>
                                                                         </h3>
-                                                                        <p>Êtes-vous sûr de vouloir archiver cet utilisateur ?</p>
-                                                                        <p class="text-danger">Cette action est irréversible.</p>
+                                                                        <p>Êtes-vous sûr de vouloir archiver cet utilisateur
+                                                                            ?</p>
+                                                                        <p class="text-danger">Cette action est
+                                                                            irréversible.</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -188,32 +188,28 @@
                         role="dialog" aria-labelledby="detailsMondale" aria-hidden="true">
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
-                                <div class="modal-header bg-primary">
-                                    <h4 class="modal-title text-light">{{ $user->nom }} {{ $user->prenom }}</h4>
+                                <div class="modal-header bg-primary  d-flex justify-content-between align-items-center">
+                                    <h4 class="modal-title text-light">Détails sur : {{ $user->nom }}
+                                        {{ $user->prenom }}</h4>
+                                        @if ($user->photo)
+                                                <img src="{{ asset('storage/' . $user->photo) }}"
+                                                    class="img-fluid rounded-circle border" 
+                                                    alt="Photo de profil" style="width: 70px; height: 70px;">
+                                        @else
+                                                <img src="{{ asset('src/images/user.jpg') }}"
+                                                    class="img-fluid rounded-circle border" 
+                                                    alt="Photo de profil"  style="width: 70px; height: 70px;">
+                                        @endif
                                 </div>
 
-                                <div class="modal-body">
-                                    <div class="card shadow-sm mb-4">
+                                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                                    <div class="card shadow-sm">
                                         <div class="card-header text-white">
-                                            <h5 class="mb-0" style="padding: 5px;margin-top:10px">Informations
+                                            <h5 class="mb-0" style="padding: 5px;">Informations
                                                 personnelles</h5>
                                         </div>
                                         <div class="card-body row g-4">
-                                            @if ($user->photo)
-                                                <div class="col-md-3 text-center">
-                                                    <img src="{{ asset('storage/' . $user->photo) }}"
-                                                        class="img-fluid rounded-circle border" width="150"
-                                                        alt="Photo de profil">
-                                                </div>
-                                            @else
-                                                <div class="col-md-3 text-center">
-                                                    <img src="{{ asset('src/images/user.jpg') }}"
-                                                        class="img-fluid rounded-circle border" width="150"
-                                                        alt="Photo de profil">
-                                                </div>
-                                            @endif
-
-                                            <div class="col-md-9 row g-3">
+                                            <div class="col-md-12 row g-4">
                                                 @if ($user->date_naissance)
                                                     <div class="col-md-6"><strong>Date de naissance
                                                             :</strong><br><span>{{ $user->date_naissance }}</span>
@@ -256,6 +252,11 @@
                                                             :</strong><br><span>{{ $user->nationalite }}</span>
                                                     </div>
                                                 @endif
+                                                @if ($user->numero_securite_sociale)
+                                                    <div class="col-md-6"><strong>Numéro sécurité sociale
+                                                            :</strong><br><span>{{ $user->numero_securite_sociale }}</span>
+                                                    </div>
+                                                @endif
                                                 @if ($user->nombre_enfant)
                                                     <div class="col-md-6"><strong>Nombre d'enfants
                                                             :</strong><br><span>{{ $user->nombre_enfant }}</span>
@@ -265,9 +266,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="card shadow-sm mb-4">
+                                    <div class="card shadow-sm ">
                                         <div class="card-header  text-white">
-                                            <h5 class="mb-0" style="padding: 5px;margin-top:10px">Informations
+                                            <h5 class="mb-0" style="padding: 5px;">Informations
                                                 professionnelles</h5>
                                         </div>
                                         <div class="card-body row g-3">
@@ -303,23 +304,45 @@
                                         </div>
                                     </div>
 
-                                    <div class="card shadow-sm mb-4">
+                                    <div class="card shadow-sm ">
                                         <div class="card-header  text-white">
-                                            <h5 class="mb-0" style="padding: 5px;margin-top:10px">Documents et
+                                            <h5 class="mb-0" style="padding: 5px;">Documents et
                                                 compétences</h5>
                                         </div>
                                         <div class="card-body row g-3">
                                             @foreach (['cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $doc)
                                                 @if ($user->$doc)
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-4 mb-2">
                                                         <strong>{{ ucfirst(str_replace('_', ' ', $doc)) }}</strong><br>
-                                                        <a href="{{ asset('storage/' . $user->$doc) }}" target="_blank"
-                                                            class="btn btn-outline-primary btn-sm mt-1">📄
-                                                            Télécharger</a>
+
+                                                        <a href="{{ asset('storage/' . $user->$doc) }}"
+                                                            onclick="ouvrirDocument(event, '{{ asset('storage/' . $user->$doc) }}')"
+                                                            class="btn btn-outline-primary btn-sm mt-1">
+                                                            <i class="fas fa-file-alt me-1"></i>
+                                                             Ouvrir
+                                                        </a>
                                                     </div>
                                                 @endif
                                             @endforeach
+                                            <script>
+                                                function ouvrirDocument(event, url) {
+                                                    event.preventDefault(); // Empêche l'ouverture normale du lien
 
+                                                    const width = 800; // largeur de la popup
+                                                    const height = 900; // hauteur de la popup
+
+                                                    // Calcul pour centrer la popup
+                                                    const left = (window.screen.width / 2) - (width / 2);
+                                                    const top = (window.screen.height / 2) - (height / 2);
+
+                                                    // Ouvrir la popup centrée avec le document
+                                                    window.open(
+                                                        url,
+                                                        'documentPopup',
+                                                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+                                                    );
+                                                }
+                                            </script>
                                             @if ($user->competence)
                                                 <div class="col-md-12"><strong>Compétences
                                                         :</strong><br>{{ $user->competence }}</div>
@@ -331,10 +354,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="text-right">
-                                        <button type="button" class="btn btn-primary"
-                                            data-bs-dismiss="modal">Fermer</button>
-                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary text-right"
+                                        data-bs-dismiss="modal">Fermer</button>
                                 </div>
                             </div>
                         </div>

@@ -5,7 +5,8 @@
         <div class="container">
             <div class="card-body">
                 <div class="justify-content-between align-items-center mb-4">
-                    <h2 class="card-title text-primary">Modification : {{ $utilisateur->nom }} {{ $utilisateur->prenom }}</h2>
+                    <h2 class="card-title text-primary">Modification : {{ $utilisateur->nom }} {{ $utilisateur->prenom }}
+                    </h2>
                 </div>
             </div>
             <div class="card-body shadow p-3" style="background-color: white;shadow: 0px 0px 10px #ccc;padding: 40px;">
@@ -33,11 +34,12 @@
                     </div>
                 @endif
                 <form method="POST" action="{{ route('modifier_utilisateur', $utilisateur->id) }}"
-                    enctype="multipart/form-data" class="px-4 card border rounded shadow-sm bg-light needs-validation" novalidate>
+                    enctype="multipart/form-data" class="px-4 card border rounded shadow-sm bg-light needs-validation"
+                    novalidate>
                     @csrf
                     @method('PUT')
                     <h4 class="mb-3 text-primary">Informations personnelles</h4>
-                  <div class="row g-3">
+                    <div class="row g-3">
                         <div class="form-group col-md-4">
                             <label class="form-label">Nom(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
@@ -94,8 +96,7 @@
                             </div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label class="form-label">État civil(<span
-                                    style="color: red;font-size:12px">***</span>)</label>
+                            <label class="form-label">État civil(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-heart"></i></span>
                                 <input type="text" name="etat_civil" class="form-control" autocomplete="off"
@@ -139,8 +140,8 @@
                             <label class="form-label">Téléphone personel</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-phone"></i></span>
-                                <input type="text" name="telephone" class="form-control"
-                                    autocomplete="off" value="{{ old('telephone', $utilisateur->telephone) }}">
+                                <input type="text" name="telephone" class="form-control" autocomplete="off"
+                                    value="{{ old('telephone', $utilisateur->telephone) }}">
                             </div>
                         </div>
                         <div class="form-group col-md-4">
@@ -167,8 +168,7 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Ville(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <select class="select2 form-control" name="ville_id" style="width: 100%;"
-                                    required>
+                                <select class="select2 form-control" name="ville_id" style="width: 100%;" required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($villes as $ville)
                                         <option value="{{ $ville->id }}"
@@ -186,8 +186,7 @@
                             <label class="form-label">Entreprise(<span
                                     style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <select class="select2 form-control" name="entreprise_id" style="width: 100%;"
-                                    required>
+                                <select class="select2 form-control" name="entreprise_id" style="width: 100%;" required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($entreprises as $entreprise)
                                         <option value="{{ $entreprise->id }}"
@@ -200,8 +199,7 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Service(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <select class="select2 form-control" name="service_id" style="width: 100%;"
-                                    required>
+                                <select class="select2 form-control" name="service_id" style="width: 100%;" required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}"
@@ -301,8 +299,8 @@
                             <label class="form-label">Responsable hiérarchique(<span
                                     style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <select class="select2 form-control" name="superieur_hierarchique"
-                                    style="width: 100%;" required>
+                                <select class="select2 form-control" name="superieur_hierarchique" style="width: 100%;"
+                                    required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->nom }} {{ $user->prenom }}"
@@ -406,9 +404,13 @@
                                 <input type="file" name="photo" class="form-control">
                             </div>
                             @if ($utilisateur->photo)
-                                <a href="{{ asset('storage/' . $utilisateur->photo) }}" target="_blank"
-                                    class="mt-1 d-block">Voir la photo actuelle</a>
+                                <a href="{{ asset('storage/' . $utilisateur->photo) }}"
+                                    onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->photo) }}')"
+                                    class="mt-1 d-block">
+                                    📷 Voir la photo actuelle
+                                </a>
                             @endif
+                            
                         </div>
                         <div class="form-group col-md-4">
                             <label class="form-label">CV</label>
@@ -417,8 +419,12 @@
                                 <input type="file" name="cv" class="form-control">
                             </div>
                             @if ($utilisateur->cv)
-                                <a href="{{ asset('storage/' . $utilisateur->cv) }}" target="_blank"
-                                    class="mt-1 d-block">Voir le CV actuel</a>
+                                <a href="{{ asset('storage/' . $utilisateur->cv) }}"
+                                    onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->cv) }}')"
+                                    class="mt-1 d-block">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Voir le CV actuel
+                                </a>
                             @endif
                         </div>
                         <div class="form-group col-md-4">
@@ -535,7 +541,7 @@
         </div>
     </div> --}}
                     <div class="modal-footer">
-        <a href="{{ url()->previous() }}" class="btn btn-secondary me-2">Annuler</a>
+                        <a href="{{ url()->previous() }}" class="btn btn-secondary me-2">Annuler</a>
                         <button type="submit" class="btn btn-primary">Modifier les informations</button>
                     </div>
                 </form>
@@ -543,6 +549,25 @@
 
         </div>
     </div>
+    <script>
+                                function ouvrirPopup(event, url) {
+                                    event.preventDefault(); // Empêche le lien de s'ouvrir normalement
+
+                                    const width = 800; // largeur de la popup
+                                    const height = 900; // hauteur de la popup
+
+                                    // Calcul pour centrer la popup
+                                    const left = (window.screen.width / 2) - (width / 2);
+                                    const top = (window.screen.height / 2) - (height / 2);
+
+                                    // Ouvrir la popup centrée
+                                    window.open(
+                                        url,
+                                        'popupDocument',
+                                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+                                    );
+                                }
+                            </script>
     {{-- <script>
         // Script to toggle password visibility
         document.getElementById('togglePasswordModif').addEventListener('click', function() {
