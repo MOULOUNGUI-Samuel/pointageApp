@@ -161,7 +161,7 @@
                                 <!-- Bouton de chargement (caché au départ) -->
                                 <button type="button" id="connecter" class="btn btn-outline-primary w-100"
                                     style="display: none;" disabled>
-                                    <i class="fa fa-spinner fa-spin me-2"></i>Chargement...
+                                    <i class="fa fa-spinner fa-spin me-2"></i> Connexion en cours...
                                 </button>
                             </div>
                             {{-- <div class="mb-3">

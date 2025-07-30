@@ -114,7 +114,14 @@ Route::middleware('auth')->group(
         Route::get('/documents', [DocumentController::class, 'index'])->name('document.index');
         Route::post('/import-html/from-owncloud', [DocumentController::class, 'importFromOwncloud'])->name('html.import.owncloud');
         Route::post('/partageFichier', [DocumentController::class, 'partageFichier'])->name('partageFichier');
+
+
+        //Espace Utilitaires
         Route::get('/annuaire', [DocumentController::class, 'annuaire'])->name('annuaire');
+        Route::get('/Simulateur_des_prets',  function () {
+    return view('components.simulations.Simulateur_des_prets');})->name('Simulateur_des_prets');
+        Route::get('/SIMULATEUR_FACTURATION_hots_TVA',  function () {
+    return view('components.simulations.SIMULATEUR_FACTURATION_hots_TVA');})->name('SIMULATEUR_FACTURATION_hots_TVA');
 
 
         Route::get('/auto-login', function (Request $request) {

@@ -477,7 +477,7 @@
                                             style="font-size: 13px">Annuaire Nedcore</small>
                                     </a>
                                 </div>
-
+                               
                                 <style>
                                     .card-hover-zoom {
                                         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -509,9 +509,24 @@
                                         );
                                     }
                                 </script>
+                                 <div class="col text-center  card-hover-zoom">
+                                    <a href="#" data-bs-toggle="offcanvas"
+										data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling" class="text-decoration-none text-dark d-block">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                            style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                            <img src="{{ asset('assets/img/simulation.png') }}" alt="OpenProject"
+                                                class="img-fluid rounded py-1"
+                                                style="width: 170px;height: 70px; object-fit: contain;border-radius: 5px;">
+                                        </div>
+                                        <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
+                                            style="font-size: 13px">Simulations</small>
+                                    </a>
+                                </div>
+
                             </div>
 
                         </div>
+                        @include('components.fenetre_simulation');
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="generateTasksModal" tabindex="-1"
