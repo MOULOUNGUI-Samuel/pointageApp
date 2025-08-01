@@ -161,8 +161,8 @@
                                                             value="{{ Auth::user()->id }}">
                                                     </form>
                                                 @else
-                                                    @if ($module->nom_module === 'GestionCaissePro')
-                                                        <a type="button" data-bs-toggle="offcanvas"
+                                                    @if ($module->nom_module === 'Caisses')
+                                                        {{-- <a type="button" data-bs-toggle="offcanvas"
                                                             data-bs-target="#offcanvasWithBackdrop2"
                                                             aria-controls="offcanvasWithBackdrop2"
                                                             class="text-decoration-none text-dark d-block">
@@ -175,7 +175,79 @@
                                                             </div>
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                        </a>
+                                                        </a> --}}
+                                                        <form id="userLoginForm{{ $module->id }}">
+                                                            <!-- 🔹 Informations de la société -->
+                                                            <input type="hidden" name="code_societe"
+                                                                value="{{ Auth::user()->code_entreprise }}">
+                                                            <input type="hidden" name="nom_societe"
+                                                                value="{{ Auth::user()->entreprise->nom_entreprise }}">
+
+                                                            <!-- 🔹 Informations de l'utilisateur -->
+                                                            <input type="hidden" name="name"
+                                                                value="{{ Auth::user()->nom }}">
+                                                            <input type="hidden" name="nedcore_user_id"
+                                                                value="{{ Auth::user()->id }}">
+                                                            <input type="hidden" name="societe_id"
+                                                                value="{{ Auth::user()->entreprise_id }}">
+                                                            <input type="hidden" name="code_entreprise"
+                                                                value="{{ Auth::user()->code_entreprise }}">
+                                                            <input type="hidden" name="username"
+                                                                value="{{ Auth::user()->prenom }}">
+                                                            <input type="hidden" name="email"
+                                                                value="{{ Auth::user()->email_professionnel }}">
+                                                            <input type="hidden" name="identifiant"
+                                                                value="{{ Auth::user()->matricule }}">
+
+                                                            <!-- ⚠️ Assure-toi que c'est déjà hashé -->
+
+                                                            <!-- 🔹 Bouton d'action (ressemble à ton lien <a>) -->
+                                                            <button type="button"
+                                                                onclick="submitLoginForm('{{ $module->id }}')"
+                                                                class="text-decoration-none text-dark d-block"
+                                                                style="border:none; background:none; padding:0;">
+
+                                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                        alt="{{ $module->nom_module }}"
+                                                                        class="img-fluid rounded"
+                                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                                </div>
+
+                                                                <small class="fw-medium d-block text-truncate"
+                                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                            </button>
+                                                        </form>
+
+                                                        <script>
+                                                            async function submitLoginForm(moduleId) {
+                                                                const form = document.getElementById("userLoginForm" + moduleId);
+                                                                const formData = new FormData(form);
+
+                                                                try {
+                                                                    const response = await fetch("https://caisse.nedcore.net/login", {
+                                                                        method: "POST",
+                                                                        body: formData,
+                                                                        credentials: "include",
+                                                                        headers: {
+                                                                            "Accept": "application/json"
+                                                                        }
+                                                                    });
+
+                                                                    const data = await response.json();
+
+                                                                    if (data.success) {
+                                                                        window.location.href = "https://caisse.nedcore.net/dashboard";
+                                                                    } else {
+                                                                        alert("Erreur : " + data.message);
+                                                                    }
+                                                                } catch (error) {
+                                                                    alert("Erreur réseau !");
+                                                                    console.error(error);
+                                                                }
+                                                            }
+                                                        </script>
                                                     @else
                                                         <a href="{{ route('dashboard', $module->id) }}"
                                                             class="text-decoration-none text-dark d-block">
@@ -279,8 +351,8 @@
                                         <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                                     </form>
                                 @else
-                                    @if ($module->nom_module === 'GestionCaissePro')
-                                        <a type="button" data-bs-toggle="offcanvas"
+                                    @if ($module->nom_module === 'Caisses')
+                                        {{-- <a type="button" data-bs-toggle="offcanvas"
                                             data-bs-target="#offcanvasWithBackdrop2"
                                             aria-controls="offcanvasWithBackdrop2"
                                             class="text-decoration-none text-dark d-block">
@@ -292,7 +364,7 @@
                                             </div>
                                             <small class="fw-medium d-block text-truncate"
                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                        </a>
+                                        </a> --}}
                                     @else
                                         <a href="{{ route('dashboard', $module->id) }}"
                                             class="text-decoration-none text-dark d-block">
@@ -444,15 +516,14 @@
                                     </a>
                                 </div>
                                 <div class="col text-center  card-hover-zoom">
-                                    <a  @if (Auth::user()->openproject_api_token) 
-                                            href="{{ route('openproject.redirect') }}" 
+                                    <a @if (Auth::user()->openproject_api_token) href="{{ route('openproject.redirect') }}" 
                                             target="_blank" 
                                     @else
                                             href="#"
                                             data-bs-toggle="offcanvas" 
                                             data-bs-target="#offcanvasWithBackdrop3" 
-                                            aria-controls="offcanvasWithBackdrop3"
-                                    @endif  data-bs-toggle="modal" data-bs-target="#generateTasksModal"
+                                            aria-controls="offcanvasWithBackdrop3" @endif
+                                        data-bs-toggle="modal" data-bs-target="#generateTasksModal"
                                         class="text-decoration-none text-dark d-block">
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
@@ -477,7 +548,7 @@
                                             style="font-size: 13px">Annuaire Nedcore</small>
                                     </a>
                                 </div>
-                               
+
                                 <style>
                                     .card-hover-zoom {
                                         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -509,9 +580,10 @@
                                         );
                                     }
                                 </script>
-                                 <div class="col text-center  card-hover-zoom">
-                                    <a href="#" data-bs-toggle="offcanvas"
-										data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling" class="text-decoration-none text-dark d-block">
+                                <div class="col text-center  card-hover-zoom">
+                                    <a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling"
+                                        aria-controls="offcanvasScrolling"
+                                        class="text-decoration-none text-dark d-block">
                                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/simulation.png') }}" alt="OpenProject"
@@ -519,7 +591,7 @@
                                                 style="width: 170px;height: 70px; object-fit: contain;border-radius: 5px;">
                                         </div>
                                         <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
-                                            style="font-size: 13px">Simulations</small>
+                                            style="font-size: 13px">Simulateurs</small>
                                     </a>
                                 </div>
 
@@ -1084,7 +1156,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel1"
                     style="border-left: 5px solid #05436b; color: #333;">
-                    Clé API OpenProject 
+                    Clé API OpenProject
                 </h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                     aria-label="Close"></button>
@@ -1100,7 +1172,8 @@
                     <div class="mb-3">
                         <label for="api_key" class="form-label">Clé API OpenProject</label>
                         <input type="text" class="form-control mb-3" id="api_key" name="openproject_api_token"
-                            value="{{ old('openproject_api_token') }}" placeholder="Entrez votre clé API OpenProject">
+                            value="{{ old('openproject_api_token') }}"
+                            placeholder="Entrez votre clé API OpenProject">
                         <button type="submit" class="btn btn-primary text-center">Enregistrer la
                             clé</button>
                 </form>
@@ -1111,7 +1184,7 @@
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- À la fin de votre fichier Blade, avant </body> -->
-    
+
     <script>
         // On utilise jQuery car votre code l'utilise déjà
         $('#login-caisse-form').on('submit', function(e) {
