@@ -226,7 +226,7 @@
                                                                 const formData = new FormData(form);
 
                                                                 try {
-                                                                    const response = await fetch("https://caisse.nedcore.net/login", {
+                                                                    const response = await fetch("https://caisse.nedcore.net/api/login", {
                                                                         method: "POST",
                                                                         body: formData,
                                                                         credentials: "include",
