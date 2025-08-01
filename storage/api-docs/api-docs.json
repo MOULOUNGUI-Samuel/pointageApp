@@ -14,16 +14,14 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/",
+            "url": "https://nedcore.net/",
             "description": "Serveur API de Développement"
         }
     ],
     "paths": {
         "/users": {
             "get": {
-                "tags": [
-                    "Utilisateurs"
-                ],
+                "tags": ["Utilisateurs"],
                 "summary": "Obtenir la liste des utilisateurs",
                 "description": "Retourne une liste paginée des utilisateurs.",
                 "operationId": "getUsersList",
@@ -95,9 +93,7 @@
         },
         "/users/{id}": {
             "get": {
-                "tags": [
-                    "Utilisateurs"
-                ],
+                "tags": ["Utilisateurs"],
                 "summary": "Obtenir les informations d'un utilisateur",
                 "description": "Retourne les données d'un utilisateur spécifique.",
                 "operationId": "getUserById",
