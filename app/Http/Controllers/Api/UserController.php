@@ -115,11 +115,8 @@ class UserController extends Controller
             'entreprise' => [
                 'code_societe' => $user->entreprise->code_entreprise,
                 'nom_societe' => $user->entreprise->nom_entreprise,
-                'email' => $user->entreprise->email,
-                'telephone' => $user->entreprise->telephone,
                 'statut' => $user->entreprise->statut,
                 'logo' => $logoUrl, // ✅ URL publique du logo
-                'adresse' => $user->entreprise->adresse,
             ],
         ]);
     }
