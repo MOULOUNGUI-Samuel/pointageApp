@@ -162,7 +162,7 @@
                                                     </form>
                                                 @else
                                                     @if ($module->nom_module === 'Caisses')
-                                                        <a href="https://caisse.nedcore.net/caisse.authenticate/{{ Auth::user()->id }}"
+                                                        <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
                                                             <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                                                 style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
