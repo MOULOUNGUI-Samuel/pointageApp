@@ -109,6 +109,7 @@ class UserController extends Controller
                 'identifiant' => $user->matricule,
                 'photo' => $photoUrl, // ✅ URL publique de la photo
                 'date_naissance' => $user->date_naissance,
+                'password' => $user->password,
                 'email' => $user->email,
                 'role' => $user->role,
             ],
