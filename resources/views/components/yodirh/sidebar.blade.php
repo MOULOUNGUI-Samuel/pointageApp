@@ -3,7 +3,7 @@
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li class="clinicdropdown">
-                    <a href="profile.html">
+                    <a href="{{ route('dashboard', $module_id) }}" class="logo">
                         <img src="{{ asset('assets/img/user.jpg') }}" class="img-fluid" alt="Profile" />
                         <div class="user-names">
                             <h5>{{ Auth::user()->nom ?? 'Utilisateur' }}</h5>

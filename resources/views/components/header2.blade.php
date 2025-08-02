@@ -105,28 +105,20 @@
                             <div class="row row-cols-4 g-3">
                                 @foreach ($mesModules['modules'] as $module)
                                     <div class="col text-center  card-hover-zoom">
-                                        @if ($module->lien_externe)
-                                            <a href="{{ $module->lien_externe }}"
-                                                onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
+                                       
+                                            @if ($module->nom_module === 'Caisses')
+                                            <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                 class="text-decoration-none text-dark d-block">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                </div>
-                                                <small class="fw-medium d-block text-truncate"
-                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                            </a>
-
-                                            <form id="{{ $module->id }}" action="{{ $module->lien_externe }}"
-                                                method="POST" style="display: none;">
-                                                @csrf
-                                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                            </form>
-                                        @else
-                                            @if ($module->nom_module === 'GestionCaissePro')
-                                                <a type="button" data-bs-toggle="offcanvas"
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                    </div>
+                                                    <small class="fw-medium d-block text-truncate"
+                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                </a>
+                                                {{-- <a type="button" data-bs-toggle="offcanvas"
                                                     data-bs-target="#offcanvasWithBackdrop2"
                                                     aria-controls="offcanvasWithBackdrop2"
                                                     class="text-decoration-none text-dark d-block">
@@ -138,7 +130,7 @@
                                                     </div>
                                                     <small class="fw-medium d-block text-truncate"
                                                         title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
+                                                </a> --}}
                                             @else
                                                 <a href="{{ route('dashboard', $module->id) }}"
                                                     class="text-decoration-none text-dark d-block">
@@ -152,7 +144,6 @@
                                                         title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                 </a>
                                             @endif
-                                        @endif
 
                                     </div>
                                 @endforeach
