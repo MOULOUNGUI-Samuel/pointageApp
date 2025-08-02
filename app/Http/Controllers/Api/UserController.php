@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -83,10 +84,15 @@ class UserController extends Controller
      *      )
      * )
      */
-    public function show(User $user): JsonResponse
-    {
-        // Grâce au "Route Model Binding" de Laravel,
-        // si l'ID n'est pas trouvé, Laravel renverra automatiquement une erreur 404.
-        return response()->json($user);
+    public function show(Request $request, User $user): JsonResponse
+{
+    // Vérifier la clé API envoyée dans l'entête
+    $apiKey = $request->header('X-API-KEY');
+
+    if ($apiKey !== config('app.api_key')) {
+        return response()->json(['message' => 'Clé API invalide'], 401);
     }
+
+    return response()->json($user);
+}
 }

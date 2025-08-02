@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Http\Routes\RouteRegistrar;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +12,7 @@ use Laravel\Passport\Http\Routes\RouteRegistrar;
 */
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Api\UserController; // Ensure this class exists in the specified namespace
 
 // Route pour la connexion
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -34,8 +34,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Vous pouvez également protéger vos autres routes API de la même manière.
-// Par exemple, pour votre route qui récupère la liste des utilisateurs :
-Route::middleware('auth:api')->get('/users', [\App\Http\Controllers\Api\UserController::class, 'UserInfo'])->name('api.users.UserInfo');
+// Ensure the UserController class and 'show' method are implemented correctly
+Route::get('/users/{user}', [UserController::class, 'show']);
 
 
