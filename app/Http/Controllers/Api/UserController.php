@@ -85,14 +85,42 @@ class UserController extends Controller
      * )
      */
     public function show(Request $request, User $user): JsonResponse
-{
-    // Vérifier la clé API envoyée dans l'entête
-    $apiKey = $request->header('X-API-KEY');
+    {
+        // Vérifier la clé API envoyée dans l'entête
+        $apiKey = $request->header('X-API-KEY');
 
-    if ($apiKey !== config('app.api_key')) {
-        return response()->json(['message' => 'Clé API invalide'], 401);
+        if ($apiKey !== config('app.api_key')) {
+            return response()->json(['message' => 'Clé API invalide'], 401);
+        }
+
+        // Construire l'URL du logo si présent
+        $logoUrl = $user->entreprise->logo
+            ? asset('storage/' . $user->entreprise->logo)
+            : null;
+            $photoUrl = $user->photo
+            ? asset('storage/' . $user->photo)
+            : null;
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->nom,
+                'username' => $user->prenom,
+                'identifiant' => $user->matricule,
+                'photo' => $photoUrl, // ✅ URL publique de la photo
+                'date_naissance' => $user->date_naissance,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+            'entreprise' => [
+                'code_societe' => $user->entreprise->code_entreprise,
+                'nom_societe' => $user->entreprise->nom_entreprise,
+                'email' => $user->entreprise->email,
+                'telephone' => $user->entreprise->telephone,
+                'statut' => $user->entreprise->statut,
+                'logo' => $logoUrl, // ✅ URL publique du logo
+                'adresse' => $user->entreprise->adresse,
+            ],
+        ]);
     }
-
-    return response()->json($user);
-}
 }
