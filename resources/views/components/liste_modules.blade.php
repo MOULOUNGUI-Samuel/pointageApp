@@ -162,6 +162,18 @@
                                                     </form>
                                                 @else
                                                     @if ($module->nom_module === 'Caisses')
+                                                        <a href="https://caisse.nedcore.net/caisse.authenticate/{{ Auth::user()->id }}"
+                                                            class="text-decoration-none text-dark d-block">
+                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                                <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                    alt="{{ $module->nom_module }}"
+                                                                    class="img-fluid rounded"
+                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                            </div>
+                                                            <small class="fw-medium d-block text-truncate"
+                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                        </a>
                                                         {{-- <a type="button" data-bs-toggle="offcanvas"
                                                             data-bs-target="#offcanvasWithBackdrop2"
                                                             aria-controls="offcanvasWithBackdrop2"
@@ -176,78 +188,8 @@
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a> --}}
-                                                        <form id="userLoginForm{{ $module->id }}">
-                                                            <!-- 🔹 Informations de la société -->
-                                                            <input type="hidden" name="code_societe"
-                                                                value="{{ Auth::user()->code_entreprise }}">
-                                                            <input type="hidden" name="nom_societe"
-                                                                value="{{ Auth::user()->entreprise->nom_entreprise }}">
+                                                       
 
-                                                            <!-- 🔹 Informations de l'utilisateur -->
-                                                            <input type="hidden" name="name"
-                                                                value="{{ Auth::user()->nom }}">
-                                                            <input type="hidden" name="nedcore_user_id"
-                                                                value="{{ Auth::user()->id }}">
-                                                            <input type="hidden" name="societe_id"
-                                                                value="{{ Auth::user()->entreprise_id }}">
-                                                            <input type="hidden" name="code_entreprise"
-                                                                value="{{ Auth::user()->code_entreprise }}">
-                                                            <input type="hidden" name="username"
-                                                                value="{{ Auth::user()->prenom }}">
-                                                            <input type="hidden" name="email"
-                                                                value="{{ Auth::user()->email_professionnel }}">
-                                                            <input type="hidden" name="identifiant"
-                                                                value="{{ Auth::user()->matricule }}">
-
-                                                            <!-- ⚠️ Assure-toi que c'est déjà hashé -->
-
-                                                            <!-- 🔹 Bouton d'action (ressemble à ton lien <a>) -->
-                                                            <button type="button"
-                                                                onclick="submitLoginForm('{{ $module->id }}')"
-                                                                class="text-decoration-none text-dark d-block"
-                                                                style="border:none; background:none; padding:0;">
-
-                                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                        alt="{{ $module->nom_module }}"
-                                                                        class="img-fluid rounded"
-                                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                                </div>
-
-                                                                <small class="fw-medium d-block text-truncate"
-                                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                            </button>
-                                                        </form>
-
-                                                        <script>
-                                                            async function submitLoginForm(moduleId) {
-                                                                const form = document.getElementById("userLoginForm" + moduleId);
-                                                                const formData = new FormData(form);
-
-                                                                try {
-                                                                    const response = await fetch("https://caisse.nedcore.net/authenticate_externe", {
-                                                                        method: "POST",
-                                                                        body: formData,
-                                                                        credentials: "include",
-                                                                        headers: {
-                                                                            "Accept": "application/json"
-                                                                        }
-                                                                    });
-
-                                                                    const data = await response.json();
-
-                                                                    if (data.success) {
-                                                                        window.location.href = "https://caisse.nedcore.net/dashboard";
-                                                                    } else {
-                                                                        alert("Erreur : " + data.message);
-                                                                    }
-                                                                } catch (error) {
-                                                                    alert("Erreur réseau !");
-                                                                    console.error(error);
-                                                                }
-                                                            }
-                                                        </script>
                                                     @else
                                                         <a href="{{ route('dashboard', $module->id) }}"
                                                             class="text-decoration-none text-dark d-block">
