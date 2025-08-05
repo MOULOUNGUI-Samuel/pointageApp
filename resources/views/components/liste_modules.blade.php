@@ -201,6 +201,21 @@
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a>
+                                                    @elseif($module->nom_module === 'Configurations')
+                                                        @if (Auth::user()->super_admin === 1)
+                                                            <a href="{{ route('dashboard', $module->id) }}"
+                                                                class="text-decoration-none text-dark d-block">
+                                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                                        alt="{{ $module->nom_module }}"
+                                                                        class="img-fluid rounded"
+                                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                                </div>
+                                                                <small class="fw-medium d-block text-truncate"
+                                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                            </a>
+                                                        @endif
                                                     @else
                                                         <a href="{{ route('dashboard', $module->id) }}"
                                                             class="text-decoration-none text-dark d-block">
