@@ -46,11 +46,10 @@
                             <img src="{{ asset('storage/' . $entreprise_logo) }}" alt="Profile" />
                         </span>
                     </span> --}}
-                    <button class="btn btn-outline-primary" type="button" @if (Auth::user()->statut_vue_entreprise===1)
-                        data-bs-toggle="offcanvas"
+                    <button class="btn btn-outline-primary" type="button"
+                        @if (Auth::user()->statut_vue_entreprise === 1) data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasWithBackdrop"
-                        aria-controls="offcanvasWithBackdrop"
-                    @endif >{{ $entreprise_nom }}</button>
+                        aria-controls="offcanvasWithBackdrop" @endif>{{ $entreprise_nom }}</button>
 
                     <div style="margin-left: 30px;margin-top: 5px">
                         @if (session('module_id'))
@@ -105,20 +104,20 @@
                             <div class="row row-cols-4 g-3">
                                 @foreach ($mesModules['modules'] as $module)
                                     <div class="col text-center  card-hover-zoom">
-                                       
-                                            @if ($module->nom_module === 'Caisses')
+
+                                        @if ($module->nom_module === 'Caisses')
                                             <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                 class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                                {{-- <a type="button" data-bs-toggle="offcanvas"
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                            {{-- <a type="button" data-bs-toggle="offcanvas"
                                                     data-bs-target="#offcanvasWithBackdrop2"
                                                     aria-controls="offcanvasWithBackdrop2"
                                                     class="text-decoration-none text-dark d-block">
@@ -131,19 +130,31 @@
                                                     <small class="fw-medium d-block text-truncate"
                                                         title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                 </a> --}}
-                                            @else
-                                                <a href="{{ route('dashboard', $module->id) }}"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            @endif
+                                        @elseif($module->nom_module === 'GED')
+                                            <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('dashboard', $module->id) }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        @endif
 
                                     </div>
                                 @endforeach
