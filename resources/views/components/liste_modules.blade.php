@@ -137,8 +137,8 @@
 
                                     <div class="row row-cols-4 g-3">
                                         @foreach ($mesModules['modules'] as $module)
-                                            <div class="col text-center  card-hover-zoom">
-                                                @if ($module->lien_externe)
+                                        @if ($module->lien_externe)
+                                        <div class="col text-center  card-hover-zoom">
                                                     <a href="{{ $module->lien_externe }}"
                                                         onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
                                                         class="text-decoration-none text-dark d-block">
@@ -160,8 +160,10 @@
                                                         <input type="hidden" name="user_id"
                                                             value="{{ Auth::user()->id }}">
                                                     </form>
+                                        </div>
                                                 @else
                                                     @if ($module->nom_module === 'Caisses')
+                                                    <div class="col text-center  card-hover-zoom">
                                                         <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
                                                             <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
@@ -188,7 +190,9 @@
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a> --}}
+                                                    </div>
                                                     @elseif($module->nom_module === 'GED')
+                                                    <div class="col text-center  card-hover-zoom">
                                                         <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
                                                             <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
@@ -201,8 +205,10 @@
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a>
+                                                    </div>
                                                     @elseif($module->nom_module === 'Configurations')
                                                         @if (Auth::user()->super_admin === 1)
+                                                        <div class="col text-center  card-hover-zoom">
                                                             <a href="{{ route('dashboard', $module->id) }}"
                                                                 class="text-decoration-none text-dark d-block">
                                                                 <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
@@ -215,8 +221,11 @@
                                                                 <small class="fw-medium d-block text-truncate"
                                                                     title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                             </a>
+                                                        </div>
+                                                        @else
                                                         @endif
                                                     @else
+                                                    <div class="col text-center  card-hover-zoom">
                                                         <a href="{{ route('dashboard', $module->id) }}"
                                                             class="text-decoration-none text-dark d-block">
                                                             <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
@@ -229,10 +238,10 @@
                                                             <small class="fw-medium d-block text-truncate"
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a>
+                                                    </div>
                                                     @endif
                                                 @endif
 
-                                            </div>
                                         @endforeach
 
                                         <style>

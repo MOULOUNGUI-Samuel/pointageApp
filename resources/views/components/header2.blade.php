@@ -155,6 +155,8 @@
                                                 <small class="fw-medium d-block text-truncate"
                                                     title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                             </a>
+                                            @else
+                                            
                                             @endif
                                         @else
                                             <a href="{{ route('dashboard', $module->id) }}"
