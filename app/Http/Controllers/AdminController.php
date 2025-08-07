@@ -93,6 +93,8 @@ class AdminController extends Controller
     public function create(Request $request)
     {
         try {
+
+            
             // Validation
             $validator = Validator::make([
                 'nom' => 'required|string|max:100',
@@ -133,9 +135,10 @@ class AdminController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+            $entreprise_id = session('entreprise_id');
             // Création de l'utilisateur
             $user = new User();
-            $user->entreprise_id = $request->input('entreprise_id') ?? auth()->user()->entreprise_id;
+            $user->entreprise_id = $entreprise_id;
             $user->service_id = $request->input('service_id');
             $user->role_id = $request->input('role_id');
             $user->pays_id = $request->input('pays_id');
@@ -202,125 +205,126 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
 
-        // try {
-            // Validation
-            $validator = Validator::make($request->all(), [
-                'nom' => 'required|string|max:100',
-                'prenom' => 'required|string|max:100',
-                'date_naissance' => 'required|date_format:d/m/Y',
-                'date_fin_contrat' => 'nullable',
-                'adresse' => 'required|string|max:255',
-                'telephone' => 'nullable',
-                'matricule' => 'required|string|max:50|unique:users,matricule,' . $id,
-                'email' => 'nullable|email|unique:users,email,' . $id,
-                'email_professionnel' => 'nullable|email|unique:users,email_professionnel,' . $id,
-                'password' => 'nullable|string|min:6',
-                'salaire' => 'nullable|numeric|min:0',
-                'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-                'cv' => 'nullable|file|mimes:pdf,doc,docx|max:4096',
-                'permis_conduire' => 'nullable',
-                'piece_identite' => 'nullable',
-                'diplome' => 'nullable',
-                'pays_id' => 'required',
-                'ville_id' => 'required',
-                'type_contrat' => 'nullable',
-                'certificat_travail' => 'nullable',
-            ], [
-                'nom.required' => 'Le nom est obligatoire.',
-                'prenom.required' => 'Le prénom est obligatoire.',
-                'date_naissance.required' => 'La date de naissance est obligatoire.',
-                // 'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
-                'matricule.required' => 'Le matricule est obligatoire.',
-                'matricule.unique' => 'Ce matricule est déjà utilisé.',
-                'pays_id.required' => 'Le pays est obligatoire.',
-                'ville_id.required' => 'La ville est obligatoire.',
-                'email.unique' => 'Cet email est déjà utilisé.',
-                'email_professionnel.unique' => 'Cet email professionnel est déjà utilisé.',
-                'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
-            ]);
+        try {
+       
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|string|max:100',
+            'prenom' => 'required|string|max:100',
+            'date_naissance' => 'required|date_format:d/m/Y',
+            'date_fin_contrat' => 'nullable',
+            'adresse' => 'required|string|max:255',
+            'telephone' => 'nullable',
+            'matricule' => 'required|string|max:50|unique:users,matricule,' . $id,
+            'email' => 'nullable|email|unique:users,email,' . $id,
+            'email_professionnel' => 'nullable|email|unique:users,email_professionnel,' . $id,
+            'password' => 'nullable|string|min:6',
+            'salaire' => 'nullable|numeric|min:0',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:4096',
+            'permis_conduire' => 'nullable',
+            'piece_identite' => 'nullable',
+            'diplome' => 'nullable',
+            'pays_id' => 'required',
+            'ville_id' => 'required',
+            'type_contrat' => 'nullable',
+            'certificat_travail' => 'nullable',
+        ], [
+            'nom.required' => 'Le nom est obligatoire.',
+            'prenom.required' => 'Le prénom est obligatoire.',
+            'date_naissance.required' => 'La date de naissance est obligatoire.',
+            // 'date_fin_contrat.required' => 'La date de fin de contrat est obligatoire.',
+            'matricule.required' => 'Le matricule est obligatoire.',
+            'matricule.unique' => 'Ce matricule est déjà utilisé.',
+            'pays_id.required' => 'Le pays est obligatoire.',
+            'ville_id.required' => 'La ville est obligatoire.',
+            'email.unique' => 'Cet email est déjà utilisé.',
+            'email_professionnel.unique' => 'Cet email professionnel est déjà utilisé.',
+            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+        ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+  $entreprise_id = session('entreprise_id');
+        // Récupération de l'utilisateur
+        $user = User::findOrFail($id);
+        if ($request->input('password')) {
+            // Vérification du mot de passe
+            if (!Hash::check($request->input('password1'), $user->password)) {
+                return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
             }
-
-            // Récupération de l'utilisateur
-            $user = User::findOrFail($id);
-            if ($request->input('password')) {
-                // Vérification du mot de passe
-                if (!Hash::check($request->input('password1'), $user->password)) {
-                    return back()->withErrors(['password' => 'Ancien mot de passe est incorrect.'])->withInput();
-                }
-            }
-            $user->entreprise_id = $request->input('entreprise_id') ?? $user->entreprise_id;
-            $user->service_id = $request->input('service_id') ?? $user->service_id;
-            $user->role_id = $request->input('role_id') ?? $user->role_id;
-            $user->pays_id = $request->input('pays_id') ?? $user->pays_id;
-            $user->ville_id = $request->input('ville_id') ?? $user->ville_id;
-            $user->nom = $request->input('nom') ?? $user->nom;
-            $user->prenom = $request->input('prenom') ?? $user->prenom;
-            if ($request->filled('date_naissance')) {
-                if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
-                    $date = $request->input('date_naissance');
-                } else {
-                    $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
-                }
-                $user->date_naissance = $date;
-            }
-            $user->lieu_naissance = $request->input('lieu_naissance') ?? $user->lieu_naissance;
-            $user->nationalite = $request->input('nationalite') ?? $user->nationalite;
-            $user->numero_securite_sociale = $request->input('numero_securite_sociale') ?? $user->numero_securite_sociale;
-            $user->etat_civil = $request->input('etat_civil') ?? $user->etat_civil;
-            $user->nombre_enfant = $request->input('nombre_enfant') ?? $user->nombre_enfant;
-            $user->adresse = $request->input('adresse') ?? $user->adresse;
-            $user->adresse_complementaire = $request->input('adresse_complementaire') ?? $user->adresse_complementaire;
-            $user->code_postal = $request->input('code_postal') ?? $user->code_postal;
-            $user->telephone = $request->input('telephone') ?? $user->telephone;
-            $user->email = $request->input('email') ?? $user->email;
-            $user->email_professionnel = $request->input('email_professionnel') ?? $user->email_professionnel;
-            $user->telephone_professionnel = $request->input('telephone_professionnel') ?? $user->telephone_professionnel;
-            if ($request->filled('date_embauche')) {
-                $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
-            }
-            $user->date_fin_contrat = $request->filled('date_fin_contrat')
-    ? Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d')
-    : null;
-            $user->fonction = $request->input('fonction') ?? $user->fonction;
-            $user->matricule = $request->input('matricule') ?? $user->matricule;
-            $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;
-            $user->niveau_etude = $request->input('niveau_etude') ?? $user->niveau_etude;
-            $user->competence = $request->input('competence') ?? $user->competence;
-            $user->salaire = $request->input('salaire') ?? $user->salaire;
-            $user->type_contrat = $request->input('type_contrat') ?? $user->type_contrat;
-            $user->mode_paiement = $request->input('mode_paiement') ?? $user->mode_paiement;
-            $user->iban = $request->input('iban') ?? $user->iban;
-            $user->bic = $request->input('bic') ?? $user->bic;
-            $user->titulaire_compte = $request->input('titulaire_compte') ?? $user->titulaire_compte;
-            $user->nom_banque = $request->input('nom_banque') ?? $user->nom_banque;
-            $user->nom_agence = $request->input('nom_agence') ?? $user->nom_agence;
-            $user->nom_completaire = $request->input('nom_completaire') ?? $user->nom_completaire;
-            $user->lien_completaire = $request->input('lien_completaire') ?? $user->lien_completaire;
-            $user->contact_completaire = $request->input('contact_completaire') ?? $user->contact_completaire;
-            $user->formation_completaire = $request->input('formation_completaire') ?? $user->formation_completaire;
-            $user->commmentaire_completaire = $request->input('commmentaire_completaire') ?? $user->commmentaire_completaire;
-
-            // Gestion des fichiers
-            foreach (['photo', 'cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $fileField) {
-                if ($request->hasFile($fileField)) {
-                    $path = $request->file($fileField)->store('documents_utilisateur', 'public');
-                    $user->$fileField = $path;
-                }
-            }
-
-            $user->save();
-
-            if ($request->input('profile_mobile')) {
-                return redirect()->back()->with('success', 'Informations modifié avec succès.');
+        }
+        $user->entreprise_id = $entreprise_id;
+        $user->service_id = $request->input('service_id') ?? $user->service_id;
+        $user->categorie_professionel_id = $request->input('categorie_professionel_id');
+        $user->role_id = $request->input('role_id') ?? $user->role_id;
+        $user->pays_id = $request->input('pays_id') ?? $user->pays_id;
+        $user->ville_id = $request->input('ville_id') ?? $user->ville_id;
+        $user->nom = $request->input('nom') ?? $user->nom;
+        $user->prenom = $request->input('prenom') ?? $user->prenom;
+        if ($request->filled('date_naissance')) {
+            if (Carbon::hasFormat($request->input('date_naissance'), 'Y-m-d')) {
+                $date = $request->input('date_naissance');
             } else {
-                return redirect()->route('yodirh.utilisateurs')->with('success', 'Utilisateur modifié avec succès.');
+                $date = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('date_naissance'))->format('Y-m-d');
             }
-        // } catch (\Exception $e) {
-        //     return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
-        // }
+            $user->date_naissance = $date;
+        }
+        $user->lieu_naissance = $request->input('lieu_naissance') ?? $user->lieu_naissance;
+        $user->nationalite = $request->input('nationalite') ?? $user->nationalite;
+        $user->numero_securite_sociale = $request->input('numero_securite_sociale') ?? $user->numero_securite_sociale;
+        $user->etat_civil = $request->input('etat_civil') ?? $user->etat_civil;
+        $user->nombre_enfant = $request->input('nombre_enfant') ?? $user->nombre_enfant;
+        $user->adresse = $request->input('adresse') ?? $user->adresse;
+        $user->adresse_complementaire = $request->input('adresse_complementaire') ?? $user->adresse_complementaire;
+        $user->code_postal = $request->input('code_postal') ?? $user->code_postal;
+        $user->telephone = $request->input('telephone') ?? $user->telephone;
+        $user->email = $request->input('email') ?? $user->email;
+        $user->email_professionnel = $request->input('email_professionnel') ?? $user->email_professionnel;
+        $user->telephone_professionnel = $request->input('telephone_professionnel') ?? $user->telephone_professionnel;
+        if ($request->filled('date_embauche')) {
+            $user->date_embauche = Carbon::createFromFormat('d/m/Y', $request->input('date_embauche'))->format('Y-m-d');
+        }
+        $user->date_fin_contrat = $request->filled('date_fin_contrat')
+            ? Carbon::createFromFormat('d/m/Y', $request->input('date_fin_contrat'))->format('Y-m-d')
+            : null;
+        $user->fonction = $request->input('fonction') ?? $user->fonction;
+        $user->matricule = $request->input('matricule') ?? $user->matricule;
+        $user->superieur_hierarchique = $request->input('superieur_hierarchique') ?? $user->superieur_hierarchique;
+        $user->niveau_etude = $request->input('niveau_etude') ?? $user->niveau_etude;
+        $user->competence = $request->input('competence') ?? $user->competence;
+        $user->salaire = $request->input('salaire') ?? $user->salaire;
+        $user->type_contrat = $request->input('type_contrat') ?? $user->type_contrat;
+        $user->mode_paiement = $request->input('mode_paiement') ?? $user->mode_paiement;
+        $user->iban = $request->input('iban') ?? $user->iban;
+        $user->bic = $request->input('bic') ?? $user->bic;
+        $user->titulaire_compte = $request->input('titulaire_compte') ?? $user->titulaire_compte;
+        $user->nom_banque = $request->input('nom_banque') ?? $user->nom_banque;
+        $user->nom_agence = $request->input('nom_agence') ?? $user->nom_agence;
+        $user->nom_completaire = $request->input('nom_completaire') ?? $user->nom_completaire;
+        $user->lien_completaire = $request->input('lien_completaire') ?? $user->lien_completaire;
+        $user->contact_completaire = $request->input('contact_completaire') ?? $user->contact_completaire;
+        $user->formation_completaire = $request->input('formation_completaire') ?? $user->formation_completaire;
+        $user->commmentaire_completaire = $request->input('commmentaire_completaire') ?? $user->commmentaire_completaire;
+
+        // Gestion des fichiers
+        foreach (['photo', 'cv', 'permis_conduire', 'piece_identite', 'diplome', 'certificat_travail'] as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $path = $request->file($fileField)->store('documents_utilisateur', 'public');
+                $user->$fileField = $path;
+            }
+        }
+
+        $user->save();
+
+        if ($request->input('profile_mobile')) {
+            return redirect()->back()->with('success', 'Informations modifié avec succès.');
+        } else {
+            return redirect()->route('yodirh.utilisateurs')->with('success', 'Utilisateur modifié avec succès.');
+        }
+         } catch (\Exception $e) {
+             return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.'])->withInput();
+         }
     }
     public function desactiver_user(Request $request, $id)
     {

@@ -34,8 +34,7 @@
                     </div>
                 @endif
                 <form method="POST" action="{{ route('modifier_utilisateur', $utilisateur->id) }}"
-                    enctype="multipart/form-data" class="needs-validation"
-                    novalidate>
+                    enctype="multipart/form-data" class="needs-validation" novalidate>
                     @csrf
                     @method('PUT')
                     <h4 class="mb-3 text-primary">Informations personnelles</h4>
@@ -183,20 +182,6 @@
                     <h4 class="mt-4 mb-3 text-primary">Informations professionnelles</h4>
                     <div class="row g-3">
                         <div class="form-group col-md-4">
-                            <label class="form-label">Entreprise(<span
-                                    style="color: red;font-size:12px">***</span>)</label>
-                            <div class="input-group">
-                                <select class="select2 form-control" name="entreprise_id" style="width: 100%;" required>
-                                    <option value="">Veuillez selectionner</option>
-                                    @foreach ($entreprises as $entreprise)
-                                        <option value="{{ $entreprise->id }}"
-                                            {{ old('entreprise_id', $utilisateur->entreprise_id) == $entreprise->id ? 'selected' : '' }}>
-                                            {{ $entreprise->nom_entreprise }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-4">
                             <label class="form-label">Service(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
                                 <select class="select2 form-control" name="service_id" style="width: 100%;" required>
@@ -217,8 +202,10 @@
                                     style="width: 100%;" required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($categorie_professionelles as $categorie_professionel)
-                                        <option value="{{ $categorie_professionel->id }}" @selected(old('categorie_professionel_id', $utilisateur->categorie_professionel_id) == $categorie_professionel->id)>
-                                            {{ $categorie_professionel->nom_categorie_professionnelle }}</option>
+                                        <option value="{{ $categorie_professionel->id }}"
+                                            {{ $utilisateur->categorie_professionel_id === $categorie_professionel->id ? 'selected' : '' }}>
+                                            {{ $categorie_professionel->nom_categorie_professionnelle }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -525,32 +512,10 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <h4 class="mt-4 mb-3 text-primary">Changer le mot de passe</h4>
-    <p class="text-muted small">Laissez ces champs vides si vous ne souhaitez pas modifier le mot de passe.</p>
-    <div class="row g-3">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label class="form-label">Nouveau mot de passe</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                    <input type="password" name="password" class="form-control" id="password_modif" autocomplete="new-password">
-                    <span class="input-group-text" id="togglePasswordModif" style="cursor: pointer"><i class="fa fa-eye"></i></span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label class="form-label">Confirmer le mot de passe</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                    <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
-                </div>
-            </div>
-        </div>
-    </div> --}}
                     <div class="d-flex justify-content-between">
                         <a href="{{ url()->previous() }}" class="btn btn-dark me-2">Annuler</a>
-                        <button type="submit" class="btn btn-primary btn-action" data-loader-target="loader-modif"><i class="fas fa-edit me-2"></i> Modifier les
+                        <button type="submit" class="btn btn-primary btn-action" data-loader-target="loader-modif"><i
+                                class="fas fa-edit me-2"></i> Modifier les
                             informations</button>
                         <!-- Bouton de chargement (caché au départ) -->
                         <button type="button" id="loader-modif" class="btn btn-outline-primary" style="display: none;"
@@ -563,7 +528,7 @@
 
         </div>
     </div>
-    
+
     <script>
         function ouvrirPopup(event, url) {
             event.preventDefault(); // Empêche le lien de s'ouvrir normalement

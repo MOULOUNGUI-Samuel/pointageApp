@@ -52,7 +52,7 @@
                                     <!-- Bouton de chargement (caché au départ) -->
                                     <button type="button" id="ajout-utilisateur" class="btn btn-outline-primary"
                                         style="display: none;" disabled>
-                                        <i class="fas fa-spinner fa-spin me-2"></i>Charg...
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
                                     </button>
                                 </div>
                             </div>
@@ -92,8 +92,8 @@
                                             <td>{{ Str::limit($user->nom . ' ' . $user->prenom, 20, '...') }}</td>
                                             <td>{{ $user->matricule }}</td>
                                             <td>{{ $user->email_professionnel }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/Y') }}</td>
                                             <td>{{ Str::limit($user->fonction, 25, '...') }}</td>
                                             <td>
                                                 <!-- Bouton initial -->

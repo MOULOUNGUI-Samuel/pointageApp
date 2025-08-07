@@ -75,7 +75,7 @@
                     </div>
                 @endif
                 <form method="POST" action="{{ route('ajoute_utilisateur') }}" enctype="multipart/form-data"
-                    class="px-4 card border rounded shadow-sm bg-light needs-validation" novalidate>
+                    class="px-4 needs-validation" novalidate>
                     @csrf
                     <h4 class="mb-3 text-primary">Informations personnelles</h4>
                     <div class="row g-3">
@@ -221,20 +221,6 @@
                     <h4 class="mt-4 mb-3 text-primary">Informations professionnelles</h4>
                     <div class="row g-3">
                         <div class="form-group col-md-4">
-                            <label class="form-label">Entreprise(<span
-                                    style="color: red;font-size:12px">***</span>)</label>
-                            <div class="input-group">
-                                <select class="select2 form-control" name="entreprise_id" style="width: 100%;" required>
-                                    <option value="">Veuillez selectionner</option>
-                                    @foreach ($entreprises as $entreprise)
-                                        <option value="{{ $entreprise->id }}"
-                                            {{ old('entreprise_id') == $entreprise->id ? 'selected' : '' }}>
-                                            {{ $entreprise->nom_entreprise }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-4">
                             <label class="form-label">Service(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
                                 <select class="select2 form-control" name="service_id" style="width: 100%;" required>
@@ -309,7 +295,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group" id="group_date_fin_contrat">
-                                <label class="form-label">Date de fin de contrat</label>
+                                <label class="form-label">Date de fin de contrat(<span
+                                        style="color: red;font-size:12px">***</span>)</label>
                                 <div class="input-group date">
                                     <span class="input-group-text"><i class="fa fa-calendar-times"></i></span>
                                     <input type="text" class="form-control mask-date" name="date_fin_contrat"
@@ -367,7 +354,7 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Salaire(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa fa-eur"></i></span>
+                                <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
                                 <input type="number" step="0.01" name="salaire" class="form-control"
                                     autocomplete="off" value="{{ old('salaire') }}" required>
                             </div>
@@ -498,7 +485,7 @@
                             <label class="form-label">Contact d'urgence</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-ambulance"></i></span>
-                                <input type="text" name="contact_completaire" class="form-control mask-phone-fr"
+                                <input type="text" name="contact_completaire" class="form-control"
                                     autocomplete="off" value="{{ old('contact_completaire') }}">
                             </div>
                         </div>
@@ -548,8 +535,12 @@
                         });
                     </script>
                     <div class="d-flex-justify-content-between mt-4">
-                        <button type="reset" class="btn btn-secondary">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer l'utilisateur</button>
+                        <button type="reset" class="btn btn-dark">Annuler</button>
+                        <button type="submit" class="btn btn-primary btn-action" data-loader-target="loader-modif">Enregistrer l'utilisateur</button>
+                        <button type="button" id="loader-modif" class="btn btn-outline-primary" style="display: none;"
+                            disabled>
+                            <i class="fas fa-spinner fa-spin me-2"></i>Enregistrement en cours...
+                        </button>
                     </div>
                 </form>
             </div>
