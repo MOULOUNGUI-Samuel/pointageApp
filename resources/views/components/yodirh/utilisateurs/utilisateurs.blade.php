@@ -6,17 +6,16 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="d-flex-justify-content-between mb-3 mt-3">
                     <h2 class="card-title text-primary">Gestion des utilisateurs</h2>
-
-                </div>
-                <div class="card ">
                     @if (session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                            <strong class="me-5"><i class="fas fa-check me-2"></i> {{ session('success') }}</strong>
+                            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert"
+                                aria-label="Close"><i class="fas fa-xmark"></i></button>
                         </div>
                     @endif
+                </div>
+                <div class="card">
+
                     <div class="card-header">
                         <!-- Search -->
                         <div class="row align-items-center">
@@ -53,7 +52,7 @@
                                     <!-- Bouton de chargement (caché au départ) -->
                                     <button type="button" id="ajout-utilisateur" class="btn btn-outline-primary"
                                         style="display: none;" disabled>
-                                        <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Charg...
                                     </button>
                                 </div>
                             </div>
@@ -65,12 +64,12 @@
                             <table id="data-table-basic" class="table table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Photo</th>
                                         <th>Nom</th>
-                                        <th>Prénom</th>
                                         <th>Matricule</th>
                                         <th>Email professionnel</th>
                                         <th>Date d'embauche</th>
-                                        <th>Date de fin de contrat</th>
+                                        <th>Date de fin</th>
                                         <th>Fonction</th>
                                         <th>Action</th>
                                     </tr>
@@ -79,37 +78,47 @@
                                     @foreach ($utilisateurs as $user)
                                         <tr>
                                             {{-- <td>{{ $user->id }}</td> --}}
-                                            <td>{{ $user->nom }}</td>
-                                            <td>{{ $user->prenom }}</td>
+                                            <td>
+                                                @if ($user->photo)
+                                                    <img src="{{ asset('storage/' . $user->photo) }}"
+                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
+                                                        style="width: 40px; height: 40px;">
+                                                @else
+                                                    <img src="{{ asset('src/images/user.jpg') }}"
+                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
+                                                        style="width: 40px; height: 40px;">
+                                                @endif
+                                            </td>
+                                            <td>{{ Str::limit($user->nom . ' ' . $user->prenom, 20, '...') }}</td>
                                             <td>{{ $user->matricule }}</td>
                                             <td>{{ $user->email_professionnel }}</td>
-                                            <td>{{ $user->date_embauche }}</td>
-                                            <td>{{ $user->date_fin_contrat }}</td>
-                                            <td>{{ $user->fonction }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/y') }}</td>
+                                            <td>{{ Str::limit($user->fonction, 25, '...') }}</td>
                                             <td>
                                                 <!-- Bouton initial -->
                                                 <button type="button" class="btn-action btn btn-dark"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#detailsMondale{{ $user->id }}">
-                                                    <i class="fas fa-eye me-2"></i>Détails
+                                                    <i class="fas fa-eye me-2"></i> voir
                                                 </button>
                                                 <!-- Bouton initial -->
                                                 <a href="{{ route('modif_affiche_utilisateur', $user->id) }}"
                                                     type="button" class="btn-action btn btn-primary"
                                                     data-loader-target="loader-like{{ $user->id }}">
-                                                    <i class="fas fa-edit me-2"></i>Modifier
+                                                    <i class="fas fa-edit me-2"></i>Modif...
                                                 </a>
 
                                                 <!-- Bouton de chargement (caché au départ) -->
                                                 <button type="button" id="loader-like{{ $user->id }}"
                                                     class="btn btn-outline-primary" style="display: none;" disabled>
-                                                    <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                                    <i class="fas fa-spinner fa-spin me-2"></i>Charg...
                                                 </button>
 
                                                 <button type="button" class="btn-action btn btn-danger"
                                                     data-bs-toggle="modal" data-bs-target="#archiver-{{ $user->id }}">
                                                     <i class="fas fa-archive me-2"></i>
-                                                    Archiver
+                                                    Arch...
                                                 </button>
 
 
@@ -191,15 +200,15 @@
                                 <div class="modal-header bg-primary  d-flex justify-content-between align-items-center">
                                     <h4 class="modal-title text-light">Détails sur : {{ $user->nom }}
                                         {{ $user->prenom }}</h4>
-                                        @if ($user->photo)
-                                                <img src="{{ asset('storage/' . $user->photo) }}"
-                                                    class="img-fluid rounded-circle border" 
-                                                    alt="Photo de profil" style="width: 70px; height: 70px;">
-                                        @else
-                                                <img src="{{ asset('src/images/user.jpg') }}"
-                                                    class="img-fluid rounded-circle border" 
-                                                    alt="Photo de profil"  style="width: 70px; height: 70px;">
-                                        @endif
+                                    @if ($user->photo)
+                                        <img src="{{ asset('storage/' . $user->photo) }}"
+                                            class="img-fluid rounded-circle border" alt="Photo de profil"
+                                            style="width: 70px; height: 70px;">
+                                    @else
+                                        <img src="{{ asset('src/images/user.jpg') }}"
+                                            class="img-fluid rounded-circle border" alt="Photo de profil"
+                                            style="width: 70px; height: 70px;">
+                                    @endif
                                 </div>
 
                                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
@@ -319,7 +328,7 @@
                                                             onclick="ouvrirDocument(event, '{{ asset('storage/' . $user->$doc) }}')"
                                                             class="btn btn-outline-primary btn-sm mt-1">
                                                             <i class="fas fa-file-alt me-1"></i>
-                                                             Ouvrir
+                                                            Ouvrir
                                                         </a>
                                                     </div>
                                                 @endif

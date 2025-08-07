@@ -31,10 +31,21 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Cible tous les boutons ayant l'attribut data-loader-target
-        document.querySelectorAll('.btn-action[data-loader-target]').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-loader-target]').forEach(function(btn) { // Simplification du sélecteur
+            btn.addEventListener('click', function(event) {
                 const targetId = btn.getAttribute('data-loader-target');
                 const loaderBtn = document.getElementById(targetId);
+
+                if (btn.type === 'submit') {
+                    const form = btn.closest('form');
+                    if (form && !form.checkValidity()) {
+                        // Si le formulaire n'est pas valide, empêche l'action par défaut
+                        event.preventDefault();
+                        event.stopPropagation();
+                        form.classList.add('was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
+                        return;
+                    }
+                }
 
                 if (loaderBtn) {
                     btn.style.display = 'none';

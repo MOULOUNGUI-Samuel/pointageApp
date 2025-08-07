@@ -9,7 +9,7 @@
                     </h2>
                 </div>
             </div>
-            <div class="card-body shadow p-3" style="background-color: white;shadow: 0px 0px 10px #ccc;padding: 40px;">
+            <div class="card-body shadow p-3 bg-light" style="shadow: 0px 0px 10px #ccc;padding: 40px;">
                 @if (session('success'))
                     <div class="alert alert-success" role="alert">
                         {{ session('success') }}
@@ -34,7 +34,7 @@
                     </div>
                 @endif
                 <form method="POST" action="{{ route('modifier_utilisateur', $utilisateur->id) }}"
-                    enctype="multipart/form-data" class="px-4 card border rounded shadow-sm bg-light needs-validation"
+                    enctype="multipart/form-data" class="needs-validation"
                     novalidate>
                     @csrf
                     @method('PUT')
@@ -217,8 +217,7 @@
                                     style="width: 100%;" required>
                                     <option value="">Veuillez selectionner</option>
                                     @foreach ($categorie_professionelles as $categorie_professionel)
-                                        <option value="{{ $categorie_professionel->id }}"
-                                             @selected(old('categorie_professionel_id', $utilisateur->categorie_professionel_id) == $categorie_professionel->id)>
+                                        <option value="{{ $categorie_professionel->id }}" @selected(old('categorie_professionel_id', $utilisateur->categorie_professionel_id) == $categorie_professionel->id)>
                                             {{ $categorie_professionel->nom_categorie_professionnelle }}</option>
                                     @endforeach
                                 </select>
@@ -273,7 +272,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group" id="group_date_fin_contrat_modif">
-                                <label class="form-label">Date de fin de contrat</label>
+                                <label class="form-label">Date de fin de contrat(<span
+                                        style="color: red;font-size:12px">***</span>)</label>
                                 <div class="input-group date">
                                     <span class="input-group-text"><i class="fa fa-calendar-times"></i></span>
                                     <input type="text" class="form-control mask-date" name="date_fin_contrat"
@@ -332,7 +332,7 @@
                         <div class="form-group col-md-4">
                             <label class="form-label">Salaire(<span style="color: red;font-size:12px">***</span>)</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa fa-eur"></i></span>
+                                <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
                                 <input type="number" step="0.01" name="salaire" class="form-control"
                                     autocomplete="off" value="{{ old('salaire', $utilisateur->salaire) }}" required>
                             </div>
@@ -434,9 +434,8 @@
                                 <input type="file" name="permis_conduire" class="form-control">
                             </div>
                             @if ($utilisateur->permis_conduire)
-                                <a  onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->permis_conduire) }}')"
-                                href="{{ asset('storage/' . $utilisateur->permis_conduire) }}"
-                                    class="mt-1 d-block">
+                                <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->permis_conduire) }}')"
+                                    href="{{ asset('storage/' . $utilisateur->permis_conduire) }}" class="mt-1 d-block">
                                     <i class="fas fa-car me-1"></i>
                                     Voir le permis actuel</a>
                             @endif
@@ -449,8 +448,7 @@
                             </div>
                             @if ($utilisateur->piece_identite)
                                 <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->piece_identite) }}')"
-                                href="{{ asset('storage/' . $utilisateur->piece_identite) }}"
-                                    class="mt-1 d-block">
+                                    href="{{ asset('storage/' . $utilisateur->piece_identite) }}" class="mt-1 d-block">
                                     <i class="fas fa-id-card me-1"></i>
                                     Voir la pièce actuelle</a>
                             @endif
@@ -463,8 +461,7 @@
                             </div>
                             @if ($utilisateur->diplome)
                                 <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->diplome) }}')"
-                                href="{{ asset('storage/' . $utilisateur->diplome) }}" 
-                                    class="mt-1 d-block">
+                                    href="{{ asset('storage/' . $utilisateur->diplome) }}" class="mt-1 d-block">
                                     <i class="fas fa-certificate me-1"></i>
                                     Voir le diplôme actuel</a>
                             @endif
@@ -477,7 +474,7 @@
                             </div>
                             @if ($utilisateur->certificat_travail)
                                 <a onclick="ouvrirPopup(event, '{{ asset('storage/' . $utilisateur->certificat_travail) }}')"
-                                href="{{ asset('storage/' . $utilisateur->certificat_travail) }}"
+                                    href="{{ asset('storage/' . $utilisateur->certificat_travail) }}"
                                     class="mt-1 d-block">
                                     <i class="fas fa-file-word me-1"></i>
                                     Voir le certificat actuel</a>
@@ -507,8 +504,7 @@
                             <label class="form-label">Contact d'urgence</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa fa-ambulance"></i></span>
-                                <input type="text" name="contact_completaire" class="form-control mask-phone-fr"
-                                    autocomplete="off"
+                                <input type="text" name="contact_completaire" class="form-control" autocomplete="off"
                                     value="{{ old('contact_completaire', $utilisateur->contact_completaire) }}">
                             </div>
                         </div>
@@ -552,9 +548,9 @@
             </div>
         </div>
     </div> --}}
-                    <div class="modal-footer">
-                        <a href="{{ url()->previous() }}" class="btn btn-secondary me-2">Annuler</a>
-                        <button type="submit" class="btn btn-primary" data-loader-target="loader-modif">Modifier les
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url()->previous() }}" class="btn btn-dark me-2">Annuler</a>
+                        <button type="submit" class="btn btn-primary btn-action" data-loader-target="loader-modif"><i class="fas fa-edit me-2"></i> Modifier les
                             informations</button>
                         <!-- Bouton de chargement (caché au départ) -->
                         <button type="button" id="loader-modif" class="btn btn-outline-primary" style="display: none;"
@@ -567,6 +563,7 @@
 
         </div>
     </div>
+    
     <script>
         function ouvrirPopup(event, url) {
             event.preventDefault(); // Empêche le lien de s'ouvrir normalement
