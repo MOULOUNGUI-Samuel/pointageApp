@@ -68,6 +68,7 @@ class User extends Authenticatable
         'certificat_travail',
         'statu_user',
         'statut_vue_entreprise',
+        'statut_vue_caisse',
         'super_admin',
         'statut',
         'nom_completaire',

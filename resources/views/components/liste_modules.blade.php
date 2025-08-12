@@ -162,7 +162,8 @@
                                                     </form>
                                                 </div>
                                             @else
-                                                @if ($module->nom_module === 'Caisses')
+                                                @if ($module->nom_module === 'Caisses' )
+                                                @if (Auth::user()->statut_vue_caisse===1)
                                                     <div class="col text-center  card-hover-zoom">
                                                         <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
@@ -191,6 +192,7 @@
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a> --}}
                                                     </div>
+                                                    @endif
                                                 @elseif($module->nom_module === 'GED')
                                                     <div class="col text-center  card-hover-zoom">
                                                         <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
@@ -222,7 +224,6 @@
                                                                     title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                             </a>
                                                         </div>
-                                                    @else
                                                     @endif
                                                 @else
                                                     <div class="col text-center  card-hover-zoom">
