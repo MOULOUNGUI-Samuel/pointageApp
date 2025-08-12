@@ -137,8 +137,8 @@
 
                                     <div class="row row-cols-4 g-3">
                                         @foreach ($mesModules['modules'] as $module)
-                                        @if ($module->lien_externe)
-                                        <div class="col text-center  card-hover-zoom">
+                                            @if ($module->lien_externe)
+                                                <div class="col text-center  card-hover-zoom">
                                                     <a href="{{ $module->lien_externe }}"
                                                         onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
                                                         class="text-decoration-none text-dark d-block">
@@ -160,9 +160,9 @@
                                                         <input type="hidden" name="user_id"
                                                             value="{{ Auth::user()->id }}">
                                                     </form>
-                                        </div>
-                                                @else
-                                                    @if ($module->nom_module === 'Caisses')
+                                                </div>
+                                            @else
+                                                @if ($module->nom_module === 'Caisses')
                                                     <div class="col text-center  card-hover-zoom">
                                                         <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
@@ -191,7 +191,7 @@
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a> --}}
                                                     </div>
-                                                    @elseif($module->nom_module === 'GED')
+                                                @elseif($module->nom_module === 'GED')
                                                     <div class="col text-center  card-hover-zoom">
                                                         <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
                                                             class="text-decoration-none text-dark d-block">
@@ -206,8 +206,8 @@
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a>
                                                     </div>
-                                                    @elseif($module->nom_module === 'Configurations')
-                                                        @if (Auth::user()->super_admin === 1)
+                                                @elseif($module->nom_module === 'Configurations')
+                                                    @if (Auth::user()->super_admin === 1)
                                                         <div class="col text-center  card-hover-zoom">
                                                             <a href="{{ route('dashboard', $module->id) }}"
                                                                 class="text-decoration-none text-dark d-block">
@@ -222,9 +222,9 @@
                                                                     title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                             </a>
                                                         </div>
-                                                        @else
-                                                        @endif
                                                     @else
+                                                    @endif
+                                                @else
                                                     <div class="col text-center  card-hover-zoom">
                                                         <a href="{{ route('dashboard', $module->id) }}"
                                                             class="text-decoration-none text-dark d-block">
@@ -239,8 +239,8 @@
                                                                 title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                         </a>
                                                     </div>
-                                                    @endif
                                                 @endif
+                                            @endif
 
                                         @endforeach
 
@@ -625,7 +625,132 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-6 mt-5">
+                    
+                    <div class="col-xl-5 mt-5">
+                        <div class="card shadow-sm">
+                            <div class="card-header border-0 pb-0">
+                                <div
+                                    class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0);"
+                                            class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
+                                            <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                        </a>
+                                        <div>
+                                            <h5 class="mb-1"><a href="javascript:void(0);">Groupe Ned&Co <i
+                                                        class="ti ti-circle-check-filled text-success"></i></a></h5>
+                                            <p class="d-flex align-items-center">
+                                                <span class="text-info">@groupe_nedco</span>
+                                                <i class="ti ti-circle-filled fs-5 mx-2"></i>
+                                                Actualités
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 text-dark">Aujourd'hui</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <p class="text-dark fw-medium">
+                                        🌟 <strong>GROUPE NED&CO - ÉCONOMIE SOCIALE</strong> 🌟
+                                        <br><br>
+                                        Le Groupe NED&CO est le bras séculier de l'ONG NÉHÉMIE International : nous
+                                        prônons une économie sociale où le business sert la transformation sociétale !
+                                        🇬🇦
+                                        <br><br>
+                                        <strong>Notre Modèle Unique :</strong>
+                                        <br>
+                                        📋 5 Sociétés Supports apportent leur expertise complète aux ASMG (entreprises
+                                        opérationnelles) pour les développer :
+                                        <!-- Lien pour dérouler le contenu -->
+                                        <a class="text-info link-hover" data-bs-toggle="collapse"
+                                            href="#post-details" role="button" aria-expanded="false"
+                                            aria-controls="post-details">
+                                            Voir plus...
+                                        </a>
+                                    </p>
+
+                                    <!-- Contenu masqué qui se déroule -->
+                                    <div class="collapse" id="post-details">
+                                        <ul class="mt-2">
+                                            <li><strong>BFEV</strong> = Stratégie, conseil business, mentorat
+                                                entrepreneurs 📈</li>
+                                            <li><strong>COMKETING</strong> = Marketing digital, communication,
+                                                événementiel 📢</li>
+                                            <li><strong>YOD INGÉNIERIE</strong> = Solutions IT, système NEDCORE,
+                                                sécurité informatique 💻</li>
+                                            <li><strong>FCI</strong> = Finance, investissements, levées de fonds 💰</li>
+                                            <li><strong>ALPHON PARTNERS</strong> = Comptabilité, juridique, conformité
+                                                fiscale ⚖️</li>
+                                        </ul>
+                                        <p class="text-dark fw-medium">
+                                            <strong>Résultat :</strong>
+                                        </p>
+                                        <ul>
+                                            <li>✅ ASMG développées et performantes</li>
+                                            <li>✅ Sociétés Supports expertes</li>
+                                            <li>✅ Tous ensemble = Mission d'économie sociale accomplie</li>
+                                            <li>✅ Profits au service de l'impact social et des actions caritatives</li>
+                                        </ul>
+                                        <p class="text-dark fw-medium">
+                                            Notre expertise collective transforme le business gabonais selon les valeurs
+                                            chrétiennes ! 🚀
+                                        </p>
+                                    </div>
+                                    <p class="mt-2">
+                                        <a href="#" class="text-info link-hover">#ÉconomieSociale</a>
+                                        <a href="#" class="text-info link-hover">#NED&CO</a>
+                                        <a href="#" class="text-info link-hover">#Excellence</a>
+                                        <a href="#" class="text-info link-hover">#ImpactSocial</a>
+                                    </p>
+                                </div>
+                                <div class="card shadow-none mb-3">
+                                    <div class="card-img card-img-hover rounded-0 text-center">
+                                        <!-- Assurez-vous que le chemin vers votre nouvelle image est correct -->
+                                        <img src="{{ asset('src/images/annonce2.jpeg') }}"
+                                            class="rounded w-50 shadow-sm" alt="Le Groupe NED&CO"
+                                            style="width: 200px">
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <h6 class="mb-1 text-truncate">
+                                            Le Groupe NED&CO : Moteur de transformation de l'écosystème entrepreneurial
+                                        </h6>
+                                        <a href="javascript:void(0);">Groupe NED&CO</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <div class="d-flex align-items-center flex-wrap row-gap-3">
+                                        <a href="javascript:void(0);" class="d-inline-flex align-items-center me-3">
+                                            <i class="ti ti-heart me-2"></i>1.2K J'aime
+                                        </a>
+                                        <a href="javascript:void(0);" class="d-inline-flex align-items-center me-3">
+                                            <i class="ti ti-message-dots me-2"></i>132 Commentaires
+                                        </a>
+                                        <a href="javascript:void(0);" class="d-inline-flex align-items-center">
+                                            <i class="ti ti-share-3 me-2"></i>58 Partages
+                                        </a>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0);" class="btn btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-heart-filled text-danger"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-share"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-message-star"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-bookmark-filled text-warning"></i></a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start mt-3">
+                                    <span class="avatar avatar-rounded me-2 flex-shrink-0">
+                                        <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
+                                    </span>
+                                    <input type="text" class="form-control" placeholder="Écrire un commentaire">
+                                </div>
+                            </div>
+                        </div>
                         <div class="card shadow-sm">
                             <div class="card-header border-0 pb-0">
                                 <div
@@ -780,159 +905,8 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div>
-                            <div class="card shadow-sm">
-                                <div class="card-header border-0 pb-0">
-                                    <div
-                                        class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
-                                        <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);"
-                                                class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                                <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
-                                            </a>
-                                            <div>
-                                                <h5 class="mb-1"><a href="javascript:void(0);">Service Communication
-                                                        <i class="ti ti-circle-check-filled text-success"></i></a></h5>
-                                                <p class="d-flex align-items-center">
-                                                    <span class="text-info">@communication</span>
-                                                    <i class="ti ti-circle-filled fs-5 mx-2"></i>
-                                                    Siège Groupe NEDCO
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <p class="mb-0 text-dark">Il y a environ 1 heure</p>
-                                            <div class="dropdown mx-1">
-                                                <button
-                                                    class="btn btn-icon shadow-none dropdown-toggle bg-transparent d-flex align-items-center text-dark border-0 p-0 btn-sm"
-                                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li><a class="dropdown-item" href="javascript:void(0);">Privé</a>
-                                                    </li>
-                                                    <li><a class="dropdown-item" href="javascript:void(0);">Public</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="dropdown">
-                                                <a href="javascript:void(0);"
-                                                    class="d-inline-flex align-items-center show p-1"
-                                                    data-bs-toggle="dropdown" aria-expanded="true">
-                                                    <i class="ti ti-dots-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end p-3">
-                                                    <li><a href="javascript:void(0);"
-                                                            class="dropdown-item rounded-1"><i
-                                                                class="ti ti-edit me-2"></i>Modifier</a></li>
-                                                    <li><a href="javascript:void(0);"
-                                                            class="dropdown-item rounded-1"><i
-                                                                class="ti ti-eye me-2"></i>Masquer</a></li>
-                                                    <li><a href="javascript:void(0);"
-                                                            class="dropdown-item rounded-1"><i
-                                                                class="ti ti-report me-2"></i>Signaler</a></li>
-                                                    <li><a href="javascript:void(0);"
-                                                            class="dropdown-item rounded-1"><i
-                                                                class="ti ti-trash-x me-2"></i>Supprimer</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <p class="text-dark fw-medium">
-                                            "Croyez en vous et en tout ce que vous êtes. Sachez qu'il y a quelque chose
-                                            en vous qui est plus grand que n'importe quel obstacle."
-                                            <a href="javascript:void(0);"
-                                                class="text-info link-hover">#MotivationDuLundi</a>
-                                            <a href="javascript:void(0);"
-                                                class="text-info link-hover">#Inspiration</a> ✨
-                                        </p>
-                                    </div>
-                                    <div class="mb-2">
-                                        <img src="assets/img/social/social-feed-01.jpg" class="rounded"
-                                            alt="Img">
-                                    </div>
-                                    <div class="social-gallery-slider owl-carousel mb-3">
-                                        <a href="assets/img/social/gallery-big-01.jpg" data-fancybox="gallery"
-                                            class="gallery-item">
-                                            <img src="assets/img/social/gallery-01.jpg" class="rounded"
-                                                alt="img">
-                                            <span class="avatar avatar-md avatar-rounded"><i
-                                                    class="ti ti-eye"></i></span>
-                                        </a>
-                                        <a href="assets/img/social/gallery-big-02.jpg" data-fancybox="gallery"
-                                            class="gallery-item">
-                                            <img src="assets/img/social/gallery-02.jpg" class="rounded"
-                                                alt="img">
-                                            <span class="avatar avatar-md avatar-rounded"><i
-                                                    class="ti ti-eye"></i></span>
-                                        </a>
-                                        <a href="assets/img/social/gallery-big-03.jpg" data-fancybox="gallery"
-                                            class="gallery-item">
-                                            <img src="assets/img/social/gallery-03.jpg" class="rounded"
-                                                alt="img">
-                                            <span class="avatar avatar-md avatar-rounded"><i
-                                                    class="ti ti-eye"></i></span>
-                                        </a>
-                                        <a href="assets/img/social/gallery-big-04.jpg" data-fancybox="gallery"
-                                            class="gallery-item">
-                                            <img src="assets/img/social/gallery-04.jpg" class="rounded"
-                                                alt="img">
-                                            <span class="avatar avatar-md avatar-rounded"><i
-                                                    class="ti ti-eye"></i></span>
-                                        </a>
-                                        <a href="assets/img/social/gallery-big-01.jpg" data-fancybox="gallery"
-                                            class="gallery-item">
-                                            <img src="assets/img/social/gallery-01.jpg" class="rounded"
-                                                alt="img">
-                                            <span class="avatar avatar-md avatar-rounded"><i
-                                                    class="ti ti-eye"></i></span>
-                                        </a>
-                                    </div>
-                                    <div
-                                        class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
-                                        <div class="d-flex align-items-center flex-wrap row-gap-3">
-                                            <a href="javascript:void(0);"
-                                                class="d-inline-flex align-items-center me-3">
-                                                <i class="ti ti-heart me-2"></i>340K J'aime
-                                            </a>
-                                            <a href="javascript:void(0);"
-                                                class="d-inline-flex align-items-center me-3">
-                                                <i class="ti ti-message-dots me-2"></i>45 Commentaires
-                                            </a>
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center">
-                                                <i class="ti ti-share-3 me-2"></i>28 Partages
-                                            </a>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-heart-filled text-danger"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-share"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-message-star"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-bookmark-filled text-warning"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-start">
-                                        <a href="javascript:void(0);"
-                                            class="avatar avatar-rounded me-2 flex-shrink-0">
-                                            <img src="{{ asset('assets/img/user.jpg') }}" alt="Img">
-                                        </a>
-                                        <input type="text" class="form-control"
-                                            placeholder="Écrire un commentaire">
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-
-
+                    </div>
+                    <div class="col-xl-1">
                     </div>
                     <div class="col-xl-3 theiaStickySidebar mt-5">
                         <div class="card">
