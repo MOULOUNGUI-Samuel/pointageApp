@@ -626,8 +626,8 @@
                     </div>
 
                     
-                    <div class="col-xl-5 mt-5">
-                        <div class="card shadow-sm">
+                    <div class="col-xl-6 mt-5 ">
+                        <div class="card shadow-sm mx-5">
                             <div class="card-header border-0 pb-0">
                                 <div
                                     class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
@@ -751,7 +751,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm mx-5">
                             <div class="card-header border-0 pb-0">
                                 <div
                                     class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
@@ -905,8 +905,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-1">
                     </div>
                     <div class="col-xl-3 theiaStickySidebar mt-5">
                         <div class="card">
