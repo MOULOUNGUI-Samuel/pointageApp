@@ -493,7 +493,7 @@
                                             style="font-size: 13px">Gestion de projets</small>
                                     </a>
                                 </div>
-                                <div class="col text-center  card-hover-zoom">
+                                {{-- <div class="col text-center  card-hover-zoom">
                                     <a @if (Auth::user()->openproject_api_token) href="{{ route('openproject.redirect') }}" 
                                             target="_blank" 
                                     @else
@@ -512,7 +512,7 @@
                                         <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
                                             style="font-size: 13px">Créer des tâches avec IA</small>
                                     </a>
-                                </div>
+                                </div> --}}
                                 <div class="col text-center  card-hover-zoom">
                                     <a href="#" onclick="ModaleAnnuaire(event)"
                                         class="text-decoration-none text-dark d-block">
