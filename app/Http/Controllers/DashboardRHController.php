@@ -66,7 +66,7 @@ class DashboardRHController extends Controller
         $employesActifs = User::where('entreprise_id', $entreprise_id)->where('statu_user', 1)->get();
         $employesInactifs = User::where('entreprise_id', $entreprise_id)->where('statu_user', 0)->get();
 
-        $pointages_oui = Pointage::whereHas('user', fn($query) => $query->where('entreprise_id', $entreprise_id)->where('statu_user', 1))
+        $pointages_oui = Pointage::whereHas('user', fn($query) => $query->where('entreprise_id', $entreprise_id)->where('statu_user', 1)->where('statut', 1))
             ->where('date_arriver', now()->format('Y-m-d'))
             ->get();
 
@@ -75,6 +75,7 @@ class DashboardRHController extends Controller
                 $query->whereDate('date_arriver', now()->format('Y-m-d'));
             })
             ->where('statu_user', 1)
+            ->where('statut', 1)
             ->get();
 
         $pointage_intermediaires = PointagesIntermediaire::whereHas('pointage', fn($query) => $query->whereHas('user', fn($subQuery) => $subQuery->where('entreprise_id', auth()->user()->entreprise_id)))

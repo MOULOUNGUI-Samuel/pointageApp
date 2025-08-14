@@ -213,9 +213,31 @@
 
                                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                                     <div class="card shadow-sm">
-                                        <div class="card-header text-white">
+                                        <div
+                                            class="card-header text-white d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0" style="padding: 5px;">Informations
                                                 personnelles</h5>
+
+                                            @if (Auth::user()->super_admin === 1)
+                                                @if ($user->statut === 1)
+                                                    <a href="{{ route('statut_pointage', $user->id) }}"
+                                                        class="btn-action btn btn-warning text-right"
+                                                        data-loader-target="non{{ $user->id }}">Ne valide pas la
+                                                        présence</a>
+                                                    <button type="button" id="non{{ $user->id }}"
+                                                        class="btn btn-outline-warning" style="display: none;" disabled>
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                                    </button>
+                                                @else
+                                                    <a href="{{ route('statut_pointage', $user->id) }}"
+                                                        class="btn-action btn btn-dark text-right"
+                                                        data-loader-target="oui{{ $user->id }}">Valide la presence</a>
+                                                    <button type="button" id="oui{{ $user->id }}"
+                                                        class="btn btn-outline-dark" style="display: none;" disabled>
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Chargement...
+                                                    </button>
+                                                @endif
+                                            @endif
                                         </div>
                                         <div class="card-body row g-4">
                                             <div class="col-md-12 row g-4">

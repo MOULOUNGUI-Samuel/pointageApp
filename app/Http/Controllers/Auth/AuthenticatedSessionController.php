@@ -57,12 +57,19 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            if ($user->statut == 0) {
+            if ($user->statu_user == 0) {
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
                 return redirect()->back()
                     ->withInput($request->only('matricule', 'code_entreprise'))
                     ->with('error', 'Votre compte a été désactivé.');
+            }
+            if ($user->statut == 0) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->back()
+                    ->withInput($request->only('matricule', 'code_entreprise'))
+                    ->with('error', 'Vous n\'êtes pas autorisé à pointer.');
             }
 
             if ($request->filled('code_entreprise')) {
@@ -111,7 +118,7 @@ class AuthenticatedSessionController extends Controller
                 // }
 
                 // Vérifier si le compte est actif
-                if ($user->statut == 0) {
+                if ($user->statu_user == 0) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
                     return redirect()->back()->with('error', 'Votre compte est désactivé.');
