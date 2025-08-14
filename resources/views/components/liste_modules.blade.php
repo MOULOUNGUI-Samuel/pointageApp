@@ -122,143 +122,6 @@
                                     <i class="ti ti-moon dark-mode"></i>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a href="javascript:void(0);" class="btn btn-header-list" data-bs-toggle="dropdown">
-                                    <i class="ti ti-layout-grid-add"></i>
-                                </a>
-                                <div class="dropdown-menu p-3"
-                                    style="width: 380px; max-height: 80vh; overflow-y: auto; border-radius: 12px;border: 3px solid #bebdbdd7;">
-                                    <h5 class="fw-bold mb-3"><i class="fa fa-tasks me-2"></i>Liste des
-                                        modules NedCore</h5>
-
-                                    @php
-                                        $mesModules = \App\Helpers\DateHelper::dossier_info();
-                                    @endphp
-
-                                    <div class="row row-cols-4 g-3">
-                                        @foreach ($mesModules['modules'] as $module)
-                                            @if ($module->lien_externe)
-                                                <div class="col text-center  card-hover-zoom">
-                                                    <a href="{{ $module->lien_externe }}"
-                                                        onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
-                                                        class="text-decoration-none text-dark d-block">
-                                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                            style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                            <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                alt="{{ $module->nom_module }}"
-                                                                class="img-fluid rounded"
-                                                                style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                        </div>
-                                                        <small class="fw-medium d-block text-truncate"
-                                                            title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                    </a>
-
-                                                    <form id="{{ $module->id }}"
-                                                        action="{{ $module->lien_externe }}" method="POST"
-                                                        style="display: none;">
-                                                        @csrf
-                                                        <input type="hidden" name="user_id"
-                                                            value="{{ Auth::user()->id }}">
-                                                    </form>
-                                                </div>
-                                            @else
-                                                @if ($module->nom_module === 'Caisses' )
-                                                @if (Auth::user()->statut_vue_caisse===1)
-                                                    <div class="col text-center  card-hover-zoom">
-                                                        <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
-                                                            class="text-decoration-none text-dark d-block">
-                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                    alt="{{ $module->nom_module }}"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                            </div>
-                                                            <small class="fw-medium d-block text-truncate"
-                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                        </a>
-                                                        {{-- <a type="button" data-bs-toggle="offcanvas"
-                                                            data-bs-target="#offcanvasWithBackdrop2"
-                                                            aria-controls="offcanvasWithBackdrop2"
-                                                            class="text-decoration-none text-dark d-block">
-                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                    alt="{{ $module->nom_module }}"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                            </div>
-                                                            <small class="fw-medium d-block text-truncate"
-                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                        </a> --}}
-                                                    </div>
-                                                    @endif
-                                                @elseif($module->nom_module === 'GED')
-                                                    <div class="col text-center  card-hover-zoom">
-                                                        <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
-                                                            class="text-decoration-none text-dark d-block">
-                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                    alt="{{ $module->nom_module }}"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                            </div>
-                                                            <small class="fw-medium d-block text-truncate"
-                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                        </a>
-                                                    </div>
-                                                @elseif($module->nom_module === 'Configurations')
-                                                    @if (Auth::user()->super_admin === 1)
-                                                        <div class="col text-center  card-hover-zoom">
-                                                            <a href="{{ route('dashboard', $module->id) }}"
-                                                                class="text-decoration-none text-dark d-block">
-                                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                        alt="{{ $module->nom_module }}"
-                                                                        class="img-fluid rounded"
-                                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                                </div>
-                                                                <small class="fw-medium d-block text-truncate"
-                                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                @else
-                                                    <div class="col text-center  card-hover-zoom">
-                                                        <a href="{{ route('dashboard', $module->id) }}"
-                                                            class="text-decoration-none text-dark d-block">
-                                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                    alt="{{ $module->nom_module }}"
-                                                                    class="img-fluid rounded"
-                                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                            </div>
-                                                            <small class="fw-medium d-block text-truncate"
-                                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @endif
-
-                                        @endforeach
-
-                                        <style>
-                                            .card-hover-zoom {
-                                                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                                            }
-
-                                            .card-hover-zoom:hover {
-                                                transform: scale(1.15);
-                                                z-index: 2;
-                                            }
-                                        </style>
-                                    </div>
-                                </div>
-
-                            </li>
                         </ul>
                     </li>
                     <!-- /Nav List -->
@@ -626,7 +489,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="col-xl-6 mt-5 ">
                         <div class="card shadow-sm mx-5">
                             <div class="card-header border-0 pb-0">
@@ -907,143 +770,85 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 theiaStickySidebar mt-5">
-                        <div class="card">
-                            <div class="card-body  mt-3">
-                                <h5 class="mb-3">Équipe Ned&Co</h5>
-                                <ul class="nav nav-pills border d-flex p-2 rounded mb-3" id="pills-tab"
-                                    role="tablist">
-                                    <li class="nav-item flex-fill" role="presentation">
-                                        <button class="nav-link btn active w-100" data-bs-toggle="pill"
-                                            data-bs-target="#pills-home" type="button" role="tab"
-                                            aria-selected="true">
-                                            Collaborateurs
-                                        </button>
-                                    </li>
-                                    <li class="nav-item flex-fill" role="presentation">
-                                        <button class="nav-link btn w-100" data-bs-toggle="pill"
-                                            data-bs-target="#pills-profile" type="button" role="tab"
-                                            aria-selected="false">
-                                            Responsables
-                                        </button>
-                                    </li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
-                                        <div>
-                                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <a href="javascript:void(0);"
-                                                        class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}"
-                                                            alt="MBADINGA MBADINGA joelle">
-                                                    </a>
-                                                    <div>
-                                                        <h6 class="fw-medium mb-1">MBADINGA MBADINGA Joelle</h6>
-                                                        <span class="fs-12 d-block">Responsable Santé</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <a href="javascript:void(0);"
-                                                        class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}"
-                                                            alt="MBENGA EPSE MAGHAGHA AIMERIE C">
-                                                    </a>
-                                                    <div>
-                                                        <h6 class="fw-medium mb-1">MBENGA EPSE MAGHAGHA AIMERIE C</h6>
-                                                        <span class="fs-12 d-block">Dame de Ménage</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <a href="javascript:void(0);"
-                                                        class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}"
-                                                            alt="ELANIE NDONG">
-                                                    </a>
-                                                    <div>
-                                                        <h6 class="fw-medium mb-1">ELANIE NDONG</h6>
-                                                        <span class="fs-12 d-block">Commercial</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:void(0);" class="btn btn-outline-light w-100 border">Voir
-                                            toute l'équipe<i class="ti ti-arrow-right ms-2"></i></a>
-                                    </div>
-                                    <div class="tab-pane fade" id="pills-profile" role="tabpanel">
-                                        <div>
-                                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <a href="javascript:void(0);"
-                                                        class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}"
-                                                            alt="NDZIGHE ONGONE FREDDY">
-                                                    </a>
-                                                    <div>
-                                                        <h6 class="fw-medium mb-1">NDZIGHE ONGONE FREDDY</h6>
-                                                        <span class="fs-12 d-block">Chef Comptable</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <a href="javascript:void(0);"
-                                                        class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="{{ asset('assets/img/user.jpg') }}"
-                                                            alt="MAGNI BALLA LAURE NAIKE">
-                                                    </a>
-                                                    <div>
-                                                        <h6 class="fw-medium mb-1">MAGNI BALLA LAURE NAIKE</h6>
-                                                        <span class="fs-12 d-block">Responsable Technique</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:void(0);" class="btn btn-outline-light w-100 border">Voir
-                                            les responsables<i class="ti ti-arrow-right ms-2"></i></a>
-                                    </div>
-                                </div>
+                    <div class="col-xl-3 theiaStickySidebar">
+                        <div class="mt-5">
+                            <div style="border-left: 4px solid #05426bce; padding-left: 12px;">
+                                <h4 class="mb-0">MODULES NEDCORE</h4>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="mb-3">Documents Récents</h5>
-                                <div class="bg-light rounded p-2 mb-2">
-                                    <p class="text-dark fw-medium"><a href="javascript:void(0);">Plan stratégique
-                                            2025-2027</a></p>
-                                </div>
-                                <div class="bg-light rounded p-2 mb-2">
-                                    <p class="text-dark fw-medium"><a href="javascript:void(0);">Rapport d'activité
-                                            2024</a></p>
-                                </div>
-                                <div class="bg-light rounded p-2">
-                                    <p class="text-dark fw-medium"><a href="javascript:void(0);">Règlement intérieur
-                                            Ned&Co</a></p>
-                                </div>
-                                <div class="mt-3">
-                                    <a href="javascript:void(0);" class="btn btn-outline-light w-100 border">Voir tous
-                                        les documents<i class="ti ti-arrow-right ms-2"></i></a>
-                                </div>
+                        <div class="p-3" style="width: 400px; max-height: 85vh; overflow-y: auto;">
+
+
+                            <div class="row row-cols-2 g-1">
+                                @foreach ($mesModules['modules'] as $module)
+                                    @if ($module->nom_module === 'Caisses')
+                                        @if (Auth::user()->statut_vue_caisse === 1)
+                                            <div class="col text-center card-hover-zoom">
+                                                <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
+                                                <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
+                                                    class="text-decoration-none text-dark d-block" target="_blank">
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                        style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                            style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+                                                    </div>
+                                                    <small class="fw-medium d-block text-truncate"
+                                                        style="font-size: 13px"
+                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    @elseif($module->nom_module === 'GED')
+                                        <div class="col text-center card-hover-zoom">
+                                            <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
+                                            <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
+                                                class="text-decoration-none text-dark d-block" target="_blank">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate" style="font-size: 13px"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        </div>
+                                    @elseif($module->nom_module === 'Configurations')
+                                        @if (Auth::user()->super_admin === 1)
+                                            <div class="col text-center  card-hover-zoom">
+                                                <a href="{{ route('dashboard', $module->id) }}"
+                                                    class="text-decoration-none text-dark d-block">
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                        style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                            style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+                                                    </div>
+                                                    <small class="fw-medium d-block text-truncate"
+                                                        style="font-size: 13px"
+                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="col text-center  card-hover-zoom">
+                                            <a href="{{ route('dashboard', $module->id) }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate" style="font-size: 13px"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="mb-3">Tendances</h5>
-                                <div class="d-flex align-items-center flex-wrap gap-1">
-                                    <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#NedCore</a>
-                                    <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#TransformationDigitale</a>
-                                    <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#EquipeNedCo</a>
-                                    <a href="javascript:void(0);"
-                                        class="text-info d-inline-flex link-hover">#Excellence</a>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 

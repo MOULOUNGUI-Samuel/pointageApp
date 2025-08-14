@@ -50,65 +50,78 @@
                         <span class="avatar avatar-md rounded bg-dark mb-3">
                             <i class="fa fa-users fs-16"></i>
                         </span>
-                        <span class="badge bg-dark fw-normal mb-3">
+                        <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h2 class="mb-1">{{ count($employes) }}</h2>
-                            <h5>Nombre d'employés</h5>
-                        </div>
-                        <div class="company-bar1">Inactif :
-                            @if (isset($employes) && count($employes) > 0)
-                                {{ (count($employesInactifs) * 100) / count($employes) }}
-                            @else
-                                0
-                            @endif
+                            <h2 class="mb-1">{{ count($employesActifs) }}</h2>
+                            <h5>Employés</h5>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="col-xl-2 col-sm-6 d-flex">
+            <div class="card flex-fill shadow">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="avatar avatar-md rounded bg-warning mb-3">
+                            <i class="fa fa-users fs-16"></i>
+                        </span>
+                         <span class="badge text-dark border border-dark fw-normal mb-3">
+                            {{ $entreprise_nom }}
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="mb-1">{{ count($employesNePointePas) }}</h2>
+                            <h5>Ne pointe pas</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="avatar avatar-md rounded bg-success mb-3">
                             <i class="fa fa-user fs-16"></i>
                         </span>
-                        <span class="badge bg-success fw-normal mb-3">
+                         <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h2 class="mb-1">{{ count($pointages_oui) }}</h2>
-                            <h5>Employés présents</h5>
+                            <h5>Présents</h5>
                         </div>
-                        <div class="company-bar1">Employés ayants pointé
+                        <div class="company-bar1">Ayants pointé
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="col-xl-2 col-sm-6 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="avatar avatar-md rounded bg-danger mb-3">
                             <i class="fa fa-user-times fs-16"></i>
                         </span>
-                        <span class="badge bg-danger fw-normal mb-3">
+                         <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h2 class="mb-1">{{ count($users_non_existants) }}</h2>
-                            <h5>Employés absences</h5>
+                            <h5>Absences</h5>
                         </div>
-                        <div class="company-bar1">Employés n'ayants pas pointé
+                        <div class="company-bar1">N'ayants pas pointé
                         </div>
                     </div>
                 </div>
@@ -121,7 +134,7 @@
                         <span class="avatar avatar-md rounded bg-primary mb-3">
                             <i class="fa fa-sign-out fs-16"></i>
                         </span>
-                        <span class="badge bg-primary fw-normal mb-3">
+                         <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
