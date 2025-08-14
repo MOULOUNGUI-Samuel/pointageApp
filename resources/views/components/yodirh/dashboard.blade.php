@@ -42,7 +42,7 @@
     <!-- /Welcome Wrap -->
 
     <div class="row">
-       
+
         <div class="col-xl-3 col-sm-6 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-body">
@@ -171,12 +171,6 @@
                                                     class="text-info">{{ $absent->fonction }}</span></p>
                                         </div>
                                     </div>
-                                    <div class="text-sm-end mb-2">
-                                        <h6 class="mb-1">
-                                            {{ \Carbon\Carbon::parse($absent->date_embauche)->format('d M Y') }}
-                                        </h6>
-                                        <p class="fs-13">Date d'embauche</p>
-                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -220,9 +214,16 @@
                                         </div>
                                     </div>
                                     <div class="text-sm-end mb-2">
-                                        <h6 class="mb-1">
-                                            {{ \Carbon\Carbon::parse($present->user->date_embauche)->format('d M Y') }}</h6>
-                                        <p class="fs-13">Date d'embauche</p>
+                                        @if ($present->heure_arriver > $present->user->entreprise->heure_ouverture)
+                                            <span class="badge badge-danger p-2"
+                                                style="background-color:rgba(196, 12, 12, 0.877)">
+                                                {{ $present->date_arriver }}
+                                            </span>
+                                        @else
+                                            <span class="badge badge-success p-2" style="background-color:green">
+                                                {{ $present->date_arriver }}
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -245,7 +245,7 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-  $entreprise_id = session('entreprise_id');
+        $entreprise_id = session('entreprise_id');
         // Récupération de l'utilisateur
         $user = User::findOrFail($id);
         if ($request->input('password')) {
