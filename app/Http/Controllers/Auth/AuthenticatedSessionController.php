@@ -64,13 +64,7 @@ class AuthenticatedSessionController extends Controller
                     ->withInput($request->only('matricule', 'code_entreprise'))
                     ->with('error', 'Votre compte a été désactivé.');
             }
-            if ($user->statut == 0) {
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return redirect()->back()
-                    ->withInput($request->only('matricule', 'code_entreprise'))
-                    ->with('error', 'Vous n\'êtes pas autorisé à pointer.');
-            }
+            
 
             if ($request->filled('code_entreprise')) {
                 $code_entreprise = trim($request->code_entreprise);
@@ -100,7 +94,13 @@ class AuthenticatedSessionController extends Controller
                     $request->session()->regenerateToken();
                     return redirect()->back()->with('error', 'Entreprise non trouvée.');
                 }
-
+                if ($user->statut == 0) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return redirect()->back()
+                        ->withInput($request->only('matricule', 'code_entreprise'))
+                        ->with('error', 'Vous n\'êtes pas autorisé à pointer.');
+                }
                 // dd($request->latitude."/". $request->longitude);
                 // Vérification de la géolocalisation
                 // $distance = $this->calculateDistance(
@@ -187,6 +187,13 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
                 return redirect()->route('loginPointe')->with('success', 'Vous avez pointé avec succès.');
             } elseif ($request->pointagesortie) {
+                if ($user->statut == 0) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return redirect()->back()
+                        ->withInput($request->only('matricule', 'code_entreprise'))
+                        ->with('error', 'Vous n\'êtes pas autorisé à pointer.');
+                }
                 if (
                     !is_array($request->description) ||
                     count(array_filter($request->description, fn($d) => trim($d) !== '')) === 0

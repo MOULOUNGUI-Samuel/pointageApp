@@ -16,10 +16,8 @@
 
     <!-- Title -->
     <title>NedCore</title>
-
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
-
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
