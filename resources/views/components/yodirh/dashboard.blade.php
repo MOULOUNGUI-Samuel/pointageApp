@@ -217,11 +217,11 @@
                                         @if ($present->heure_arriver > $present->user->entreprise->heure_ouverture)
                                             <span class="badge badge-danger p-2"
                                                 style="background-color:rgba(196, 12, 12, 0.877)">
-                                                {{ $present->date_arriver }}
+                                                {{ $present->heure_arriver }}
                                             </span>
                                         @else
                                             <span class="badge badge-success p-2" style="background-color:green">
-                                                {{ $present->date_arriver }}
+                                                {{ $present->heure_arriver }}
                                             </span>
                                         @endif
                                     </div>
