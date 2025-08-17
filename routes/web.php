@@ -74,13 +74,13 @@ Route::middleware('auth')->group(
         Route::put('/modifier_service/{id}', [ParamettreController::class, 'modifier_service'])->name('modifier_service');
         Route::delete('/supprimer_service/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_service');
         Route::post('/affecter_service', [ParamettreController::class, 'affecter_service'])->name('affecter_service');
-        
+
         Route::get('/categorieprofessionel', [ParamettreController::class, 'categorieprofessionel'])->name('categorieprofessionel');
         Route::post('/Ajoutcategorieprofessionels', [ParamettreController::class, 'Ajoutcategorieprofessionels'])->name('Ajoutcategorieprofessionels');
         Route::put('/modifier_categorieprofessionel/{id}', [ParamettreController::class, 'modifier_categorieprofessionel'])->name('modifier_categorieprofessionel');
         Route::delete('/supprimer_categorieprofessionel/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_categorieprofessionel');
         Route::post('/affecter_categorie', [ParamettreController::class, 'affecter_categorie'])->name('affecter_categorie');
-        
+
         Route::get('/Liste_utilisateur', [AdminController::class, 'affiche_utilisateur'])->name('yodirh.utilisateurs');
         Route::get('/utilisateur', [AdminController::class, 'formulaire'])->name('yodirh.formulaire_utilisateurs');
         Route::post('/ajoute_utilisateur', [AdminController::class, 'create'])->name('ajoute_utilisateur');
@@ -120,9 +120,11 @@ Route::middleware('auth')->group(
         //Espace Utilitaires
         Route::get('/annuaire', [DocumentController::class, 'annuaire'])->name('annuaire');
         Route::get('/Simulateur_des_prets',  function () {
-    return view('components.simulations.Simulateur_des_prets');})->name('Simulateur_des_prets');
+            return view('components.simulations.Simulateur_des_prets');
+        })->name('Simulateur_des_prets');
         Route::get('/SIMULATEUR_FACTURATION_hots_TVA',  function () {
-    return view('components.simulations.SIMULATEUR_FACTURATION_hots_TVA');})->name('SIMULATEUR_FACTURATION_hots_TVA');
+            return view('components.simulations.SIMULATEUR_FACTURATION_hots_TVA');
+        })->name('SIMULATEUR_FACTURATION_hots_TVA');
 
 
         Route::get('/auto-login', function (Request $request) {
@@ -167,10 +169,12 @@ Route::middleware('auth')->group(
             return view('dashboard');
         })->name('caisse.dashboard');
 
-Route::post('/openproject/test-connection', [OpenProjectController::class, 'testConnection'])->name('openproject.test');
-// NOUVELLE ROUTE POUR LA REDIRECTION VERS LE DASHBOARD
-    Route::get('/openproject/redirect', [OpenProjectController::class, 'redirectToDashboard'])->name('openproject.redirect');
-         Route::patch('/profile/api-key', [OpenProjectController::class, 'updateApiKey'])->name('profile.update.apikey');
+        Route::post('/openproject/test-connection', [OpenProjectController::class, 'testConnection'])->name('openproject.test');
+        // NOUVELLE ROUTE POUR LA REDIRECTION VERS LE DASHBOARD
+        Route::get('/openproject/redirect', [OpenProjectController::class, 'redirectToDashboard'])->name('openproject.redirect');
+        Route::patch('/profile/api-key', [OpenProjectController::class, 'updateApiKey'])->name('profile.update.apikey');
+
+        Route::get('/paie', [CaisseWebController::class, 'paie'])->name('paie');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

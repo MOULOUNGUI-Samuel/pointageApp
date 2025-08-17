@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\CaisseHelper;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class CaisseWebController extends Controller
@@ -51,5 +52,23 @@ class CaisseWebController extends Controller
             'success' => false,
             'message' => $apiResponse['message'] ?? 'Le service de connexion à la caisse a rencontré un problème.'
         ], 503); // 503 Service Unavailable est plus approprié ici qu'un 401, car on sait que les identifiants sont bons.
+    }
+
+    public function paie()
+    {
+        $entreprise_id = session('entreprise_id');
+    
+        if (!$entreprise_id) {
+            // La session 'entreprise_id' n'est pas définie
+            return redirect()->route('erreur')->with('message', 'Session entreprise_id non définie.'); // Remplace 'erreur' par ta route d'erreur
+        }
+    
+        $utilisateurs = User::with(['entreprise','categorieProfessionnelle', 'service', 'role', 'pays', 'ville'])
+            ->orderBy('id', 'desc')
+            ->where('statu_user', 1)
+            ->where('entreprise_id', $entreprise_id)
+            ->get();
+    
+        return view('components.yodirh.paie',compact('utilisateurs'));
     }
 }

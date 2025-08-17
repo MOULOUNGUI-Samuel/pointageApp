@@ -231,6 +231,26 @@
         }, 1200);
     </script>
     <script>
+        function Paie(event) {
+            event.preventDefault(); // Empêche le lien de naviguer
+
+            const url = "{{ route('paie') }}";
+            const width = 1450;
+            const height = 700;
+
+            // Calcul de la position centrée
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            // Ouverture de la popup centrée
+            window.open(
+                url,
+                'annuaire',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
+            );
+        }
+    </script>
+    <script>
         // On utilise jQuery car votre code l'utilise déjà
         $('#login-caisse-form').on('submit', function(e) {
             e.preventDefault(); // Empêche le rechargement de la page

@@ -38,7 +38,7 @@
                                 <li><a href="#">Organigramme</a></li>
                             </ul>
                         </li>
-                        <li class="submenu">
+                        {{-- <li class="submenu">
                             <a href="javascript:void(0);"><i class="fa fa-briefcase"></i><span>Recrutement</span><span
                                     class="menu-arrow"></span></a>
                             <ul>
@@ -47,17 +47,11 @@
                                 <li><a href="#">Suivi des entretiens</a></li>
                                 <li><a href="#">Onboarding</a></li>
                             </ul>
+                        </li> --}}
+                        <li>
+                            <a href="{{ route('paie') }}" class="{{ request()->routeIs('paie') ? 'active' : '' }}"><i class="fa fa-credit-card"></i><span>Paie</span></a>
                         </li>
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><i class="fa fa-credit-card"></i><span>Paie</span><span
-                                    class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="#">Calcul et édition des bulletins</a></li>
-                                <li><a href="#">Déclarations sociales</a></li>
-                                <li><a href="#">Gestion des avantages</a></li>
-                            </ul>
-                        </li>
-                        <li class="submenu">
+                        {{-- <li class="submenu">
                             <a href="javascript:void(0);"><i class="fa fa-graduation-cap"></i><span>Formation &
                                     Développement</span><span class="menu-arrow"></span></a>
                             <ul>
@@ -65,7 +59,7 @@
                                 <li><a href="#">Suivi des compétences</a></li>
                                 <li><a href="#">Évaluations et entretiens annuels</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
             </ul>
