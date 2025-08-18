@@ -283,9 +283,14 @@
                         <h2 class="text-xl font-semibold text-gray-800 flex items-center">
                             <i class="fas fa-list mr-2 text-blue-600"></i>Variables de Paie
                         </h2>
-                        <button onclick="showAddVariableModal()"
+                        <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddVariable"
                             class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
                             <i class="fas fa-plus mr-2"></i>Ajouter Variable
+                        </button>
+                        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBackdrop3"
+                            aria-controls="offcanvasWithBackdrop3"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
+                            <i class="fas fa-plus mr-2"></i>Ajouter une categorie
                         </button>
                     </div>
                 </div>
@@ -295,7 +300,8 @@
                 </div>
             </div>
         </div>
-
+        @include('components.yodirh._categorie')
+        @include('components.yodirh._variable',$categories)
         <!-- Tab: Saisie Globale -->
         <div id="content-saisie-globale" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg">
@@ -982,16 +988,16 @@
                     </h4>
                     <div class="space-y-2">
                         ${variables.map(variable => `
-                                <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
-                                    <div class="flex items-center">
-                                        <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
-                                        <span class="text-sm font-medium">${variable.name}</span>
-                                    </div>
-                                    <button onclick="deleteVariable(${variable.index})" class="text-red-500 hover:text-red-700 no-print">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            `).join('')}
+                                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
+                                            <div class="flex items-center">
+                                                <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
+                                                <span class="text-sm font-medium">${variable.name}</span>
+                                            </div>
+                                            <button onclick="deleteVariable(${variable.index})" class="text-red-500 hover:text-red-700 no-print">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    `).join('')}
                     </div>
                 </div>
             `).join('');
@@ -1029,37 +1035,7 @@
                     return 'text-gray-600';
             }
         }
-
-        function showAddVariableModal() {
-            document.getElementById('addVariableModal').classList.remove('hidden');
-        }
-
-        function closeAddVariableModal() {
-            document.getElementById('addVariableModal').classList.add('hidden');
-            document.getElementById('newVariableName').value = '';
-            document.getElementById('newVariableType').value = 'gain';
-            document.getElementById('newVariableCategory').value = 'Primes';
-        }
-
-        function addVariable() {
-            const name = document.getElementById('newVariableName').value.trim();
-            const type = document.getElementById('newVariableType').value;
-            const category = document.getElementById('newVariableCategory').value;
-
-            if (!name) {
-                showNotification('Veuillez entrer un nom pour la variable', 'error');
-                return;
-            }
-
-            payrollVariables.push({
-                name,
-                type,
-                category
-            });
-            renderVariablesGrid();
-            closeAddVariableModal();
-            showNotification('Variable ajoutée avec succès', 'success');
-        }
+        
 
         function deleteVariable(index) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
@@ -1108,7 +1084,7 @@
 
                 payrollVariables.forEach((variable, index) => {
                     const value = employeeData[employee.id] && employeeData[employee.id][variable.name] ||
-                    0;
+                        0;
                     rowHTML += `
                         <td class="px-4 py-4 whitespace-nowrap">
                             <input type="number" 

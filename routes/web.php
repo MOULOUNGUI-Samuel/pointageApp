@@ -175,6 +175,11 @@ Route::middleware('auth')->group(
         Route::patch('/profile/api-key', [OpenProjectController::class, 'updateApiKey'])->name('profile.update.apikey');
 
         Route::get('/paie', [CaisseWebController::class, 'paie'])->name('paie');
+
+        Route::post('/categories/multiple', [CaisseWebController::class, 'storeMultiple'])
+    ->name('categories.storeMultiple');
+    Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
+    ->name('variables.ajax.store');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
