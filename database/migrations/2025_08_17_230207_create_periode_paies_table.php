@@ -10,6 +10,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->date('date_debut');
             $table->date('date_fin');
+            $table->string('ticket');
             $table->boolean('statut')->default(true)->index();
             $table->foreignUuid('entreprise_id')
                   ->constrained('entreprises')

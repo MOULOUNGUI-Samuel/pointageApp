@@ -55,7 +55,7 @@
 
 </head>
 
-<body class="account-page">
+<body class="account-page" style="background-color: rgb(240, 243, 243)">
 
     <!-- Main Wrapper -->
     <div class="main-wrapper">
@@ -346,7 +346,7 @@
                                     <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                     <a href="https://tache.groupenedco.com/"
                                         class="text-decoration-none text-dark d-block" target="_blank">
-                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/OpenProject-1.jpg') }}" alt="OpenProject"
                                                 class="img-fluid rounded"
@@ -379,7 +379,7 @@
                                 <div class="col text-center  card-hover-zoom">
                                     <a href="#" onclick="ModaleAnnuaire(event)"
                                         class="text-decoration-none text-dark d-block">
-                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/annuaires.png') }}" alt="OpenProject"
                                                 class="img-fluid rounded py-1"
@@ -425,7 +425,7 @@
                                     <a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling"
                                         aria-controls="offcanvasScrolling"
                                         class="text-decoration-none text-dark d-block">
-                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                             style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                             <img src="{{ asset('assets/img/simulation.png') }}" alt="OpenProject"
                                                 class="img-fluid rounded py-1"
@@ -787,7 +787,7 @@
                                                 <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                                 <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
                                                     class="text-decoration-none text-dark d-block" target="_blank">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                                         style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                                         <img src="{{ asset('storage/' . $module->logo) }}"
                                                             alt="{{ $module->nom_module }}" class="img-fluid rounded"
@@ -804,7 +804,7 @@
                                             <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
                                             <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
                                                 class="text-decoration-none text-dark d-block" target="_blank">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                                     style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                                     <img src="{{ asset('storage/' . $module->logo) }}"
                                                         alt="{{ $module->nom_module }}" class="img-fluid rounded"
@@ -819,7 +819,7 @@
                                             <div class="col text-center  card-hover-zoom">
                                                 <a href="{{ route('dashboard', $module->id) }}"
                                                     class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                                         style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                                         <img src="{{ asset('storage/' . $module->logo) }}"
                                                             alt="{{ $module->nom_module }}" class="img-fluid rounded"
@@ -835,7 +835,7 @@
                                         <div class="col text-center  card-hover-zoom">
                                             <a href="{{ route('dashboard', $module->id) }}"
                                                 class="text-decoration-none text-dark d-block">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                                                     style="width: 170px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
                                                     <img src="{{ asset('storage/' . $module->logo) }}"
                                                         alt="{{ $module->nom_module }}" class="img-fluid rounded"

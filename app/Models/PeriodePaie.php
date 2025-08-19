@@ -16,7 +16,7 @@ class PeriodePaie extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['date_debut', 'date_fin', 'statut', 'entreprise_id'];
+    protected $fillable = ['date_debut', 'date_fin', 'statut','ticket', 'entreprise_id'];
 
     protected $casts = [
         'date_debut' => 'date',

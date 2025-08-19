@@ -177,9 +177,16 @@ Route::middleware('auth')->group(
         Route::get('/paie', [CaisseWebController::class, 'paie'])->name('paie');
 
         Route::post('/categories/multiple', [CaisseWebController::class, 'storeMultiple'])
-    ->name('categories.storeMultiple');
-    Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
-    ->name('variables.ajax.store');
+            ->name('categories.storeMultiple');
+        Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
+            ->name('variables.ajax.store');
+
+            Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
+        Route::post('/variables', [CaisseWebController::class, 'storeAjax'])->name('variables.store');
+        Route::delete('/variables/{id}', [CaisseWebController::class, 'destroy'])->name('variables.destroy');
+        Route::post('/payroll/save-ticket', [CaisseWebController::class,'saveByTicket'])->name('payroll.saveByTicket');
+Route::get('/payroll/tickets/replaceable', [CaisseWebController::class,'listReplaceableTickets'])->name('payroll.tickets.replaceable');
+
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

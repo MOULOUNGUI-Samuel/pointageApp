@@ -10,7 +10,7 @@
 @section('content2')
     <style>
         :root {
-            --primary-color: #3b82f6;
+            --primary-color: #05436b;
             --secondary-color: #64748b;
             --success-color: #10b981;
             --warning-color: #f59e0b;
@@ -20,25 +20,15 @@
             --dark-text: #f9fafb;
         }
 
-        .dark {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .dark .bg-white {
-            background-color: var(--dark-card) !important;
-            color: var(--dark-text);
-        }
-
-        .dark .border-gray-200 {
+        .dark .border-gray {
             border-color: #4b5563 !important;
         }
 
         .dark .text-gray-600 {
-            color: #d1d5db !important;
+            color: #434343 !important;
         }
 
-        .dark .text-gray-800 {
+        .dark .text-primary {
             color: var(--dark-text) !important;
         }
 
@@ -58,9 +48,6 @@
             }
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
 
         .input-focus:focus {
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -98,15 +85,30 @@
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
         }
 
+        /* Le modal Bootstrap est à z-index: 1055, on passe au-dessus */
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            padding: 12px 16px;
-            border-radius: 8px;
+            top: 1rem;
+            right: 1rem;
+            z-index: 99999;
+            padding: .75rem 1rem;
+            border-radius: .5rem;
+            color: #fff;
             font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
             animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.bg-green-500 {
+            background: #16a34a
+        }
+
+        .notification.bg-red-500 {
+            background: #ef4444
+        }
+
+        .notification.bg-blue-500 {
+            background: #3b82f6
         }
 
         @keyframes slideIn {
@@ -129,33 +131,21 @@
                 display: none !important;
             }
 
-            body {
-                font-size: 12px;
-            }
 
-            .container {
-                max-width: none;
-                margin: 0;
-                padding: 0;
-            }
         }
     </style>
     <!-- Header -->
-    <header class="gradient-bg shadow-lg">
+    <header class="bg-primary rounded shadow">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-calculator text-white text-2xl"></i>
                     <h1 class="text-2xl font-bold text-white">Système de Gestion de Paie Complet</h1>
-                    <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">Version Finale</span>
                 </div>
+
                 <div class="flex items-center space-x-4 no-print">
-                    <button onclick="toggleTheme()"
-                        class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
-                        <i id="themeIcon" class="fas fa-moon"></i>
-                    </button>
                     <button onclick="saveData()"
-                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
+                        class="bg-dark text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
                         <i class="fas fa-save mr-2"></i>Sauvegarder
                     </button>
                 </div>
@@ -163,7 +153,7 @@
         </div>
     </header>
 
-    <div class="container mx-auto px-6 py-6 space-y-6">
+    <div class="container-fluid mx-auto px-6 py-6 space-y-6">
         <!-- Navigation Tabs -->
         <div class="bg-white rounded-xl shadow-lg p-6 no-print">
             <div class="flex flex-wrap gap-2 mb-6">
@@ -191,16 +181,23 @@
                     class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-100">
                     <i class="fas fa-chart-bar mr-2"></i>Synthèse
                 </button>
+                @if (session('success'))
+                    <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                        <strong class="me-5"><i class="fas fa-check me-2"></i> {{ session('success') }}</strong>
+                        <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                                class="fas fa-xmark"></i></button>
+                    </div>
+                @endif
             </div>
         </div>
 
         <!-- Tab: Période de Paie -->
         <div id="content-periode" class="tab-content animate-fade-in">
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>Configuration de la Période de Paie
+                <h2 class="text-xl font-semibold text-primary mb-6 flex items-center">
+                    <i class="fas fa-calendar-alt mr-2 "></i>Configuration de la Période de Paie
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Date de début</label>
                         <input type="date" id="periodStart"
@@ -211,7 +208,42 @@
                         <input type="date" id="periodEnd"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus">
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Ticket généré</label>
+                        <input type="text" id="periodTicket" class="w-full px-4 py-3 border rounded-lg input-focus"
+                            readonly placeholder="Ticket (auto)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tickets pouvant être remplacés</label>
+                        <select id="replaceTicket" class="form-select">
+                            <option value="">Choix du ticket</option>
+                            {{-- tu peux pré-remplir côté Blade si tu veux --}}
+                        </select>
+                    </div>
                 </div>
+                <script>
+                    (function() {
+                        const startEl = document.getElementById('periodStart');
+                        const endEl = document.getElementById('periodEnd');
+                        const ticketEl = document.getElementById('periodTicket');
+
+                        function toJJMMAA(iso) {
+                            if (!iso) return '';
+                            const [y, m, d] = iso.split('-');
+                            return `${d}${m}${y.slice(2)}`;
+                        }
+
+                        function previewTicket() {
+                            const s = startEl?.value,
+                                e = endEl?.value;
+                            if (ticketEl) ticketEl.value = (s && e) ? `Tk-${toJJMMAA(s)}-${toJJMMAA(e)}` : '';
+                        }
+
+                        startEl?.addEventListener('change', previewTicket);
+                        endEl?.addEventListener('change', previewTicket);
+                        previewTicket(); // init au chargement
+                    })();
+                </script>
                 <div class="mt-6 p-4 bg-blue-50 rounded-lg">
                     <h3 class="font-semibold text-blue-800 mb-2">Instructions</h3>
                     <p class="text-blue-700 text-sm">Configurez la période de paie avant de commencer la saisie des données.
@@ -223,19 +255,19 @@
         <!-- Tab: Gestion des Employés -->
         <div id="content-employes" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg">
-                <div class="p-6 border-b border-gray-200">
+                <div class="p-6 border-b border-gray">
                     <div
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-users mr-2 text-blue-600"></i>Gestion des Employés
+                        <h2 class="text-xl font-semibold text-primary flex items-center">
+                            <i class="fas fa-users mr-2 "></i>Gestion des Employés
                         </h2>
-                        <div class="flex flex-wrap gap-2 no-print">
+                        <div class="flex gap-2 no-print">
                             <button onclick="showAddEmployeeModal()"
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                                 <i class="fas fa-plus mr-2"></i>Ajouter Employé
                             </button>
                             <button onclick="importEmployees()"
-                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                                 <i class="fas fa-file-excel mr-2"></i>Importer Excel
                             </button>
                         </div>
@@ -277,21 +309,22 @@
         <!-- Tab: Variables de Paie -->
         <div id="content-variables" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg">
-                <div class="p-6 border-b border-gray-200">
+                <div class="p-6 border-b border-gray">
                     <div
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-list mr-2 text-blue-600"></i>Variables de Paie
+                        <h2 class="text-xl font-semibold text-primary flex items-center">
+                            <i class="fas fa-list mr-2 "></i>Variables de Paie
                         </h2>
-                        <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddVariable"
-                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
-                            <i class="fas fa-plus mr-2"></i>Ajouter Variable
-                        </button>
-                        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBackdrop3"
-                            aria-controls="offcanvasWithBackdrop3"
-                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
-                            <i class="fas fa-plus mr-2"></i>Ajouter une categorie
-                        </button>
+                        <div class="flex gap-2 no-print">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#floatingLabelsModal"
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
+                                <i class="fas fa-plus mr-2"></i>Ajouter Variable
+                            </button>
+                            <button data-bs-toggle="modal" data-bs-target="#floatingLabelsModalCategori"
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
+                                <i class="fas fa-plus mr-2"></i>Ajouter une categorie
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="p-6">
@@ -301,19 +334,19 @@
             </div>
         </div>
         @include('components.yodirh._categorie')
-        @include('components.yodirh._variable',$categories)
+        @include('components.yodirh._variable', $categories)
         <!-- Tab: Saisie Globale -->
         <div id="content-saisie-globale" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg">
-                <div class="p-6 border-b border-gray-200">
+                <div class="p-6 border-b border-gray">
                     <div
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-table mr-2 text-blue-600"></i>Saisie Globale des Variables
+                        <h2 class="text-xl font-semibold text-primary flex items-center">
+                            <i class="fas fa-table mr-2 "></i>Saisie Globale des Variables
                         </h2>
                         <div class="flex flex-wrap gap-2 no-print">
                             <button onclick="calculateAll()"
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                                 <i class="fas fa-calculator mr-2"></i>Calculer Tout
                             </button>
                             <button onclick="resetAllInputs()"
@@ -337,8 +370,8 @@
         <!-- Tab: Saisie Détaillée -->
         <div id="content-saisie-detaillee" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-user-edit mr-2 text-blue-600"></i>Saisie Détaillée par Employé
+                <h2 class="text-xl font-semibold text-primary mb-6 flex items-center">
+                    <i class="fas fa-user-edit mr-2 "></i>Saisie Détaillée par Employé
                 </h2>
 
                 <!-- Sélection d'employé -->
@@ -352,8 +385,8 @@
                 <div id="employeeDetail" class="hidden">
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                <i class="fas fa-user text-blue-600 mr-2"></i>
+                            <h3 class="text-lg font-semibold text-primary">
+                                <i class="fas fa-user  mr-2"></i>
                                 <span id="selectedEmployeeName"></span>
                             </h3>
                             <div class="flex space-x-3 no-print">
@@ -370,15 +403,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
                                 <span class="font-medium text-gray-600">Matricule:</span>
-                                <span id="selectedEmployeeId" class="ml-2 text-gray-800"></span>
+                                <span id="selectedEmployeeId" class="ml-2 text-primary"></span>
                             </div>
                             <div>
                                 <span class="font-medium text-gray-600">Salaire de Base:</span>
-                                <span id="selectedEmployeeSalary" class="ml-2 text-gray-800 font-semibold"></span>
+                                <span id="selectedEmployeeSalary" class="ml-2 text-primary font-semibold"></span>
                             </div>
                             <div>
                                 <span class="font-medium text-gray-600">Service:</span>
-                                <span id="selectedEmployeeService" class="ml-2 text-gray-800"></span>
+                                <span id="selectedEmployeeService" class="ml-2 text-primary"></span>
                             </div>
                         </div>
                     </div>
@@ -386,7 +419,7 @@
                     <!-- Formulaire des variables -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <!-- Gains -->
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <div class="bg-white border border-gray rounded-lg p-6">
                             <h4 class="text-lg font-semibold text-green-700 mb-4 flex items-center">
                                 <i class="fas fa-plus-circle mr-2"></i>Gains et Primes
                             </h4>
@@ -401,7 +434,7 @@
                         </div>
 
                         <!-- Retenues -->
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <div class="bg-white border border-gray rounded-lg p-6">
                             <h4 class="text-lg font-semibold text-red-700 mb-4 flex items-center">
                                 <i class="fas fa-minus-circle mr-2"></i>Retenues et Déductions
                             </h4>
@@ -424,7 +457,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="text-center">
                                 <div class="text-sm text-gray-600">Salaire de Base</div>
-                                <div id="recapBaseSalary" class="text-lg font-bold text-gray-800">0 F CFA</div>
+                                <div id="recapBaseSalary" class="text-lg font-bold text-primary">0 F CFA</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-sm text-gray-600">+ Gains</div>
@@ -449,12 +482,12 @@
             <div class="space-y-6">
                 <!-- Indicateurs principaux -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>Synthèse de la Paie
+                    <h2 class="text-xl font-semibold text-primary mb-6 flex items-center">
+                        <i class="fas fa-chart-bar mr-2 "></i>Synthèse de la Paie
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                        <div class="bg-gradient-to-r bg-primary rounded-xl p-6 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-blue-100 text-sm">Masse Salariale de Base</p>
@@ -464,7 +497,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+                        <div class="bg-gradient-to-r bg-success rounded-xl p-6 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-green-100 text-sm">Total Gains Variables</p>
@@ -474,7 +507,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-6 text-white">
+                        <div class="bg-gradient-to-r bg-danger rounded-xl p-6 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-red-100 text-sm">Total Retenues</p>
@@ -484,7 +517,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                        <div class="bg-gradient-to-r bg-dark rounded-xl p-6 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-purple-100 text-sm">Salaire Net Total</p>
@@ -497,7 +530,7 @@
 
                     <!-- Graphique -->
                     <div class="bg-gray-50 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition de la Masse Salariale</h3>
+                        <h3 class="text-lg font-semibold text-primary mb-4">Répartition de la Masse Salariale</h3>
                         <div class="chart-container">
                             <canvas id="salaryChart"></canvas>
                         </div>
@@ -506,8 +539,8 @@
 
                 <!-- Détail par employé -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-users mr-2 text-blue-600"></i>Détail par Employé
+                    <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                        <i class="fas fa-users mr-2 "></i>Détail par Employé
                     </h3>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -538,8 +571,8 @@
 
                 <!-- Répartition par service -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-building mr-2 text-blue-600"></i>Répartition par Service
+                    <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                        <i class="fas fa-building mr-2 "></i>Répartition par Service
                     </h3>
                     <div id="serviceBreakdown" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     </div>
@@ -553,9 +586,9 @@
     <div id="addEmployeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 no-print">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-user-plus mr-2 text-blue-600"></i>Ajouter un Employé
+                <div class="p-6 border-b border-gray">
+                    <h3 class="text-lg font-semibold text-primary flex items-center">
+                        <i class="fas fa-user-plus mr-2 "></i>Ajouter un Employé
                     </h3>
                 </div>
                 <div class="p-6 space-y-4">
@@ -604,9 +637,9 @@
                         </select>
                     </div>
                 </div>
-                <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <div class="p-6 border-t border-gray flex justify-end space-x-3">
                     <button onclick="closeAddEmployeeModal()"
-                        class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Annuler</button>
+                        class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">Annuler</button>
                     <button onclick="addEmployee()"
                         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ajouter</button>
                 </div>
@@ -614,51 +647,162 @@
         </div>
     </div>
 
-    <!-- Modal: Ajouter Variable -->
-    <div id="addVariableModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 no-print">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-plus mr-2 text-blue-600"></i>Ajouter une Variable
-                    </h3>
-                </div>
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la variable</label>
-                        <input type="text" id="newVariableName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus"
-                            placeholder="Prime de performance">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                        <select id="newVariableType"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
-                            <option value="gain">Gain (Prime, Indemnité...)</option>
-                            <option value="deduction">Retenue (Acompte, Amende...)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
-                        <select id="newVariableCategory"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
-                            <option value="Primes">Primes</option>
-                            <option value="Indemnités">Indemnités</option>
-                            <option value="Heures supplémentaires">Heures supplémentaires</option>
-                            <option value="Avantages">Avantages en nature</option>
-                            <option value="Retenues">Retenues diverses</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
-                    <button onclick="closeAddVariableModal()"
-                        class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Annuler</button>
-                    <button onclick="addVariable()"
-                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ajouter</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
+
+    <script>
+        // IDs des champs à mapper depuis les clés de validation Laravel
+        const FIELD_MAP = {
+            'period.start': 'periodStart',
+            'period.end': 'periodEnd',
+            'replace_ticket': 'replaceTicket',
+        };
+
+        function clearFieldErrors() {
+            Object.values(FIELD_MAP).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('is-invalid');
+                // si un bloc .invalid-feedback juste après existe, on le vide/masque
+                const box = el.parentElement?.querySelector('.invalid-feedback');
+                if (box) {
+                    box.textContent = '';
+                    box.classList.add('d-none');
+                }
+            });
+
+            const globalBox = document.getElementById('globalFormErrors');
+            if (globalBox) {
+                globalBox.innerHTML = '';
+                globalBox.classList.add('d-none');
+            }
+        }
+
+        function showFieldError(inputId, message) {
+            const el = document.getElementById(inputId);
+            if (!el) return;
+
+            el.classList.add('is-invalid');
+
+            // on cherche un sibling .invalid-feedback sinon on le crée
+            let box = el.parentElement?.querySelector('.invalid-feedback');
+            if (!box) {
+                box = document.createElement('div');
+                box.className = 'invalid-feedback';
+                el.parentElement.appendChild(box);
+            }
+            box.textContent = message;
+            box.classList.remove('d-none');
+        }
+
+        function handleValidationErrors(payload) {
+            clearFieldErrors();
+
+            const errors = payload?.errors || {};
+            const first = payload?.first_error || payload?.message;
+
+            // Affiche toast globale si dispo
+            if (typeof showNotification === 'function' && (first || payload?.message)) {
+                showNotification(first || 'Données invalides', 'error');
+            }
+
+            // Affiche inline pour les champs connus
+            Object.keys(errors).forEach(key => {
+                const inputId = FIELD_MAP[key];
+                if (inputId) {
+                    showFieldError(inputId, errors[key][0] || 'Champ invalide');
+                }
+            });
+
+            // S'il reste des erreurs non mappées (ex: employeeData), on les met dans un bloc global
+            const others = Object.entries(errors).filter(([k]) => !FIELD_MAP[k]);
+            if (others.length) {
+                let html = '<ul class="mb-0 ps-3">';
+                others.forEach(([, msgs]) => {
+                    (msgs || []).forEach(m => {
+                        html += `<li>${m}</li>`;
+                    });
+                });
+                html += '</ul>';
+
+                let globalBox = document.getElementById('globalFormErrors');
+                if (!globalBox) {
+                    globalBox = document.createElement('div');
+                    globalBox.id = 'globalFormErrors';
+                    globalBox.className = 'alert alert-danger mt-3';
+                    // Tu peux choisir où l’insérer :
+                    // Ici on l’ajoute après le conteneur de la période s’il existe
+                    const periodContainer = document.getElementById('content-periode') || document.body;
+                    periodContainer.appendChild(globalBox);
+                }
+                globalBox.innerHTML = html;
+                globalBox.classList.remove('d-none');
+            }
+        }
+    </script>
+
+    <script>
+        // Format YYYY-MM-DD -> JJ/MM/AAAA
+        function fmtFR(iso) {
+            if (!iso) return '';
+            const [y, m, d] = iso.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        // Charge et remplit la liste des tickets remplaçables
+        async function loadReplaceableTickets(options = {
+            excludeCurrent: true
+        }) {
+            const sel = document.getElementById('replaceTicket');
+            if (!sel) return;
+
+            // optionnel: exclure le ticket actuellement affiché dans l'UI
+            const current = document.getElementById('periodTicket')?.value || null;
+
+            try {
+                const res = await fetch("{{ route('payroll.tickets.replaceable') }}", {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                let json = {};
+                try {
+                    json = await res.json();
+                } catch (_) {}
+
+                if (!res.ok) {
+                    (window.showNotification || console.error)(
+                        json.message || 'Impossible de charger les tickets', 'error'
+                    );
+                    return;
+                }
+
+                const rows = Array.isArray(json.data) ? json.data : [];
+                const opts = ['<option value="">Choix du ticket</option>']
+                    .concat(rows
+                        .filter(t => !options.excludeCurrent || t.ticket !== current)
+                        .map(t => {
+                            const sd = fmtFR(t.date_debut);
+                            const ed = fmtFR(t.date_fin);
+                            return `<option value="${t.ticket}">${t.ticket}</option>`;
+                        })
+                    );
+
+                sel.innerHTML = opts.join('');
+
+            } catch (e) {
+                console.error(e);
+                (window.showNotification || console.error)(
+                    'Erreur réseau lors du chargement des tickets', 'error'
+                );
+            }
+        }
+
+        // Charger à l’ouverture de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReplaceableTickets();
+        });
+    </script>
 
     <script>
         // --- Données venant de Laravel (users + relations) ---
@@ -706,72 +850,33 @@
             actif: u.statu_user === 1 // bool utile côté UI
         }));
 
-        let payrollVariables = [{
-                name: "Prime de performance",
-                type: "gain",
-                category: "Primes"
-            },
-            {
-                name: "Prime d'ancienneté",
-                type: "gain",
-                category: "Primes"
-            },
-            {
-                name: "Prime de 13ème mois",
-                type: "gain",
-                category: "Primes"
-            },
-            {
-                name: "Heures supplémentaires",
-                type: "gain",
-                category: "Heures supplémentaires"
-            },
-            {
-                name: "Commissions sur ventes",
-                type: "gain",
-                category: "Primes"
-            },
-            {
-                name: "Indemnité de transport",
-                type: "gain",
-                category: "Indemnités"
-            },
-            {
-                name: "Indemnité de repas",
-                type: "gain",
-                category: "Indemnités"
-            },
-            {
-                name: "Prime de risque",
-                type: "gain",
-                category: "Primes"
-            },
-            {
-                name: "Acompte sur salaire",
-                type: "deduction",
-                category: "Retenues"
-            },
-            {
-                name: "Avance sur salaire",
-                type: "deduction",
-                category: "Retenues"
-            },
-            {
-                name: "Absence non rémunérée",
-                type: "deduction",
-                category: "Retenues"
-            },
-            {
-                name: "Retard/Sanctions",
-                type: "deduction",
-                category: "Retenues"
-            },
-            {
-                name: "Saisie sur salaire",
-                type: "deduction",
-                category: "Retenues"
-            }
-        ];
+
+
+        // Depuis ton contrôleur : $variables = Variable::with('categorie')->get();
+        //                         $categories = Categorie::where('statut',1)->orderBy('nom_categorie')->get();
+
+        const rawVariables = @json($variables);
+        const rawCategories = @json($categories);
+
+        // Variables pour l’UI (note: on garde l’index pour deleteVariable(index))
+        let payrollVariables = (rawVariables || []).map(v => ({
+            id: v.id,
+            name: v.nom_variable,
+            type: v.type, // 'gain' | 'deduction'
+            categoryId: v.categorie ? v.categorie.id : null,
+            categoryName: v.categorie ? v.categorie.nom_categorie : '(Sans catégorie)'
+        }));
+
+        // (optionnel) tri par catégorie puis par nom pour un affichage propre
+        payrollVariables.sort((a, b) => {
+            const cA = (a.category || '').localeCompare(b.category || '');
+            return cA !== 0 ? cA : (a.name || '').localeCompare(b.name || '');
+        });
+
+        // Si ta grille s’affiche au chargement :
+        if (typeof renderVariablesGrid === 'function') {
+            renderVariablesGrid();
+        }
 
         let currentTab = 'periode';
         let currentEmployeeIndex = 0;
@@ -866,7 +971,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium no-print">
-                        <button onclick="editEmployee('${emp.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                        <button onclick="editEmployee('${emp.id}')" class=" hover:text-blue-900 mr-3">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button onclick="deleteEmployee('${emp.id}')" class="text-red-600 hover:text-red-900">
@@ -888,7 +993,7 @@
                 case 'Consultant':
                     return 'bg-purple-100 text-purple-800';
                 default:
-                    return 'bg-gray-100 text-gray-800';
+                    return 'bg-gray-100 text-primary';
             }
         }
 
@@ -966,41 +1071,83 @@
             showNotification('Fonctionnalité d\'import Excel en cours de développement', 'info');
         }
 
-        // --- GESTION DES VARIABLES ---
         function renderVariablesGrid() {
             const container = document.getElementById('variablesContainer');
 
-            const groupedVariables = payrollVariables.reduce((acc, variable, index) => {
-                if (!acc[variable.category]) {
-                    acc[variable.category] = [];
-                }
-                acc[variable.category].push({
+            // 1) Préparer les groupes avec toutes les catégories (même vides)
+            const groupsMap = new Map();
+            (rawCategories || []).forEach(cat => {
+                groupsMap.set(cat.id, {
+                    label: cat.nom_categorie,
+                    items: [],
+                    catId: cat.id
+                });
+            });
+
+            // 2) Groupe spécial pour les variables sans catégorie
+            const UNCAT_KEY = '__uncat__';
+
+            // 3) Répartir les variables dans leurs groupes
+            (payrollVariables || []).forEach((variable, index) => {
+                const item = {
                     ...variable,
                     index
-                });
-                return acc;
-            }, {});
+                }; // on garde l’index pour deleteVariable(index)
+                if (variable.categoryId && groupsMap.has(variable.categoryId)) {
+                    groupsMap.get(variable.categoryId).items.push(item);
+                } else {
+                    if (!groupsMap.has(UNCAT_KEY)) {
+                        groupsMap.set(UNCAT_KEY, {
+                            label: '(Sans catégorie)',
+                            items: [],
+                            catId: null
+                        });
+                    }
+                    groupsMap.get(UNCAT_KEY).items.push(item);
+                }
+            });
 
-            container.innerHTML = Object.entries(groupedVariables).map(([category, variables]) => `
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                        <i class="fas fa-folder mr-2 text-blue-600"></i>${category}
-                    </h4>
-                    <div class="space-y-2">
-                        ${variables.map(variable => `
-                                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
-                                            <div class="flex items-center">
-                                                <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
-                                                <span class="text-sm font-medium">${variable.name}</span>
-                                            </div>
-                                            <button onclick="deleteVariable(${variable.index})" class="text-red-500 hover:text-red-700 no-print">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    `).join('')}
-                    </div>
+            // 4) Construire le HTML (ordre: catégories connues puis "(Sans catégorie)" s'il existe)
+            const orderedGroups = [
+                ...[...groupsMap.entries()].filter(([k]) => k !== UNCAT_KEY),
+                ...[...groupsMap.entries()].filter(([k]) => k === UNCAT_KEY),
+            ];
+
+            container.innerHTML = orderedGroups.map(([key, group]) => `
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h4 class="font-semibold text-primary mb-3 flex items-center">
+          <i class="fas fa-folder mr-2"></i>${group.label}
+        </h4>
+
+        ${
+          group.items.length
+          ? `<div class="space-y-2">
+                                                      ${group.items.map(variable => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
+                  <div class="flex items-center">
+                    <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
+                    <span class="text-sm font-medium">${variable.name}</span>
+                  </div>
+                  <button onclick="deleteVariable(${variable.index})" class="text-red-500 hover:text-red-700 no-print">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
-            `).join('');
+              `).join('')}
+                                                    </div>`
+          : `
+                                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                      <span>Aucune variable dans cette catégorie</span>
+                                                    </div>`
+        }
+      </div>
+    `).join('');
+        }
+
+        // Pré-sélectionner la catégorie dans le modal d’ajout
+        function openAddVariableWithCategory(catId) {
+            const select = document.getElementById('newVariableCategory');
+            if (select && catId) select.value = catId;
+            if (typeof showAddVariableModal === 'function') showAddVariableModal();
         }
 
         function getVariableClass(type) {
@@ -1035,13 +1182,102 @@
                     return 'text-gray-600';
             }
         }
-        
+
+
+        function closefloatingLabelsModal() {
+            document.getElementById('floatingLabelsModal').classList.add('hidden');
+            document.getElementById('newVariableName').value = '';
+            document.getElementById('newVariableType').value = 'gain';
+            document.getElementById('newVariableCategory').value = 'Primes';
+        }
+
+        async function addVariable() {
+            const name = document.getElementById('newVariableName').value.trim();
+            const type = document.getElementById('newVariableType').value;
+            const category = document.getElementById('newVariableCategory').value;
+
+            if (!name) {
+                showNotification('Veuillez entrer un nom pour la variable', 'error');
+                return;
+            }
+
+            // *** NOUVELLE SECTION : APPEL AJAX ***
+            try {
+                const res = await fetch("{{ route('variables.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify({
+                        nom_variable: name,
+                        type: type,
+                        categorie_id: category
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showNotification(data.message || 'Erreur lors de l\'ajout de la variable', 'error');
+                    return;
+                }
+
+                // après succès AJAX de création
+                const created = data.data; // { id, nom_variable, type, categorie:{ id, nom_categorie } }
+
+                payrollVariables.push({
+                    id: created.id,
+                    name: created.nom_variable,
+                    type: created.type,
+                    categoryId: created.categorie ? created.categorie.id : null,
+                    categoryName: created.categorie ? created.categorie.nom_categorie : '(Sans catégorie)'
+                });
+
+                renderVariablesGrid();
+                closefloatingLabelsModal();
+                showNotification('Variable ajoutée avec succès', 'success');
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showNotification('Erreur lors de l\'ajout de la variable (réseau)', 'error');
+            }
+            // *** FIN NOUVELLE SECTION ***
+        }
 
         function deleteVariable(index) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
-                payrollVariables.splice(index, 1);
-                renderVariablesGrid();
-                showNotification('Variable supprimée avec succès', 'success');
+                const variableToDelete = payrollVariables[index];
+
+                // *** NOUVELLE SECTION : APPEL AJAX ***
+                fetch("{{ route('variables.destroy', ['id' => '__ID__']) }}".replace('__ID__', variableToDelete
+                        .id), { // IMPORTANT : remplacer __ID__
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la suppression de la variable.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Si la suppression sur le serveur réussit, on peut supprimer la variable du tableau et recharger
+                        payrollVariables.splice(index, 1);
+                        renderVariablesGrid();
+                        showNotification('Variable supprimée avec succès', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('Erreur lors de la suppression de la variable (réseau)', 'error');
+                    });
+                // *** FIN NOUVELLE SECTION ***
             }
         }
 
@@ -1102,7 +1338,7 @@
 
                 const netSalary = calculateEmployeeNet(employee.id);
                 rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold text-blue-600" data-net-salary="${employee.id}">
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold " data-net-salary="${employee.id}">
                             ${formatCurrency(netSalary)}
                         </td>
                     </tr>
@@ -1185,12 +1421,12 @@
                 card.innerHTML = `
                     <div class="flex items-center space-x-3">
                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-blue-600"></i>
+                            <i class="fas fa-user "></i>
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-800">${emp.lastName} ${emp.firstName}</div>
+                            <div class="font-semibold text-primary">${emp.lastName} ${emp.firstName}</div>
                             <div class="text-sm text-gray-600">${emp.id} • ${emp.department}</div>
-                            <div class="text-sm font-medium text-blue-600">${formatCurrency(emp.baseSalary)}</div>
+                            <div class="text-sm font-medium ">${formatCurrency(emp.baseSalary)}</div>
                         </div>
                     </div>
                 `;
@@ -1374,7 +1610,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">${formatCurrency(detail.employee.baseSalary)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">${formatCurrency(detail.gains)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">${formatCurrency(detail.deductions)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-blue-600">${formatCurrency(detail.netSalary)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold ">${formatCurrency(detail.netSalary)}</td>
                 </tr>
             `).join('');
 
@@ -1388,9 +1624,9 @@
         function renderServiceBreakdown(serviceData) {
             const breakdown = document.getElementById('serviceBreakdown');
             breakdown.innerHTML = Object.entries(serviceData).map(([service, data]) => `
-                <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                    <div class="text-lg font-semibold text-gray-800 mb-2">${service}</div>
-                    <div class="text-2xl font-bold text-blue-600 mb-1">${formatCurrency(data.totalSalary)}</div>
+                <div class="bg-white border border-gray rounded-lg p-4 text-center">
+                    <div class="text-lg font-semibold text-primary mb-2">${service}</div>
+                    <div class="text-2xl font-bold  mb-1">${formatCurrency(data.totalSalary)}</div>
                     <div class="text-sm text-gray-600">
                         <i class="fas fa-users mr-1"></i>${data.count} employé${data.count > 1 ? 's' : ''}
                     </div>
@@ -1471,20 +1707,91 @@
             icon.classList.toggle('fa-sun');
         }
 
-        function saveData() {
-            const data = {
-                employees,
-                payrollVariables,
-                employeeData,
+        async function saveData() {
+            const startEl = document.getElementById('periodStart');
+            const endEl = document.getElementById('periodEnd');
+            const ticketEl = document.getElementById('periodTicket');
+            const replaceEl = document.getElementById('replaceTicket'); // peut ne pas exister
+
+            const payload = {
                 period: {
-                    start: document.getElementById('periodStart').value,
-                    end: document.getElementById('periodEnd').value
-                }
+                    start: startEl?.value || '',
+                    end: endEl?.value || ''
+                },
+                employeeData, // doit exister dans ton scope
+                replace_ticket: replaceEl?.value || null
             };
 
-            localStorage.setItem('payrollData', JSON.stringify(data));
-            showNotification('Données sauvegardées avec succès', 'success');
+            try {
+                const res = await fetch("{{ route('payroll.saveByTicket') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (_) {}
+
+                // --- Erreurs ---
+                if (!res.ok) {
+                    if (res.status === 419) {
+                        showNotification('Session expirée. Rafraîchis la page et réessaie.', 'error');
+                        return;
+                    }
+                    if (res.status === 422) {
+                        if (typeof handleValidationErrors === 'function') {
+                            handleValidationErrors(data); // utilisera data.errors / data.first_error
+                        } else {
+                            showNotification(data.first_error || data.message || 'Données invalides', 'error');
+                        }
+                    } else {
+                        showNotification(data.message || 'Erreur lors de la sauvegarde', 'error');
+                    }
+                    return;
+                }
+
+                // --- Succès ---
+                if (typeof clearFieldErrors === 'function') clearFieldErrors();
+
+                const mode = data?.data?.mode;
+                const successMsg =
+                    data?.message ??
+                    (mode === 'renamed_and_replaced' ?
+                        'Le ticket a été renommé et les données ont été remplacées.' :
+                        mode === 'replaced' ?
+                        'Ticket existant : données remplacées.' :
+                        mode === 'created' ?
+                        'Ticket créé : période enregistrée et lignes insérées.' :
+                        'Données sauvegardées avec succès');
+
+                showNotification(successMsg, 'success');
+
+                // MAJ de l’input "Ticket généré"
+                if (data?.data?.ticket && ticketEl) {
+                    ticketEl.value = data.data.ticket;
+                }
+
+                // Rafraîchir la liste des tickets remplaçables (si présent)
+                if (typeof loadReplaceableTickets === 'function') {
+                    loadReplaceableTickets(); // éventuellement { excludeCurrent: true/false }
+                }
+
+                // Optionnel : reset la sélection "ticket à remplacer"
+                if (replaceEl) replaceEl.value = '';
+
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde AJAX:', error);
+                showNotification('Erreur réseau lors de la sauvegarde', 'error');
+            }
         }
+
 
         function loadData() {
             const savedData = localStorage.getItem('payrollData');
