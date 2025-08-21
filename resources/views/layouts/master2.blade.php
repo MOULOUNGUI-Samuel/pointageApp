@@ -19,7 +19,7 @@
     }
 </style>
 
-<body>
+<body  style="background-color: rgb(240, 243, 243)">
 
     <!-- Preloader -->
     <div id="preloader" class="preloader-single">
