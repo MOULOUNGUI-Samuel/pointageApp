@@ -51,6 +51,7 @@ return new class extends Migration
         $table->string('certificat_travail')->nullable();
         $table->string('type_contrat')->nullable();
         $table->integer('salaire')->nullable();
+        $table->integer('salairebase')->nullable();
         $table->string('mode_paiement')->nullable();
         $table->string('iban')->nullable();
         $table->string('superieur_hierarchique')->nullable();

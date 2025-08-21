@@ -61,7 +61,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="data-table-basic" class="table table-striped">
+                            <table id="example2" class="w-full table table-striped table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Photo</th>

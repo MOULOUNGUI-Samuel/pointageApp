@@ -52,6 +52,7 @@ class User extends Authenticatable
         'categorie_professionel_id',
         'type_contrat',
         'salaire',
+        'salairebase',
         'mode_paiement',
         'iban',
         'bic',

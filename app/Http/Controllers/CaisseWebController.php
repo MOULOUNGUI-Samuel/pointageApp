@@ -177,11 +177,11 @@ class CaisseWebController extends Controller
         $v = Validator::make(
             $request->all(),
             [
-                'period.start'   => ['bail','required','date'],
-                'period.end'     => ['bail','required','date','after_or_equal:period.start'],
-                'employeeData'   => ['bail','required','array'],
-                'employeeData.*' => ['bail','array'],
-                'replace_ticket' => ['nullable','string','max:20'],
+                'period.start'   => ['bail', 'required', 'date'],
+                'period.end'     => ['bail', 'required', 'date', 'after_or_equal:period.start'],
+                'employeeData'   => ['bail', 'required', 'array'],
+                'employeeData.*' => ['bail', 'array'],
+                'replace_ticket' => ['nullable', 'string', 'max:20'],
             ],
             [
                 'required'                    => 'Le champ :attribute est obligatoire.',
@@ -197,7 +197,7 @@ class CaisseWebController extends Controller
                 'replace_ticket' => 'ticket à remplacer',
             ]
         );
-        
+
         if ($v->fails()) {
             $errors = $v->errors();
             return response()->json([
@@ -206,8 +206,8 @@ class CaisseWebController extends Controller
                 'errors'      => $errors->toArray(),   // ex: ['period.start'=>['...'], ...]
             ], 422);
         }
-        
-        
+
+
 
         $data = $v->validated();
 
@@ -229,7 +229,7 @@ class CaisseWebController extends Controller
 
             // ---------- Préchargements (performances) ----------
             $employeeKeys = array_keys($data['employeeData']); // clés = matricules ou ids
-            $users = User::whereIn('matricule', $employeeKeys)
+            $users = User::whereIn('id', $employeeKeys)
                 ->orWhereIn('id', $employeeKeys)
                 ->get(['id', 'matricule']);
 
@@ -417,5 +417,95 @@ class CaisseWebController extends Controller
             ->orderBy('date_debut', 'desc')
             ->get(['ticket', 'date_debut', 'date_fin']);
         return response()->json(['data' => $tickets]);
+    }
+
+    public function loadTicketData(Request $request, string $ticket)
+    {
+        $entrepriseId = session('entreprise_id');
+
+        if (!PayrollTicket::isValid($ticket)) {
+            return response()->json([
+                'message' => 'Ticket invalide.',
+            ], 422);
+        }
+
+        $periode = PeriodePaie::where('entreprise_id', $entrepriseId)
+            ->where('ticket', $ticket)
+            ->first();
+
+        if (!$periode) {
+            return response()->json([
+                'message' => "Aucune période trouvée pour le ticket {$ticket}.",
+            ], 404);
+        }
+
+        // On récupère toutes les lignes de la période, avec le nom de la variable, son type et sa catégorie
+        $rows = DB::table('variable_periode_users as vpu')
+            ->join('users as u', 'u.id', '=', 'vpu.user_id')
+            ->join('variables as v', 'v.id', '=', 'vpu.variable_id')
+            ->leftJoin('categories as c', 'c.id', '=', 'v.categorie_id')
+            ->where('vpu.periode_paie_id', $periode->id)
+            ->get([
+                'u.id as user_id',
+                'u.matricule',
+                'v.nom_variable',
+                'v.type',
+                'c.nom_categorie',
+                'vpu.montant',
+            ]);
+
+        // Transforme en structure employeeData attendue côté front
+        // et récupère la liste unique des variables pour compléter payrollVariables si besoin
+        $employeeData = [];
+        $variables = []; // unique par nom_variable
+
+        foreach ($rows as $r) {
+            // ⚠️ Ne renvoie pas les lignes à 0 : elles doivent être considérées "supprimées"
+            if ((float)$r->montant <= 0) continue;
+
+            $empKey = (string)$r->user_id; // correspond à ton mapping front
+            if (!isset($employeeData[$empKey])) $employeeData[$empKey] = [];
+            $employeeData[$empKey][$r->nom_variable] = (float)$r->montant;
+
+            if (!isset($variables[$r->nom_variable])) {
+                $variables[$r->nom_variable] = [
+                    'name'     => $r->nom_variable,
+                    'type'     => $r->type,                   // 'gain' | 'deduction'
+                    'category' => $r->nom_categorie ?? '—',
+                ];
+            }
+        }
+
+        return response()->json([
+            'data' => [
+                'ticket'  => $periode->ticket,
+                'period'  => [
+                    'start' => $periode->date_debut instanceof \Carbon\Carbon
+                        ? $periode->date_debut->toDateString()
+                        : (string)$periode->date_debut,
+                    'end'   => $periode->date_fin instanceof \Carbon\Carbon
+                        ? $periode->date_fin->toDateString()
+                        : (string)$periode->date_fin,
+                ],
+                // map prêt à l’emploi pour ton JS
+                'employeeData' => $employeeData,
+                // liste des variables présentes sur ce ticket
+                'variables'    => array_values($variables),
+            ],
+        ], 200);
+    }
+
+    public function updateBaseSalary(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:users,id', // Assurez-vous d'utiliser le bon champ
+            'base_salary' => 'required|numeric|min:0'
+        ]);
+
+        $employee = User::where('id', $request->employee_id)->firstOrFail(); // Utilisez le bon champ pour trouver l'employé
+        $employee->salairebase = $request->base_salary; // Assurez-vous que le champ est correct
+        $employee->save();
+
+        return response()->json(['message' => 'Salaire de base mis à jour avec succès']);
     }
 }

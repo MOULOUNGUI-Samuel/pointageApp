@@ -181,6 +181,12 @@
                     class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-100">
                     <i class="fas fa-chart-bar mr-2"></i>Synthèse
                 </button>
+                <div>
+                    <select id="replaceTicket" class="form-select shadow">
+                        <option value="">Choix du ticket</option>
+                        {{-- tu peux pré-remplir côté Blade si tu veux --}}
+                    </select>
+                </div>
                 @if (session('success'))
                     <div class="alert alert-success rounded-pill alert-dismissible fade show">
                         <strong class="me-5"><i class="fas fa-check me-2"></i> {{ session('success') }}</strong>
@@ -188,6 +194,7 @@
                                 class="fas fa-xmark"></i></button>
                     </div>
                 @endif
+
             </div>
         </div>
 
@@ -213,13 +220,7 @@
                         <input type="text" id="periodTicket" class="w-full px-4 py-3 border rounded-lg input-focus"
                             readonly placeholder="Ticket (auto)">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tickets pouvant être remplacés</label>
-                        <select id="replaceTicket" class="form-select">
-                            <option value="">Choix du ticket</option>
-                            {{-- tu peux pré-remplir côté Blade si tu veux --}}
-                        </select>
-                    </div>
+
                 </div>
                 <script>
                     (function() {
@@ -543,29 +544,32 @@
                         <i class="fas fa-users mr-2 "></i>Détail par Employé
                     </h3>
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Employé</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Salaire Base</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Gains Variables</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Retenues</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Salaire Net</th>
-                                </tr>
-                            </thead>
-                            <tbody id="employeeDetailsBody" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+
+                            <table id="example2" class="w-full table table-striped table-bordered">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Employé</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Salaire Base</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Gains Variables</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Retenues</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Salaire Net</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeDetailsBody" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -583,7 +587,7 @@
 
     <!-- Modals -->
     <!-- Modal: Ajouter Employé -->
-    <div id="addEmployeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 no-print">
+    <div id="addEmployeeModal" class="fixed inset-0 hidden z-50 no-print" style="background-color: rgba(0, 0, 0, 0.393)">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
                 <div class="p-6 border-b border-gray">
@@ -592,62 +596,132 @@
                     </h3>
                 </div>
                 <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-                        <input type="text" id="newEmployeeLastName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus"
-                            placeholder="Nom de famille">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
-                        <input type="text" id="newEmployeeFirstName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus" placeholder="Prénom">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Poste</label>
-                        <input type="text" id="newEmployeePosition"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus"
-                            placeholder="Poste occupé">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Service</label>
-                        <select id="newEmployeeDepartment"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
-                            <option value="Administration">Administration</option>
-                            <option value="Comptabilité">Comptabilité</option>
-                            <option value="Commercial">Commercial</option>
-                            <option value="Technique">Technique</option>
-                            <option value="RH">Ressources Humaines</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Salaire de Base (F CFA)</label>
-                        <input type="number" id="newEmployeeBaseSalary"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus" placeholder="200000"
-                            min="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                        <select id="newEmployeeStatus"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
-                            <option value="CDI">CDI</option>
-                            <option value="CDD">CDD</option>
-                            <option value="Stage">Stage</option>
-                            <option value="Consultant">Consultant</option>
-                        </select>
+                    <div class="mb-3">
+                        <label class="form-label">Salaire de base</label>
+                        <input type="text" id="newEmployeeBaseSalary" class="form-control" min="0"
+                            placeholder="Salaire" required>
+                        <input type="hidden" class="form-control" id="employeeIdToUpdate" value="">
+                        <!-- Champ caché pour l'ID -->
                     </div>
                 </div>
                 <div class="p-6 border-t border-gray flex justify-end space-x-3">
                     <button onclick="closeAddEmployeeModal()"
                         class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">Annuler</button>
-                    <button onclick="addEmployee()"
+                    <button onclick="updateEmployeeBaseSalary()"
                         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ajouter</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+		$(document).ready(function() {
+			var table = $('#example2').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#example2_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
 
+    <script>
+        (function() {
+            const replaceEl = document.getElementById('replaceTicket');
+            const startEl = document.getElementById('periodStart');
+            const endEl = document.getElementById('periodEnd');
+            const ticketEl = document.getElementById('periodTicket');
 
+            // Injecte les variables backend manquantes dans payrollVariables
+            function ensurePayrollVariables(varsFromBackend) {
+                if (!Array.isArray(varsFromBackend)) return;
+
+                const names = new Set(payrollVariables.map(v => v.name));
+                varsFromBackend.forEach(v => {
+                    if (!names.has(v.name)) {
+                        payrollVariables.push({
+                            name: v.name,
+                            type: v.type === 'deduction' ? 'deduction' : 'gain',
+                            category: v.category || '—'
+                        });
+                        names.add(v.name);
+                    }
+                });
+            }
+
+            // Convertit la map employeeData reçue en s’assurant que les employés existent
+            function applyEmployeeData(map) {
+                // reset toutes les saisies courantes
+                window.employeeData = {};
+
+                if (!map || typeof map !== 'object') return;
+
+                // Construire un index de recherche employé par clé (matricule d’abord, sinon id)
+                const empIndex = {};
+                (employees || []).forEach(e => {
+                    if (e.id) empIndex[e.id] = e; // ici e.id = matricule OU id selon ton mapping
+                });
+
+                // Injecte chaque valeur si l’employé est connu
+                Object.keys(map).forEach(empKey => {
+                    if (!empIndex[empKey]) return; // ignore les employés non chargés côté front
+                    window.employeeData[empKey] = {};
+                    const vars = map[empKey] || {};
+                    Object.keys(vars).forEach(varName => {
+                        const val = parseFloat(vars[varName]) || 0;
+                        if (val > 0) { // on n’enregistre pas les 0 (considérés supprimés)
+                            window.employeeData[empKey][varName] = val;
+                        }
+                    });
+                });
+            }
+
+            async function fetchTicketData(ticket) {
+                const url = `{{ url('/payroll/period') }}/${encodeURIComponent(ticket)}/data`;
+                const res = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const json = await res.json();
+                if (!res.ok) {
+                    throw new Error(json.message || 'Impossible de charger les données du ticket.');
+                }
+                return json.data;
+            }
+
+            async function onReplaceTicketChange(e) {
+                const ticket = e.target.value;
+                if (!ticket) return; // rien sélectionné
+
+                try {
+                    // 1) Récupère les montants et la période
+                    const data = await fetchTicketData(ticket);
+
+                    // 2) Mise à jour de l’UI période
+                    if (startEl) startEl.value = data?.period?.start || '';
+                    if (endEl) endEl.value = data?.period?.end || '';
+                    if (ticketEl) ticketEl.value = data?.ticket || ticket;
+
+                    // 3) Variables (ajoute celles manquantes pour que le tableau ait bien les colonnes)
+                    ensurePayrollVariables(data?.variables || []);
+
+                    // 4) Montants -> employeeData
+                    applyEmployeeData(data?.employeeData || {});
+
+                    // 5) Re-render des vues impactées
+                    if (typeof renderPayrollTable === 'function') renderPayrollTable(); // Saisie globale
+                    if (typeof renderEmployeeSelector === 'function') renderEmployeeSelector(); // Saisie détaillée
+                    if (typeof calculateSynthesis === 'function') calculateSynthesis(); // Synthèse
+                } catch (err) {
+                    console.error(err);
+                    showNotification(err.message || 'Erreur lors du chargement du ticket', 'error');
+                }
+            }
+
+            replaceEl?.addEventListener('change', onReplaceTicketChange);
+        })();
+    </script>
 
     <script>
         // IDs des champs à mapper depuis les clés de validation Laravel
@@ -835,7 +909,8 @@
 
         // --- Transformation en "employees" dynamiques ---
         const employees = resultsUtilisateur.map(u => ({
-            id: u.matricule ?? u.id, // choisis l’un des deux
+            id: u.id, // choisis l’un des deux
+            matricule: u.matricule, // choisis l’un des deux
             firstName: u.prenom ?? '—',
             lastName: u.nom ?? '—',
             position: u.fonction // champ direct si présent
@@ -845,10 +920,11 @@
                 '—',
             department: u.service?.nom_service ?? '—', // vérifie le nom du champ de ta table service
             role: u.role?.nom ?? '—',
-            baseSalary: u.salaire ? Number(u.salaire) : null, // "350000" -> 350000
+            baseSalary: u.salairebase ? Number(u.salairebase) : null, // "350000" -> 350000
             status: u.type_contrat ?? '—', // ou derive de date_fin_contrat si besoin
             actif: u.statu_user === 1 // bool utile côté UI
         }));
+
 
 
 
@@ -957,8 +1033,8 @@
             );
 
             tbody.innerHTML = filteredEmployees.map(emp => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.id}</td>
+                 <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.matricule}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">${emp.lastName} ${emp.firstName}</div>
                     </td>
@@ -971,11 +1047,8 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium no-print">
-                        <button onclick="editEmployee('${emp.id}')" class=" hover:text-blue-900 mr-3">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteEmployee('${emp.id}')" class="text-red-600 hover:text-red-900">
-                            <i class="fas fa-trash"></i>
+                        <button onclick="editEmployee('${emp.id}')" class="btn btn-primary hover:text-blue-900 mr-3">
+                            <i class="fas fa-edit me-2"></i> modifier salaire de base
                         </button>
                     </td>
                 </tr>
@@ -1007,63 +1080,93 @@
 
         function closeAddEmployeeModal() {
             document.getElementById('addEmployeeModal').classList.add('hidden');
-            document.getElementById('newEmployeeLastName').value = '';
-            document.getElementById('newEmployeeFirstName').value = '';
-            document.getElementById('newEmployeePosition').value = '';
-            document.getElementById('newEmployeeDepartment').value = 'Administration';
+            const department = document.getElementById('employeeIdToUpdate').value;
             document.getElementById('newEmployeeBaseSalary').value = '';
-            document.getElementById('newEmployeeStatus').value = 'CDI';
         }
 
-        function addEmployee() {
-            const lastName = document.getElementById('newEmployeeLastName').value.trim();
-            const firstName = document.getElementById('newEmployeeFirstName').value.trim();
-            const position = document.getElementById('newEmployeePosition').value.trim();
-            const department = document.getElementById('newEmployeeDepartment').value;
-            const baseSalary = parseFloat(document.getElementById('newEmployeeBaseSalary').value);
-            const status = document.getElementById('newEmployeeStatus').value;
+        async function updateEmployeeBaseSalary() {
+            const idEl = document.getElementById('employeeIdToUpdate');
+            const salEl = document.getElementById('newEmployeeBaseSalary');
 
-            if (!lastName || !firstName || !position || !baseSalary || baseSalary <= 0) {
-                showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+            const employeeId = (idEl?.value || '').trim(); // id ou matricule
+            const salaryText = (salEl?.value || '').replace(/\s/g, '');
+            const baseSalary = parseFloat(salaryText.replace(',', '.'));
+
+            if (!employeeId || isNaN(baseSalary) || baseSalary < 0) {
+                showNotification('Veuillez entrer un salaire de base valide', 'error', 9000);
                 return;
             }
 
-            const newEmployee = {
-                id: generateEmployeeId(),
-                firstName,
-                lastName,
-                position,
-                department,
-                baseSalary,
-                status
-            };
+            try {
+                const res = await fetch("{{ route('employees.updateBaseSalary') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content'),
+                    },
+                    body: JSON.stringify({
+                        employee_id: employeeId,
+                        base_salary: baseSalary
+                    })
+                });
 
-            employees.push(newEmployee);
-            renderEmployeesTable();
-            closeAddEmployeeModal();
-            showNotification('Employé ajouté avec succès', 'success');
-        }
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (_) {}
 
-        function deleteEmployee(employeeId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet employé ?')) {
-                employees = employees.filter(emp => emp.id !== employeeId);
-                renderEmployeesTable();
-                showNotification('Employé supprimé avec succès', 'success');
+                if (!res.ok) {
+                    if (res.status === 419) {
+                        showNotification('Session expirée. Rechargez la page et réessayez.', 'error', 9000);
+                        return;
+                    }
+                    if (res.status === 422 && data?.errors) {
+                        showNotification(data.message || 'Données invalides.', 'error', 9000);
+                        return;
+                    }
+                    showNotification(data.message || 'Erreur lors de la mise à jour du salaire de base', 'error', 9000);
+                    return;
+                }
+
+                // Mise à jour locale du salarié (par id OU par matricule)
+                if (Array.isArray(window.employees)) {
+                    const idx = employees.findIndex(e =>
+                        String(e.id) === String(employeeId) || String(e.matricule) === String(employeeId)
+                    );
+                    if (idx !== -1) employees[idx].baseSalary = Number(data.data.base_salary);
+                }
+
+                // Rafraîchir les vues dépendantes
+                typeof renderEmployeesTable === 'function' && renderEmployeesTable();
+                typeof renderPayrollTable === 'function' && renderPayrollTable();
+                typeof calculateSynthesis === 'function' && calculateSynthesis();
+
+                // Fermer la bonne modale
+                document.getElementById('addEmployeeModal')?.classList.add('hidden');
+
+                // Reset champs
+                salEl.value = '';
+                idEl.value = '';
+
+                showNotification(data.message || 'Salaire de base mis à jour', 'success', 7000);
+
+            } catch (error) {
+                console.error(error);
+                showNotification('Erreur lors de la mise à jour du salaire de base (réseau)', 'error', 9000);
             }
         }
+
+
 
         function editEmployee(employeeId) {
             const employee = employees.find(emp => emp.id === employeeId);
             if (!employee) return;
-
-            document.getElementById('newEmployeeLastName').value = employee.lastName;
-            document.getElementById('newEmployeeFirstName').value = employee.firstName;
-            document.getElementById('newEmployeePosition').value = employee.position;
-            document.getElementById('newEmployeeDepartment').value = employee.department;
             document.getElementById('newEmployeeBaseSalary').value = employee.baseSalary;
-            document.getElementById('newEmployeeStatus').value = employee.status;
+            document.getElementById('employeeIdToUpdate').value = employee.id;
 
-            deleteEmployee(employeeId);
+            // deleteEmployee(employeeId);
             showAddEmployeeModal();
         }
 
@@ -1122,7 +1225,7 @@
         ${
           group.items.length
           ? `<div class="space-y-2">
-                                                      ${group.items.map(variable => `
+                                                                              ${group.items.map(variable => `
                 <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
                   <div class="flex items-center">
                     <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
@@ -1133,11 +1236,11 @@
                   </button>
                 </div>
               `).join('')}
-                                                    </div>`
+                                    </div>`
           : `
-                                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                      <span>Aucune variable dans cette catégorie</span>
-                                                    </div>`
+                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                        <span>Aucune variable dans cette catégorie</span>
+                                    </div>`
         }
       </div>
     `).join('');
@@ -1323,7 +1426,7 @@
                         0;
                     rowHTML += `
                         <td class="px-4 py-4 whitespace-nowrap">
-                            <input type="number" 
+                            <input type="number"
                                    class="w-24 px-2 py-1 text-sm text-right border border-gray-300 rounded input-focus" 
                                    placeholder="0" 
                                    min="0" 
@@ -1425,7 +1528,7 @@
                         </div>
                         <div>
                             <div class="font-semibold text-primary">${emp.lastName} ${emp.firstName}</div>
-                            <div class="text-sm text-gray-600">${emp.id} • ${emp.department}</div>
+                            <div class="text-sm text-gray-600">${emp.matricule} • ${emp.department}</div>
                             <div class="text-sm font-medium ">${formatCurrency(emp.baseSalary)}</div>
                         </div>
                     </div>
@@ -1493,6 +1596,78 @@
                     deductionsForm.innerHTML += fieldHTML;
                 }
             });
+        }
+        const replaceTicketSelect = document.getElementById('replaceTicket');
+
+        replaceTicketSelect.addEventListener('change', function() {
+            const selectedTicket = this.value;
+            if (selectedTicket) {
+                loadTicketData(selectedTicket);
+            } else {
+                // Si aucun ticket n'est sélectionné, réinitialiser les données
+                employeeData = {};
+                renderPayrollTable();
+            }
+        });
+        async function loadTicketData(ticket) {
+            try {
+                const res = await fetch("{{ route('payroll.period.data', ['ticket' => '__TICKET__']) }}".replace(
+                    '__TICKET__', ticket), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    showNotification(data.message || 'Erreur lors du chargement des données du ticket', 'error');
+                    employeeData = {}; // Réinitialiser en cas d'erreur
+                    renderPayrollTable();
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Mettre à jour les dates de période
+                document.getElementById('periodStart').value = data.data.period.start;
+                document.getElementById('periodEnd').value = data.data.period.end;
+
+                // Mettre à jour employeeData avec les données du ticket
+                employeeData = data.data.employeeData;
+
+                // Ajouter les nouvelles variables du ticket à payrollVariables si elles n'existent pas déjà
+                data.data.variables.forEach(newVar => {
+                    const alreadyExists = payrollVariables.some(existingVar => existingVar.name === newVar
+                        .name);
+                    if (!alreadyExists) {
+                        payrollVariables.push({
+                            id: newVar.id || null, // Important si l'ID est utilisé
+                            name: newVar.name,
+                            type: newVar.type,
+                            category: newVar.category
+                        });
+                    }
+                });
+
+                // (optionnel) tri par catégorie puis par nom pour un affichage propre
+                payrollVariables.sort((a, b) => {
+                    const cA = (a.category || '').localeCompare(b.category || '');
+                    return cA !== 0 ? cA : (a.name || '').localeCompare(b.name || '');
+                });
+
+                // Recharger le tableau
+                renderPayrollTable();
+
+                showNotification('Données du ticket chargées avec succès', 'success');
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showNotification('Erreur lors du chargement des données du ticket (réseau)', 'error');
+                employeeData = {}; // Réinitialiser en cas d'erreur
+                renderPayrollTable();
+            }
         }
 
         function handleDetailInput(input) {

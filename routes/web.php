@@ -181,12 +181,16 @@ Route::middleware('auth')->group(
         Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
             ->name('variables.ajax.store');
 
-            Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
+        Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
         Route::post('/variables', [CaisseWebController::class, 'storeAjax'])->name('variables.store');
         Route::delete('/variables/{id}', [CaisseWebController::class, 'destroy'])->name('variables.destroy');
-        Route::post('/payroll/save-ticket', [CaisseWebController::class,'saveByTicket'])->name('payroll.saveByTicket');
-Route::get('/payroll/tickets/replaceable', [CaisseWebController::class,'listReplaceableTickets'])->name('payroll.tickets.replaceable');
+        Route::post('/payroll/save-ticket', [CaisseWebController::class, 'saveByTicket'])->name('payroll.saveByTicket');
+        Route::get('/payroll/tickets/replaceable', [CaisseWebController::class, 'listReplaceableTickets'])->name('payroll.tickets.replaceable');
+        // routes/web.php
+        Route::get('/payroll/period/{ticket}/data', [CaisseWebController::class, 'loadTicketData'])
+            ->name('payroll.period.data');
 
+            Route::post('/employees/update-base-salary', [CaisseWebController::class, 'updateBaseSalary'])->name('employees.updateBaseSalary');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
