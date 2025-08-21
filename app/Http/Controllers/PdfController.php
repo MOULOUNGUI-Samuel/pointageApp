@@ -345,18 +345,22 @@ class PdfController extends Controller
         }
         $entrepriseId = session('entreprise_id');
         $entreprise   = Entreprise::findOrFail($entrepriseId);
-        
+
         // --- 1) Période via ticket (comme dans loadTicketData) ---
         $periode = PeriodePaie::where('entreprise_id', $entrepriseId)
-        ->where('ticket', $ticket)
-        ->first();
-        
+            ->where('ticket', $ticket)
+            ->first()
+            ?? PeriodePaie::where('entreprise_id', $entrepriseId)
+            ->latest('created_at')
+            ->first();
+
+
         // --- 2) Employés actifs de l’entreprise (mêmes relations que dans ta vue) ---
         $users = User::with(['categorieProfessionnelle', 'service', 'role'])
-        ->where('statu_user', 1)
-        ->where('entreprise_id', $entrepriseId)
-        ->orderBy('nom')
-        ->get();
+            ->where('statu_user', 1)
+            ->where('entreprise_id', $entrepriseId)
+            ->orderBy('nom')
+            ->get();
         // dd($periode);
 
         // --- 3) Lignes variables pour cette période ---
@@ -556,151 +560,158 @@ class PdfController extends Controller
             ->header('Content-Disposition', 'inline; filename="saisie-variables-' . $ticket . '.pdf"');
     }
 
-    
+
     public function detailParEmployerTablePdf(Request $request, string $ticket)
     {
-    function fcfa($n) { return number_format((float)$n, 0, ',', ' ') . ' F CFA'; }
-    $entrepriseId = session('entreprise_id');
+        function fcfa($n)
+        {
+            return number_format((float)$n, 0, ',', ' ') . ' F CFA';
+        }
+        $entrepriseId = session('entreprise_id');
 
-    // 1) Période depuis le ticket
-    $periode = PeriodePaie::where('entreprise_id', $entrepriseId)
+        // 1) Période depuis le ticket
+        $periode = PeriodePaie::where('entreprise_id', $entrepriseId)
         ->where('ticket', $ticket)
-        ->firstOrFail();
+        ->first()
+        ?? PeriodePaie::where('entreprise_id', $entrepriseId)
+        ->latest('created_at')
+            ->firstOrFail();
 
-    // 2) Employés actifs de l’entreprise (mêmes que dans l’écran)
-    $users = User::where('entreprise_id', $entrepriseId)
-        ->where('statu_user', 1)
-        ->orderBy('nom')
-        ->get(['id','nom','prenom','salairebase']);
+        // 2) Employés actifs de l’entreprise (mêmes que dans l’écran)
+        $users = User::where('entreprise_id', $entrepriseId)
+            ->where('statu_user', 1)
+            ->orderBy('nom')
+            ->get(['id', 'nom', 'prenom', 'salairebase']);
 
-    // 3) Agrégats variables par employé pour cette période
-    $aggs = DB::table('variable_periode_users as vpu')
-        ->join('variables as v', 'v.id', '=', 'vpu.variable_id')
-        ->where('vpu.periode_paie_id', $periode->id)
-        ->select([
-            'vpu.user_id',
-            DB::raw("SUM(CASE WHEN v.type='gain' THEN vpu.montant ELSE 0 END) AS total_gains"),
-            DB::raw("SUM(CASE WHEN v.type='deduction' THEN vpu.montant ELSE 0 END) AS total_retenues"),
-        ])
-        ->groupBy('vpu.user_id')
-        ->get()
-        ->keyBy('user_id'); // accès rapide: $aggs[$userId]
+        // 3) Agrégats variables par employé pour cette période
+        $aggs = DB::table('variable_periode_users as vpu')
+            ->join('variables as v', 'v.id', '=', 'vpu.variable_id')
+            ->where('vpu.periode_paie_id', $periode->id)
+            ->select([
+                'vpu.user_id',
+                DB::raw("SUM(CASE WHEN v.type='gain' THEN vpu.montant ELSE 0 END) AS total_gains"),
+                DB::raw("SUM(CASE WHEN v.type='deduction' THEN vpu.montant ELSE 0 END) AS total_retenues"),
+            ])
+            ->groupBy('vpu.user_id')
+            ->get()
+            ->keyBy('user_id'); // accès rapide: $aggs[$userId]
 
-    // 4) Construire les lignes dynamiques pour le tableau PDF
-    $rows = [];
-    foreach ($users as $u) {
-        $g = (float)($aggs[$u->id]->total_gains ?? 0);
-        $r = (float)($aggs[$u->id]->total_retenues ?? 0);
-        $rows[] = [
-            'name'     => trim(($u->nom ?? '').' '.($u->prenom ?? '')),
-            'base'     => (float)($u->salairebase ?? 0),
-            'gains'    => $g,
-            'retenues' => $r,
-        ];
-    }
-
-    // 5) Génération du PDF (paysage)
-    $pdf = new PdfList('L', 'mm', 'A4');
-    $pdf->AliasNbPages();
-    $pdf->SetMargins(12, 20, 12);
-
-    // En-tête
-    $pdf->logoPath  = public_path(session('entreprise_logo')
-        ? 'storage/' . ltrim(session('entreprise_logo'), '/')
-        : 'src/image/logo.png');
-    $pdf->printedBy = Auth::user()->nom ?? 'Système';
-    $pdf->title     = "Détail par Employé du [{$periode->date_debut}] au [{$periode->date_fin}]";
-
-    $pdf->AddPage();
-
-    $t = fn($s) => mb_convert_encoding($s ?? '', 'ISO-8859-1', 'UTF-8');
-
-    // Colonnes
-    $left   = 12;
-    $pageW  = $pdf->GetPageWidth();
-    $right  = 12;
-    $usable = $pageW - $left - $right;
-
-    $wEmp  = 108;
-    $wBase = 40;
-    $wGain = 40;
-    $wRet  = 40;
-    $wNet  = 45;
-    $hRow  = 10;
-    
-    // Entête du tableau
-    $drawHeader = function() use ($pdf, $t, $left, $wEmp, $wBase, $wGain, $wRet, $wNet, $hRow) {
-        $pdf->SetFillColor(245,245,245);
-        $pdf->SetDrawColor(210,210,210);
-        $pdf->SetFont('Arial','B',10);
-        $pdf->SetX($left);
-        $pdf->Cell($wEmp,  $hRow, $t('EMPLOYÉ'),         1, 0, 'L', true);
-        $pdf->Cell($wBase, $hRow, $t('SALAIRE BASE'),    1, 0, 'C', true);
-        $pdf->Cell($wGain, $hRow, $t('GAINS VARIABLES'), 1, 0, 'C', true);
-        $pdf->Cell($wRet,  $hRow, $t('RETENUES'),        1, 0, 'C', true);
-        $pdf->Cell($wNet,  $hRow, $t('SALAIRE NET'),     1, 1, 'C', true);
-    };
-
-// Dans la boucle pour chaque employé
-
-    $drawHeader();
-
-    // Corps
-    $y = $pdf->GetY();
-    $alt = false;
-
-    $totalBase = $totalGain = $totalRet = $totalNet = 0;
-
-    $pdf->SetFont('Arial','',10);
-    foreach ($rows as $r) {
-        // Saut de page
-        if ($y > $pdf->GetPageHeight() - 30) {
-            $pdf->AddPage();
-            $drawHeader();
-            $y = $pdf->GetY();
+        // 4) Construire les lignes dynamiques pour le tableau PDF
+        $rows = [];
+        foreach ($users as $u) {
+            $g = (float)($aggs[$u->id]->total_gains ?? 0);
+            $r = (float)($aggs[$u->id]->total_retenues ?? 0);
+            $rows[] = [
+                'name'     => trim(($u->nom ?? '') . ' ' . ($u->prenom ?? '')),
+                'base'     => (float)($u->salairebase ?? 0),
+                'gains'    => $g,
+                'retenues' => $r,
+            ];
         }
 
-        $base = (float)$r['base'];
-        $gain = (float)$r['gains'];
-        $ret  = (float)$r['retenues'];
-        $net  = $base + $gain - $ret;
+        // 5) Génération du PDF (paysage)
+        $pdf = new PdfList('L', 'mm', 'A4');
+        $pdf->AliasNbPages();
+        $pdf->SetMargins(12, 20, 12);
 
-        $totalBase += $base;
-        $totalGain += $gain;
-        $totalRet  += $ret;
-        $totalNet  += $net;
+        // En-tête
+        $pdf->logoPath  = public_path(session('entreprise_logo')
+            ? 'storage/' . ltrim(session('entreprise_logo'), '/')
+            : 'src/image/logo.png');
+        $pdf->printedBy = Auth::user()->nom ?? 'Système';
+        $pdf->title     = "Détail par Employé du [{$periode->date_debut}] au [{$periode->date_fin}]";
 
-        if ($alt) $pdf->SetFillColor(245,245,245); else $pdf->SetFillColor(255,255,255);
-        $pdf->SetDrawColor(230,230,230);
+        $pdf->AddPage();
 
-        $pdf->SetX($left);
-        $pdf->SetFont('Arial','',10);
-        $pdf->Cell($wEmp,  $hRow, $t(mb_strtoupper($r['name'], 'UTF-8')), 1, 0, 'L', true);
-        $pdf->Cell($wBase, $hRow, $t(fcfa($base)), 1, 0, 'R', true);
-        $pdf->Cell($wGain, $hRow, $t(fcfa($gain)), 1, 0, 'R', true);
-        $pdf->Cell($wRet,  $hRow, $t(fcfa($ret)),  1, 0, 'R', true);
-        
-        $pdf->SetFont('Arial','B',10); // mettre en gras uniquement ici
-        $pdf->Cell($wNet,  $hRow, $t(fcfa($net)),  1, 1, 'R', true);
-        $pdf->SetFont('Arial','',10); // revenir à normal
+        $t = fn($s) => mb_convert_encoding($s ?? '', 'ISO-8859-1', 'UTF-8');
 
+        // Colonnes
+        $left   = 12;
+        $pageW  = $pdf->GetPageWidth();
+        $right  = 12;
+        $usable = $pageW - $left - $right;
+
+        $wEmp  = 108;
+        $wBase = 40;
+        $wGain = 40;
+        $wRet  = 40;
+        $wNet  = 45;
+        $hRow  = 10;
+
+        // Entête du tableau
+        $drawHeader = function () use ($pdf, $t, $left, $wEmp, $wBase, $wGain, $wRet, $wNet, $hRow) {
+            $pdf->SetFillColor(245, 245, 245);
+            $pdf->SetDrawColor(210, 210, 210);
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->SetX($left);
+            $pdf->Cell($wEmp,  $hRow, $t('EMPLOYÉ'),         1, 0, 'L', true);
+            $pdf->Cell($wBase, $hRow, $t('SALAIRE BASE'),    1, 0, 'C', true);
+            $pdf->Cell($wGain, $hRow, $t('GAINS VARIABLES'), 1, 0, 'C', true);
+            $pdf->Cell($wRet,  $hRow, $t('RETENUES'),        1, 0, 'C', true);
+            $pdf->Cell($wNet,  $hRow, $t('SALAIRE NET'),     1, 1, 'C', true);
+        };
+
+        // Dans la boucle pour chaque employé
+
+        $drawHeader();
+
+        // Corps
         $y = $pdf->GetY();
-        $alt = !$alt;
+        $alt = false;
+
+        $totalBase = $totalGain = $totalRet = $totalNet = 0;
+
+        $pdf->SetFont('Arial', '', 10);
+        foreach ($rows as $r) {
+            // Saut de page
+            if ($y > $pdf->GetPageHeight() - 30) {
+                $pdf->AddPage();
+                $drawHeader();
+                $y = $pdf->GetY();
+            }
+
+            $base = (float)$r['base'];
+            $gain = (float)$r['gains'];
+            $ret  = (float)$r['retenues'];
+            $net  = $base + $gain - $ret;
+
+            $totalBase += $base;
+            $totalGain += $gain;
+            $totalRet  += $ret;
+            $totalNet  += $net;
+
+            if ($alt) $pdf->SetFillColor(245, 245, 245);
+            else $pdf->SetFillColor(255, 255, 255);
+            $pdf->SetDrawColor(230, 230, 230);
+
+            $pdf->SetX($left);
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell($wEmp,  $hRow, $t(mb_strtoupper($r['name'], 'UTF-8')), 1, 0, 'L', true);
+            $pdf->Cell($wBase, $hRow, $t(fcfa($base)), 1, 0, 'R', true);
+            $pdf->Cell($wGain, $hRow, $t(fcfa($gain)), 1, 0, 'R', true);
+            $pdf->Cell($wRet,  $hRow, $t(fcfa($ret)),  1, 0, 'R', true);
+
+            $pdf->SetFont('Arial', 'B', 10); // mettre en gras uniquement ici
+            $pdf->Cell($wNet,  $hRow, $t(fcfa($net)),  1, 1, 'R', true);
+            $pdf->SetFont('Arial', '', 10); // revenir à normal
+
+            $y = $pdf->GetY();
+            $alt = !$alt;
+        }
+
+        // Totaux
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFillColor(235, 235, 235);
+        $pdf->SetDrawColor(210, 210, 210);
+        $pdf->SetX($left);
+        $pdf->Cell($wEmp,  $hRow, $t('TOTAL'),          1, 0, 'R', true);
+        $pdf->Cell($wBase, $hRow, $t(fcfa($totalBase)), 1, 0, 'R', true);
+        $pdf->Cell($wGain, $hRow, $t(fcfa($totalGain)), 1, 0, 'R', true);
+        $pdf->Cell($wRet,  $hRow, $t(fcfa($totalRet)),  1, 0, 'R', true);
+        $pdf->Cell($wNet,  $hRow, $t(fcfa($totalNet)),  1, 1, 'R', true);
+
+        return response($pdf->Output('S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="détail-employé-' . $ticket . '.pdf"');
     }
-
-    // Totaux
-    $pdf->SetFont('Arial','B',10);
-    $pdf->SetFillColor(235,235,235);
-    $pdf->SetDrawColor(210,210,210);
-    $pdf->SetX($left);
-    $pdf->Cell($wEmp,  $hRow, $t('TOTAL'),          1, 0, 'R', true);
-    $pdf->Cell($wBase, $hRow, $t(fcfa($totalBase)), 1, 0, 'R', true);
-    $pdf->Cell($wGain, $hRow, $t(fcfa($totalGain)), 1, 0, 'R', true);
-    $pdf->Cell($wRet,  $hRow, $t(fcfa($totalRet)),  1, 0, 'R', true);
-    $pdf->Cell($wNet,  $hRow, $t(fcfa($totalNet)),  1, 1, 'R', true);
-
-    return response($pdf->Output('S'))
-        ->header('Content-Type', 'application/pdf')
-        ->header('Content-Disposition', 'inline; filename="détail-employé-'.$ticket.'.pdf"');
-}
 }
