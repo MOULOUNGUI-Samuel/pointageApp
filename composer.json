@@ -11,7 +11,8 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "openai-php/client": "^0.14.0"
+        "openai-php/client": "^0.14.0",
+        "setasign/fpdf": "^1.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

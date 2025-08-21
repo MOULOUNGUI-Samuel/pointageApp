@@ -231,11 +231,31 @@
         }, 1200);
     </script>
     <script>
-        function Paie(event) {
+        function presentPdf(event) {
             event.preventDefault(); // Empêche le lien de naviguer
 
-            const url = "{{ route('paie') }}";
-            const width = 1450;
+            const url = "{{ route('presentPdf') }}";
+            const width = 850;
+            const height = 700;
+
+            // Calcul de la position centrée
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            // Ouverture de la popup centrée
+            window.open(
+                url,
+                'annuaire',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
+            );
+        }
+    </script>
+    <script>
+        function Absent(event) {
+            event.preventDefault(); // Empêche le lien de naviguer
+
+            const url = "{{ route('absentsPdf') }}";
+            const width = 850;
             const height = 700;
 
             // Calcul de la position centrée

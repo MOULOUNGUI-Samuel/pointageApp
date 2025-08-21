@@ -70,7 +70,7 @@
                         <span class="avatar avatar-md rounded bg-warning mb-3">
                             <i class="fa fa-users fs-16"></i>
                         </span>
-                         <span class="badge text-dark border border-dark fw-normal mb-3">
+                        <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
@@ -90,7 +90,7 @@
                         <span class="avatar avatar-md rounded bg-success mb-3">
                             <i class="fa fa-user fs-16"></i>
                         </span>
-                         <span class="badge text-dark border border-dark fw-normal mb-3">
+                        <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
@@ -112,7 +112,7 @@
                         <span class="avatar avatar-md rounded bg-danger mb-3">
                             <i class="fa fa-user-times fs-16"></i>
                         </span>
-                         <span class="badge text-dark border border-dark fw-normal mb-3">
+                        <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
@@ -134,7 +134,7 @@
                         <span class="avatar avatar-md rounded bg-primary mb-3">
                             <i class="fa fa-sign-out fs-16"></i>
                         </span>
-                         <span class="badge text-dark border border-dark fw-normal mb-3">
+                        <span class="badge text-dark border border-dark fw-normal mb-3">
                             {{ $entreprise_nom }}
                         </span>
                     </div>
@@ -158,11 +158,17 @@
         <div class="col-xxl-4 col-xl-12 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-header pb-2 d-flex align-items-center justify-content-between flex-wrap">
-                    <h5 class="mb-2 text-danger">Employés absents</h5>
+                    <h5 class="mb-2 text-danger">Absents</h5>
+
                     <div class="input-group" style="max-width: 300px;">
                         <span class="input-group-text"><i class="ti ti-search"></i></span>
                         <input type="text" class="form-control shadow" id="search1" placeholder="Rechercher...">
                     </div>
+                    <!-- Bouton Imprimer -->
+                    <a href="#" onclick="Absent(event)" class="btn btn-outline-primary shadow">
+                    
+                        <i class="ti ti-printer"></i> Imprimer
+                    </a>
                 </div>
                 <div class="card-body pb-2" id="absentTable1" style="max-height: 300px; overflow-y: auto;">
                     @if (count($users_non_existants) > 0)
@@ -199,12 +205,16 @@
         <div class="col-xxl-4 col-xl-12 d-flex">
             <div class="card flex-fill shadow">
                 <div class="card-header pb-2 d-flex align-items-center justify-content-between flex-wrap">
-                    <h5 class="mb-2 text-success">Employés presents</h5>
+                    <h5 class="mb-2 text-success">Presents</h5>
                     <div class="input-group" style="max-width: 300px;">
                         <span class="input-group-text"><i class="ti ti-search"></i></span>
                         <input type="text" class="form-control shadow" id="search2" placeholder="Rechercher..."
                             width="50">
                     </div>
+                    <!-- Bouton Imprimer -->
+                    <a href="#" onclick="presentPdf(event)" class="btn btn-outline-primary shadow">
+                        <i class="ti ti-printer"></i> Imprimer
+                    </a>
                 </div>
                 <div class="card-body pb-2" id="absentTable2" style="max-height: 300px; overflow-y: auto;">
                     @if (count($pointages_oui) > 0)

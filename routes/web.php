@@ -12,6 +12,7 @@ use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaisseWebController;
+use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Auth;
@@ -190,7 +191,11 @@ Route::middleware('auth')->group(
         Route::get('/payroll/period/{ticket}/data', [CaisseWebController::class, 'loadTicketData'])
             ->name('payroll.period.data');
 
-            Route::post('/employees/update-base-salary', [CaisseWebController::class, 'updateBaseSalary'])->name('employees.updateBaseSalary');
+        Route::post('/employees/update-base-salary', [CaisseWebController::class, 'updateBaseSalary'])->name('employees.updateBaseSalary');
+
+        Route::get('/pdf/absent', [PdfController::class, 'absentsPdf'])->name('absentsPdf');
+        Route::get('/pdf/presentPdf', [PdfController::class, 'presentPdf'])->name('presentPdf');
+
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
