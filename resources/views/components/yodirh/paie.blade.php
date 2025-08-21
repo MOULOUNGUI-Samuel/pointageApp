@@ -1077,24 +1077,41 @@
                 emp.department.toLowerCase().includes(searchTerm)
             );
 
-            tbody.innerHTML = filteredEmployees.map(emp => `
+            tbody.innerHTML = filteredEmployees.map(emp =>
+
+                `
+            
                  <tr class="hover:bg-gray-50" data-employee-id="${emp.id}">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.matricule}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${emp.lastName} ${emp.firstName}</div>
+                   <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">
+                            ${ (emp.lastName + ' ' + emp.firstName).length > 20 
+                                ? (emp.lastName + ' ' + emp.firstName).substring(0, 20) + "..." 
+                                : (emp.lastName + ' ' + emp.firstName) }
+                        </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.position}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.department}</td>
+
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${ emp.position.length > 20
+                            ? emp.position.substring(0, 20) + "..." 
+                            : emp.position }
+                    </td>
+
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${ emp.department.length > 20 
+                            ? emp.department.substring(0, 20) + "..." 
+                            : emp.department }
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                          <input
-        type="text"
-        class="form-control input-montant-base shadow-none"
-        data-employee-id="${emp.id}"
-        value="${formatCurrency(emp.baseSalary) ?? 0}" readonly style="border:none">
-                         <input
-        type="text"
-        class="form-control input-montant-base hidden"
-        id="montantCacher">
+                            type="text"
+                            class="form-control input-montant-base shadow-none"
+                            data-employee-id="${emp.id}"
+                            value="${formatCurrency(emp.baseSalary) ?? 0}" readonly style="border:none">
+                                            <input
+                            type="text"
+                            class="form-control input-montant-base hidden"
+                            id="montantCacher">
                         </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(emp.status)}">
@@ -1142,7 +1159,7 @@
         async function updateEmployeeBaseSalary() {
             const idEl = document.getElementById('employeeIdToUpdate');
             const salEl = document.getElementById('newEmployeeBaseSalary');
-           
+
 
             const employeeId = (idEl?.value || '').trim(); // id ou matricule
             const salaryText = (salEl?.value || '').replace(/\s/g, '');
@@ -1206,7 +1223,7 @@
                 // 2) input de la ligne
                 const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${domId}"]`);
                 if (rowInput) rowInput.value = formatCurrency(newVal);
-                
+
 
                 // 3) recalcule le net affiché pour cette ligne + la synthèse globale
                 if (typeof updateEmployeeNetInTable === 'function') updateEmployeeNetInTable(domId);
@@ -1293,7 +1310,7 @@
         ${
           group.items.length
           ? `<div class="space-y-2">
-                                                                                      ${group.items.map(variable => `
+                                                                                              ${group.items.map(variable => `
                 <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
                   <div class="flex items-center">
                     <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
@@ -1304,11 +1321,11 @@
                   </button>
                 </div>
               `).join('')}
-                                            </div>`
+                                                    </div>`
           : `
-                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                <span>Aucune variable dans cette catégorie</span>
-                                            </div>`
+                                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                        <span>Aucune variable dans cette catégorie</span>
+                                                    </div>`
         }
       </div>
     `).join('');
