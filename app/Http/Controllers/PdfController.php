@@ -203,6 +203,8 @@ class PdfController extends Controller
             ->whereDoesntHave('pointage', function ($query) {
                 $query->whereDate('date_arriver', now()->format('Y-m-d'));
             })
+            ->where('statu_user', 1)
+            ->where('statut', 1)
             ->get();
 
         // Construire les lignes pour FPDF : [nom, rôle, heure, isGreen]
@@ -227,7 +229,7 @@ class PdfController extends Controller
             ? 'storage/' . ltrim(session('entreprise_logo'), '/')
             : 'src/image/logo.png');
         $pdf->printedBy = Auth::user()->nom ?? 'Système';
-        $pdf->title     = 'Employés absents : ' . ((count($users_non_existants) > 0) ?  ': '.count($users_non_existants) : '');
+        $pdf->title     = 'Employés absents ' . ((count($users_non_existants) > 0) ?  ': '.count($users_non_existants) : '');
 
         $pdf->AddPage();
 
