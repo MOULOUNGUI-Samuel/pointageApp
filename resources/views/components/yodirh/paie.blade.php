@@ -1985,30 +1985,30 @@
             }
         }
 
-        // --- INITIALISATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Charger les données sauvegardées
-            loadData();
+        // // --- INITIALISATION ---
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     // Charger les données sauvegardées
+        //     loadData();
 
-            // Définir les dates par défaut
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        //     // Définir les dates par défaut
+        //     const today = new Date();
+        //     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        //     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-            if (!document.getElementById('periodStart').value) {
-                document.getElementById('periodStart').value = firstDay.toISOString().split('T')[0];
-            }
-            if (!document.getElementById('periodEnd').value) {
-                document.getElementById('periodEnd').value = lastDay.toISOString().split('T')[0];
-            }
+        //     if (!document.getElementById('periodStart').value) {
+        //         document.getElementById('periodStart').value = firstDay.toISOString().split('T')[0];
+        //     }
+        //     if (!document.getElementById('periodEnd').value) {
+        //         document.getElementById('periodEnd').value = lastDay.toISOString().split('T')[0];
+        //     }
 
-            // Navigation employé détaillée
-            document.getElementById('prevEmployeeBtn').onclick = () => navigateEmployee('prev');
-            document.getElementById('nextEmployeeBtn').onclick = () => navigateEmployee('next');
+        //     // Navigation employé détaillée
+        //     document.getElementById('prevEmployeeBtn').onclick = () => navigateEmployee('prev');
+        //     document.getElementById('nextEmployeeBtn').onclick = () => navigateEmployee('next');
 
-            // Initialiser la première vue
-            switchTab('periode');
-        });
+        //     // Initialiser la première vue
+        //     switchTab('periode');
+        // });
     </script>
 @endsection
 {{-- </body>
