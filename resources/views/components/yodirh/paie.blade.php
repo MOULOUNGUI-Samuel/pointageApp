@@ -540,9 +540,15 @@
 
                 <!-- Détail par employé -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
-                        <i class="fas fa-users mr-2 "></i>Détail par Employé
-                    </h3>
+                    <div class="d-flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fas fa-users mr-2 "></i>Détail par Employé
+                        </h3>
+                        <button onclick="importEmployees()"
+                            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                        </button>
+                    </div>
                     <div class="overflow-x-auto">
                         <div class="table-responsive">
 
@@ -553,16 +559,16 @@
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Employé</th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Salaire Base</th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Gains Variables</th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Retenues</th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Salaire Net</th>
                                     </tr>
                                 </thead>
@@ -614,16 +620,16 @@
         </div>
     </div>
     <script>
-		$(document).ready(function() {
-			var table = $('#example2').DataTable( {
-				lengthChange: false,
-				buttons: [ 'copy', 'excel', 'pdf', 'print']
-			} );
-		 
-			table.buttons().container()
-				.appendTo( '#example2_wrapper .col-md-6:eq(0)' );
-		} );
-	</script>
+        $(document).ready(function() {
+            var table = $('#example2').DataTable({
+                lengthChange: false,
+                buttons: ['copy', 'excel', 'pdf', 'print']
+            });
+
+            table.buttons().container()
+                .appendTo('#example2_wrapper .col-md-6:eq(0)');
+        });
+    </script>
 
     <script>
         (function() {
@@ -877,6 +883,44 @@
             loadReplaceableTickets();
         });
     </script>
+    <script>
+        (function() {
+            const modalInput = document.getElementById('newEmployeeBaseSalary');
+            const hiddenId = document.getElementById('employeeIdToUpdate');
+
+            // Ouvre la modale pour un employé et pré-remplit
+            window.editEmployee = function(empId) {
+                const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${empId}"]`);
+                document.getElementById('newEmployeeBaseSalary').value = rowInput ? rowInput.value : '';
+                document.getElementById('employeeIdToUpdate').value = empId;
+                document.getElementById('addEmployeeModal').classList.remove('hidden');
+            };
+
+            // Miroite en “live” ce qui est saisi dans la modale vers la ligne de l’employé
+            function mirrorBaseSalary() {
+                const id = (hiddenId?.value || '').trim();
+                if (!id) return;
+
+                const raw = (modalInput?.value || '').trim();
+                const num = parseFloat(raw.replace(/\s/g, '').replace(',', '.'));
+
+                // met à jour l'input de la ligne
+                const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${id}"]`);
+                if (rowInput) rowInput.value = isNaN(num) ? '' : num;
+
+                // met à jour le store JS si disponible
+                if (Array.isArray(window.employees)) {
+                    const idx = employees.findIndex(e => String(e.id) === String(id) || String(e.matricule) === String(
+                        id));
+                    if (idx !== -1) employees[idx].baseSalary = isNaN(num) ? 0 : num;
+                }
+            }
+
+            modalInput?.addEventListener('input', mirrorBaseSalary);
+            // dispo si tu veux déclencher manuellement:
+            window.updateEmployeeBaseSalaryField = mirrorBaseSalary;
+        })();
+    </script>
 
     <script>
         // --- Données venant de Laravel (users + relations) ---
@@ -1033,14 +1077,20 @@
             );
 
             tbody.innerHTML = filteredEmployees.map(emp => `
-                 <tr class="hover:bg-gray-50">
+                 <tr class="hover:bg-gray-50" data-employee-id="${emp.id}">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.matricule}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">${emp.lastName} ${emp.firstName}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.position}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.department}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${formatCurrency(emp.baseSalary)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                         <input
+        type="number"
+        class="form-control input-montant-base shadow-none"
+        data-employee-id="${emp.id}"
+        value="${emp.baseSalary ?? 0}" readonly style="border:none">
+                        </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(emp.status)}">
                             ${emp.status}
@@ -1130,23 +1180,33 @@
                     return;
                 }
 
-                // Mise à jour locale du salarié (par id OU par matricule)
+                // -------- MAJ locale du store + du champ de la ligne --------
+                const newVal = Number(data?.data?.base_salary ?? baseSalary);
+
+                // 1) store employees (par id OU matricule)
+                let domId = null;
                 if (Array.isArray(window.employees)) {
                     const idx = employees.findIndex(e =>
                         String(e.id) === String(employeeId) || String(e.matricule) === String(employeeId)
                     );
-                    if (idx !== -1) employees[idx].baseSalary = Number(data.data.base_salary);
+                    if (idx !== -1) {
+                        employees[idx].baseSalary = newVal;
+                        domId = employees[idx].id; // id utilisé dans data-employee-id du tableau
+                    }
                 }
+                // Si pas trouvé ci-dessus, tente id renvoyé par le backend
+                if (!domId) domId = data?.data?.id ?? employeeId;
 
-                // Rafraîchir les vues dépendantes
-                typeof renderEmployeesTable === 'function' && renderEmployeesTable();
-                typeof renderPayrollTable === 'function' && renderPayrollTable();
-                typeof calculateSynthesis === 'function' && calculateSynthesis();
+                // 2) input de la ligne
+                const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${domId}"]`);
+                if (rowInput) rowInput.value = newVal;
 
-                // Fermer la bonne modale
+                // 3) recalcule le net affiché pour cette ligne + la synthèse globale
+                if (typeof updateEmployeeNetInTable === 'function') updateEmployeeNetInTable(domId);
+                if (typeof calculateSynthesis === 'function') calculateSynthesis();
+
+                // -------- UI/Reset --------
                 document.getElementById('addEmployeeModal')?.classList.add('hidden');
-
-                // Reset champs
                 salEl.value = '';
                 idEl.value = '';
 
@@ -1157,6 +1217,7 @@
                 showNotification('Erreur lors de la mise à jour du salaire de base (réseau)', 'error', 9000);
             }
         }
+
 
 
 
@@ -1225,7 +1286,7 @@
         ${
           group.items.length
           ? `<div class="space-y-2">
-                                                                              ${group.items.map(variable => `
+                                                                                  ${group.items.map(variable => `
                 <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
                   <div class="flex items-center">
                     <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
@@ -1236,11 +1297,11 @@
                   </button>
                 </div>
               `).join('')}
-                                    </div>`
+                                        </div>`
           : `
-                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                        <span>Aucune variable dans cette catégorie</span>
-                                    </div>`
+                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                            <span>Aucune variable dans cette catégorie</span>
+                                        </div>`
         }
       </div>
     `).join('');
@@ -1553,7 +1614,7 @@
             document.getElementById('employeeDetail').classList.remove('hidden');
 
             document.getElementById('selectedEmployeeName').textContent = `${emp.lastName} ${emp.firstName}`;
-            document.getElementById('selectedEmployeeId').textContent = emp.id;
+            document.getElementById('selectedEmployeeId').textContent = emp.matricule;
             document.getElementById('selectedEmployeeSalary').textContent = formatCurrency(emp.baseSalary);
             document.getElementById('selectedEmployeeService').textContent = emp.department;
 
@@ -1782,7 +1843,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         ${detail.employee.lastName} ${detail.employee.firstName}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right">${formatCurrency(detail.employee.baseSalary)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        ${formatCurrency(detail.employee.baseSalary)}
+                        </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">${formatCurrency(detail.gains)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">${formatCurrency(detail.deductions)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold ">${formatCurrency(detail.netSalary)}</td>
