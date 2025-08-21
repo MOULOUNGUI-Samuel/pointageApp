@@ -598,7 +598,7 @@
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
                 <div class="p-6 border-b border-gray">
                     <h3 class="text-lg font-semibold text-primary flex items-center">
-                        <i class="fas fa-user-plus mr-2 "></i>Ajouter un Employé
+                        <i class="fas fa-user-plus mr-2 "></i>Modifier le salaire de base
                     </h3>
                 </div>
                 <div class="p-6 space-y-4">
@@ -611,10 +611,10 @@
                     </div>
                 </div>
                 <div class="p-6 border-t border-gray flex justify-end space-x-3">
-                    <button onclick="closeAddEmployeeModal()"
-                        class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">Annuler</button>
+                    {{-- <button onclick="closeAddEmployeeModal()"
+                        class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">Annuler</button> --}}
                     <button onclick="updateEmployeeBaseSalary()"
-                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ajouter</button>
+                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ajouter</button>
                 </div>
             </div>
         </div>
@@ -891,7 +891,8 @@
             // Ouvre la modale pour un employé et pré-remplit
             window.editEmployee = function(empId) {
                 const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${empId}"]`);
-                document.getElementById('newEmployeeBaseSalary').value = rowInput ? rowInput.value : '';
+                document.getElementById('newEmployeeBaseSalary').value = '';
+                // document.getElementById('newEmployeeBaseSalary').value = rowInput ? rowInput.value : '';
                 document.getElementById('employeeIdToUpdate').value = empId;
                 document.getElementById('addEmployeeModal').classList.remove('hidden');
             };
@@ -1086,10 +1087,14 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.department}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                          <input
-        type="number"
+        type="text"
         class="form-control input-montant-base shadow-none"
         data-employee-id="${emp.id}"
-        value="${emp.baseSalary ?? 0}" readonly style="border:none">
+        value="${formatCurrency(emp.baseSalary) ?? 0}" readonly style="border:none">
+                         <input
+        type="text"
+        class="form-control input-montant-base hidden"
+        id="montantCacher">
                         </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(emp.status)}">
@@ -1128,15 +1133,16 @@
             document.getElementById('addEmployeeModal').classList.remove('hidden');
         }
 
-        function closeAddEmployeeModal() {
-            document.getElementById('addEmployeeModal').classList.add('hidden');
-            const department = document.getElementById('employeeIdToUpdate').value;
-            document.getElementById('newEmployeeBaseSalary').value = '';
-        }
+        // function closeAddEmployeeModal() {
+        //     document.getElementById('addEmployeeModal').classList.add('hidden');
+        //     const department = document.getElementById('employeeIdToUpdate').value;
+        //     document.getElementById('newEmployeeBaseSalary').value = '';
+        // }
 
         async function updateEmployeeBaseSalary() {
             const idEl = document.getElementById('employeeIdToUpdate');
             const salEl = document.getElementById('newEmployeeBaseSalary');
+           
 
             const employeeId = (idEl?.value || '').trim(); // id ou matricule
             const salaryText = (salEl?.value || '').replace(/\s/g, '');
@@ -1199,7 +1205,8 @@
 
                 // 2) input de la ligne
                 const rowInput = document.querySelector(`input.input-montant-base[data-employee-id="${domId}"]`);
-                if (rowInput) rowInput.value = newVal;
+                if (rowInput) rowInput.value = formatCurrency(newVal);
+                
 
                 // 3) recalcule le net affiché pour cette ligne + la synthèse globale
                 if (typeof updateEmployeeNetInTable === 'function') updateEmployeeNetInTable(domId);
@@ -1286,7 +1293,7 @@
         ${
           group.items.length
           ? `<div class="space-y-2">
-                                                                                  ${group.items.map(variable => `
+                                                                                      ${group.items.map(variable => `
                 <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
                   <div class="flex items-center">
                     <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
@@ -1297,11 +1304,11 @@
                   </button>
                 </div>
               `).join('')}
-                                        </div>`
+                                            </div>`
           : `
-                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                            <span>Aucune variable dans cette catégorie</span>
-                                        </div>`
+                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                <span>Aucune variable dans cette catégorie</span>
+                                            </div>`
         }
       </div>
     `).join('');
