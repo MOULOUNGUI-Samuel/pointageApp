@@ -304,7 +304,7 @@ class PdfController extends Controller
         $pdf->logoPath  = public_path(session('entreprise_logo')
             ? 'storage/' . ltrim(session('entreprise_logo'), '/')
             : 'src/image/logo.png');
-        $pdf->printedBy = \Illuminate\Support\Facades\Auth::user()->name ?? 'Système';
+        $pdf->printedBy = Auth::user()->nom ?? 'Système';
         $pdf->title     = 'Employés présents ' . ((count($pointages_oui) > 0) ? ': '.count($pointages_oui) : '');
 
         $pdf->AddPage();
