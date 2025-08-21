@@ -279,7 +279,7 @@
                             oninput="filterEmployees()">
                     </div>
                 </div>
-                <div class="overflow-x-auto">
+                <div  style="max-height: 450px; overflow-y: auto;">
                     <table id="example2" class="w-full table table-striped table-bordered">
                         <thead class="bg-gray-50">
                             <tr>
@@ -556,7 +556,7 @@
                             <i class="fas fa-file-excel mr-2"></i>Importer Excel
                         </a>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div style="max-height: 450px; overflow-y: auto;">
                         <div class="table-responsive">
 
                             <table id="example2" class="w-full table table-striped table-bordered">
