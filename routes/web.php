@@ -195,7 +195,10 @@ Route::middleware('auth')->group(
 
         Route::get('/pdf/absent', [PdfController::class, 'absentsPdf'])->name('absentsPdf');
         Route::get('/pdf/presentPdf', [PdfController::class, 'presentPdf'])->name('presentPdf');
-
+        Route::get('/pdf/payrollTablePdf/{ticket}', [PdfController::class, 'payrollTablePdf'])
+            ->name('payrollTablePdf');
+        Route::get('/pdf/detailParEmployerTablePdf/{ticket}', [PdfController::class, 'detailParEmployerTablePdf'])
+            ->name('detailParEmployerTablePdf');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

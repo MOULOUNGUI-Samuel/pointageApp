@@ -280,7 +280,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full">
+                    <table id="example2" class="w-full table table-striped table-bordered">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -354,7 +354,14 @@
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-undo mr-2"></i>Reset
                             </button>
+                            
+                            <a href="{{ route('payrollTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
+                                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                             </a>
+                             
                         </div>
+
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -544,10 +551,10 @@
                         <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
                             <i class="fas fa-users mr-2 "></i>Détail par Employé
                         </h3>
-                        <button onclick="importEmployees()"
+                        <a href="{{ route('detailParEmployerTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
                             class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                             <i class="fas fa-file-excel mr-2"></i>Importer Excel
-                        </button>
+                        </a>
                     </div>
                     <div class="overflow-x-auto">
                         <div class="table-responsive">
@@ -1102,7 +1109,7 @@
                             ? emp.department.substring(0, 20) + "..." 
                             : emp.department }
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td class="py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                          <input
                             type="text"
                             class="form-control input-montant-base shadow-none"
@@ -1113,14 +1120,14 @@
                             class="form-control input-montant-base hidden"
                             id="montantCacher">
                         </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class=" py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(emp.status)}">
                             ${emp.status}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium no-print">
+                    <td class=" py-4 whitespace-nowrap text-left text-sm font-medium no-print">
                         <button onclick="editEmployee('${emp.id}')" class="btn btn-primary hover:text-blue-900 mr-3">
-                            <i class="fas fa-edit me-2"></i> modifier salaire de base
+                            <i class="fas fa-edit me-2"></i> Salaire de base
                         </button>
                     </td>
                 </tr>
