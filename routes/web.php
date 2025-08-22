@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardRHController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaisseWebController;
+use App\Http\Controllers\Manager\ManagerAbsenceController;
 use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -199,6 +201,23 @@ Route::middleware('auth')->group(
             ->name('payrollTablePdf');
         Route::get('/pdf/detailParEmployerTablePdf/{ticket}', [PdfController::class, 'detailParEmployerTablePdf'])
             ->name('detailParEmployerTablePdf');
+
+
+
+             // --- Routes pour l'employé ---
+  
+        Route::get('/absenceindex', [AbsenceController::class, 'index'])->name('absenceindex');
+        // Afficher le formulaire de nouvelle demande
+        Route::get('/absencecreate', [AbsenceController::class, 'create'])->name('absencecreate');
+        // Enregistrer la nouvelle demande
+        Route::post('/absencestore', [AbsenceController::class, 'store'])->name('absencestore');
+   
+
+    
+        Route::get('/managerindex', [ManagerAbsenceController::class, 'index'])->name('managerindex');
+        // Approuver ou rejeter une demande
+        Route::patch('/{absence}/statut', [ManagerAbsenceController::class, 'updateStatus'])->name('managerupdateStatus');
+   
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

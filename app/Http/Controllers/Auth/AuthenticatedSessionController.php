@@ -84,7 +84,6 @@ class AuthenticatedSessionController extends Controller
                         ->with('error', 'Le code de l\'entreprise ne correspond pas à votre compte.');
                 }
             }
-
             $heure_actuelle = Carbon::now('Africa/Libreville')->format('H:i:s');
             if ($request->pointage_entrer) {
                 $entreprise = Entreprise::find($user->entreprise_id);
@@ -173,6 +172,7 @@ class AuthenticatedSessionController extends Controller
                     $request->session()->regenerateToken();
                     return redirect()->route('loginPointe')->with('success', 'Vous avez pointé votre entrée avec succès.');
                 }
+                
                 // Enregistrer le pointage
                 Pointage::create([
                     'user_id' => $user->id,

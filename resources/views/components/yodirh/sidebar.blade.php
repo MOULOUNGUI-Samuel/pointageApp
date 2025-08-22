@@ -33,8 +33,10 @@
                                         Dossiers des employés</a></li>
                                 <li><a href="#">Contrats de travail</a></li>
                                 <li><a href="{{ route('liste_presence') }}"
-                                        class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'active' : '' }}">Suivi des
-                                        absences et congés</a></li>
+                                        class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'active' : '' }}">Suivi de pointages</a></li>
+                                        
+                                <li><a href="{{ route('absenceindex') }}"
+                                        class="{{ request()->routeIs('absenceindex') ? 'active' : '' }}">Demandes d'absence</a></li>
                                 <li><a href="#">Organigramme</a></li>
                             </ul>
                         </li>
