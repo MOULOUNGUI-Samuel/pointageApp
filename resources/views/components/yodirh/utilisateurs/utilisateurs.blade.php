@@ -120,7 +120,7 @@
                                                         Actions
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li class="mb-1">
+                                                        {{-- <li class="mb-1">
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="offcanvas"
                                                                 data-bs-target="#offcanvasRight{{ $user->id }}"
@@ -129,7 +129,7 @@
                                                                 Demandes d'absence
                                                             </a>
 
-                                                        </li>
+                                                        </li> --}}
                                                         <li>
                                                             <a class="dropdown-item text-danger" href="#"
                                                                 data-bs-toggle="modal"
@@ -209,9 +209,9 @@
                                                                     style="width: 100%;" required>
                                                                     <option value="">Veuillez selectionner</option>
                                                                     <option value="congé_payé">Congé payé</option>
-                <option value="maladie">Maladie</option>
-                <option value="RTT">RTT</option>
-                <option value="autre">Autre</option>
+                                                                    <option value="maladie">Maladie</option>
+                                                                    <option value="RTT">RTT</option>
+                                                                    <option value="autre">Autre</option>
                                                                 </select>
                                                             </div>
                                                         </div>

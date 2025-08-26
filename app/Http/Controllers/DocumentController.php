@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Demande_intervention;
 use App\Models\Entreprise;
 use App\Models\LienDoc;
 use App\Models\Service;
@@ -13,6 +14,7 @@ use ZipArchive;
 use Normalizer;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class DocumentController extends Controller
 {
@@ -327,14 +329,54 @@ class DocumentController extends Controller
 
     public function annuaire()
     {
-         $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
-        ->with('entreprise')
-        ->with('service')
-        ->get();
+        $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
+            ->with('entreprise')
+            ->with('service')
+            ->get();
 
-        $entreprises=Entreprise::all();
-        $services=Service::all();
+        $entreprises = Entreprise::all();
+        $services = Service::all();
         return view('components.annuaire', compact('utilisateurs', 'entreprises', 'services'));
     }
+    public function storeDemandeIntervention(Request $request)
+    {
+        // Validation
+        $validated = $request->validate([
+            'titre'          => ['required', 'string', 'max:255'],
+            'entreprise_id'  => ['required', 'uuid', Rule::exists('entreprises', 'id')],
+            'description'    => ['nullable', 'string'],
+            'date_souhaite'  => ['required', 'date'],
+            'piece_jointe'   => ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx'],
+        ]);
 
+        // (Optionnel) Sécurité multi-structure : s'assurer que l'entreprise appartient
+        // bien à la structure en session (si ton schéma a bien `entreprises.structure_id`)
+        // $structureId = session('structure_id');
+        // abort_unless(
+        //     Entreprise::where('id', $validated['entreprise_id'])
+        //               ->where('structure_id', $structureId)
+        //               ->exists(),
+        //     403, 'Entreprise invalide pour cette structure.'
+        // );
+
+        // Upload fichier si fourni
+        $pieceJointePath = null;
+        if ($request->hasFile('piece_jointe')) {
+            // nécessite: php artisan storage:link
+            $pieceJointePath = $request->file('piece_jointe')->store('demande_interventions', 'public');
+        }
+
+        // Création
+        $demande = Demande_intervention::create([
+            'titre'             => $validated['titre'],
+            'entreprise_id'     => $validated['entreprise_id'],
+            'user_id'           => Auth::id(),
+            'description'       => $validated['description'] ?? null,
+            'date_souhaite'     => $validated['date_souhaite'],
+            'piece_jointe_path' => $pieceJointePath,
+            'statut'            => 'en_attente', // par défaut
+        ]);
+
+        return back()->with('success', 'Votre demande a été enregistrée avec succès.');
+    }
 }

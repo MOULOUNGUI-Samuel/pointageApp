@@ -35,8 +35,8 @@
                                 <li><a href="{{ route('liste_presence') }}"
                                         class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'active' : '' }}">Suivi de pointages</a></li>
                                         
-                                <li><a href="{{ route('absenceindex') }}"
-                                        class="{{ request()->routeIs('absenceindex') ? 'active' : '' }}">Demandes d'absence</a></li>
+                                {{-- <li><a href="{{ route('absenceindex') }}"
+                                        class="{{ request()->routeIs('absenceindex') ? 'active' : '' }}">Demandes d'absence</a></li> --}}
                                 <li><a href="#">Organigramme</a></li>
                             </ul>
                         </li>

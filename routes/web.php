@@ -217,7 +217,9 @@ Route::middleware('auth')->group(
         Route::get('/managerindex', [ManagerAbsenceController::class, 'index'])->name('managerindex');
         // Approuver ou rejeter une demande
         Route::patch('/{absence}/statut', [ManagerAbsenceController::class, 'updateStatus'])->name('managerupdateStatus');
-   
+
+   Route::post('/demande-interventions', [DocumentController::class, 'storeDemandeIntervention'])
+    ->name('envoi_demande');
     }
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

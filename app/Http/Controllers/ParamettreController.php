@@ -18,10 +18,11 @@ class ParamettreController extends Controller
     public function listemodules()
     {
         $modules = Module::orderBy('created_at', 'asc')->get();
+        $entreprises= Entreprise::orderBy('created_at', 'asc')->get();
         $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
             ->with('entreprise')
             ->get();
-        return view('components.liste_modules', compact('modules', 'utilisateurs'));
+        return view('components.liste_modules', compact('modules', 'utilisateurs','entreprises'));
     }
     public function modules()
     {

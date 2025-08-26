@@ -148,5 +148,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pointage::class);
     }
+     public function demande_intervention()
+    {
+        return $this->hasMany(Demande_intervention::class);
+    }
 
 }

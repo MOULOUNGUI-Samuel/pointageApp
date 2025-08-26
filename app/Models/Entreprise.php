@@ -46,4 +46,8 @@ class Entreprise extends Model
     {
         return $this->hasMany(User::class);
     }
+    public function demande_interventions()
+    {
+        return $this->hasMany(Demande_intervention::class);
+    }
 }
