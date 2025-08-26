@@ -13,6 +13,7 @@ use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaisseWebController;
+use App\Http\Controllers\DemandeInterventionController;
 use App\Http\Controllers\Manager\ManagerAbsenceController;
 use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
@@ -54,6 +55,8 @@ Route::get(
 Route::middleware('auth')->group(
     function () {
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
+        Route::patch('/demande-interventions/{demande}/status', [DemandeInterventionController::class, 'updateStatus'])
+    ->name('demande_interventions.update_status');
         // La route que le JavaScript va appeler pour peupler la modale
         Route::get('/projects', [OpenProjectController::class, 'fetchProjects'])->name('projects');
         // La route que le JavaScript va appeler pour créer les tâches

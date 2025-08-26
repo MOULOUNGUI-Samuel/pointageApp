@@ -346,8 +346,15 @@ class DocumentController extends Controller
             'entreprise_id'  => ['required', 'uuid', Rule::exists('entreprises', 'id')],
             'description'    => ['nullable', 'string'],
             'date_souhaite'  => ['required', 'date'],
-            'piece_jointe'   => ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx'],
-        ]);
+            'piece_jointe' => [
+        'nullable',
+        'file',
+        'max:10240', // 10 Mo
+        // Autorisés: PDF + Office + OpenDocument + RTF + images
+        'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,jpg,jpeg,png,webp,gif'
+    ],
+        ]
+    );
 
         // (Optionnel) Sécurité multi-structure : s'assurer que l'entreprise appartient
         // bien à la structure en session (si ton schéma a bien `entreprises.structure_id`)

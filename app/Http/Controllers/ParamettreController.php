@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Models\Service;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Demande_intervention;
+use Illuminate\Support\Facades\Auth;
 
 class ParamettreController extends Controller
 {
@@ -15,18 +17,60 @@ class ParamettreController extends Controller
      * Display a listing of the resource.
      */
 
-    public function listemodules()
+    public function listemodules(Request $request)
     {
+        $structureId = session('entreprise_id');
+
+        abort_unless($structureId, 403, 'Structure non sélectionnée.');
+        $search = $request->input('q');
+        $filtreStatut = $request->input('statut'); // ex: en_attente, en_cours, traitee, annulee, en_retard
+        $onlyMine      = $request->boolean('only_mine');   // ?only_mine=1 pour "mes demandes"
+
+        $query = Demande_intervention::with([
+            'entreprise:id,nom_entreprise',
+            'user:id,nom,prenom',
+        ])
+            // >>> visibilité : structure OU mes propres demandes
+            ->visibleFor(Auth::id(), $structureId);
+
+        // Filtre "mes demandes uniquement" (optionnel)
+        if ($onlyMine) {
+            $query->ownedByUser(Auth::id());
+        }
+
+        // Filtre statut (inclut le pseudo-statut "en_retard")
+        if ($filtreStatut) {
+            if ($filtreStatut === 'en_retard') {
+                $query->where('statut', '!=', 'traitee')
+                    ->whereDate('date_souhaite', '<', now()->toDateString());
+            } else {
+                $query->where('statut', $filtreStatut);
+            }
+        }
+
+        // Recherche plein texte simple (titre, description, entreprise, utilisateur)
+        if ($search) {
+            $query->search($search);
+        }
+
+        $demandes = $query
+            ->orderByDesc('created_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        if ($search) $query->search($search);
+
         $modules = Module::orderBy('created_at', 'asc')->get();
-        $entreprises= Entreprise::orderBy('created_at', 'asc')->get();
+        $entreprises = Entreprise::orderBy('created_at', 'asc')->get();
         $utilisateurs = \App\Models\User::orderBy('created_at', 'asc')
             ->with('entreprise')
             ->get();
-        return view('components.liste_modules', compact('modules', 'utilisateurs','entreprises'));
+
+
+        return view('components.liste_modules', compact('modules', 'utilisateurs', 'entreprises', 'demandes', 'search', 'filtreStatut', 'onlyMine'));
     }
     public function modules()
     {
-        //
         $modules = Module::orderBy('created_at', 'asc')->get();
 
         return view("components.modul_admin", compact('modules'));
@@ -304,11 +348,10 @@ class ParamettreController extends Controller
         $entreprise_id = session('entreprise_id');
         $categorieprofessionels = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->orderBy('created_at', 'desc')->get();
 
-         $entreprisesSansCategorie = [];
+        $entreprisesSansCategorie = [];
 
         foreach ($categorieprofessionels as $categorieprofessionel) {
-            $entreprisesSansCategorie
-            [$categorieprofessionel->id] = Entreprise::whereDoesntHave('categorieProfessionels', function ($query) use ($categorieprofessionel) {
+            $entreprisesSansCategorie[$categorieprofessionel->id] = Entreprise::whereDoesntHave('categorieProfessionels', function ($query) use ($categorieprofessionel) {
                 $query->where('nom_categorie_professionnelle', $categorieprofessionel->nom_categorie_professionnelle);
             })->get();
         }

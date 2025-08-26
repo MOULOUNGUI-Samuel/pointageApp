@@ -479,7 +479,7 @@
                             </div>
 
                         </div>
-                        @include('components.fenetre_simulation')
+                       
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="generateTasksModal" tabindex="-1"
@@ -946,92 +946,8 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal" tabindex="-1"
-            role="dialog" aria-labelledby="partageLabelsModal" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary">
-                        <h4 class="modal-title" id="partageLabelsModal" style="color: white">
-                            Demande d'assistance : {{ Auth::user()->nom }}
-                        </h4>
-                        <button class="btn-close btn-lg" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="ti ti-x"></i>
-                        </button>
-                    </div>
-                    <form action="{{ route('envoi_demande') }}" method="POST" enctype="multipart/form-data"
-                        class="needs-validation" novalidate>
-                        @csrf
-                        <div class="row p-4">
-                            <div class="col-md-6 mb-2">
-                                <div class="form-group" id="titre">
-                                    <label class="form-label">Titre</label>
-                                    <div class="input-group date">
-                                        <input type="text" class="form-control" name="titre"
-                                            value="{{ old('titre') }}" required autocomplete="off">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-group" id="group_date_naissance">
-                                    <label class="form-label">Societe assignée</label>
-                                    <div class="input-group">
-                                        <select class="select2 form-control" name="entreprise_id"
-                                            style="width: 100%;" required>
-                                            <option value="">Veuillez selectionner</option>
-                                            @foreach ($entreprises as $entreprise)
-                                                <option value="{{ $entreprise->id }}"
-                                                    {{ old('entreprise_id') == $entreprise->id || $entreprise->code_entreprise == 'BFEV' ? 'selected' : '' }}>
-                                                    {{ $entreprise->nom_entreprise }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-12  mb-2">
-                                <label class="form-label">Description du besoin</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-tasks"></i></span>
-                                    <textarea name="description" class="form-control" required>{{ old('description') }}</textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-6  mb-2">
-                                <div class="form-group" id="date_souhaite">
-                                    <label class="form-label">Délai souhaité</label>
-                                    <div class="input-group date">
-                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                        <input type="date" class="form-control" name="date_souhaite"
-                                            value="{{ old('date_souhaite') }}" required autocomplete="off">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6  mb-2">
-                                <label class="form-label">Pièce jointes</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-id-card"></i></span>
-                                    <input type="file" name="piece_jointe" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="reset" class="btn btn-dark">Annuler</button>
-                                <button type="submit" class="btn btn-primary btn-action"
-                                    data-loader-target="loader-modif">Enregistrer
-                                    l'utilisateur</button>
-                                <button type="button" id="loader-modif" class="btn btn-outline-primary"
-                                    style="display: none;" disabled>
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Enregistrement
-                                    en cours...
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-
-                </div>
-            </div>
-        </div>
-
+        @include('components._demande_interventions',['entreprises'=>$entreprises,'demandes'=>$demandes,'search'=>$search,'filtreStatut',$filtreStatut,'onlyMine'=>$onlyMine])
+ @include('components.fenetre_simulation')
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWithBackdrop3"
             aria-labelledby="offcanvasWithBackdropLabel1">
             <div class="offcanvas-header">
