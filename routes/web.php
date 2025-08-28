@@ -131,6 +131,9 @@ Route::middleware('auth')->group(
         Route::get('/SIMULATEUR_FACTURATION_hots_TVA',  function () {
             return view('components.simulations.SIMULATEUR_FACTURATION_hots_TVA');
         })->name('SIMULATEUR_FACTURATION_hots_TVA');
+        Route::get('/gestion_conge',  function () {
+            return view('components.simulations.Simulateur_de_conges');
+        })->name('gestion_conge');
 
 
         Route::get('/auto-login', function (Request $request) {

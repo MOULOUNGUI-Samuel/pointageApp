@@ -36,9 +36,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json([
-                'message' => 'Session expirée. Veuillez vous reconnecter.'
-            ], 401);
+            return redirect()->route('loginGroupe');
         }
 
         return redirect()->guest(route('loginGroupe', ['expired' => '1']));

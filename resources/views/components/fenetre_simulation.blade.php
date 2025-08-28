@@ -53,6 +53,22 @@
                     </div>
                 </a>
             </div>
+            
+            <div class="col simulation-card" data-title="Simulateur Facturation - TPS & CSS">
+                <a href="#" onclick="gestion_conge(event)"
+                    class="text-decoration-none text-dark">
+                    <div class="card h-100 p-3 hover-shadow shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-file-earmark-text fs-3 text-primary me-2"></i>
+                            <h6 class="mb-0">Simulateur de Congés - Gabon</h6>
+                        </div>
+                        <p class="text-muted mt-2">
+                           © 2024 - Simulateur de Congés Gabon | Conforme au Code du Travail gabonais 2021.
+ Cet outil est fourni à titre informatif. Consultez le Code du Travail officiel pour les dispositions complètes
+                        </p>
+                    </div>
+                </a>
+            </div>
 
 
         </div>
@@ -89,6 +105,24 @@
         }
     </script>
     <script>
+        function gestion_conge(event) {
+            event.preventDefault(); // Empêche le lien de naviguer
+
+            const url = "{{ route('gestion_conge') }}";
+            const width = 1450;
+            const height = 700;
+
+            // Calcul de la position centrée
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            // Ouverture de la popup centrée
+            window.open(
+                url,
+                'gestion_conge',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
+            );
+        }
         function SIMULATEUR_FACTURATION_hots_TVA(event) {
             event.preventDefault(); // Empêche le lien de naviguer
 
