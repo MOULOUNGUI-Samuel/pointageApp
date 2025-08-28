@@ -1,5 +1,5 @@
 // Nom du cache (changer la version force la mise à jour)
-const CACHE_NAME = 'nedcore-cache-v1';
+const CACHE_NAME = 'nedcore-cache-v2';
 
 // Fichiers essentiels de l'application (la "coquille")
 // On met UNIQUEMENT les fichiers qui existent VRAIMENT.
