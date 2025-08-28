@@ -369,43 +369,93 @@ color: #fff;">
             </div>
         </form>
     </div>
-    <script>
-        function showOfflineMessage(redirect = false) {
+      <script>
+        // 🔌 GESTION CONNEXION PERDUE
+        function showOfflinePopup() {
             const existingPopup = document.getElementById('offline-popup');
-            if (existingPopup) return; // Ne pas dupliquer
+            if (existingPopup) return;
 
             const popup = document.createElement('div');
             popup.id = 'offline-popup';
             popup.innerHTML = `
-                  <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
-                      <span class="me-3">📡 Connexion perdue ou session expirée.</span>
-                  </div>
-              `;
+                <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                    📡 Connexion perdue.
+                </div>
+            `;
             document.body.appendChild(popup);
-
-            if (redirect) {
-                // Redirection automatique vers une route définie
-                setTimeout(() => {
-                    window.location.href = "/loginPointe";
-                }, 3000);
-            }
         }
 
-        function removeOfflineMessage() {
+        function showOnlinePopup() {
+            const popup = document.createElement('div');
+            popup.id = 'online-popup';
+            popup.innerHTML = `
+                <div class="alert alert-success text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                    ✅ Connexion rétablie.
+                </div>
+            `;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 4000);
+        }
+
+        function removeOfflinePopup() {
             const popup = document.getElementById('offline-popup');
             if (popup) popup.remove();
+            showOnlinePopup();
         }
 
-        function retryAutoReload() {
-            const btns = document.querySelectorAll('#offline-popup button');
-            btns.forEach(btn => btn.disabled = true);
+        window.addEventListener('offline', showOfflinePopup);
+        window.addEventListener('online', removeOfflinePopup);
 
-            const interval = setInterval(() => {
-                if (navigator.onLine) {
-                    clearInterval(interval);
-                    location.reload();
-                }
-            }, 1000); // tente toutes les 3 secondes
+        if (!navigator.onLine) {
+            showOfflinePopup();
+        }
+
+        // 📶 GESTION QUALITÉ RÉSEAU INTERNET
+        function checkNetworkQuality() {
+            const start = Date.now();
+            fetch(window.location.href, {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                })
+                .then(() => {
+                    const duration = Date.now() - start;
+                    let message = '';
+                    if (duration < 100) {
+                        message = '🚀 Réseau excellent';
+                    } else if (duration < 500) {
+                        message = '📶 Réseau moyen';
+                    } else {
+                        message = '🐢 Réseau lent';
+                    }
+
+                    const quality = document.createElement('div');
+                    quality.className = 'alert alert-info text-center position-fixed bottom-0 start-0 end-0 m-3 shadow';
+                    quality.style.zIndex = 9999;
+                    quality.innerText = message;
+                    document.body.appendChild(quality);
+                    setTimeout(() => quality.remove(), 1000);
+                });
+        }
+
+        setInterval(checkNetworkQuality, 60000); // Test de réseau toutes les 60s
+
+        // ⏱️ GESTION SESSION EXPIRÉE
+        function showSessionExpiredPopup() {
+            const existingPopup = document.getElementById('session-popup');
+            if (existingPopup) return;
+
+            const popup = document.createElement('div');
+            popup.id = 'session-popup';
+            popup.innerHTML = `
+                <div class="alert alert-warning text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                    ⌛ Session expirée. Redirection en cours...
+                </div>
+            `;
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                window.location.href = "/loginPointe";
+            }, 3000);
         }
 
         function checkSessionExpired() {
@@ -415,25 +465,15 @@ color: #fff;">
                 })
                 .then(response => {
                     if (response.status === 419 || response.status === 401) {
-                        showOfflineMessage(true); // redirige vers /components/liste_module
+                        showSessionExpiredPopup();
                     }
                 })
                 .catch(() => {
-                    // Si l’appel échoue complètement, probablement hors ligne
-                    showOfflineMessage();
+                    showOfflinePopup();
                 });
         }
 
-        window.addEventListener('offline', showOfflineMessage);
-        window.addEventListener('online', removeOfflineMessage);
-
-        // Vérifie l'état initial au chargement
-        if (!navigator.onLine) {
-            showOfflineMessage();
-        }
-
-        // Vérifie périodiquement si la session a expiré
-        setInterval(checkSessionExpired, 60000); // toutes les 60 secondes
+        setInterval(checkSessionExpired, 60000); // Vérifie expiration session toutes les 60s
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

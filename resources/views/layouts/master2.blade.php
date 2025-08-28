@@ -19,7 +19,7 @@
     }
 </style>
 
-<body  style="background-color: rgb(240, 243, 243)">
+<body style="background-color: rgb(240, 243, 243)">
 
     <!-- Preloader -->
     <div id="preloader" class="preloader-single">
@@ -392,7 +392,7 @@
             document.body.appendChild(popup);
 
             setTimeout(() => {
-                window.location.href = "/liste_modules";
+                window.location.href = "/loginGroupe";
             }, 3000);
         }
 
