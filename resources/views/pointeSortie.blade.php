@@ -386,7 +386,7 @@ color: #fff;">
             if (redirect) {
                 // Redirection automatique vers une route définie
                 setTimeout(() => {
-                    window.location.href = "/loginGroupe";
+                    window.location.href = "/loginPointe";
                 }, 3000);
             }
         }
