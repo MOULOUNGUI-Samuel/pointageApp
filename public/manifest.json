@@ -1,7 +1,7 @@
 {
   "name": "Nedcore",
   "short_name": "Nedcore",
-  "start_url": "/login",
+  "start_url": "/loginPointe",
   "display": "standalone",
   "background_color": "#05436b",
   "theme_color": "#05436b",
