@@ -286,7 +286,7 @@ color: #fff;">
             const popup = document.createElement('div');
             popup.id = 'offline-popup';
             popup.innerHTML = `
-                <div class="alert alert-danger text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                <div class="alert alert-danger text-center position-fixed top-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                     📡 Connexion perdue.
                 </div>
             `;
@@ -297,7 +297,7 @@ color: #fff;">
             const popup = document.createElement('div');
             popup.id = 'online-popup';
             popup.innerHTML = `
-                <div class="alert alert-success text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                <div class="alert alert-success text-center position-fixed top-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                     ✅ Connexion rétablie.
                 </div>
             `;
@@ -337,7 +337,7 @@ color: #fff;">
                     }
 
                     const quality = document.createElement('div');
-                    quality.className = 'alert alert-info text-center position-fixed bottom-0 start-0 end-0 m-3 shadow';
+                    quality.className = 'alert alert-info text-center position-fixed top-0 start-0 end-0 m-3 shadow';
                     quality.style.zIndex = 9999;
                     quality.innerText = message;
                     document.body.appendChild(quality);
@@ -355,7 +355,7 @@ color: #fff;">
             const popup = document.createElement('div');
             popup.id = 'session-popup';
             popup.innerHTML = `
-                <div class="alert alert-warning text-center position-fixed bottom-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
+                <div class="alert alert-warning text-center position-fixed top-0 start-0 end-0 m-3 shadow" role="alert" style="z-index: 9999;">
                     ⌛ Session expirée. Redirection en cours...
                 </div>
             `;
