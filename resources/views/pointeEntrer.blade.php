@@ -237,7 +237,7 @@ color: #fff;">
                                 <input type="text" class="form-control text-white"
                                     placeholder="Identifiant de connexion"
                                     style="border:none;padding: 20px;background: transparent" name="matricule"
-                                    autocomplete="off" required>
+                                    autocomplete="off" autocapitalize="off" spellcheck="false" required>
                             </div>
 
                             <div class="input-group mt-3 shadow-sm rounded"
@@ -249,7 +249,7 @@ color: #fff;">
                                     <input type="password" id="passwordField" class="form-control text-white"
                                         placeholder="Mot de passe" name="password"
                                         style="border: none; padding: 20px; background: transparent"
-                                        autocomplete="off" required>
+                                        autocomplete="new-password" required>
                                 </div>
                                 <!-- Icône pour afficher/masquer -->
                                 <span class="input-group-addon nk-ic-st-pro" onclick="togglePassword()">
