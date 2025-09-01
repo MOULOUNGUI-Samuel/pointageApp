@@ -39,21 +39,20 @@ class UserController extends Controller
      */
     public function index(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
     {
-        $perPage     = (int) $request->integer('per_page', 15);
-        $q           = trim((string) $request->query('q', ''));
-        $sortBy      = (string) $request->query('sort_by', 'nom');
-        $sortDir     = strtolower((string) $request->query('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
-        $role        = $request->query('role');
+        $q            = trim((string) $request->query('q', ''));
+        $sortBy       = (string) $request->query('sort_by', 'nom');
+        $sortDir      = strtolower((string) $request->query('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $role         = $request->query('role');
         $entrepriseId = $request->query('entreprise_id');
-
+    
         // Colonnes autorisées pour le tri
         $sortable = ['nom', 'prenom', 'email', 'matricule', 'created_at'];
         if (!in_array($sortBy, $sortable, true)) {
             $sortBy = 'nom';
         }
-
+    
         $query = \App\Models\User::with('entreprise');
-
+    
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('nom', 'like', "%{$q}%")
@@ -62,19 +61,18 @@ class UserController extends Controller
                     ->orWhere('matricule', 'like', "%{$q}%");
             });
         }
-
+    
         if (!empty($role)) {
             $query->where('role', $role);
         }
-
+    
         if (!empty($entrepriseId)) {
             $query->where('entreprise_id', $entrepriseId);
         }
-
-        $paginator = $query->orderBy($sortBy, $sortDir)->get();
-
-        // Façonne chaque item pour ne JAMAIS exposer le password
-        $payload = $paginator->through(function ($u) {
+    
+        $users = $query->orderBy($sortBy, $sortDir)->get();
+    
+        $payload = $users->map(function ($u) {
             return [
                 'id'             => $u->id,
                 'name'           => $u->nom,
@@ -83,7 +81,6 @@ class UserController extends Controller
                 'photo'          => $u->photo ? asset('storage/' . $u->photo) : null,
                 'date_naissance' => $u->date_naissance,
                 'email'          => $u->email,
-                'password' => $u->password,
                 'role'           => $u->role,
                 'entreprise'     => $u->entreprise ? [
                     'code_societe' => $u->entreprise->code_entreprise,
@@ -93,9 +90,10 @@ class UserController extends Controller
                 ] : null,
             ];
         });
-
+    
         return response()->json($payload);
     }
+    
 
 
     /**
