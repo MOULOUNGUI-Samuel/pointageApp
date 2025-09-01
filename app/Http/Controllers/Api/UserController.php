@@ -71,7 +71,7 @@ class UserController extends Controller
             $query->where('entreprise_id', $entrepriseId);
         }
 
-        $paginator = $query->orderBy($sortBy, $sortDir)->paginate($perPage);
+        $paginator = $query->orderBy($sortBy, $sortDir)->get();
 
         // Façonne chaque item pour ne JAMAIS exposer le password
         $payload = $paginator->through(function ($u) {
