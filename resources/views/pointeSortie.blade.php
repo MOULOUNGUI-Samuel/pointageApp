@@ -233,7 +233,7 @@ color: #fff;">
                                 <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
                                         style="font-size: 25px"></i></span>
                                 <input type="text" class="form-control text-white"
-                                    placeholder="Identifiant de connexion"
+                                    placeholder="Identifiant de connexion" {{old('matricule')}}
                                     style="border:none;padding: 20px;background: transparent" name="matricule"
                                     required autocomplete="off" autocapitalize="off" spellcheck="false">
                             </div>

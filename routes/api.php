@@ -33,7 +33,7 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+Route::get('/users', [UserController::class, 'index']);   // ✅ Public
 // Ensure the UserController class and 'show' method are implemented correctly
 Route::get('/users/{user}', [UserController::class, 'show']);
 
