@@ -39,6 +39,14 @@ class UserController extends Controller
      */
     public function index(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
     {
+
+        // Vérifier la clé API envoyée dans l'entête
+        $apiKey = $request->header('X-API-KEY');
+
+        if ($apiKey !== config('app.api_key')) {
+            return response()->json(['message' => 'Clé API invalide'], 401);
+        }
+        
         $q            = trim((string) $request->query('q', ''));
         $sortBy       = (string) $request->query('sort_by', 'nom');
         $sortDir      = strtolower((string) $request->query('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
