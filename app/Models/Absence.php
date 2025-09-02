@@ -55,4 +55,8 @@ class Absence extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+    public function scopeMine($query)
+    {
+        return $query->where('user_id', auth()->id());
+    }
 }

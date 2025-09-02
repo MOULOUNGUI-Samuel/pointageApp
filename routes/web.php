@@ -220,7 +220,7 @@ Route::middleware('auth')->group(
    
 
     
-        Route::get('/managerindex', [ManagerAbsenceController::class, 'index'])->name('managerindex');
+        Route::view('/absences', 'absences.index')->name('managerindex');
         // Approuver ou rejeter une demande
         Route::patch('/{absence}/statut', [ManagerAbsenceController::class, 'updateStatus'])->name('managerupdateStatus');
 

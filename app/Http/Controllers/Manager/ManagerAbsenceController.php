@@ -12,12 +12,7 @@ class ManagerAbsenceController extends Controller
     // Affiche le tableau de bord avec les demandes en attente
     public function index()
     {
-        $pendingAbsences = Absence::where('status', 'demandé')
-            ->with('user') // Eager loading pour éviter les requêtes N+1
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return view('components.manager.absences.index', compact('pendingAbsences'));
+        return view('components.manager.absences.index');
     }
 
     // Met à jour le statut d'une demande (Approuver / Rejeter)

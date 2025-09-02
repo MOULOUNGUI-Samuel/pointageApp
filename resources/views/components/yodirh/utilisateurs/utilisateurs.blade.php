@@ -120,16 +120,13 @@
                                                         Actions
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        {{-- <li class="mb-1">
-                                                            <a class="dropdown-item" href="#"
-                                                                data-bs-toggle="offcanvas"
-                                                                data-bs-target="#offcanvasRight{{ $user->id }}"
-                                                                aria-controls="offcanvasRight">
+                                                        <li class="mb-1">
+                                                            <a class="dropdown-item" href="{{ route('absences.index') }}">
                                                                 <i class="fas fa-file-signature me-2"></i>
                                                                 Demandes d'absence
                                                             </a>
+                                                        </li>
 
-                                                        </li> --}}
                                                         <li>
                                                             <a class="dropdown-item text-danger" href="#"
                                                                 data-bs-toggle="modal"
@@ -140,7 +137,7 @@
                                                 </div>
 
                                                 {{-- <div class="dropdown table-action">
-                                                <a href="#" class="action-icon "
+                                                <a href="#" class="action-icon"
                                                     data-bs-toggle="dropdown"aria-expanded="false">
                                                     <i class="fa fa-ellipsis-v"></i>
                                                 </a>
