@@ -121,9 +121,10 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li class="mb-1">
-                                                            <a class="dropdown-item" href="{{ route('absences.index') }}">
-                                                                <i class="fas fa-file-signature me-2"></i>
-                                                                Demandes d'absence
+                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                                data-bs-target="#absenceModal-{{ $user->id }}">
+                                                                <i class="fas fa-file-signature me-2"></i> Demandes
+                                                                d'absence
                                                             </a>
                                                         </li>
 
@@ -135,107 +136,26 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-
-                                                {{-- <div class="dropdown table-action">
-                                                <a href="#" class="action-icon"
-                                                    data-bs-toggle="dropdown"aria-expanded="false">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#detailsMondale{{ $user->id }}">
-                                                        <i class="ti ti-eye text-info"></i>Détails
-                                                    </a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
-                                                        data-bs-target="#offcanvas_edit">
-                                                        <i class="ti ti-edit text-blue"></i>Edit
-                                                    </a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#delete_company">
-                                                        <i class="ti ti-trash text-danger"></i>Delete
-                                                    </a>
-                                                </div>
-                                            </div> --}}
                                             </td>
                                         </tr>
-                                        <div class="offcanvas offcanvas-end" tabindex="-1"
-                                            id="offcanvasRight{{ $user->id }}" aria-labelledby="offcanvasRightLabel">
-                                            <div class="offcanvas-header">
-                                                <h5 id="offcanvasRightLabel">Demande d'absence : {{ $user->nom }}</h5>
-                                                <button type="button" class="btn-close text-reset"
-                                                    data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                            </div> <!-- end offcanvas-header-->
-
-                                            <div class="offcanvas-body">
-                                                <form method="POST" action="{{ route('ajoute_utilisateur') }}"
-                                                    enctype="multipart/form-data" class="px-4 needs-validation"
-                                                    novalidate>
-                                                    <h4 class="mb-3 text-primary">Informations personnelles</h4>
-                                                    <div class="row g-3">
-
-                                                        <div class="col-md-4">
-                                                            <div class="form-group" id="group_date_naissance">
-                                                                <label class="form-label">Début de l'absence</label>
-                                                                <div class="input-group date">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fa fa-calendar"></i></span>
-                                                                    <input type="text" class="form-control mask-date"
-                                                                        name="date_naissance"
-                                                                        value="{{ old('date_naissance') }}" required
-                                                                        autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group" id="group_date_naissance">
-                                                                <label class="form-label">Fin de l'absence</label>
-                                                                <div class="input-group date">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fa fa-calendar"></i></span>
-                                                                    <input type="text" class="form-control mask-date"
-                                                                        name="date_naissance"
-                                                                        value="{{ old('date_naissance') }}" required
-                                                                        autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group col-md-4">
-                                                            <label class="form-label">Type d'absence</label>
-                                                            <div class="input-group">
-                                                                <select class="select2 form-control" name="pays_id"
-                                                                    style="width: 100%;" required>
-                                                                    <option value="">Veuillez selectionner</option>
-                                                                    <option value="congé_payé">Congé payé</option>
-                                                                    <option value="maladie">Maladie</option>
-                                                                    <option value="RTT">RTT</option>
-                                                                    <option value="autre">Autre</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group col-md-4">
-                                                            <label class="form-label">Compétences</label>
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fa fa-tasks"></i></span>
-                                                                <textarea name="competence" class="form-control">{{ old('competence') }}</textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="d-flex-justify-content-between mt-4">
-                                                            <button type="reset" class="btn btn-dark">Annuler</button>
-                                                            <button type="submit" class="btn btn-primary btn-action"
-                                                                data-loader-target="loader-modif">Enregistrer
-                                                                l'utilisateur</button>
-                                                            <button type="button" id="loader-modif"
-                                                                class="btn btn-outline-primary" style="display: none;"
-                                                                disabled>
-                                                                <i class="fas fa-spinner fa-spin me-2"></i>Enregistrement
-                                                                en cours...
-                                                            </button>
-                                                        </div>
+                                        {{-- MODALE UNIQUE POUR CE USER --}}
+                                        <div class="modal fade" id="absenceModal-{{ $user->id }}" tabindex="-1"
+                                            role="dialog" aria-hidden="true" wire:ignore.self>
+                                            <div class="modal-dialog modal-fullscreen p-3" role="document" >
+                                                <div class="modal-content"  style="background-color: rgb(240, 243, 243)">
+                                                    <div class="modal-header" style="background-color:white">
+                                                        <h4 class="modal-title">Demandes d'absence : {{ $user->nom }}
+                                                            {{ $user->prenom }}</h4>
+                                                            
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"></button>
                                                     </div>
-                                                </form>
-                                            </div> <!-- end offcanvas-body-->
-                                        </div> <!-- end offcanvas-->
+                                                    <div class="modal-body p-0 mx-3">
+                                                        @livewire('absences.unique-demand-checker', ['forUserId' => $user->id, 'modalId' => 'absenceModal-' . $user->id], key('unique-' . $user->id))
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="archiver" aria-hidden="true">
                                             <div class="modal-dialog" role="document">

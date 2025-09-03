@@ -1,3 +1,5 @@
+
+@livewireScripts
 <script>
     let dotCount = 1;
     let dotInterval;

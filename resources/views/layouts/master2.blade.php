@@ -221,7 +221,7 @@
         </div>
         {{-- @include('components/footer') --}}
     </div>
-
+@stack('modals')
     @include('components/script2')
     <script>
         setTimeout(function() {

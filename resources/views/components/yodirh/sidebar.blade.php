@@ -24,7 +24,7 @@
                         </li>
                         <li class="submenu">
                             <a href="javascript:void(0);"
-                                class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','modif_affiche_utilisateur','yodirh.formulaire_utilisateurs','Suivi_profil') ? 'active' : '' }}">
+                                class="{{ request()->routeIs('yodirh.utilisateurs', 'liste_presence','modif_affiche_utilisateur','yodirh.formulaire_utilisateurs','Suivi_profil','absenceindex') ? 'active' : '' }}">
                                 <i class="fa fa-users"></i><span>Gestion du personnel</span><span
                                     class="menu-arrow"></span></a>
                             <ul>

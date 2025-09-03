@@ -1,117 +1,70 @@
 <?php
 
-// app/Livewire/Absences/Manager.php
 namespace App\Livewire\Absences;
 
 use App\Models\Absence;
-use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class Manager extends Component
+class UniqueDemandChecker extends Component
 {
     use WithPagination, WithFileUploads;
 
     protected $paginationTheme = 'bootstrap';
 
-    /** Portée Entreprise */
-    public string $forCompanyId;
-    protected string $companyKey = 'entreprise_id'; // nom de la colonne dans `users`
+    public string $forUserId;
+    public string $modalId;
 
     /** Formulaire (droite) */
     public bool $isEditing = false;
     public ?string $selectedId = null;
-    public ?string $form_user_id = null;   // ✅ utilisateur choisi dans le formulaire
     public string $type = 'congé_payé';
     public ?string $start_datetime = null;
     public ?string $end_datetime = null;
     public ?string $reason = null;
-    public $attachment; // TemporaryUploadedFile|null
+    /** Upload (création/édition) */
+    public $attachment; // Livewire TemporaryUploadedFile|null
 
-    /** Filtres Livewire */
+    /** Filtres (gauche) */
     public string $search = '';
     public string $statusFilter = '';
-    public ?string $dateFrom = null;
-    public ?string $dateTo   = null;
+    public ?string $dateFrom = null;  // 'Y-m-d'
+    public ?string $dateTo   = null;  // 'Y-m-d'
 
     /** États UI (gauche) */
-    public array $openAcc = [];
-    public array $confirmDelete = [];
-    public array $showReject = [];
-    public array $justif = [];
+    public array $openAcc = [];           // [$id => bool]
+    public array $confirmDelete = [];     // [$id => bool]
+    public array $showReject = [];        // [$id => bool]
+    public array $justif = [];            // [$id => string|null]
 
-    /** Retour d’absence */
+    /** Retour d’absence (gauche - exclusif) */
     public ?string $returnTargetId = null;
+    public bool $returnOnTime = true;     // si false -> notes/doc obligatoires
     public ?string $returnNotes = null;
-    public $returnAttachment;
+    public $returnAttachment;             // TemporaryUploadedFile|null
 
     /** Unicité */
     public bool $hasConflict = false;
     public array $conflicts = [];
 
-    /** Pour le <select> des employés de l’entreprise */
-    public array $companyUsers = [];
-
-    public function mount(): void
+    public function mount(string $forUserId, string $modalId): void
     {
-        $this->forCompanyId = session('entreprise_id');
-
-        // Charge la liste des employés de l’entreprise
-        $this->companyUsers = User::query()
-            ->where($this->companyKey, $this->forCompanyId)
-            ->orderBy('nom')
-            ->get(['id', 'nom', 'prenom'])
-            ->map(fn($u) => ['id' => (string) $u->id, 'label' => $u->nom . ' ' . $u->prenom])
-            ->all();
+        $this->forUserId = $forUserId;
+        $this->modalId   = $modalId;
     }
 
-    public function openForm2($id = null): void
-    {
-        $this->resetValidation();
-        $this->isEditing = false;
-        $this->selectedId = null;
-        $this->form_user_id = null;
-        $this->type = 'congé_payé';
-        $this->start_datetime = $this->end_datetime = $this->reason = null;
-        $this->attachment = null;
-
-        if ($id) {
-            $a = $this->findInCompany($id);
-            $this->isEditing = true;
-            $this->selectedId = (string) $a->id;
-            $this->form_user_id = (string) $a->user_id;
-            $this->type = $a->type;
-            $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
-            $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
-            $this->reason = $a->reason;
-        }
-
-        // (décommente si tu veux forcer l’ouverture via event)
-        $this->dispatch('showAbsenceModal');
-    }
-    /** Pagination indépendante par entreprise */
+    // Pagination indépendante par user
     public function getPageName(): string
     {
-        return 'absences_page_company_' . $this->forCompanyId;
-    }
-
-    /** Trouve une absence bornée à l’entreprise */
-    private function findInCompany(string $id): Absence
-    {
-        return Absence::where('id', $id)
-            ->whereHas('user', function ($q) {
-                $q->where($this->companyKey, $this->forCompanyId);
-            })
-            ->firstOrFail();
+        return 'absences_page_' . $this->forUserId;
     }
 
     protected function rules(): array
     {
         return [
-            'form_user_id'   => 'required|uuid', // ou string selon ton PK
-            'type'           => 'required|in:congé_payé,maladie,RTT,maternité,paternité,parental,formation,sans_solde,exceptionnel,accident_travail,mission_pro,grève,autre',
+            'type'           => 'required|in:congé_payé,maladie,RTT,autre',
             'start_datetime' => 'required|date',
             'end_datetime'   => 'required|date|after:start_datetime',
             'reason'         => 'nullable|string|max:5000',
@@ -136,14 +89,12 @@ class Manager extends Component
         $this->resetPage();
     }
 
-    /** Vérifie chevauchement pour l’utilisateur choisi */
+    /** Vérifie l’unicité (chevauchements) avant enregistrement */
     private function passesUniqueness(): bool
     {
-        if (!$this->form_user_id || !$this->start_datetime || !$this->end_datetime) {
-            return false;
-        }
+        if (!$this->start_datetime || !$this->end_datetime) return false;
 
-        $conflicts = Absence::where('user_id', $this->form_user_id)
+        $conflicts = Absence::where('user_id', $this->forUserId)
             ->when($this->selectedId, fn($q) => $q->where('id', '!=', $this->selectedId))
             ->whereIn('status', ['brouillon', 'soumis', 'approuvé'])
             ->where(function ($q) {
@@ -169,13 +120,13 @@ class Manager extends Component
         return true;
     }
 
-    /** Accordéon piloté Livewire */
+    /** Accordion piloté côté Livewire */
     public function toggleAccordion(string $id): void
     {
         $this->openAcc[$id] = !data_get($this->openAcc, $id, false);
     }
 
-    /** Suppression (exclusive) */
+    /** Supprimer (bloc exclusif) */
     public function showDelete(string $id): void
     {
         $this->openAcc[$id] = true;
@@ -189,7 +140,7 @@ class Manager extends Component
         $this->confirmDelete[$id] = false;
     }
 
-    /** Rejet (exclusive) */
+    /** Rejeter (bloc exclusif) */
     public function showRejectBox(string $id): void
     {
         $this->openAcc[$id] = true;
@@ -204,17 +155,17 @@ class Manager extends Component
         unset($this->justif[$id]);
     }
 
-    /** Retour (exclusive) */
+    /** Retour d’absence (bloc exclusif) */
     public function showReturnBox(string $id): void
     {
-        $a = $this->findInCompany($id);
+        $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
 
         if ($a->status !== 'approuvé') {
-            session()->flash('error', "Retour possible uniquement pour une demande approuvée.");
+            session()->flash('error', "Le retour ne peut être confirmé que pour une demande approuvée.");
             return;
         }
         if ($a->return_confirmed_at) {
-            session()->flash('error', "Retour déjà confirmé.");
+            session()->flash('error', "Le retour est déjà confirmé pour cette demande.");
             return;
         }
 
@@ -229,33 +180,37 @@ class Manager extends Component
     public function cancelReturn(): void
     {
         $this->returnTargetId = null;
+        $this->returnOnTime = true;
         $this->returnNotes = null;
         $this->returnAttachment = null;
     }
-
     public function confirmReturn(): void
     {
         if (!$this->returnTargetId) {
-            session()->flash('error', "Aucune demande sélectionnée.");
+            session()->flash('error', "Aucune demande sélectionnée pour le retour.");
             return;
         }
 
-        $a = $this->findInCompany($this->returnTargetId);
+        $a = Absence::where('user_id', $this->forUserId)->findOrFail($this->returnTargetId);
+
         if ($a->status !== 'approuvé') {
-            session()->flash('error', "Retour possible uniquement pour une demande approuvée.");
+            session()->flash('error', "Le retour ne peut être confirmé que pour une demande approuvée.");
             return;
         }
 
-        $onTime = now()->lte($a->end_datetime); // ✅ auto “à l’heure” vs “en retard”
+        // Auto: à l’heure si maintenant <= end_datetime
+        $onTime = now()->lte($a->end_datetime);
 
+        // Validation (retard => description requise; pièce jointe facultative)
         $this->validate([
             'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
             'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
-        $returnPath = $this->returnAttachment
-            ? $this->returnAttachment->store('absences/returns', 'public')
-            : null;
+        $returnPath = null;
+        if ($this->returnAttachment) {
+            $returnPath = $this->returnAttachment->store('absences/returns', 'public');
+        }
 
         $a->update([
             'return_confirmed_at'    => now(),
@@ -265,10 +220,11 @@ class Manager extends Component
         ]);
 
         $this->cancelReturn();
-        session()->flash('success', "Retour confirmé.");
-        $this->dispatch('absencesUpdated'); // Livewire v3 
+        session()->flash('success', "Retour d'absence confirmé.");
+        $this->dispatch('absencesUpdated'); // Livewire v3
         $this->resetPage();
     }
+
 
     /** Formulaire (droite) */
     public function openForm($id = null): void
@@ -279,13 +235,11 @@ class Manager extends Component
         $this->type = 'congé_payé';
         $this->start_datetime = $this->end_datetime = $this->reason = null;
         $this->attachment = null;
-        $this->form_user_id = null;
 
         if ($id) {
-            $a = $this->findInCompany($id);
+            $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
             $this->isEditing = true;
             $this->selectedId = (string) $a->id;
-            $this->form_user_id = (string) $a->user_id;
             $this->type = $a->type;
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
@@ -296,55 +250,41 @@ class Manager extends Component
     public function save(): void
     {
         $this->validate();
-
-        // Vérifie que l’utilisateur choisi appartient à l’entreprise
-        $belongs = User::where('id', $this->form_user_id)
-            ->where($this->companyKey, $this->forCompanyId)
-            ->exists();
-
-        if (!$belongs) {
-            session()->flash('error', "L'utilisateur choisi n'appartient pas à cette entreprise.");
-            return;
-        }
-
         if (!$this->passesUniqueness()) {
-            session()->flash('error', 'Chevauchement détecté avec une autre demande de cet utilisateur.');
+            session()->flash('error', 'Conflit détecté : chevauchement avec une autre demande.');
             return;
         }
 
-        $path = $this->attachment
-            ? $this->attachment->store('absences/attachments', 'public')
-            : null;
+        $path = null;
+        if ($this->attachment) {
+            $path = $this->attachment->store('absences/attachments', 'public');
+        }
 
         if ($this->isEditing && $this->selectedId) {
-            $a = $this->findInCompany($this->selectedId);
+            $a = Absence::where('user_id', $this->forUserId)->findOrFail($this->selectedId);
             $data = [
-                'user_id'        => $this->form_user_id, // tu peux autoriser le changement d’employé
                 'type'           => $this->type,
                 'start_datetime' => $this->start_datetime,
                 'end_datetime'   => $this->end_datetime,
                 'reason'         => $this->reason,
             ];
             if ($path) {
+                // (optionnel) supprime l’ancien
                 if ($a->attachment_path) Storage::disk('public')->delete($a->attachment_path);
                 $data['attachment_path'] = $path;
-            }
-            if ($a->status === 'approuvé') {
-                session()->flash('error', "Impossible de modifier une demande approuvée.");
-                return;
             }
             $a->update($data);
             session()->flash('success', 'Demande mise à jour.');
             $this->dispatch('absencesUpdated'); // Livewire v3
         } else {
             Absence::create([
-                'user_id'         => $this->form_user_id,
-                'type'            => $this->type,
-                'start_datetime'  => $this->start_datetime,
-                'end_datetime'    => $this->end_datetime,
-                'reason'          => $this->reason,
+                'user_id'        => $this->forUserId,
+                'type'           => $this->type,
+                'start_datetime' => $this->start_datetime,
+                'end_datetime'   => $this->end_datetime,
+                'reason'         => $this->reason,
                 'attachment_path' => $path,
-                'status'          => 'brouillon',
+                'status'         => 'brouillon',
             ]);
             session()->flash('success', 'Demande créée.');
             $this->dispatch('absencesUpdated'); // Livewire v3
@@ -357,8 +297,8 @@ class Manager extends Component
     /** Actions liste */
     public function submit(string $id): void
     {
-        $a = $this->findInCompany($id);
-        if (in_array($a->status, ['brouillon', 'rejeté'])) {
+        $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
+        if ($a->status === 'brouillon' || $a->status === 'rejeté') {
             $a->update(['status' => 'soumis']);
             session()->flash('success', 'Demande soumise.');
             $this->dispatch('absencesUpdated'); // Livewire v3
@@ -368,11 +308,12 @@ class Manager extends Component
 
     public function delete(string $id): void
     {
-        $a = $this->findInCompany($id);
+        $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
         if ($a->status === 'approuvé') {
             session()->flash('error', 'Impossible de supprimer une demande approuvée.');
             return;
         }
+        // (optionnel) supprime pièces jointes
         if ($a->attachment_path) Storage::disk('public')->delete($a->attachment_path);
         if ($a->return_attachment_path) Storage::disk('public')->delete($a->return_attachment_path);
 
@@ -386,7 +327,7 @@ class Manager extends Component
 
     public function approve(string $id): void
     {
-        $a = $this->findInCompany($id);
+        $a = Absence::findOrFail($id);
         if ($a->status !== 'soumis') {
             session()->flash('error', 'Seules les demandes soumises peuvent être approuvées.');
             return;
@@ -405,9 +346,11 @@ class Manager extends Component
     {
         $this->validate([
             "justif.$id" => 'required|string|min:5|max:8000'
-        ], [], ["justif.$id" => 'justification']);
+        ], [], [
+            "justif.$id" => 'justification'
+        ]);
 
-        $a = $this->findInCompany($id);
+        $a = Absence::findOrFail($id);
         if ($a->status !== 'soumis') {
             session()->flash('error', 'Seules les demandes soumises peuvent être rejetées.');
             return;
@@ -430,11 +373,7 @@ class Manager extends Component
 
     public function render()
     {
-        $items = Absence::query()
-            ->with(['user:id,nom,prenom,fonction,' . $this->companyKey]) // récupérer les infos nécessaires
-            ->whereHas('user', function ($uq) {
-                $uq->where($this->companyKey, $this->forCompanyId);
-            })
+        $items = Absence::where('user_id', $this->forUserId)
             ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
             ->when($this->search, function ($q) {
                 $s = "%{$this->search}%";
@@ -450,6 +389,6 @@ class Manager extends Component
             ->orderByDesc('start_datetime')
             ->paginate(10, pageName: $this->getPageName());
 
-        return view('livewire.absences.manager', compact('items'));
+        return view('livewire.absences.unique-demand-checker', compact('items'));
     }
 }

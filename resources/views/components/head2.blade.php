@@ -54,7 +54,7 @@
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @endif
 <meta name="csrf-token" content="{{ csrf_token() }}">
-
+@livewireStyles
 </head>
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');

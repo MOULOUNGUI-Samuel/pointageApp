@@ -17,26 +17,30 @@ class Absence extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        // ADAPTATION : Remplacement de 'employee_id' par 'user_id'.
         'user_id',
         'type',
         'status',
         'start_datetime',
         'end_datetime',
         'reason',
+        'attachment_path',          // <-- NEW (pièce jointe de la demande)
         'approved_by',
         'approved_at',
+        'justification',
+
+        // Retour d'absence
+        'return_confirmed_at',      // <-- NEW
+        'returned_on_time',         // <-- NEW (bool)
+        'return_notes',             // <-- NEW (si retard/non respect)
+        'return_attachment_path',   // <-- NEW (pièce jointe retour)
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'start_datetime' => 'datetime',
-        'end_datetime' => 'datetime',
-        'approved_at' => 'datetime',
+        'start_datetime'       => 'datetime',
+        'end_datetime'         => 'datetime',
+        'approved_at'          => 'datetime',
+        'return_confirmed_at'  => 'datetime',
+        'returned_on_time'     => 'boolean',
     ];
 
     /**
