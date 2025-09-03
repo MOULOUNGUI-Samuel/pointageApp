@@ -235,9 +235,9 @@ color: #fff;">
                         @endif
                         <input type="hidden" name="pointagesortie" value="1">
 
-                        <div class="col-md-12 col-sm-12">
-                            <div class="input-group shadow-sm rounded"
-                                style="background: none;border-bottom: 1px solid #fff">
+                        <div class="col-md-12 col-sm-12 mt-2">
+                            <div class="input-group shadow-sm rounded "
+                                style="background: none;border-bottom: 1px solid #fff;">
                                 <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
                                         style="font-size: 25px"></i></span>
                                 <input type="text" class="form-control text-white"
@@ -246,7 +246,7 @@ color: #fff;">
                                     required autocomplete="off" autocapitalize="off" spellcheck="false">
                             </div>
 
-                            <div class="input-group mt-3 shadow-sm rounded"
+                            <div class="input-group mt-5 shadow-sm rounded"
                                 style="background: none; border-bottom: 1px solid #fff">
                                 <span class="input-group-addon nk-ic-st-pro">
                                     <i class="icon-key" style="font-size: 25px"></i>
@@ -268,13 +268,13 @@ color: #fff;">
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="text-center my-1">
-                        <h4 class="text-warning">Veuillez choisir les raisons de votre sortie</h4>
+                    <div class="text-center my-1 my-2">
+                        <h4 class="text-warning">Veuillez choisir la raison de votre sortie</h4>
                     </div>
                 </div>
 
                 <div class="col-md-12">
-                    <div class="px-2 pb-4">
+                    <div class="px-2">
 
                         <div class="row">
 
@@ -284,7 +284,7 @@ color: #fff;">
                                 <input type="hidden" id="longitude" name="longitude"
                                     value="{{ old('longitude') }}" style="color:black">
                                     <input type="hidden" id="currentTimeInput" name="current_time" class="text-primary">
-                                <div class="row">
+                                <div class="row mt-3">
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
                                             <div class="nk-toggle-switch" data-ts-color="blue">
@@ -336,7 +336,7 @@ color: #fff;">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-12 mt-3">
+                                <div class="col-md-12 mt-5">
                                     <div class="d-flex justify-content-between">
                                         <button type="submit" class=" btn-action btn btn-gradient  w-100"  data-loader-target="connecter">
                                             <i class="icon-save-disk" style="margin-right: 5px"></i> Valider la sortie
