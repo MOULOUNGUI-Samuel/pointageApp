@@ -249,7 +249,7 @@ color: #fff;">
                                     autocomplete="off" autocapitalize="off" spellcheck="false" required>
                             </div>
 
-                            <div class="input-group mt-3 shadow-sm rounded"
+                            <div class="input-group mt-5 shadow-sm rounded"
                                 style="background: none; border-bottom: 1px solid #fff">
                                 <span class="input-group-addon nk-ic-st-pro">
                                     <i class="icon-key" style="font-size: 25px"></i>
