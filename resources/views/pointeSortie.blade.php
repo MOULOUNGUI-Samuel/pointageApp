@@ -132,7 +132,7 @@ color: #fff;">
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-6 text-left" style="margin-top: 80px;">
+            <div class="col-6 text-left" style="margin-top: 20px;">
                 <a href="{{ route('loginPointe') }}">
                     <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
                 </a>
@@ -140,7 +140,7 @@ color: #fff;">
         </div>
         <form action="{{ route('login') }}" method="post">
             @csrf
-            <div class="row" style="margin-top: 150px">
+            <div class="row" style="margin-top: 50px">
                 {{-- <div class="col-md-2 text-left">
                         <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                             style="max-width: 150px;">
@@ -169,18 +169,26 @@ color: #fff;">
                         setInterval(updateDateTime, 1000); // Met à jour chaque seconde
                         updateDateTime();
                     </script>
-                    <script>
-                        function updateTime() {
-                            let now = new Date();
-                            let hours = now.getHours().toString().padStart(2, '0');
-                            let minutes = now.getMinutes().toString().padStart(2, '0');
-                            let seconds = now.getSeconds().toString().padStart(2, '0');
-                            document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                        }
+                   <script>
+                    function updateTime() {
+                        const now = new Date();
+                        const hours = now.getHours().toString().padStart(2, '0');
+                        const minutes = now.getMinutes().toString().padStart(2, '0');
+                        const seconds = now.getSeconds().toString().padStart(2, '0');
+                        const timeStr = hours + ":" + minutes + ":" + seconds;
 
-                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                        updateTime(); // Exécute immédiatement au chargement
-                    </script>
+                        // Met à jour l'affichage
+                        const displayEl = document.getElementById("currentTime");
+                        if (displayEl) displayEl.innerText = timeStr;
+
+                        // Met à jour l'input caché
+                        const inputEl = document.getElementById("currentTimeInput");
+                        if (inputEl) inputEl.value = timeStr;
+                    }
+
+                    setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+                    updateTime(); // Exécute immédiatement au chargement
+                </script>
 
                 </div>
 
@@ -275,6 +283,7 @@ color: #fff;">
                                     style="color:black">
                                 <input type="hidden" id="longitude" name="longitude"
                                     value="{{ old('longitude') }}" style="color:black">
+                                    <input type="hidden" id="currentTimeInput" name="current_time" class="text-primary">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
@@ -289,27 +298,6 @@ color: #fff;">
                                     <div class="col-6">
                                         <div class="toggle-select-act mg-t-30">
                                             <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts4" type="checkbox" name="description[]"
-                                                    hidden="hidden" value="Courses essentielles">
-                                                <label for="ts4" class="ts-helper"></label>
-                                                <label for="ts4" class="ts-label">Courses
-                                                    essentielles</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
-                                                <input id="ts5" type="checkbox" name="description[]"
-                                                    hidden="hidden" value="Prospection">
-                                                <label for="ts5" class="ts-helper"></label>
-                                                <label for="ts5" class="ts-label">Prospection</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="toggle-select-act mg-t-30">
-                                            <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts6" type="checkbox" name="description[]"
                                                     hidden="hidden" value="Pause">
                                                 <label for="ts6" class="ts-helper"></label>
@@ -317,7 +305,7 @@ color: #fff;">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-8">
                                         <div class="toggle-select-act mg-t-30">
                                             <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts8" type="checkbox" name="description[]"
@@ -327,7 +315,7 @@ color: #fff;">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <div class="toggle-select-act mg-t-30">
                                             <div class="nk-toggle-switch" data-ts-color="blue">
                                                 <input id="ts7" type="checkbox" hidden="hidden"
@@ -350,13 +338,13 @@ color: #fff;">
                                 </div>
                                 <div class="col-md-12 mt-3">
                                     <div class="d-flex justify-content-between">
-                                        <a href="{{ url('/loginPointe') }}" class="btn btn-gradient1 loading-btn">
-                                            <i class="icon-close-solid"></i> Annuler
+                                        <button type="submit" class=" btn-action btn btn-gradient  w-100"  data-loader-target="connecter">
+                                            <i class="icon-save-disk" style="margin-right: 5px"></i> Valider la sortie
                                             <span class="spinner"></span>
-                                        </a>
-                                        <button type="submit" class="btn btn-gradient loading-btn">
-                                            <i class="icon-save-disk"></i> Enrégristrer
-                                            <span class="spinner"></span>
+                                        </button>
+                                        <button type="button" id="connecter" class="btn btn-gradient  w-100"
+                                            style="display: none;" disabled>
+                                            <i class="fa fa-spinner fa-spin me-2"></i> Validation en cours...
                                         </button>
 
                                     </div>
@@ -369,6 +357,33 @@ color: #fff;">
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cible tous les boutons ayant l'attribut data-loader-target
+            document.querySelectorAll('[data-loader-target]').forEach(function(btn) { // Simplification du sélecteur
+                btn.addEventListener('click', function(event) {
+                    const targetId = btn.getAttribute('data-loader-target');
+                    const loaderBtn = document.getElementById(targetId);
+    
+                    if (btn.type === 'submit') {
+                        const form = btn.closest('form');
+                        if (form && !form.checkValidity()) {
+                            // Si le formulaire n'est pas valide, empêche l'action par défaut
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
+                            return;
+                        }
+                    }
+    
+                    if (loaderBtn) {
+                        btn.style.display = 'none';
+                        loaderBtn.style.display = 'inline-block';
+                    }
+                });
+            });
+        });
+    </script>
       <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {

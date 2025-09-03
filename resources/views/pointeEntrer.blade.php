@@ -133,13 +133,13 @@ color: #fff;">
     {{-- <div class="center-container"> --}}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-6 text-left" style="margin-top: 80px;">
+            <div class="col-6 text-left" style="margin-top: 40px;">
                 <a href="{{ route('loginPointe') }}">
                     <i class="fa fa-arrow-left text-white" style="font-size: 2.5rem;"></i>
                 </a>
             </div>
         </div>
-        <div class="row" style="margin-top: 150px">
+        <div class="row" style="margin-top: 50px">
             {{-- <div class="col-md-2 text-left">
                     <img src="{{ asset('src/images/YODIPOINTE.png') }}" alt="Logo" class="mb-4"
                         style="max-width: 150px;">
@@ -147,6 +147,27 @@ color: #fff;">
             <div class="col-md-12">
                 <div class="text-center my-1">
                     <h1 id="currentTime" class="display-3 fw-bold" style="font-size: 60px; color: #f7f7f7;"></h1>
+                    <!-- Input qui reçoit l'heure -->
+                    <script>
+                        function updateTime() {
+                            const now = new Date();
+                            const hours = now.getHours().toString().padStart(2, '0');
+                            const minutes = now.getMinutes().toString().padStart(2, '0');
+                            const seconds = now.getSeconds().toString().padStart(2, '0');
+                            const timeStr = hours + ":" + minutes + ":" + seconds;
+
+                            // Met à jour l'affichage
+                            const displayEl = document.getElementById("currentTime");
+                            if (displayEl) displayEl.innerText = timeStr;
+
+                            // Met à jour l'input caché
+                            const inputEl = document.getElementById("currentTimeInput");
+                            if (inputEl) inputEl.value = timeStr;
+                        }
+
+                        setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
+                        updateTime(); // Exécute immédiatement au chargement
+                    </script>
                 </div>
                 <div class="text-center my-1">
                     <h4>Bienvenue ! Vous pointez pour : <span id="currentDateTime" style="font-size: 25px"></span>
@@ -165,18 +186,6 @@ color: #fff;">
                     }
                     setInterval(updateDateTime, 1000); // Met à jour chaque seconde
                     updateDateTime();
-                </script>
-                <script>
-                    function updateTime() {
-                        let now = new Date();
-                        let hours = now.getHours().toString().padStart(2, '0');
-                        let minutes = now.getMinutes().toString().padStart(2, '0');
-                        let seconds = now.getSeconds().toString().padStart(2, '0');
-                        document.getElementById("currentTime").innerText = hours + ":" + minutes + ":" + seconds;
-                    }
-
-                    setInterval(updateTime, 1000); // Met à jour l'heure chaque seconde
-                    updateTime(); // Exécute immédiatement au chargement
                 </script>
                 @if (session('success'))
                     <div class="alert alert-success " role="alert">
@@ -228,14 +237,14 @@ color: #fff;">
                         <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}"
                             style="color:black">
                         <input type="hidden" name="pointage_entrer" value="1">
-
+                        <input type="hidden" id="currentTimeInput" name="current_time" class="text-primary">
                         <div class="col-md-12 col-sm-12">
                             <div class="input-group shadow-sm rounded mt-4"
                                 style="background: none;border-bottom: 1px solid #fff">
                                 <span class="input-group-addon nk-ic-st-pro"><i class="icon-lock"
                                         style="font-size: 25px"></i></span>
                                 <input type="text" class="form-control text-white"
-                                    placeholder="Identifiant de connexion" {{old('matricule')}}
+                                    placeholder="Identifiant de connexion" {{ old('matricule') }}
                                     style="border:none;padding: 20px;background: transparent" name="matricule"
                                     autocomplete="off" autocapitalize="off" spellcheck="false" required>
                             </div>
@@ -263,9 +272,13 @@ color: #fff;">
                                     <i class="icon-close-solid"></i> Annuler
                                     <span class="spinner"></span>
                                 </a> --}}
-                                <button type="submit" class="btn btn-gradient loading-btn w-75">
-                                    <i class="icon-save-disk"></i> Vaider le pointage
+                                <button type="submit" class=" btn-action btn btn-gradient  w-100"  data-loader-target="connecter">
+                                    <i class="icon-save-disk" style="margin-right: 5px"></i> Valider le pointage
                                     <span class="spinner"></span>
+                                </button>
+                                <button type="button" id="connecter" class="btn btn-gradient  w-100"
+                                    style="display: none;" disabled>
+                                    <i class="fa fa-spinner fa-spin me-2"></i> Validation en cours...
                                 </button>
 
                             </div>
@@ -277,7 +290,34 @@ color: #fff;">
 
         </div>
     </div>
-       <script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cible tous les boutons ayant l'attribut data-loader-target
+            document.querySelectorAll('[data-loader-target]').forEach(function(btn) { // Simplification du sélecteur
+                btn.addEventListener('click', function(event) {
+                    const targetId = btn.getAttribute('data-loader-target');
+                    const loaderBtn = document.getElementById(targetId);
+    
+                    if (btn.type === 'submit') {
+                        const form = btn.closest('form');
+                        if (form && !form.checkValidity()) {
+                            // Si le formulaire n'est pas valide, empêche l'action par défaut
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
+                            return;
+                        }
+                    }
+    
+                    if (loaderBtn) {
+                        btn.style.display = 'none';
+                        loaderBtn.style.display = 'inline-block';
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
         // 🔌 GESTION CONNEXION PERDUE
         function showOfflinePopup() {
             const existingPopup = document.getElementById('offline-popup');

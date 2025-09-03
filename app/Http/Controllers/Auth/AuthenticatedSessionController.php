@@ -51,7 +51,9 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
 
-        try {
+
+
+        // try {
 
             $request->authenticate();
             $request->session()->regenerate();
@@ -64,14 +66,14 @@ class AuthenticatedSessionController extends Controller
                     ->withInput($request->only('matricule', 'code_entreprise'))
                     ->with('error', 'Votre compte a été désactivé.');
             }
-            
+
 
             if ($request->filled('code_entreprise')) {
                 $code_entreprise = trim($request->code_entreprise);
-
                 // Recherche de l'entreprise liée au code saisi
                 $entreprise = Entreprise::where('code_entreprise', $code_entreprise)->first();
 
+                
                 // Vérifie si l’entreprise existe et si c’est bien celle du user connecté
                 $isSameEntreprise = $entreprise && $user->entreprise_id === $entreprise->id;
 
@@ -84,10 +86,30 @@ class AuthenticatedSessionController extends Controller
                         ->with('error', 'Le code de l\'entreprise ne correspond pas à votre compte.');
                 }
             }
-            $heure_actuelle = Carbon::now('Africa/Libreville')->format('H:i:s');
+            $heure_actuelle = $request->current_time;
             if ($request->pointage_entrer) {
+                $start = \Carbon\Carbon::createFromFormat('H:i:s', $request->current_time);
+                // +20 minutes
+                $end = $start->copy()->addMinutes(20);
+                $endTime = $end->format('H:i:s'); // ex. "22:28:42"
+
                 $entreprise = Entreprise::find($user->entreprise_id);
 
+                $startEntreprise = \Carbon\Carbon::createFromFormat('H:i:s', $entreprise->heure_ouverture);
+                // +20 minutes
+                $endEntreprise = $startEntreprise->copy()->addMinutes(20);
+                $endTimeEntreprise = $endEntreprise->format('H:i:s'); // ex. "22:28:42"
+
+                // dd("heure de depart /" . $start . "/ heures avec 20 minute :" . $endTime." / heure entreprise +20 :".$endTimeEntreprise);
+                
+                if($endTime > $startEntreprise)
+                {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
+                    return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
+                }
+                
                 if (!$entreprise) {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
@@ -172,7 +194,7 @@ class AuthenticatedSessionController extends Controller
                     $request->session()->regenerateToken();
                     return redirect()->route('loginPointe')->with('success', 'Vous avez pointé votre entrée avec succès.');
                 }
-                
+
                 // Enregistrer le pointage
                 Pointage::create([
                     'user_id' => $user->id,
@@ -324,11 +346,11 @@ class AuthenticatedSessionController extends Controller
                     return redirect()->route('index_employer');
                 }
             }
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput($request->only('matricule', 'code_entreprise'))
-                ->withErrors(['login' => 'Informations de connexion incorrectes !']);
-        }
+        // } catch (\Exception $e) {
+        //     return redirect()->back()
+        //         ->withInput($request->only('matricule', 'code_entreprise'))
+        //         ->withErrors(['login' => 'Informations de connexion incorrectes !']);
+        // }
     }
 
 
