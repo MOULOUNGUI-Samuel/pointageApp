@@ -13,7 +13,6 @@
         * {
             font-family: 'Inter', sans-serif;
         }
-        
         .gradient-bg { 
             background: linear-gradient(135deg, #05436b 0%, #05436b 100%); 
         }
