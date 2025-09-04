@@ -138,13 +138,13 @@
                                             </td>
                                             <td>{{ Str::limit($user->nom . ' ' . $user->prenom, 20, '...') }}</td>
                                             <td class="text-center">{{ $user->matricule }} <br>
-                                                <span class="badge  {{ $user->statu_user==1 ? 'badge-success' : 'badge-danger' }}">{{ $user->statu_user==1 ? 'Actif' : 'Inactif' }}</span>
+                                                <span class="px-2 rounded  border  {{ $user->statu_user==1 ? 'border-success text-success' : 'border-danger text-danger' }}">{{ $user->statu_user==1 ? 'Actif' : 'Inactif' }}</span>
                                             </td>
                                             <td>{{ $user->email_professionnel }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/Y') }}</td>
-                                            <td>{{ Str::limit($user->fonction, 25, '...') }}<br>
-                                                <span class="badge  {{ ($user->statut==1 && $user->statu_user==1)  ? 'badge-primary' : 'badge-dark' }}">{{ ($user->statut==1 && $user->statu_user==1) ? 'Peut pointer' : 'Ne pointe pas' }}</span>
+                                            <td class="text-center">{{ Str::limit($user->fonction, 25, '...') }}<br>
+                                                <span class="px-2 rounded  border  {{ ($user->statut==1 && $user->statu_user==1)  ? 'border-primary text-primary' : 'border-dark text-dark' }}">{{ ($user->statut==1 && $user->statu_user==1) ? 'Peut pointer' : 'Ne pointe pas' }}</span>
                                             </td>
                                             <td>
                                                 <!-- Bouton initial -->
