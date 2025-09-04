@@ -29,23 +29,70 @@
                             <div class="col-sm-8">
                                 <div class="d-flex align-items-center flex-wrap row-gap-2 justify-content-sm-end">
                                     <div class="dropdown me-2">
-                                        <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown"><i
-                                                class="ti ti-package-export me-2"></i>Exporter</a>
-                                        <div class="dropdown-menu  dropdown-menu-end">
+                                        <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ti ti-filter me-2"></i>
+                                            Filtre de pointage
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
                                             <ul>
                                                 <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item"><i
-                                                            class="ti ti-file-type-pdf text-danger me-1"></i>Exporter
-                                                        en PDF</a>
+                                                    <a href="javascript:void(0);" class="dropdown-item filter-btn"
+                                                        data-filter="peut">
+                                                        <i class="ti ti-eye me-1"></i>
+                                                        Peut pointer
+                                                    </a>
                                                 </li>
                                                 <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item"><i
-                                                            class="ti ti-file-type-xls text-green me-1"></i>Exporter
-                                                        en Excel </a>
+                                                    <a href="javascript:void(0);"
+                                                        class="dropdown-item filter-btn text-warning" data-filter="ne_peut">
+                                                        <i class="ti ti-eye me-1"></i>
+                                                        Ne pointe pas
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                        class="dropdown-item filter-btn text-primary" data-filter="all">
+                                                        <i class="ti ti-reload me-1"></i>Tous
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
+                                    <!-- Filtre archive -->
+                                    <div class="dropdown me-2">
+                                        <a href="javascript:void(0);" class="dropdown-toggle text-primary" data-bs-toggle="dropdown">
+                                            <i class="ti ti-archive me-2"></i>
+                                            Filtre d'archivage...
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <ul>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item filter-btn2"
+                                                        data-type="archive" data-filter="active">
+                                                        <i class="ti ti-users me-1"></i>
+                                                        utilisateurs actifs
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                        class="dropdown-item filter-btn2 text-danger" data-type="archive"
+                                                        data-filter="non_active">
+                                                        <i class="ti ti-users me-1"></i>
+                                                        utilisateurs archivés
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                        class="dropdown-item filter-btn2 text-primary" data-type="archive"
+                                                        data-filter="allarchive">
+                                                        <i class="ti ti-reload me-1"></i>
+                                                        Tous
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
                                     <a href="{{ route('yodirh.formulaire_utilisateurs') }}"
                                         class="btn-action btn btn-primary" data-loader-target="ajout-utilisateur"><i
                                             class="ti ti-square-rounded-plus me-2"></i>Ajouter un utilisateur</a>
@@ -76,8 +123,8 @@
                                 </thead>
                                 <tbody id="approbationsTable2">
                                     @foreach ($utilisateurs as $user)
-                                        <tr>
-                                            {{-- <td>{{ $user->id }}</td> --}}
+                                        <tr data-pointer="{{ $user->statut ? '1' : '0' }}"
+                                            data-archived="{{ $user->statu_user ? '0' : '1' }}">
                                             <td>
                                                 @if ($user->photo)
                                                     <img src="{{ asset('storage/' . $user->photo) }}"
@@ -90,11 +137,15 @@
                                                 @endif
                                             </td>
                                             <td>{{ Str::limit($user->nom . ' ' . $user->prenom, 20, '...') }}</td>
-                                            <td>{{ $user->matricule }}</td>
+                                            <td class="text-center">{{ $user->matricule }} <br>
+                                                <span class="badge  {{ $user->statu_user==1 ? 'badge-success' : 'badge-danger' }}">{{ $user->statu_user==1 ? 'Actif' : 'Inactif' }}</span>
+                                            </td>
                                             <td>{{ $user->email_professionnel }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/Y') }}</td>
-                                            <td>{{ Str::limit($user->fonction, 25, '...') }}</td>
+                                            <td>{{ Str::limit($user->fonction, 25, '...') }}<br>
+                                                <span class="badge  {{ ($user->statut==1 && $user->statu_user==1)  ? 'badge-primary' : 'badge-dark' }}">{{ ($user->statut==1 && $user->statu_user==1) ? 'Peut pointer' : 'Ne pointe pas' }}</span>
+                                            </td>
                                             <td>
                                                 <!-- Bouton initial -->
                                                 <button type="button" class="btn-action btn btn-dark"
@@ -121,7 +172,8 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li class="mb-1">
-                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                            <a class="dropdown-item" href="#"
+                                                                data-bs-toggle="modal"
                                                                 data-bs-target="#absenceModal-{{ $user->id }}">
                                                                 <i class="fas fa-file-signature me-2"></i> Demandes
                                                                 d'absence
@@ -129,10 +181,11 @@
                                                         </li>
 
                                                         <li>
-                                                            <a class="dropdown-item text-danger" href="#"
+                                                            <a class="dropdown-item {{ ($user->statu_user===0) ? 'text-success' : 'text-danger' }}" href="#"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#archiver-{{ $user->id }}"><i
-                                                                    class="fas fa-archive me-2"></i>Archiver</a>
+                                                                    class="fas fa-user me-2"></i>
+                                                                    {{ ($user->statu_user===0) ? 'Activer' : 'Désactiver' }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -141,12 +194,12 @@
                                         {{-- MODALE UNIQUE POUR CE USER --}}
                                         <div class="modal fade" id="absenceModal-{{ $user->id }}" tabindex="-1"
                                             role="dialog" aria-hidden="true" wire:ignore.self>
-                                            <div class="modal-dialog modal-fullscreen p-3" role="document" >
-                                                <div class="modal-content"  style="background-color: rgb(240, 243, 243)">
+                                            <div class="modal-dialog modal-fullscreen p-3" role="document">
+                                                <div class="modal-content" style="background-color: rgb(240, 243, 243)">
                                                     <div class="modal-header" style="background-color:white">
                                                         <h4 class="modal-title">Demandes d'absence : {{ $user->nom }}
                                                             {{ $user->prenom }}</h4>
-                                                            
+
                                                         <button type="button" class="btn-close"
                                                             data-bs-dismiss="modal"></button>
                                                     </div>
@@ -156,43 +209,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1"
-                                            role="dialog" aria-labelledby="archiver" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-danger">
-                                                        <h4 class="modal-title text-white" id="archiver">
-                                                            <i class="bi bi-trash-fill"></i> Archiver un utilisateur
-                                                        </h4>
-                                                    </div>
-                                                    <form action="{{ route('desactiver_user', $user->id) }}"
-                                                        method="POST" style="display:inline-block;">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="modal-body">
-                                                            <div class="row">
-                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                                    <div class="text-center">
-                                                                        <h3>{{ $user->nom }} {{ $user->prenom }}</h3>
-                                                                        </h3>
-                                                                        <p>Êtes-vous sûr de vouloir archiver cet utilisateur
-                                                                            ?</p>
-                                                                        <p class="text-danger">Cette action est
-                                                                            irréversible.</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Annuler</button>
-                                                            <button type="submit" class="btn btn-danger">Oui,
-                                                                archiver</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                       
                                     @endforeach
 
 
@@ -205,6 +222,52 @@
                     </div>
                 </div>
                 @foreach ($utilisateurs as $user)
+                <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1"
+                    role="dialog" aria-labelledby="archiver" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header {{ ($user->statu_user===0) ? 'bg-success' : 'bg-danger' }} ">
+                                <h4 class="modal-title text-white" id="archiver">
+                                    <i class="bi bi-trash-fill"></i>{{ ($user->statu_user===0) ? 'Activé cet utilisateur' : 'Désactivé cet utilisateur' }} 
+                                </h4>
+                            </div>
+                            <form action="{{ route('desactiver_user', $user->id) }}"
+                                method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="text-center">
+                                                <h3 class="mb-2">{{ $user->nom }} {{ $user->prenom }}</h3>
+                                                </h3>
+                                                <p class="mb-2">Êtes-vous sûr de vouloir {{ ($user->statu_user===0) ? 'activé' : 'désactiver' }} cet utilisateur
+                                                    ?</p>
+                                                <div class="text-center">
+                                                    @if ($user->photo)
+                                                    <img src="{{ asset('storage/' . $user->photo) }}"
+                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
+                                                        style="width: 90px; height: 90px;">
+                                                @else
+                                                    <img src="{{ asset('src/images/user.jpg') }}"
+                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
+                                                        style="width: 90px; height: 90px;">
+                                                @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Annuler</button>
+                                    <button type="submit" class="btn {{ ($user->statu_user===0) ? 'btn-success' : 'btn-danger' }}">Oui,
+                                        {{ ($user->statu_user===0) ? 'activé' : 'désactiver' }} </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                     <div id="detailsMondale{{ $user->id }}" class="modal fade" role="dialog"tabindex="-1"
                         role="dialog" aria-labelledby="detailsMondale" aria-hidden="true">
                         <div class="modal-dialog modal-lg" role="document">
@@ -410,6 +473,70 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterArchiveButtons = document.querySelectorAll('.filter-btn2[data-type="archive"]');
+            const rows = document.querySelectorAll('#approbationsTable2 tr');
+        
+            function applyDefault() {
+                rows.forEach(row => {
+                    const isArchived = row.dataset.archived === "1";
+                    row.style.display = isArchived ? "none" : "";
+                });
+            }
+        
+            // appliquer par défaut (utilisateurs actifs seulement)
+            applyDefault();
+        
+            filterArchiveButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+        
+                    rows.forEach(row => {
+                        const isArchived = row.dataset.archived === "1";
+        
+                        if (filter === "allarchive") {
+                            row.style.display = "";
+                        } else if (filter === "active" && !isArchived) {
+                            row.style.display = "";
+                        } else if (filter === "non_active" && isArchived) {
+                            row.style.display = "";
+                        } else {
+                            row.style.display = "none";
+                        }
+                    });
+                });
+            });
+        });
+        </script>
+        
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const rows = document.querySelectorAll('#approbationsTable2 tr');
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+
+                    rows.forEach(row => {
+                        const canPoint = row.dataset.pointer === "1";
+
+                        if (filter === "all") {
+                            row.style.display = "";
+                        } else if (filter === "peut" && canPoint) {
+                            row.style.display = "";
+                        } else if (filter === "ne_peut" && !canPoint) {
+                            row.style.display = "";
+                        } else {
+                            row.style.display = "none";
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
     <script>
         function searchTable() {
             const input = document.getElementById('searchInput2').value.toLowerCase();

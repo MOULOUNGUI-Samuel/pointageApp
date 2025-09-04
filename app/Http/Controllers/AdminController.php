@@ -48,7 +48,6 @@ class AdminController extends Controller
         $entreprise_id = session('entreprise_id');
         $utilisateurs = User::with(['entreprise', 'service', 'role', 'pays', 'ville'])
             ->orderBy('id', 'desc')
-            ->where('statu_user', 1)
             ->where('entreprise_id', $entreprise_id)
             ->get();
 
@@ -330,10 +329,10 @@ class AdminController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            $user->statu_user = 0; // Désactiver l'utilisateur
+            $user->statu_user = ($user->statu_user === 0) ?  1 : 0; // Désactiver l'utilisateur
             $user->save();
 
-            return redirect()->back()->with('success', 'Utilisateur désactivé avec succès.');
+            return redirect()->back()->with('success', 'Utilisateur ' . (($user->statu_user === 0) ? 'désactivé' : 'activé') . ' avec succès.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.']);
         }
@@ -342,7 +341,7 @@ class AdminController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            $user->statut = ($user->statut === 1 )?  0 : 1; // Désactiver l'utilisateur
+            $user->statut = ($user->statut === 1) ?  0 : 1; // Désactiver l'utilisateur
             $user->save();
 
             return redirect()->back()->with('success', 'Statut changé avec succès.');

@@ -46,21 +46,21 @@ class UserController extends Controller
         if ($apiKey !== config('app.api_key')) {
             return response()->json(['message' => 'Clé API invalide'], 401);
         }
-        
+
         $q            = trim((string) $request->query('q', ''));
         $sortBy       = (string) $request->query('sort_by', 'nom');
         $sortDir      = strtolower((string) $request->query('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
         $role         = $request->query('role');
         $entrepriseId = $request->query('entreprise_id');
-    
+
         // Colonnes autorisées pour le tri
         $sortable = ['nom', 'prenom', 'email', 'matricule', 'created_at'];
         if (!in_array($sortBy, $sortable, true)) {
             $sortBy = 'nom';
         }
-    
+
         $query = \App\Models\User::with('entreprise');
-    
+
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('nom', 'like', "%{$q}%")
@@ -69,23 +69,24 @@ class UserController extends Controller
                     ->orWhere('matricule', 'like', "%{$q}%");
             });
         }
-    
+
         if (!empty($role)) {
             $query->where('role', $role);
         }
-    
+
         if (!empty($entrepriseId)) {
             $query->where('entreprise_id', $entrepriseId);
         }
-    
+
         $users = $query->orderBy($sortBy, $sortDir)->get();
-    
+
         $payload = $users->map(function ($u) {
             return [
                 'id'             => $u->id,
                 'name'           => $u->nom,
                 'username'       => $u->prenom,
                 'identifiant'    => $u->matricule,
+                'fonction' => $u->fonction,
                 'photo'          => $u->photo ? asset('storage/' . $u->photo) : null,
                 'date_naissance' => $u->date_naissance,
                 'email'          => $u->email,
@@ -98,10 +99,10 @@ class UserController extends Controller
                 ] : null,
             ];
         });
-    
+
         return response()->json($payload);
     }
-    
+
 
 
     /**
@@ -163,6 +164,7 @@ class UserController extends Controller
                 'photo' => $photoUrl, // ✅ URL publique de la photo
                 'date_naissance' => $user->date_naissance,
                 'password' => $user->password,
+                'fonction' => $user->fonction,
                 'email' => $user->email,
                 'role' => $user->role,
             ],
