@@ -53,7 +53,7 @@ class AuthenticatedSessionController extends Controller
 
 
 
-        // try {
+        try {
 
             $request->authenticate();
             $request->session()->regenerate();
@@ -102,7 +102,7 @@ class AuthenticatedSessionController extends Controller
 
                 // dd("heure de depart /" . $start . "/ heures avec 20 minute :" . $endTime." / heure entreprise +20 :".$endTimeEntreprise);
                 
-                if($endTime > $startEntreprise)
+                if($endTime > $endTimeEntreprise)
                 {
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
@@ -346,11 +346,11 @@ class AuthenticatedSessionController extends Controller
                     return redirect()->route('index_employer');
                 }
             }
-        // } catch (\Exception $e) {
-        //     return redirect()->back()
-        //         ->withInput($request->only('matricule', 'code_entreprise'))
-        //         ->withErrors(['login' => 'Informations de connexion incorrectes !']);
-        // }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput($request->only('matricule', 'code_entreprise'))
+                ->withErrors(['login' => 'Informations de connexion incorrectes !']);
+        }
     }
 
 
