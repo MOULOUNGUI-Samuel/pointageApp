@@ -45,9 +45,9 @@
 
             <div class="col-md-3">
                 <select id="absStatus" class="form-select shadow">
-                    <option value="">Tous les statuts</option>
+                    <option value="" selected>Tous les statuts</option>
                     <option value="brouillon">Brouillon</option>
-                    <option value="soumis" selected>Soumis</option>
+                    <option value="soumis">Soumis</option>
                     <option value="approuvé">Approuvé</option>
                     <option value="rejeté">Rejeté</option>
                 </select>
@@ -572,7 +572,7 @@
             $to.addEventListener('change', apply);
 
             // Par défaut : afficher "soumis"
-            $status.value = "soumis";
+            $status.value = "";
             apply();
         })();
     </script>

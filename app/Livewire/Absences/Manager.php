@@ -24,7 +24,7 @@ class Manager extends Component
     public bool $isEditing = false;
     public ?string $selectedId = null;
     public ?string $form_user_id = null;   // ✅ utilisateur choisi dans le formulaire
-    public string $type = 'congé_payé';
+    public string $type = '';
     public ?string $start_datetime = null;
     public ?string $end_datetime = null;
     public ?string $reason = null;

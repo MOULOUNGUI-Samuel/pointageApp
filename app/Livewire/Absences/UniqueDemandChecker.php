@@ -20,7 +20,7 @@ class UniqueDemandChecker extends Component
     /** Formulaire (droite) */
     public bool $isEditing = false;
     public ?string $selectedId = null;
-    public string $type = 'congé_payé';
+    public string $type = '';
     public ?string $start_datetime = null;
     public ?string $end_datetime = null;
     public ?string $reason = null;
@@ -64,7 +64,7 @@ class UniqueDemandChecker extends Component
     protected function rules(): array
     {
         return [
-            'type'           => 'required|in:congé_payé,maladie,RTT,autre',
+            'type'           => 'required',
             'start_datetime' => 'required|date',
             'end_datetime'   => 'required|date|after:start_datetime',
             'reason'         => 'nullable|string|max:5000',
