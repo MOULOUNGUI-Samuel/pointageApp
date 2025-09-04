@@ -102,13 +102,13 @@ class AuthenticatedSessionController extends Controller
 
                 // dd("heure de depart /" . $start . "/ heures avec 20 minute :" . $endTime." / heure entreprise +20 :".$endTimeEntreprise);
                 
-                if($endTime > $endTimeEntreprise)
-                {
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
-                    return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
-                }
+                // if($endTime > $endTimeEntreprise)
+                // {
+                //     $request->session()->invalidate();
+                //     $request->session()->regenerateToken();
+                //     // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
+                //     return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
+                // }
                 
                 if (!$entreprise) {
                     $request->session()->invalidate();
