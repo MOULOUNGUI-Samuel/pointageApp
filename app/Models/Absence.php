@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Absence extends Model
 {
@@ -21,6 +22,7 @@ class Absence extends Model
         'type',
         'status',
         'start_datetime',
+        'code_demande',
         'end_datetime',
         'reason',
         'attachment_path',          // <-- NEW (pièce jointe de la demande)
@@ -51,7 +53,28 @@ class Absence extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+// (Optionnel) génération de secours côté modèle
+    protected static function booted()
+    {
+        static::creating(function ($absence) {
+            if (empty($absence->code_demande)) {
+                $absence->code_demande = self::makeUniqueCode();
+            }
+        });
+    }
 
+    public static function makeUniqueCode(): string
+    {
+        $societe = session('entreprise_nom') ?? 'ENT';
+        $prefix = collect(explode(' ', $societe))
+            ->filter()->map(fn($w)=>strtoupper(mb_substr($w,0,1)))->implode('');
+
+        do {
+            $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
+        } while (self::where('code_demande',$code)->exists());
+
+        return $code;
+    }
     /**
      * Obtient le manager/admin qui a approuvé la demande.
      */

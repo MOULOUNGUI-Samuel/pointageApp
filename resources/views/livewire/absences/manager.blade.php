@@ -129,7 +129,7 @@
                                             <div class="d-flex justify-content-between w-100 align-items-center">
                                                 <div class="d-flex flex-column">
                                                     <span class="fw-semibold text-capitalize">
-                                                        {{ str_replace('_', ' ', $a->type) }}
+                                                        {{ str_replace('_', ' ', $a->type) }} [ {{ $a->code_demande }} ]
                                                     </span>
                                                     <small class="text-muted">
                                                         {{ $a->start_datetime?->format('d/m/Y H:i') }} →
@@ -364,8 +364,8 @@
                                                                     <span class="badge bg-danger ms-2">En
                                                                         retard</span>
                                                                 @else
-                                                                    <span class="badge bg-success ms-2">À
-                                                                        l’heure</span>
+                                                                    <span class="badge bg-success ms-2">Période
+                                                                        respectée</span>
                                                                 @endif
                                                             </div>
                                                             <small class="text-muted">Date prévue :
@@ -404,16 +404,17 @@
                                                             <div class="text-muted mb-3">Retour à la date prévue —
                                                                 aucun
                                                                 justificatif requis.</div>
-                                                            {{-- <div class="col-md-6">
-                                                                <label class="form-label">Date et heure de retoure </label>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Date et heure de retoure
+                                                                </label>
                                                                 <input type="datetime-local"
-                                                                    class="form-control @error('end_datetime') is-invalid @enderror shadow"
-                                                                    wire:model="end_datetime">
-                                                                @error('end_datetime')
+                                                                    class="form-control @error('return_confirmed_at') is-invalid @enderror shadow"
+                                                                    wire:model="return_confirmed_at">
+                                                                @error('return_confirmed_at')
                                                                     <div class="invalid-feedback">{{ $message }}
                                                                     </div>
                                                                 @enderror
-                                                            </div> --}}
+                                                            </div>
                                                         @endif
 
                                                         <div class="d-flex gap-2">
@@ -464,44 +465,65 @@
                     @endif
 
                     <form wire:submit.prevent="save">
-                        <div class="mb-3">
-                            <label class="form-label">Employé</label>
-                            <select class="form-select @error('form_user_id') is-invalid @enderror shadow"
-                                wire:model="form_user_id">
-                                <option value="">— Sélectionner un employé —</option>
-                                @foreach ($companyUsers as $u)
-                                    <option value="{{ $u['id'] }}">{{ $u['label'] }}</option>
-                                @endforeach
-                            </select>
-                            @error('form_user_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Type</label>
-                            <select class="form-select @error('type') is-invalid @enderror shadow" wire:model="type">
-                                <option value="">Choix du type</option>
-                                <option value="congé_payé">Congé payé</option>
-                                <option value="maladie">Maladie</option>
-                                <option value="RTT">RTT (Réduction du Temps de Travail)</option>
-                                <option value="maternité">Congé maternité</option>
-                                <option value="paternité">Congé paternité</option>
-                                <option value="parental">Congé parental</option>
-                                <option value="formation">Congé formation</option>
-                                <option value="sans_solde">Congé sans solde</option>
-                                <option value="exceptionnel">Congé exceptionnel (mariage, décès, etc.)</option>
-                                <option value="accident_travail">Accident du travail</option>
-                                <option value="mission_pro">Déplacement / Mission professionnelle</option>
-                                <option value="grève">Grève</option>
-                                <option value="autre">Autre</option>
-                            </select>
-                            @error('type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                         <div class="row g-3">
+                            @php
+                                $code_societe = session('entreprise_nom');
+                                $newcodeSociete = collect(explode(' ', $code_societe))
+                                    ->map(fn($word) => strtoupper(substr($word, 0, 1)))
+                                    ->implode('');
+                                $randomString = strtoupper(Str::random(3));
+                                $currentTime = now()->format('His');
+                                $code_demande = $newcodeSociete . '-' . $randomString . '-' . $currentTime;
+                            @endphp
+
+                            <div class="col-md-6">
+                                <label class="form-label">Code de la demande</label>
+                                <input type="text"
+                                    class="form-control @error('code_demande') is-invalid @enderror shadow"
+                                    wire:model="code_demande" value="{{ $code_demande }}" readonly>
+                                @error('code_demande')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Employé</label>
+                                <select class="form-select @error('form_user_id') is-invalid @enderror shadow"
+                                    wire:model="form_user_id">
+                                    <option value="">— Sélectionner un employé —</option>
+                                    @foreach ($companyUsers as $u)
+                                        <option value="{{ $u['id'] }}">{{ $u['label'] }}</option>
+                                    @endforeach
+                                </select>
+                                @error('form_user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Type</label>
+                                <select class="form-select @error('type') is-invalid @enderror shadow"
+                                    wire:model="type">
+                                    <option value="">Choix du type</option>
+                                    <option value="congé_payé">Congé payé</option>
+                                    <option value="maladie">Maladie</option>
+                                    <option value="RTT">RTT (Réduction du Temps de Travail)</option>
+                                    <option value="maternité">Congé maternité</option>
+                                    <option value="paternité">Congé paternité</option>
+                                    <option value="parental">Congé parental</option>
+                                    <option value="formation">Congé formation</option>
+                                    <option value="sans_solde">Congé sans solde</option>
+                                    <option value="exceptionnel">Congé exceptionnel (mariage, décès, etc.)</option>
+                                    <option value="accident_travail">Accident du travail</option>
+                                    <option value="mission_pro">Déplacement / Mission professionnelle</option>
+                                    <option value="grève">Grève</option>
+                                    <option value="autre">Autre</option>
+                                </select>
+                                @error('type')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
                             <div class="col-md-6">
                                 <label class="form-label">Début</label>
                                 <input type="datetime-local"
@@ -520,17 +542,18 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-                        <div class="mt-3">
-                            <label class="form-label">Pièce jointe (PDF/JPG/PNG/DOC, 5 Mo)</label>
-                            <input type="file"
-                                class="form-control @error('attachment') is-invalid @enderror shadow"
-                                wire:model="attachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-                            @error('attachment')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div wire:loading wire:target="attachment" class="small text-muted mt-1">
-                                Téléversement…
+
+                            <div class="col-md-6">
+                                <label class="form-label">Pièce jointe (PDF/JPG/PNG/DOC, 5 Mo)</label>
+                                <input type="file"
+                                    class="form-control @error('attachment') is-invalid @enderror shadow"
+                                    wire:model="attachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                @error('attachment')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div wire:loading wire:target="attachment" class="small text-muted mt-1">
+                                    Téléversement…
+                                </div>
                             </div>
                         </div>
                         <div class="mt-3">

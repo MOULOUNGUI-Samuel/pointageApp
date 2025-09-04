@@ -60,7 +60,8 @@
                                     </div>
                                     <!-- Filtre archive -->
                                     <div class="dropdown me-2">
-                                        <a href="javascript:void(0);" class="dropdown-toggle text-primary" data-bs-toggle="dropdown">
+                                        <a href="javascript:void(0);" class="dropdown-toggle text-primary"
+                                            data-bs-toggle="dropdown">
                                             <i class="ti ti-archive me-2"></i>
                                             Filtre d'archivage...
                                         </a>
@@ -138,13 +139,15 @@
                                             </td>
                                             <td>{{ Str::limit($user->nom . ' ' . $user->prenom, 20, '...') }}</td>
                                             <td class="text-center">{{ $user->matricule }} <br>
-                                                <span class="  {{ $user->statu_user==1 ? '' : 'px-2 rounded  border border-danger text-danger' }}">{{ $user->statu_user==1 ? '' : 'Inactif' }}</span>
+                                                <span
+                                                    class="  {{ $user->statu_user == 1 ? '' : 'px-2 rounded  border border-danger text-danger' }}">{{ $user->statu_user == 1 ? '' : 'Inactif' }}</span>
                                             </td>
                                             <td>{{ $user->email_professionnel }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_embauche)->format('d/m/Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ Str::limit($user->fonction, 25, '...') }}<br>
-                                                <span class="  {{ ($user->statut==1 && $user->statu_user==1)  ? '' : 'px-2 rounded  border border-dark text-dark' }}">{{ ($user->statut==1 && $user->statu_user==1) ? '' : 'Ne pointe pas' }}</span>
+                                                <span
+                                                    class="  {{ $user->statut == 1 && $user->statu_user == 1 ? '' : 'px-2 rounded  border border-dark text-dark' }}">{{ $user->statut == 1 && $user->statu_user == 1 ? '' : 'Ne pointe pas' }}</span>
                                             </td>
                                             <td>
                                                 <!-- Bouton initial -->
@@ -174,18 +177,20 @@
                                                         <li class="mb-1">
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="#absenceModal-{{ $user->id }}">
+                                                                data-bs-target="#absenceModal-{{ $user->id }}"
+                                                                wire:click="openForm" {{-- <-- important --}}>
                                                                 <i class="fas fa-file-signature me-2"></i> Demandes
                                                                 d'absence
                                                             </a>
                                                         </li>
 
+
                                                         <li>
-                                                            <a class="dropdown-item {{ ($user->statu_user===0) ? 'text-success' : 'text-danger' }}" href="#"
-                                                                data-bs-toggle="modal"
+                                                            <a class="dropdown-item {{ $user->statu_user === 0 ? 'text-success' : 'text-danger' }}"
+                                                                href="#" data-bs-toggle="modal"
                                                                 data-bs-target="#archiver-{{ $user->id }}"><i
                                                                     class="fas fa-user me-2"></i>
-                                                                    {{ ($user->statu_user===0) ? 'Activer' : 'Désactiver' }}</a>
+                                                                {{ $user->statu_user === 0 ? 'Activer' : 'Désactiver' }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -209,7 +214,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                       
                                     @endforeach
 
 
@@ -222,52 +226,56 @@
                     </div>
                 </div>
                 @foreach ($utilisateurs as $user)
-                <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1"
-                    role="dialog" aria-labelledby="archiver" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header {{ ($user->statu_user===0) ? 'bg-success' : 'bg-danger' }} ">
-                                <h4 class="modal-title text-white" id="archiver">
-                                    <i class="bi bi-trash-fill"></i>{{ ($user->statu_user===0) ? 'Activé cet utilisateur' : 'Désactivé cet utilisateur' }} 
-                                </h4>
-                            </div>
-                            <form action="{{ route('desactiver_user', $user->id) }}"
-                                method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('PUT')
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="text-center">
-                                                <h3 class="mb-2">{{ $user->nom }} {{ $user->prenom }}</h3>
-                                                </h3>
-                                                <p class="mb-2">Êtes-vous sûr de vouloir {{ ($user->statu_user===0) ? 'activé' : 'désactiver' }} cet utilisateur
-                                                    ?</p>
+                    <div class="modal fade" id="archiver-{{ $user->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="archiver" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header {{ $user->statu_user === 0 ? 'bg-success' : 'bg-danger' }} ">
+                                    <h4 class="modal-title text-white" id="archiver">
+                                        <i
+                                            class="bi bi-trash-fill"></i>{{ $user->statu_user === 0 ? 'Activé cet utilisateur' : 'Désactivé cet utilisateur' }}
+                                    </h4>
+                                </div>
+                                <form action="{{ route('desactiver_user', $user->id) }}" method="POST"
+                                    style="display:inline-block;">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                 <div class="text-center">
-                                                    @if ($user->photo)
-                                                    <img src="{{ asset('storage/' . $user->photo) }}"
-                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
-                                                        style="width: 90px; height: 90px;">
-                                                @else
-                                                    <img src="{{ asset('src/images/user.jpg') }}"
-                                                        class="img-fluid rounded-circle border" alt="Photo de profil"
-                                                        style="width: 90px; height: 90px;">
-                                                @endif
+                                                    <h3 class="mb-2">{{ $user->nom }} {{ $user->prenom }}</h3>
+                                                    </h3>
+                                                    <p class="mb-2">Êtes-vous sûr de vouloir
+                                                        {{ $user->statu_user === 0 ? 'activé' : 'désactiver' }} cet
+                                                        utilisateur
+                                                        ?</p>
+                                                    <div class="text-center">
+                                                        @if ($user->photo)
+                                                            <img src="{{ asset('storage/' . $user->photo) }}"
+                                                                class="img-fluid rounded-circle border"
+                                                                alt="Photo de profil" style="width: 90px; height: 90px;">
+                                                        @else
+                                                            <img src="{{ asset('src/images/user.jpg') }}"
+                                                                class="img-fluid rounded-circle border"
+                                                                alt="Photo de profil" style="width: 90px; height: 90px;">
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Annuler</button>
-                                    <button type="submit" class="btn {{ ($user->statu_user===0) ? 'btn-success' : 'btn-danger' }}">Oui,
-                                        {{ ($user->statu_user===0) ? 'activé' : 'désactiver' }} </button>
-                                </div>
-                            </form>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit"
+                                            class="btn {{ $user->statu_user === 0 ? 'btn-success' : 'btn-danger' }}">Oui,
+                                            {{ $user->statu_user === 0 ? 'activé' : 'désactiver' }} </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
                     <div id="detailsMondale{{ $user->id }}" class="modal fade" role="dialog"tabindex="-1"
                         role="dialog" aria-labelledby="detailsMondale" aria-hidden="true">
                         <div class="modal-dialog modal-lg" role="document">
@@ -477,24 +485,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             const filterArchiveButtons = document.querySelectorAll('.filter-btn2[data-type="archive"]');
             const rows = document.querySelectorAll('#approbationsTable2 tr');
-        
+
             function applyDefault() {
                 rows.forEach(row => {
                     const isArchived = row.dataset.archived === "1";
                     row.style.display = isArchived ? "none" : "";
                 });
             }
-        
+
             // appliquer par défaut (utilisateurs actifs seulement)
             applyDefault();
-        
+
             filterArchiveButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.dataset.filter;
-        
+
                     rows.forEach(row => {
                         const isArchived = row.dataset.archived === "1";
-        
+
                         if (filter === "allarchive") {
                             row.style.display = "";
                         } else if (filter === "active" && !isArchived) {
@@ -508,8 +516,8 @@
                 });
             });
         });
-        </script>
-        
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterButtons = document.querySelectorAll('.filter-btn');

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
 
             $table->string('type');
+            $table->string('code_demande')->unique();
             $table->string('status')->default('brouillon');
             $table->dateTime('start_datetime');
             $table->dateTime('end_datetime');

@@ -4,9 +4,12 @@ namespace App\Livewire\Absences;
 
 use App\Models\Absence;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Illuminate\Validation\Rule;
+
 
 class UniqueDemandChecker extends Component
 {
@@ -43,17 +46,36 @@ class UniqueDemandChecker extends Component
     public ?string $returnTargetId = null;
     public bool $returnOnTime = true;     // si false -> notes/doc obligatoires
     public ?string $returnNotes = null;
+    public ?string $return_confirmed_at = null;
     public $returnAttachment;             // TemporaryUploadedFile|null
 
     /** Unicité */
     public bool $hasConflict = false;
     public array $conflicts = [];
 
-    public function mount(string $forUserId, string $modalId): void
-    {
-        $this->forUserId = $forUserId;
-        $this->modalId   = $modalId;
-    }
+   public ?string $code_demande = null;
+
+private function generateUniqueCode(): string
+{
+    $societe = session('entreprise_nom') ?? 'ENT';
+    $prefix = collect(explode(' ', $societe))
+        ->filter()
+        ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
+        ->implode('');
+
+    do {
+        $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
+    } while (Absence::where('code_demande', $code)->exists());
+
+    return $code;
+}
+
+public function mount(string $forUserId, string $modalId): void
+{
+    $this->forUserId = $forUserId;
+    $this->modalId   = $modalId;
+    $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
+}
 
     // Pagination indépendante par user
     public function getPageName(): string
@@ -66,6 +88,10 @@ class UniqueDemandChecker extends Component
         return [
             'type'           => 'required',
             'start_datetime' => 'required|date',
+             'code_demande'   => [
+            'required', 'string', 'max:40',
+            Rule::unique('absences', 'code_demande')->ignore($this->selectedId),
+        ],
             'end_datetime'   => 'required|date|after:start_datetime',
             'reason'         => 'nullable|string|max:5000',
             'attachment'     => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
@@ -174,6 +200,7 @@ class UniqueDemandChecker extends Component
         $this->showReject = [];
         $this->returnTargetId = $id;
         $this->returnNotes = null;
+        $this->return_confirmed_at = null;
         $this->returnAttachment = null;
     }
 
@@ -182,6 +209,7 @@ class UniqueDemandChecker extends Component
         $this->returnTargetId = null;
         $this->returnOnTime = true;
         $this->returnNotes = null;
+        $this->return_confirmed_at = null;
         $this->returnAttachment = null;
     }
     public function confirmReturn(): void
@@ -204,6 +232,7 @@ class UniqueDemandChecker extends Component
         // Validation (retard => description requise; pièce jointe facultative)
         $this->validate([
             'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
+            'return_confirmed_at'=> 'required|date',
             'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
@@ -213,7 +242,7 @@ class UniqueDemandChecker extends Component
         }
 
         $a->update([
-            'return_confirmed_at'    => now(),
+            'return_confirmed_at'    => $this->return_confirmed_at,
             'returned_on_time'       => $onTime,
             'return_notes'           => $this->returnNotes,
             'return_attachment_path' => $returnPath,
@@ -241,10 +270,13 @@ class UniqueDemandChecker extends Component
             $this->isEditing = true;
             $this->selectedId = (string) $a->id;
             $this->type = $a->type;
+            $this->code_demande = $a->code_demande; // garder le code existant
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
             $this->reason = $a->reason;
-        }
+          } else {
+        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
+    }
     }
 
     public function save(): void
@@ -283,6 +315,7 @@ class UniqueDemandChecker extends Component
                 'start_datetime' => $this->start_datetime,
                 'end_datetime'   => $this->end_datetime,
                 'reason'         => $this->reason,
+                'code_demande'   => $this->code_demande, // <-- N'OUBLIE PAS
                 'attachment_path' => $path,
                 'status'         => 'brouillon',
             ]);

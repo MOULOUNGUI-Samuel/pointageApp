@@ -6,9 +6,11 @@ namespace App\Livewire\Absences;
 use App\Models\Absence;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Illuminate\Validation\Rule;
 
 class Manager extends Component
 {
@@ -45,6 +47,7 @@ class Manager extends Component
     /** Retour d’absence */
     public ?string $returnTargetId = null;
     public ?string $returnNotes = null;
+    public ?string $return_confirmed_at = null;
     public $returnAttachment;
 
     /** Unicité */
@@ -53,15 +56,32 @@ class Manager extends Component
 
     /** Pour le <select> des employés de l’entreprise */
     public array $companyUsers = [];
+public ?string $code_demande = null;
+
+private function generateUniqueCode(): string
+{
+    $societe = session('entreprise_nom') ?? 'ENT';
+    $prefix = collect(explode(' ', $societe))
+        ->filter()
+        ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
+        ->implode('');
+
+    do {
+        $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
+    } while (Absence::where('code_demande', $code)->exists());
+
+    return $code;
+}
 
     public function mount(): void
     {
         $this->forCompanyId = session('entreprise_id');
-
+$this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
         // Charge la liste des employés de l’entreprise
         $this->companyUsers = User::query()
             ->where($this->companyKey, $this->forCompanyId)
             ->orderBy('nom')
+            ->where('statu_user', 1)
             ->get(['id', 'nom', 'prenom'])
             ->map(fn($u) => ['id' => (string) $u->id, 'label' => $u->nom . ' ' . $u->prenom])
             ->all();
@@ -78,15 +98,17 @@ class Manager extends Component
         $this->attachment = null;
 
         if ($id) {
-            $a = $this->findInCompany($id);
+            $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
             $this->isEditing = true;
             $this->selectedId = (string) $a->id;
-            $this->form_user_id = (string) $a->user_id;
             $this->type = $a->type;
+            $this->code_demande = $a->code_demande; // garder le code existant
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
             $this->reason = $a->reason;
-        }
+          } else {
+        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
+    }
 
         // (décommente si tu veux forcer l’ouverture via event)
         $this->dispatch('showAbsenceModal');
@@ -111,7 +133,11 @@ class Manager extends Component
     {
         return [
             'form_user_id'   => 'required|uuid', // ou string selon ton PK
-            'type'           => 'required|in:congé_payé,maladie,RTT,maternité,paternité,parental,formation,sans_solde,exceptionnel,accident_travail,mission_pro,grève,autre',
+            'type'           => 'required',
+             'code_demande'   => [
+            'required', 'string', 'max:40',
+            Rule::unique('absences', 'code_demande')->ignore($this->selectedId),
+        ],
             'start_datetime' => 'required|date',
             'end_datetime'   => 'required|date|after:start_datetime',
             'reason'         => 'nullable|string|max:5000',
@@ -223,6 +249,7 @@ class Manager extends Component
         $this->showReject = [];
         $this->returnTargetId = $id;
         $this->returnNotes = null;
+        $this->return_confirmed_at = null;
         $this->returnAttachment = null;
     }
 
@@ -230,6 +257,7 @@ class Manager extends Component
     {
         $this->returnTargetId = null;
         $this->returnNotes = null;
+        $this->return_confirmed_at = null;
         $this->returnAttachment = null;
     }
 
@@ -250,6 +278,7 @@ class Manager extends Component
 
         $this->validate([
             'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
+            'return_confirmed_at'=> 'required|date',
             'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
@@ -258,7 +287,7 @@ class Manager extends Component
             : null;
 
         $a->update([
-            'return_confirmed_at'    => now(),
+            'return_confirmed_at'    => $this->return_confirmed_at,
             'returned_on_time'       => $onTime,
             'return_notes'           => $this->returnNotes,
             'return_attachment_path' => $returnPath,
@@ -281,16 +310,18 @@ class Manager extends Component
         $this->attachment = null;
         $this->form_user_id = null;
 
-        if ($id) {
-            $a = $this->findInCompany($id);
+       if ($id) {
+            $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
             $this->isEditing = true;
             $this->selectedId = (string) $a->id;
-            $this->form_user_id = (string) $a->user_id;
             $this->type = $a->type;
+            $this->code_demande = $a->code_demande; // garder le code existant
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
             $this->reason = $a->reason;
-        }
+          } else {
+        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
+    }
     }
 
     public function save(): void
@@ -343,6 +374,7 @@ class Manager extends Component
                 'start_datetime'  => $this->start_datetime,
                 'end_datetime'    => $this->end_datetime,
                 'reason'          => $this->reason,
+                'code_demande'   => $this->code_demande, // <-- N'OUBLIE PAS
                 'attachment_path' => $path,
                 'status'          => 'brouillon',
             ]);

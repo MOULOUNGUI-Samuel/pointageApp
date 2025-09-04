@@ -49,7 +49,6 @@ class DateHelper
             'lienDocuments' => $lienDocuments,
             'modules' => $modules,
             'entreprise' => $entreprise,
-
         ];
     }
     public static function convertirDateFormat($date)
