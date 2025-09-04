@@ -90,6 +90,7 @@ class UserController extends Controller
                 'photo'          => $u->photo ? asset('storage/' . $u->photo) : null,
                 'date_naissance' => $u->date_naissance,
                 'email'          => $u->email,
+                'email_professionnel'          => $u->email_professionnel,
                 'role'           => $u->role,
                 'entreprise'     => $u->entreprise ? [
                     'code_societe' => $u->entreprise->code_entreprise,
@@ -166,6 +167,7 @@ class UserController extends Controller
                 'password' => $user->password,
                 'fonction' => $user->fonction,
                 'email' => $user->email,
+                'email_professionnel' => $user->email_professionnel,
                 'role' => $user->role,
             ],
             'entreprise' => [
