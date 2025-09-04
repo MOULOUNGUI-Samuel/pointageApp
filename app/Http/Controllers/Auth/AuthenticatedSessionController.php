@@ -90,7 +90,7 @@ class AuthenticatedSessionController extends Controller
         if ($request->pointage_entrer) {
             $start = \Carbon\Carbon::createFromFormat('H:i:s', $request->current_time);
             $endTimeArriver = $start->format('H:i:s'); // ex. "22:28:42"
-            
+
             $entreprise = Entreprise::find($user->entreprise_id);
 
             $startEntreprise = \Carbon\Carbon::createFromFormat('H:i:s', $entreprise->heure_ouverture);
@@ -98,14 +98,7 @@ class AuthenticatedSessionController extends Controller
             $endEntreprise = $startEntreprise->copy()->addMinutes(20);
             $endTimeEntreprise = $endEntreprise->format('H:i:s'); // ex. "22:28:42"
 
-            // dd("heure de depart /" . $endTime . " / heure entreprise +20 :" . $endTimeEntreprise);
 
-            if ($endTimeArriver > $endTimeEntreprise) {
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
-                return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
-            }
 
             if (!$entreprise) {
                 $request->session()->invalidate();
@@ -146,7 +139,13 @@ class AuthenticatedSessionController extends Controller
             $dejaPointage = Pointage::where('user_id', $user->id)
                 ->whereDate('date_arriver', now()->toDateString())
                 ->first();
-
+            if ($endTimeArriver > $endTimeEntreprise && !$dejaPointage) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
+                return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
+            }
+            
             if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
                 return redirect()->route('loginPointe')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
             }
@@ -159,6 +158,8 @@ class AuthenticatedSessionController extends Controller
 
             // Vérifier s’il a déjà pointé sa sortie aujourd’hui
             if ($dejaPointage && $dejaPointage->statut == 0) {
+                // dd("heure de depart /" . $endTime . " / heure entreprise +20 :" . $endTimeEntreprise);
+
                 $le_pointage = Pointage::find($dejaPointage->id);
                 $le_pointage->statut = 1;
                 $le_pointage->save();
