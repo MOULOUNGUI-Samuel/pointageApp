@@ -28,6 +28,7 @@ class Entreprise extends Model
         'logo',
         'heure_debut_pose',
         'heure_fin_pose',
+        'minute_pointage_limite',
         'latitude',
         'longitude',
         'rayon_autorise',

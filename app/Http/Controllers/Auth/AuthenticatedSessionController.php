@@ -95,8 +95,7 @@ class AuthenticatedSessionController extends Controller
 
             $startEntreprise = \Carbon\Carbon::createFromFormat('H:i:s', $entreprise->heure_ouverture);
             // +20 minutes
-            $endEntreprise = $startEntreprise->copy()->addMinutes(20);
-            $endTimeEntreprise = $endEntreprise->format('H:i:s'); // ex. "22:28:42"
+
 
 
 
@@ -139,13 +138,18 @@ class AuthenticatedSessionController extends Controller
             $dejaPointage = Pointage::where('user_id', $user->id)
                 ->whereDate('date_arriver', now()->toDateString())
                 ->first();
-            if ($endTimeArriver > $endTimeEntreprise && !$dejaPointage) {
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
-                return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
+            if (isset($entreprise->minute_pointage_limite) && $entreprise->minute_pointage_limite > 0) {
+                // Ajouter les minutes définies à l'heure d'ouverture de l'entreprise
+                $endEntrepriseAvecLimite = $startEntreprise->copy()->addMinutes($entreprise->minute_pointage_limite);
+                $endTimeEntreprise = $endEntrepriseAvecLimite->format('H:i:s'); // ex. "22:28:42"
+                if ($endTimeArriver > $endTimeEntreprise && !$dejaPointage) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    // dd("Heure de pointage dépassée, vous ne pouvez plus pointer.Veuillez contacter votre administrateur.");
+                    return redirect()->back()->with('error', 'Désolé, Heure de pointage dépassée, vous ne pouvez plus pointer.');
+                }
             }
-            
+
             if (isset($dejaPointage) && $dejaPointage->heure_fin != null) {
                 return redirect()->route('loginPointe')->with('error', 'Vous ne pouvez plus pointer aujourd\'hui, car vous avez déjà enregistré votre sortie de fin de service.');
             }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->string('code_entreprise');
             $table->time('heure_debut_pose')->nullable();
+            $table->int('minute_pointage_limite')->default(0);
             $table->time('heure_fin_pose')->nullable();
             $table->double('latitude');
             $table->double('longitude');
