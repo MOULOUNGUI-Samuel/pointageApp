@@ -1,6 +1,17 @@
 
 @livewireScripts
 <script>
+    const beamsClient = new PusherPushNotifications.Client({
+      instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
+    });
+  
+    beamsClient.start()
+      .then(() => beamsClient.addDeviceInterest('hello'))
+      .then(() => console.log('Successfully registered and subscribed!'))
+      .catch(console.error);
+  </script>
+<script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
+<script>
     let dotCount = 1;
     let dotInterval;
 
@@ -148,10 +159,8 @@
 <!-- Custom JS -->
 <script src="{{ asset('assets/js/theme-colorpicker.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
+@env('production')
+  <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" crossorigin="anonymous"></script>
+@endenv
 
-<!-- Cloudflare Rocket Loader -->
-<script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
-    integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
-    data-cf-beacon='{"rayId":"94a720077e49e3c0","version":"2025.5.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}'
-    crossorigin="anonymous"></script>

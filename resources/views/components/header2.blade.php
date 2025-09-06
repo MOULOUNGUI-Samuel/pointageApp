@@ -54,28 +54,52 @@
                     <div style="margin-left: 30px;margin-top: 5px">
                         @if (session('module_id'))
                             <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                onclick="event.preventDefault(); document.getElementById('logout-form1').submit();">
                                 <i class="fa fa-sign-out" style="font-size: 20px;margin-right:6px"></i>
                                 <span class="" style="font-size: 20px">Déconnexion</span>
                             </a>
 
-                            <form id="logout-form" action="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                            <form id="logout-form1" action="{{ route('logout_module', ['id' => session('module_id')]) }}"
                                 method="POST" style="display: none;">
                                 @csrf
                             </form>
                         @else
                             <a href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                onclick="event.preventDefault(); document.getElementById('logout-form2').submit();">
                                 <i class="fa fa-sign-out" style="font-size: 20px;margin-right:6px"></i>
                                 <span style="font-size: 20px" class="">Déconnexion</span>
                             </a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            <form id="logout-form2" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
                         @endif
                     </div>
                 </div>
+            </li>
+
+            <li class="d-flex justify-content-center align-items-center gap-3">
+                {{-- @auth
+                    <button class="btn btn-primary" onclick="enablePush()">Activer les notifications</button>
+                @endauth --}}
+                @php $unread = auth()->user()?->unreadNotifications()->count() ?? 0; @endphp
+
+                <a href="{{ route('notifications.index') }}" class="btn btn-sm position-relative">
+                    Notifications
+                    <span id="notifBadge"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $unread ? '' : 'd-none' }}">
+                        {{ $unread }}
+                    </span>
+                </a>
+
+                {{-- zone d’affichage des toasts --}}
+                <div id="toast-area" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
+
+                {{-- bouton d’abonnement push (si tu veux le garder) --}}
+                @auth
+                    <button class="btn btn-primary btn-sm ms-2" onclick="enablePush()">Activer les notifications</button>
+                @endauth
+
             </li>
             <!-- /Search -->
 
@@ -103,21 +127,21 @@
                             style="width: 380px; max-height: 80vh; overflow-y: auto; border-radius: 12px;border: 3px solid #bebdbdd7;">
                             <div class="row row-cols-4 g-3">
                                 @foreach ($mesModules['modules'] as $module)
-                                        @if ($module->nom_module === 'Caisses')
-                                        @if (Auth::user()->statut_vue_caisse===1)
-                                        <div class="col text-center  card-hover-zoom">
-                                            <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
-                                                class="text-decoration-none text-dark d-block">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                    <img src="{{ asset('storage/' . $module->logo) }}"
-                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                </div>
-                                                <small class="fw-medium d-block text-truncate"
-                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                            </a>
-                                            {{-- <a type="button" data-bs-toggle="offcanvas"
+                                    @if ($module->nom_module === 'Caisses')
+                                        @if (Auth::user()->statut_vue_caisse === 1)
+                                            <div class="col text-center  card-hover-zoom">
+                                                <a href="https://caisse.nedcore.net/authenticate/{{ Auth::user()->id }}"
+                                                    class="text-decoration-none text-dark d-block">
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                        <img src="{{ asset('storage/' . $module->logo) }}"
+                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                    </div>
+                                                    <small class="fw-medium d-block text-truncate"
+                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                                </a>
+                                                {{-- <a type="button" data-bs-toggle="offcanvas"
                                                     data-bs-target="#offcanvasWithBackdrop2"
                                                     aria-controls="offcanvasWithBackdrop2"
                                                     class="text-decoration-none text-dark d-block">
@@ -130,54 +154,38 @@
                                                     <small class="fw-medium d-block text-truncate"
                                                         title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
                                                 </a> --}}
-                                        </div>
+                                            </div>
                                         @endif
-                                        @elseif($module->nom_module === 'Agenda')
-                                            <div class="col text-center  card-hover-zoom">
-                                                <a href="https://agenda.groupenedco.com/authenticate/{{ Auth::user()->id }}"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            </div>
-                                        @elseif($module->nom_module === 'GED')
-                                            <div class="col text-center  card-hover-zoom">
-                                                <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
-                                                    class="text-decoration-none text-dark d-block">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                        style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                        <img src="{{ asset('storage/' . $module->logo) }}"
-                                                            alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                            style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                    </div>
-                                                    <small class="fw-medium d-block text-truncate"
-                                                        title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                </a>
-                                            </div>
-                                        @elseif($module->nom_module === 'Configurations')
-                                            @if (Auth::user()->super_admin === 1)
-                                                <div class="col text-center  card-hover-zoom">
-                                                    <a href="{{ route('dashboard', $module->id) }}"
-                                                        class="text-decoration-none text-dark d-block">
-                                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                            style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                            <img src="{{ asset('storage/' . $module->logo) }}"
-                                                                alt="{{ $module->nom_module }}"
-                                                                class="img-fluid rounded"
-                                                                style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                                        </div>
-                                                        <small class="fw-medium d-block text-truncate"
-                                                            title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                                    </a>
+                                    @elseif($module->nom_module === 'Agenda')
+                                        <div class="col text-center  card-hover-zoom">
+                                            <a href="https://agenda.groupenedco.com/authenticate/{{ Auth::user()->id }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
                                                 </div>
-                                            @endif
-                                        @else
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        </div>
+                                    @elseif($module->nom_module === 'GED')
+                                        <div class="col text-center  card-hover-zoom">
+                                            <a href="https://ged.nedcore.net/ged/authenticate/{{ Auth::user()->id }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        </div>
+                                    @elseif($module->nom_module === 'Configurations')
+                                        @if (Auth::user()->super_admin === 1)
                                             <div class="col text-center  card-hover-zoom">
                                                 <a href="{{ route('dashboard', $module->id) }}"
                                                     class="text-decoration-none text-dark d-block">
@@ -192,6 +200,21 @@
                                                 </a>
                                             </div>
                                         @endif
+                                    @else
+                                        <div class="col text-center  card-hover-zoom">
+                                            <a href="{{ route('dashboard', $module->id) }}"
+                                                class="text-decoration-none text-dark d-block">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
+                                                    <img src="{{ asset('storage/' . $module->logo) }}"
+                                                        alt="{{ $module->nom_module }}" class="img-fluid rounded"
+                                                        style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
+                                                </div>
+                                                <small class="fw-medium d-block text-truncate"
+                                                    title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                                            </a>
+                                        </div>
+                                    @endif
                                 @endforeach
                                 <style>
                                     .card-hover-zoom {
@@ -240,24 +263,24 @@
                             </a> --}}
                         @if (session('module_id'))
                             <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                onclick="event.preventDefault(); document.getElementById('logout-form-0').submit();">
                                 <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
                                 <span class=" text-primary" style="font-size: 15px">Déconnexion</span>
                             </a>
 
-                            <form id="logout-form"
+                            <form id="logout-form-0"
                                 action="{{ route('logout_module', ['id' => session('module_id')]) }}" method="POST"
                                 style="display: none;">
                                 @csrf
                             </form>
                         @else
                             <a href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                onclick="event.preventDefault(); document.getElementById('logout-form-3').submit();">
                                 <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
                                 <span style="font-size: 15px" class=" text-primary">Déconnexion</span>
                             </a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                            <form id="logout-form-3" action="{{ route('logout') }}" method="POST"
                                 style="display: none;">
                                 @csrf
                             </form>
@@ -279,23 +302,23 @@
             </a>
             @if (session('module_id'))
                 <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    onclick="event.preventDefault(); document.getElementById('logout-form-2').submit();">
                     <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
                     <span class=" text-primary" style="font-size: 15px">Déconnexion</span>
                 </a>
 
-                <form id="logout-form" action="{{ route('logout_module', ['id' => session('module_id')]) }}"
+                <form id="logout-form-2" action="{{ route('logout_module', ['id' => session('module_id')]) }}"
                     method="POST" style="display: none;">
                     @csrf
                 </form>
             @else
                 <a href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
                     <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
                     <span style="font-size: 15px" class=" text-primary">Déconnexion</span>
                 </a>
 
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                <form id="logout-form-1" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
             @endif

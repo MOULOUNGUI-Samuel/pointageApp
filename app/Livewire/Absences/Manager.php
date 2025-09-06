@@ -7,10 +7,16 @@ use App\Models\Absence;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
+use App\Services\Beams; // Ensure this is the correct namespace for the Beams class
+use App\Notifications\NewAlert; // Import the NewAlert class
+use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
+use Illuminate\Support\Facades\Notification; // Import the Notification facade
+use App\Events\ServiceCreated; // Import the ServiceCreated event
 
 class Manager extends Component
 {
@@ -56,27 +62,27 @@ class Manager extends Component
 
     /** Pour le <select> des employés de l’entreprise */
     public array $companyUsers = [];
-public ?string $code_demande = null;
+    public ?string $code_demande = null;
 
-private function generateUniqueCode(): string
-{
-    $societe = session('entreprise_nom') ?? 'ENT';
-    $prefix = collect(explode(' ', $societe))
-        ->filter()
-        ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
-        ->implode('');
+    private function generateUniqueCode(): string
+    {
+        $societe = session('entreprise_nom') ?? 'ENT';
+        $prefix = collect(explode(' ', $societe))
+            ->filter()
+            ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
+            ->implode('');
 
-    do {
-        $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
-    } while (Absence::where('code_demande', $code)->exists());
+        do {
+            $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
+        } while (Absence::where('code_demande', $code)->exists());
 
-    return $code;
-}
+        return $code;
+    }
 
     public function mount(): void
     {
         $this->forCompanyId = session('entreprise_id');
-$this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
+        $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
         // Charge la liste des employés de l’entreprise
         $this->companyUsers = User::query()
             ->where($this->companyKey, $this->forCompanyId)
@@ -98,21 +104,26 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
         $this->attachment = null;
 
         if ($id) {
-            $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
+            // ⛔️ plus de $this->forUserId
+            $a = $this->findInCompany($id);
+
             $this->isEditing = true;
             $this->selectedId = (string) $a->id;
+            $this->form_user_id = (string) $a->user_id;   // ✅ important pour le <select>
             $this->type = $a->type;
-            $this->code_demande = $a->code_demande; // garder le code existant
+            $this->code_demande = $a->code_demande;       // on garde le code existant
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
             $this->reason = $a->reason;
-          } else {
-        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
+        } else {
+            // nouvelle demande => générer un code
+            $this->code_demande = $this->generateUniqueCode();
+        }
+
+        // pas nécessaire si tu utilises data-bs-toggle/data-bs-target
+        // $this->dispatch('showAbsenceModal');
     }
 
-        // (décommente si tu veux forcer l’ouverture via event)
-        $this->dispatch('showAbsenceModal');
-    }
     /** Pagination indépendante par entreprise */
     public function getPageName(): string
     {
@@ -129,21 +140,6 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
             ->firstOrFail();
     }
 
-    protected function rules(): array
-    {
-        return [
-            'form_user_id'   => 'required|uuid', // ou string selon ton PK
-            'type'           => 'required',
-             'code_demande'   => [
-            'required', 'string', 'max:40',
-            Rule::unique('absences', 'code_demande')->ignore($this->selectedId),
-        ],
-            'start_datetime' => 'required|date',
-            'end_datetime'   => 'required|date|after:start_datetime',
-            'reason'         => 'nullable|string|max:5000',
-            'attachment'     => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
-        ];
-    }
 
     public function updatedSearch()
     {
@@ -278,7 +274,7 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
 
         $this->validate([
             'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
-            'return_confirmed_at'=> 'required|date',
+            'return_confirmed_at' => 'required|date',
             'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
@@ -302,26 +298,7 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
     /** Formulaire (droite) */
     public function openForm($id = null): void
     {
-        $this->resetValidation();
-        $this->isEditing = false;
-        $this->selectedId = null;
-        $this->type = 'congé_payé';
-        $this->start_datetime = $this->end_datetime = $this->reason = null;
-        $this->attachment = null;
-        $this->form_user_id = null;
-
-       if ($id) {
-            $a = Absence::where('user_id', $this->forUserId)->findOrFail($id);
-            $this->isEditing = true;
-            $this->selectedId = (string) $a->id;
-            $this->type = $a->type;
-            $this->code_demande = $a->code_demande; // garder le code existant
-            $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
-            $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
-            $this->reason = $a->reason;
-          } else {
-        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
-    }
+        $this->openForm2($id);
     }
 
     public function save(): void
@@ -365,6 +342,69 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
                 return;
             }
             $a->update($data);
+            // ---- Contenu commun
+            $title = 'Demande mise à jour';
+            $entreprise_id = $this->forCompanyId;
+            $body = "La demande de type : {$this->type}, a été mise à jour pour : "
+                . ($this->form_user_id ? User::find($this->form_user_id)->nom . ' ' . User::find($this->form_user_id)->prenom : 'un utilisateur')
+                . ", par " . (Auth::user() ? Auth::user()->nom . ' ' . Auth::user()->prenom : 'un administrateur') . ".";
+            $url  = url('/services');
+
+            // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
+            $uids = User::where('entreprise_id', $entreprise_id)
+                ->where('id', '!=', Auth::id())
+                ->pluck('id')
+                ->map(fn($id) => (string) $id)   // Beams exige des strings
+                ->all();
+
+            // Beams : publier vers les users (par batch si beaucoup d’IDs)
+            foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable
+                app(Beams::class)->publishToUsers(
+                    $batch,
+                    [
+                        'title' => $title,
+                        'body'  => $body,
+                        'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                        'requireInteraction' => true,
+                        'data'  => [
+                            'url' => $url,
+                            'type' => 'request_updated',
+                            'entreprise' => $entreprise_id,
+                        ],
+                    ],
+                    $url // deep_link
+                );
+            }
+            // B) TEMPS RÉEL IN-APP + HISTORIQUE
+            $recipients = User::where('entreprise_id', $entreprise_id)
+                ->where('id', '!=', Auth::id())
+                ->get();
+            Notification::send($recipients, new NewAlert($title, $body, $url));
+            // Option : historiser aussi chez l’auteur
+            $author = request()->user();
+            $author?->notify(new NewAlert($title, $body, $url));
+            $beams = new PushNotifications([
+                'instanceId' => env('BEAMS_INSTANCE_ID'),
+                'secretKey'  => env('BEAMS_SECRET_KEY'),
+            ]);
+            $res = $beams->publishToInterests(
+                ['hello'], // intérêt sur lequel ton navigateur est abonné
+                [
+                    'web' => [
+                        'notification' => [
+                            'title' => $title,
+                            'body'  => $body,
+                            'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                            'deep_link' => url('/notifications'), // optionnel
+                        ],
+                    ],
+                ]
+            );
+
+            // C) (Optionnel) événement broadcast "entreprise.{id}" si tu l’utilises pour d'autres listeners
+            broadcast(new ServiceCreated($this->type, $entreprise_id));
+
+
             session()->flash('success', 'Demande mise à jour.');
             $this->dispatch('absencesUpdated'); // Livewire v3
         } else {
@@ -378,6 +418,75 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
                 'attachment_path' => $path,
                 'status'          => 'brouillon',
             ]);
+
+            // ---- Contenu commun
+            $title = 'Demande mise à jour';
+            $entreprise_id = $this->forCompanyId;
+            $body = "La demande de type : {$this->type}, a été mise à jour pour : "
+                . ($this->form_user_id ? User::find($this->form_user_id)->nom . ' ' . User::find($this->form_user_id)->prenom : 'un utilisateur')
+                . ", par " . (Auth::user() ? Auth::user()->nom . ' ' . Auth::user()->prenom : 'un administrateur') . ".";
+            $url  = url('/services');
+
+            // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
+            $uids = User::where('entreprise_id', $entreprise_id)
+                ->where('id', '!=', Auth::id())
+                ->pluck('id')
+                ->map(fn($id) => (string) $id)   // Beams exige des strings
+                ->all();
+
+            // Beams : publier vers les users (par batch si beaucoup d’IDs)
+            foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable
+                app(Beams::class)->publishToUsers(
+                    $batch,
+                    [
+                        'title' => $title,
+                        'body'  => $body,
+                        'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                        'requireInteraction' => true,
+                        'data'  => [
+                            'url' => $url,
+                            'type' => 'request_updated',
+                            'entreprise' => $entreprise_id,
+                        ],
+                    ],
+                    $url // deep_link
+                );
+            }
+
+            // B) TEMPS RÉEL IN-APP + HISTORIQUE
+            $recipients = User::where('entreprise_id', $entreprise_id)
+                ->where('id', '!=', Auth::id())
+                ->get();
+
+            Notification::send($recipients, new NewAlert($title, $body, $url));
+
+            // Option : historiser aussi chez l’auteur
+            $author = request()->user();
+            $author?->notify(new NewAlert($title, $body, $url));
+
+            $beams = new PushNotifications([
+                'instanceId' => env('BEAMS_INSTANCE_ID'),
+                'secretKey'  => env('BEAMS_SECRET_KEY'),
+            ]);
+
+            $res = $beams->publishToInterests(
+                ['hello'], // intérêt sur lequel ton navigateur est abonné
+                [
+                    'web' => [
+                        'notification' => [
+                            'title' => $title,
+                            'body'  => $body,
+                            'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                            'deep_link' => url('/notifications'), // optionnel
+                        ],
+                    ],
+                ]
+            );
+
+            // C) (Optionnel) événement broadcast "entreprise.{id}" si tu l’utilises pour d'autres listeners
+            broadcast(new ServiceCreated($this->type, $entreprise_id));
+
+
             session()->flash('success', 'Demande créée.');
             $this->dispatch('absencesUpdated'); // Livewire v3
         }
@@ -458,6 +567,21 @@ $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
         session()->flash('success', 'Demande rejetée.');
         $this->dispatch('absencesUpdated'); // Livewire v3
         $this->resetPage();
+    }
+
+
+    protected function rules(): array
+    {
+        return [
+            // 'required|uuid'  ⛔️
+            'form_user_id'   => ['required', 'exists:users,id'],  // ✅
+            'type'           => 'required',
+            'code_demande'   => ['required', 'string', 'max:40', Rule::unique('absences', 'code_demande')->ignore($this->selectedId)],
+            'start_datetime' => 'required|date',
+            'end_datetime'   => 'required|date|after:start_datetime',
+            'reason'         => 'nullable|string|max:5000',
+            'attachment'     => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
+        ];
     }
 
     public function render()

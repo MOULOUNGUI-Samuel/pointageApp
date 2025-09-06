@@ -70,33 +70,3 @@ self.addEventListener('fetch', event => {
       })
   );
 });
-
-
-// public/sw.js
-self.addEventListener('push', (event) => {
-  const payload = event.data ? event.data.json() : {};
-  const title = payload.title || 'Notification';
-  const options = {
-    body: payload.body || '',
-    icon: payload.icon || '/assets/img/authentication/mobile.png',
-    badge: payload.badge || '/assets/img/authentication/mobile.png',
-    data: { url: payload.url || '/notifications' }
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const url = event.notification.data?.url || '/notifications';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientsArr) => {
-        for (const client of clientsArr) {
-          if ('focus' in client && client.url.includes(self.location.origin)) {
-            return client.focus();
-          }
-        }
-        return clients.openWindow(url);
-      })
-  );
-});

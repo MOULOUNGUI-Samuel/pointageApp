@@ -281,7 +281,7 @@
                                                 wire:key="actions-{{ $a->id }}">
                                                 @if (($isDraft || $isrejete) && !$isApproved && !$alreadyReturned)
                                                     <button type="button" class="btn btn-sm btn-outline-primary"
-                                                        wire:click="openForm('{{ $a->id }}')">
+                                                        wire:click="openForm2('{{ $a->id }}')">
                                                         <i class="fas fa-edit me-1"></i>Éditer
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-info"

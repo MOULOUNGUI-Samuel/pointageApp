@@ -11,8 +11,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Demande_intervention;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Notifications\NewAlert;
+use App\Notifications\NewAlert; // Ensure this import exists and points to the correct namespace
+use App\Services\Beams; // Import the Beams class from the correct namespace
 use Illuminate\Support\Facades\Notification;
+use App\Events\ServiceCreated; // Import the ServiceCreated event
+use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
 
 class ParamettreController extends Controller
 {
@@ -290,51 +293,76 @@ class ParamettreController extends Controller
     }
     public function Ajoutservices(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'nom_service' => 'required',
-            ],
-            [
-                'nom_service.required' => 'Le nom du service est requis'
-            ]
-        );
+        $validator = Validator::make($request->all(), [
+            'nom_service' => 'required',
+        ], [
+            'nom_service.required' => 'Le nom du service est requis'
+        ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return back()->withErrors($validator)->withInput();
         }
 
-        $entreprise_id = session('entreprise_id');
-        $services = new Service();
-        $services->nom_service = $request->nom_service;
-        $services->entreprise_id = $entreprise_id;
-        $services->description = $request->description;
-        $services->statut = 1;
-        $services->save();
+        $entreprise_id = (string) session('entreprise_id');
 
-        // --- Destinataires : tous les users de l'entreprise sauf l'auteur
+        $service = new Service();
+        $service->nom_service   = $request->nom_service;
+        $service->entreprise_id = $entreprise_id;
+        $service->description   = $request->description;
+        $service->statut        = 1;
+        $service->save();
+
+        // ---- Contenu commun
+        $title = 'Nouveau service ajouté';
+        $body  = '« ' . $service->nom_service . ' » a été créé.';
+        $url   = url('/services');
+
+        // A) PUSH OS (Beams) – vers tous les navigateurs abonnés de l’entreprise
+        app(Beams::class)->publishToUsers(
+            ['entreprise-' . $entreprise_id],
+            [
+                'title' => $title,
+                'body'  => $body,
+                // Ajoutez une icône personnalisée si vous en avez une
+                // 'icon' => asset('path/to/your/icon.png'),
+            ],
+            $url // deep link
+        );
+
+        // B) TEMPS RÉEL IN-APP + HISTORIQUE
         $recipients = User::where('entreprise_id', $entreprise_id)
             ->where('id', '!=', Auth::id())
             ->get();
 
-        // --- Construire la notification
-        $title = 'Nouveau service ajouté';
-        $body  = '« ' . $services->nom_service . ' » a été créé.';
-        // Lien de destination quand on clique la notif (adapte à ta route liste des services)
-        $url   = url('/services'); // ou route('services.index') si tu l’as
+        Notification::send($recipients, new NewAlert($title, $body, $url));
 
-        // --- Envoi (database + webpush)
-        Notification::send($recipients, new NewAlert(
-            title: $title,
-            body: $body,
-            url: $url
-        ));
-
-        // (Option) notifier aussi l’auteur pour trace dans sa propre liste
-        /** @var \App\Models\User|null $author */
-        $author = $request->user();          // <- typed pour l’IDE
+        // Option : historiser aussi chez l’auteur
+        $author = $request->user();
         $author?->notify(new NewAlert($title, $body, $url));
-        return redirect()->back()->with('success', 'Service ajouté avec succès');
+
+        $beams = new PushNotifications([
+            'instanceId' => env('BEAMS_INSTANCE_ID'),
+            'secretKey'  => env('BEAMS_SECRET_KEY'),
+        ]);
+
+        $res = $beams->publishToInterests(
+            ['hello'], // intérêt sur lequel ton navigateur est abonné
+            [
+                'web' => [
+                    'notification' => [
+                        'title' => $title,
+                        'body'  => $body,
+                        'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                        'deep_link' => url('/notifications'), // optionnel
+                    ],
+                ],
+            ]
+        );
+
+        // C) (Optionnel) événement broadcast "entreprise.{id}" si tu l’utilises pour d'autres listeners
+        broadcast(new ServiceCreated($service->nom_service, $entreprise_id));
+
+        return back()->with('success', 'Service ajouté avec succès');
     }
 
     public function modifier_service(Request $request, $id)

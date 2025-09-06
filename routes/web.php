@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\pointeController;
 use App\Http\Controllers\OpenProjectController;
 use Illuminate\Support\Facades\File;
+use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaisseWebController;
 use App\Http\Controllers\DemandeInterventionController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Models\User;
 use App\Notifications\NewAlert;
+use App\Http\Controllers\NotificationsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,11 +58,43 @@ Route::get(
     [DashboardRHController::class, 'index_dashboard']
 )->middleware(['auth', 'verified'])->name('dashboard');
 
+// Route::get('/beams/test', function () {
+//     $beams = new PushNotifications([
+//         'instanceId' => env('BEAMS_INSTANCE_ID'),
+//         'secretKey'  => env('BEAMS_SECRET_KEY'),
+//     ]);
+
+//     $res = $beams->publishToInterests(
+//         ['hello'], // intérêt sur lequel ton navigateur est abonné
+//         [
+//             'web' => [
+//                 'notification' => [
+//                     'title' => 'Hello',
+//                     'body'  => 'Hello, world!',
+//                     // 'icon'  => asset('assets/img/authentication/mobile.png'),
+//                     // 'deep_link' => url('/notifications'), // optionnel
+//                 ],
+//             ],
+//         ]
+//     );
+
+//     return 'OK'; // $res contient un publishId si tu veux l’afficher
+// })->middleware('auth');
+Route::get('/beams/token', function () {
+    abort_unless(auth()->check(), 401);
+    $userId = (string) auth()->id();
+
+    $client = new \Pusher\PushNotifications\PushNotifications([
+        'instanceId' => env('BEAMS_INSTANCE_ID'),
+        'secretKey'  => env('BEAMS_SECRET_KEY'),
+    ]);
+    return $client->generateToken($userId);
+})->middleware('auth');
 Route::middleware('auth')->group(
     function () {
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
         Route::patch('/demande-interventions/{demande}/status', [DemandeInterventionController::class, 'updateStatus'])
-    ->name('demande_interventions.update_status');
+            ->name('demande_interventions.update_status');
         // La route que le JavaScript va appeler pour peupler la modale
         Route::get('/projects', [OpenProjectController::class, 'fetchProjects'])->name('projects');
         // La route que le JavaScript va appeler pour créer les tâches
@@ -214,37 +248,36 @@ Route::middleware('auth')->group(
 
 
 
-             // --- Routes pour l'employé ---
-  
+        // --- Routes pour l'employé ---
+
         Route::get('/absenceindex', [AbsenceController::class, 'index'])->name('absenceindex');
         // Afficher le formulaire de nouvelle demande
         Route::get('/absencecreate', [AbsenceController::class, 'create'])->name('absencecreate');
         // Enregistrer la nouvelle demande
         Route::post('/absencestore', [AbsenceController::class, 'store'])->name('absencestore');
-   
 
-    
+
+
         Route::view('/absences', 'absences.index')->name('managerindex');
         // Approuver ou rejeter une demande
         Route::patch('/{absence}/statut', [ManagerAbsenceController::class, 'updateStatus'])->name('managerupdateStatus');
 
-   Route::post('/demande-interventions', [DocumentController::class, 'storeDemandeIntervention'])
-    ->name('envoi_demande');
-    Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
-      ->name('push.subscribe');
-  Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
-      ->name('push.unsubscribe');
-      
-      // ================================== NOTIFICATION =================================
-      Route::get('/test-push', function () {
-          $user = User::firstOrFail();
-          $user->notify(new NewAlert(
-              title: 'Test VAPID ✅',
-              body: 'Tu devrais voir une notification système.',
-              url: url('/notifications')
-          ));
-          return 'OK';
-      });
+        Route::post('/demande-interventions', [DocumentController::class, 'storeDemandeIntervention'])
+            ->name('envoi_demande');
+        Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
+            ->name('push.subscribe');
+        Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
+            ->name('push.unsubscribe');
+
+        // ================================== NOTIFICATION =================================
+        Route::get('/dev/ping', function () {
+            $entrepriseId = session('entreprise_id') ?? 'demo';
+            broadcast(new \App\Events\ServiceCreated('Hello depuis Laravel', (string)$entrepriseId));
+            return 'sent';
+        });
+        Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/read/{id}', [NotificationsController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [NotificationsController::class, 'markAllAsRead'])->name('notifications.readAll');
     }
 
 );

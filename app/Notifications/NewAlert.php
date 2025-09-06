@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewAlert extends Notification implements ShouldQueue
 {
@@ -18,21 +19,22 @@ class NewAlert extends Notification implements ShouldQueue
         public ?string $url = null,
         public array $extra = []
     ) {
-        // ✅ NE PAS redéclarer la propriété. On l'utilise via le trait Queueable.
-        $this->afterCommit = true; // déclenche après commit DB
+        $this->afterCommit = true;
     }
 
     public function via(object $notifiable): array
     {
-        return ['database', WebPushChannel::class];
+        return ['database', 'broadcast']; // ✅ plus de WebPushChannel
     }
 
-    public function toWebPush($notifiable, $notification): WebPushMessage
+    public function toBroadcast(object $notifiable): BroadcastMessage
     {
-        return (new WebPushMessage)
-            ->title($this->title)
-            ->body($this->body)
-            ->data(['url' => $this->url ?? url('/notifications')] + $this->extra);
+        return new BroadcastMessage([
+            'title' => $this->title,
+            'body'  => $this->body,
+            'url'   => $this->url ?? url('/notifications'),
+            'extra' => $this->extra,
+        ]);
     }
 
     public function toArray(object $notifiable): array

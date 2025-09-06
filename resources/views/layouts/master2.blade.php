@@ -421,8 +421,7 @@
 
             // 1. Initialisation des Datepickers (calendriers)
             // On cible tous les conteneurs qui ont la classe 'js-datepicker'
-            $('.js-datepicker .input-group.date').datepicker({
-                format: 'dd/mm/yyyy', // Format de date français
+            $('.js-datepicker .input-group.date').datetimepicker({ format: 'YYYY-MM-DD', // Format de date français
                 todayBtn: "linked",
                 keyboardNavigation: false,
                 forceParse: false,

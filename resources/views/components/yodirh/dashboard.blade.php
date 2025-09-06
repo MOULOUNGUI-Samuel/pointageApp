@@ -166,7 +166,7 @@
                     </div>
                     <!-- Bouton Imprimer -->
                     <a href="#" onclick="Absent(event)" class="btn btn-outline-primary shadow">
-                    
+
                         <i class="ti ti-printer"></i> Imprimer
                     </a>
                 </div>
@@ -403,9 +403,7 @@
             </div>
         </div>
     </div>
-    @auth
-    <button class="btn btn-primary" onclick="enablePush()">Activer les notifications</button>
-  @endauth
+   
     <script>
         const chartData = {
             series: @json([$pourcentages['conges'], $pourcentages['actifs'], $pourcentages['inactifs']]),

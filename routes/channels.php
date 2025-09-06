@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+Broadcast::channel('entreprise.{entrepriseId}', function ($user, $entrepriseId) {
+    return (string) $user->entreprise_id === (string) $entrepriseId;
+});
