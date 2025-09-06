@@ -6,13 +6,13 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      <!-- Apple Touch Icon -->
-      <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/apple-touch-icon.png') }}">
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/apple-touch-icon.png') }}">
 
-      <!-- Favicon -->
-      <link rel="icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon">
-      <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
-  
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -47,28 +47,35 @@
 
     <!-- Preloader CSS -->
     <link rel="stylesheet" href="{{ asset('src2/css/preloader/preloader-style.css') }}">
- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-@if (request()->routeIs('paie'))
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endif
-<meta name="csrf-token" content="{{ csrf_token() }}">
-@livewireStyles
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @if (request()->routeIs('paie'))
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> @endif
+<meta name="csrf-token"
+            content="{{ csrf_token() }}">
+        <meta name="sw" content="{{ asset('sw.js') }}">
+
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
 </head>
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
     .text-primary {
         color: #05436b !important;
     }
+
     .bg-primary {
         background-color: #05436b !important;
         color: white !important;
     }
+
     .bg-primary2 {
         background-color: #05426bc6 !important;
         color: white !important;
@@ -85,5 +92,4 @@
         justify-content: space-between;
         align-items: center;
     }
-
 </style>

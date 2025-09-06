@@ -10,6 +10,9 @@ use App\Models\Service;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Demande_intervention;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Notifications\NewAlert;
+use Illuminate\Support\Facades\Notification;
 
 class ParamettreController extends Controller
 {
@@ -309,7 +312,28 @@ class ParamettreController extends Controller
         $services->statut = 1;
         $services->save();
 
+        // --- Destinataires : tous les users de l'entreprise sauf l'auteur
+        $recipients = User::where('entreprise_id', $entreprise_id)
+            ->where('id', '!=', Auth::id())
+            ->get();
 
+        // --- Construire la notification
+        $title = 'Nouveau service ajouté';
+        $body  = '« ' . $services->nom_service . ' » a été créé.';
+        // Lien de destination quand on clique la notif (adapte à ta route liste des services)
+        $url   = url('/services'); // ou route('services.index') si tu l’as
+
+        // --- Envoi (database + webpush)
+        Notification::send($recipients, new NewAlert(
+            title: $title,
+            body: $body,
+            url: $url
+        ));
+
+        // (Option) notifier aussi l’auteur pour trace dans sa propre liste
+        /** @var \App\Models\User|null $author */
+        $author = $request->user();          // <- typed pour l’IDE
+        $author?->notify(new NewAlert($title, $body, $url));
         return redirect()->back()->with('success', 'Service ajouté avec succès');
     }
 

@@ -19,6 +19,9 @@ use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PushSubscriptionController;
+use App\Models\User;
+use App\Notifications\NewAlert;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,6 +41,15 @@ Route::get('/login', function () {
 Route::get('/', function () {
     return redirect('/loginGroupe');
 });
+Route::get('/test-push', function () {
+    $user = User::firstOrFail();
+    $user->notify(new NewAlert(
+        title: 'Test VAPID ✅',
+        body: 'Tu devrais voir une notification système.',
+        url: url('/notifications')
+    ));
+    return 'OK';
+})->middleware('auth');
 Route::get('/loginGroupe', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
@@ -78,7 +90,7 @@ Route::middleware('auth')->group(
         Route::get('/services', [ParamettreController::class, 'services'])->name('services');
         Route::post('/Ajoutservices', [ParamettreController::class, 'Ajoutservices'])->name('Ajoutservices');
         Route::put('/modifier_service/{id}', [ParamettreController::class, 'modifier_service'])->name('modifier_service');
-        Route::delete('/supprimer_service/{id}', [ParamettreController::class, 'supprimer_categorieprofessionel'])->name('supprimer_service');
+        Route::delete('/supprimer_service/{id}', [ParamettreController::class, 'supprimer_service'])->name('supprimer_service');
         Route::post('/affecter_service', [ParamettreController::class, 'affecter_service'])->name('affecter_service');
 
         Route::get('/categorieprofessionel', [ParamettreController::class, 'categorieprofessionel'])->name('categorieprofessionel');
@@ -226,7 +238,14 @@ Route::middleware('auth')->group(
 
    Route::post('/demande-interventions', [DocumentController::class, 'storeDemandeIntervention'])
     ->name('envoi_demande');
+    Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
+      ->name('push.subscribe');
+  Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
+      ->name('push.unsubscribe');
     }
+
+    // ================================== NOTIFICATION =================================
+
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 Route::post('/logout_module/{id}', [AuthenticatedSessionController::class, 'logout_module'])->name('logout_module');

@@ -403,6 +403,9 @@
             </div>
         </div>
     </div>
+    @auth
+    <button class="btn btn-primary" onclick="enablePush()">Activer les notifications</button>
+  @endauth
     <script>
         const chartData = {
             series: @json([$pourcentages['conges'], $pourcentages['actifs'], $pourcentages['inactifs']]),
