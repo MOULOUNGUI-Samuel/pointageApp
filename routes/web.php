@@ -41,15 +41,7 @@ Route::get('/login', function () {
 Route::get('/', function () {
     return redirect('/loginGroupe');
 });
-Route::get('/test-push', function () {
-    $user = User::firstOrFail();
-    $user->notify(new NewAlert(
-        title: 'Test VAPID ✅',
-        body: 'Tu devrais voir une notification système.',
-        url: url('/notifications')
-    ));
-    return 'OK';
-})->middleware('auth');
+
 Route::get('/loginGroupe', [AdminController::class, 'loginGroupe'])->name('loginGroupe');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
@@ -242,9 +234,18 @@ Route::middleware('auth')->group(
       ->name('push.subscribe');
   Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
       ->name('push.unsubscribe');
+      
+      // ================================== NOTIFICATION =================================
+      Route::get('/test-push', function () {
+          $user = User::firstOrFail();
+          $user->notify(new NewAlert(
+              title: 'Test VAPID ✅',
+              body: 'Tu devrais voir une notification système.',
+              url: url('/notifications')
+          ));
+          return 'OK';
+      });
     }
-
-    // ================================== NOTIFICATION =================================
 
 );
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
