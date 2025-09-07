@@ -51,4 +51,21 @@ class Entreprise extends Model
     {
         return $this->hasMany(Demande_intervention::class);
     }
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'domaine_item_entreprises')
+            ->withPivot('statut')
+            ->withTimestamps();
+    }
+    public function domaines()
+    {
+        return $this->belongsToMany(Domaine::class, 'domaine_item_entreprises')
+            ->withPivot('statut')
+            ->withTimestamps();
+    }
+    public function evaluationEntreprises()
+    {
+        return $this->hasMany(EvaluationEntreprise::class);
+    }
+
 }

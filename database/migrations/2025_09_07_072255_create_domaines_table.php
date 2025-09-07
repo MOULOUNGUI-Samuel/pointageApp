@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('periode_validites', function (Blueprint $table) {
-            $table->id();
+        Schema::create('domaines', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('nom_domaine');
+            $table->string('description')->nullable();
+            $table->string('statut')->default(1);
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('periode_validites');
+        Schema::dropIfExists('domaines');
     }
 };
