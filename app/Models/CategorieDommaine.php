@@ -13,7 +13,8 @@ class CategorieDommaine extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $fillable = [
-        'nom_item',
+        'nom_categorie',
+        'code_categorie',
         'description',
         'statut',
     ];

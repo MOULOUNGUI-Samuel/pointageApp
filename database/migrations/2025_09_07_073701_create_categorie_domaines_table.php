@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('categorie_domaines', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nom_item');
+            $table->string('nom_categorie');
+            $table->string('code_categorie')->unique();
             $table->string('description')->nullable();
             $table->string('statut')->default(1);
             $table->timestamps();
