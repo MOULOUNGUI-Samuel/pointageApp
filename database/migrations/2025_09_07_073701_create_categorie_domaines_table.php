@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('categorie_domaines', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('user_add_id');
+            $table->uuid('user_update_id')->nullable();
             $table->string('nom_categorie');
             $table->string('code_categorie')->unique();
             $table->string('description')->nullable();
             $table->string('statut')->default(1);
+            $table->foreign('user_add_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_update_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -14,6 +14,8 @@ class Domaine extends Model
     public $incrementing = false;
     protected $fillable = [
         'entreprise_id',
+        'user_add_id',
+        'user_update_id',
         'nom_domaine',
         'description',
         'statut',
@@ -24,6 +26,14 @@ class Domaine extends Model
         static::creating(function ($model) {
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
+    }
+    public function user_add()
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function user_update()
+    {
+        return $this->belongsTo(User::class, 'user_update_id');
     }
     public function entreprises()
     {

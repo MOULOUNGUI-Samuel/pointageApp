@@ -14,6 +14,8 @@ class PeriodeItem extends Model
     public $incrementing = false;
     protected $fillable = [
         'item_id',
+        'user_add_id',
+        'user_update_id',
         'debut_periode',
         'fin_periode',
         'statut',
@@ -28,5 +30,13 @@ class PeriodeItem extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+    public function user_add()
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function user_update()
+    {
+        return $this->belongsTo(User::class, 'user_update_id');
     }
 }

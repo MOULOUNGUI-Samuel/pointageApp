@@ -14,12 +14,16 @@ return new class extends Migration
         Schema::create('periode_items', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('item_id');
+            $table->uuid('user_add_id')->nullable();
+            $table->uuid('user_update_id')->nullable();
             $table->date('debut_periode');
             $table->date('fin_periode');
             $table->string('statut')->default(1);
             $table->timestamps();
 
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('user_add_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_update_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

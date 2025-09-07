@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('categorie_domaine_id');
             $table->uuid('type_item_id');
+            $table->uuid('user_add_id')->nullable();
+            $table->uuid('user_update_id')->nullable();
             $table->string('nom_item');
             $table->string('description')->nullable();
             $table->string('statut')->default(1);
@@ -22,6 +24,8 @@ return new class extends Migration
 
             $table->foreign('categorie_domaine_id')->references('id')->on('categorie_domaines')->onDelete('cascade');
             $table->foreign('type_item_id')->references('id')->on('type_items')->onDelete('cascade');
+            $table->foreign('user_add_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_update_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

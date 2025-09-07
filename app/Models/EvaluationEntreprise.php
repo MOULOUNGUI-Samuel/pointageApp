@@ -13,6 +13,8 @@ class EvaluationEntreprise extends Model
     public $incrementing = false;
     protected $fillable = [
         'entreprise_id',
+        'user_add_id',
+        'user_update_id',
         'item_id',
         'url_document',
         'commentaire',
@@ -21,4 +23,20 @@ class EvaluationEntreprise extends Model
         'cause_rejet',
         'statut',
     ];
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class);
+    }
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+    public function user_add()
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function user_update()
+    {
+        return $this->belongsTo(User::class, 'user_update_id');
+    }
 }

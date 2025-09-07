@@ -15,6 +15,8 @@ class Item extends Model
     protected $fillable = [
         'categorie_item_id',
         'type_item_id',
+        'user_add_id',
+        'user_update_id',
         'nom_item',
         'description',
         'statut',
@@ -47,6 +49,14 @@ class Item extends Model
     public function evaluationEntreprises()
     {
         return $this->hasMany(EvaluationEntreprise::class);
+    }
+    public function user_add()
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function user_update()
+    {
+        return $this->belongsTo(User::class, 'user_update_id');
     }
     public function domaines()
     {

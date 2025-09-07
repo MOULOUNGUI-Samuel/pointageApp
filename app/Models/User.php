@@ -148,9 +148,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pointage::class);
     }
-     public function demande_intervention()
+    public function demande_intervention()
     {
         return $this->hasMany(Demande_intervention::class);
     }
-
+    public function domaines()
+    {
+        return $this->hasMany(Domaine::class);
+    }
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
+    public function categorieDomaines()
+    {
+        return $this->hasMany(CategorieDommaine::class);
+    }
+    public function periodeItems()
+    {
+        return $this->hasMany(PeriodeItem::class);
+    }
+    public function evaluationEntreprises()
+    {
+        return $this->hasMany(EvaluationEntreprise::class);
+    }
+    public function categorieDomaine()
+    {
+        return $this->hasMany(CategorieDommaine::class);
+    }
 }
