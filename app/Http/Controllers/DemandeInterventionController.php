@@ -62,28 +62,30 @@ class DemandeInterventionController extends Controller
             ->whereNotNull('email_professionnel')
             ->first();
 
+        if ($destinataire) {
+            Mail::to($destinataire->email_professionnel)->queue(new DemandeStatutMiseAJour($demande));
 
-        Mail::to($destinataire->email_professionnel)->queue(new DemandeStatutMiseAJour($demande));
+            try {
 
-        try {
-
-            \App\Models\DemandeInterventionNotification::create([
-                'demande_intervention_id' => $demande->id,
-                'user_id'                 => $destinataire->id,
-                'channel'                 => 'mail',
-                'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
-                'status'                  => 'queued',
-            ]);
-        } catch (\Throwable $e) {
-            \App\Models\DemandeInterventionNotification::create([
-                'demande_intervention_id' => $demande->id,
-                'user_id'                 => $destinataire->id,
-                'channel'                 => 'mail',
-                'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
-                'status'                  => 'failed',
-                'error'                   => $e->getMessage(),
-            ]);
+                \App\Models\DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $destinataire->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                    'status'                  => 'queued',
+                ]);
+            } catch (\Throwable $e) {
+                \App\Models\DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $destinataire->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                    'status'                  => 'failed',
+                    'error'                   => $e->getMessage(),
+                ]);
+            }
         }
+
         return response()->json([
             'success' => true,
             'message' => 'Statut mis à jour et notifications envoyées.',
