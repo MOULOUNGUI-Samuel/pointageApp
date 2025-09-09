@@ -90,19 +90,10 @@
 
                     <!-- Search -->
                     <li class="nav-item nav-search-inputs me-auto">
-                        <div class="top-nav-search">
-                            <a href="javascript:void(0);" class="responsive-search">
-                                <i class="fa fa-search"></i>
-                            </a>
-                            <form action="#" class="dropdown">
-                                <div class="searchinputs" id="dropdownMenuClickable">
-                                    <input type="text" placeholder="Rechercher...">
-                                    <div class="search-addon">
-                                        <button type="submit"><i class="ti ti-command"></i></button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                        <button class="btn btn-outline-primary" type="button"
+                            @if (Auth::user()->statut_vue_entreprise === 1) data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasWithBackdrop1"
+                            aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
                     </li>
                     <!-- /Search -->
 
@@ -309,8 +300,8 @@
 
                             </div>
                         @endif
-                      @include('components.utilitaires._utilitaires_menu')
-                       
+                        @include('components.utilitaires._utilitaires_menu')
+
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="generateTasksModal" tabindex="-1"
@@ -647,7 +638,7 @@
                                 <h4 class="mb-0">MODULES NEDCORE</h4>
                             </div>
                         </div>
-                       @include('components.modules_nedcore.mdodules')
+                        @include('components.modules_nedcore.mdodules')
                     </div>
 
                 </div>
@@ -659,8 +650,60 @@
 
             </div>
         </div>
-        @include('components._demande_interventions',['entreprises'=>$entreprises,'demandes'=>$demandes,'search'=>$search,'filtreStatut',$filtreStatut,'onlyMine'=>$onlyMine])
- @include('components.fenetre_simulation')
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWithBackdrop1"
+            aria-labelledby="offcanvasWithBackdropLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title ps-3 mb-3" id="offcanvasWithBackdropLabel"
+                    style="border-left: 5px solid #05436b; color: #333;">
+                    Actuellement sur : {{ Str::limit($entreprise_nom, 15, '...') }}
+                </h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div> <!-- end offcanvas-header-->
+            @php
+                $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
+            @endphp
+            <div class="offcanvas-body">
+                <div class="p-3" style="overflow-y: auto;">
+                    <div class="row row-cols-3 g-2">
+                        @foreach ($lesEntreprises['entreprise'] as $entreprise)
+                            <div class="col text-center  card-hover-zoom">
+                                <a href="{{ route('change_entreprise', $entreprise->id) }}"
+                                    class="text-decoration-none text-dark d-block">
+                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                        style="width: 80px;height: 70px; transition: transform 0.3s;border-radius: 5px;">
+                                        <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                            alt="{{ $entreprise->nom_entreprise }}" class="img-fluid rounded"
+                                            style="width: 80px;height: 70px; object-fit: contain;border-radius: 5px;border-radius: 20px">
+                                    </div>
+                                    <small class="fw-medium d-block text-truncate"
+                                        title="{{ $entreprise->nom_entreprise }}">{{ $entreprise->nom_entreprise }}</small>
+                                </a>
+                            </div>
+                        @endforeach
+                        <style>
+                            .card-hover-zoom {
+                                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            }
+
+                            .card-hover-zoom:hover {
+                                transform: scale(1.15);
+                                z-index: 2;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div> <!-- end offcanvas-body-->
+        </div>
+        @include('components._demande_interventions', [
+            'entreprises' => $entreprises,
+            'demandes' => $demandes,
+            'search' => $search,
+            'filtreStatut',
+            $filtreStatut,
+            'onlyMine' => $onlyMine,
+        ])
+        @include('components.fenetre_simulation')
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWithBackdrop3"
             aria-labelledby="offcanvasWithBackdropLabel1">
             <div class="offcanvas-header">
@@ -689,7 +732,9 @@
                 </form>
 
             </div> <!-- end offcanvas-body-->
+
         </div>
+
     </div>
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -709,7 +754,8 @@
                             event.preventDefault();
                             event.stopPropagation();
                             form.classList.add(
-                            'was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
+                                'was-validated'
+                            ); // Ajoute la classe Bootstrap pour afficher les erreurs
                             return;
                         }
                     }
