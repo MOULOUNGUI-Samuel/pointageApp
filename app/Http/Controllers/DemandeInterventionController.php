@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Mail\DemandeStatutMiseAJour;
 use Illuminate\Support\Facades\Mail;
 use App\Models\DemandeInterventionNotification;
+
 class DemandeInterventionController extends Controller
 {
     // public function index(Request $request)
@@ -57,38 +58,31 @@ class DemandeInterventionController extends Controller
         $demande->refresh();
 
         // 🔔 Envoi mail aux personnels de l’entreprise
-        $destinataires = \App\Models\User::where('entreprise_id', $demande->entreprise_id)
+        $destinataire = \App\Models\User::where('id', $demande->user_id)
             ->whereNotNull('email_professionnel')
-            ->get();
+            ->first();
 
-        foreach ($destinataires as $user) {
-            Mail::to($user->email_professionnel)->queue(new DemandeStatutMiseAJour($demande));
-        }
-        $destinataires = \App\Models\User::where('entreprise_id',  $demande->entreprise_id)
-            ->whereNotNull('email_professionnel')
-            ->get();
 
-        foreach ($destinataires as $user) {
-            try {
-                Mail::to($user->email_professionnel)->queue(new \App\Mail\DemandeStatutMiseAJour($demande));
+        Mail::to($destinataire->email_professionnel)->queue(new DemandeStatutMiseAJour($demande));
 
-                \App\Models\DemandeInterventionNotification::create([
-                    'demande_intervention_id' => $demande->id,
-                    'user_id'                 => $user->id,
-                    'channel'                 => 'mail',
-                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
-                    'status'                  => 'queued',
-                ]);
-            } catch (\Throwable $e) {
-                \App\Models\DemandeInterventionNotification::create([
-                    'demande_intervention_id' => $demande->id,
-                    'user_id'                 => $user->id,
-                    'channel'                 => 'mail',
-                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
-                    'status'                  => 'failed',
-                    'error'                   => $e->getMessage(),
-                ]);
-            }
+        try {
+
+            \App\Models\DemandeInterventionNotification::create([
+                'demande_intervention_id' => $demande->id,
+                'user_id'                 => $destinataire->id,
+                'channel'                 => 'mail',
+                'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                'status'                  => 'queued',
+            ]);
+        } catch (\Throwable $e) {
+            \App\Models\DemandeInterventionNotification::create([
+                'demande_intervention_id' => $demande->id,
+                'user_id'                 => $destinataire->id,
+                'channel'                 => 'mail',
+                'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                'status'                  => 'failed',
+                'error'                   => $e->getMessage(),
+            ]);
         }
         return response()->json([
             'success' => true,
@@ -113,5 +107,4 @@ class DemandeInterventionController extends Controller
 
         return view('admin.demandes.notifications', compact('demande', 'destinataires', 'logs'));
     }
-
 }

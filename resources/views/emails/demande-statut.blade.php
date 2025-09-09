@@ -36,14 +36,7 @@
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                     <tr>
                         <td style="font-weight:700;">Statut de la demande mis à jour</td>
-                        <td align="right">
-                            @if(!empty($demande->entreprise?->logo))
-                                {{-- IMPORTANT : idéalement fournir une URL absolue (APP_URL configurée) --}}
-                                <img src="{{ asset('storage/'.$demande->entreprise->logo) }}"
-                                     alt="Logo {{ $demande->entreprise->nom_entreprise ?? 'Entreprise' }}"
-                                     style="height:40px; max-width:140px;">
-                            @endif
-                        </td>
+                        
                     </tr>
                 </table>
             </div>

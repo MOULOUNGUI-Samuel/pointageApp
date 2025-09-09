@@ -18,6 +18,9 @@ use Illuminate\Validation\Rule;
 use App\Mail\DemandeAssistance;
 use Illuminate\Support\Facades\Mail;
 use App\Models\DemandeInterventionNotification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
@@ -343,7 +346,6 @@ class DocumentController extends Controller
     }
     public function storeDemandeIntervention(Request $request)
     {
-        // 1) Validation
         $validated = $request->validate([
             'titre'         => ['required', 'string', 'max:255'],
             'entreprise_id' => ['required', 'uuid', Rule::exists('entreprises', 'id')],
@@ -357,14 +359,23 @@ class DocumentController extends Controller
             ],
         ]);
 
-        // 2) Upload éventuel
+        // Upload PJ
         $pieceJointePath = null;
         if ($request->hasFile('piece_jointe')) {
-            // nécessite: php artisan storage:link + disk 'public' configuré
-            $pieceJointePath = $request->file('piece_jointe')->store('demande_interventions', 'public');
+            $file = $request->file('piece_jointe');
+        
+            // 1) Variante simple : juste enlever les espaces
+            $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $ext  = strtolower($file->getClientOriginalExtension());
+            $safe = str_replace(' ', '_', $base) . '_' . now()->format('YmdHis') . '.' . $ext;
+        
+            // 2) Variante plus robuste (accents/signes -> slug)
+            // $safe = Str::slug($base) . '_' . now()->format('YmdHis') . '.' . $ext;
+        
+            $pieceJointePath = $file->storeAs('demande_interventions', $safe, 'public');
         }
 
-        // 3) Création
+        // Création
         $demande = Demande_intervention::create([
             'titre'             => $validated['titre'],
             'entreprise_id'     => $validated['entreprise_id'],
@@ -375,30 +386,59 @@ class DocumentController extends Controller
             'statut'            => 'en_attente',
         ]);
 
-        // 4) Destinataires = personnels de l’entreprise AVEC email pro valide
+        // Relations pour l’email (logo etc.)
+        $demande->loadMissing([
+            'entreprise:id,nom_entreprise,logo',
+            'user:id,nom,prenom,email,email_professionnel',
+        ]);
+
+        // Optionnel : tableau prêt pour JSON/vue
+        $logoPath = $demande->entreprise->logo ?? null;
+
+        $logoUrl = $logoPath
+            ? (Str::startsWith($logoPath, ['http://','https://'])
+                ? $logoPath
+                : asset('storage/'.$logoPath))   // ← fonctionne avec le disk "public"
+            : null;
+            
+
+        $demandeData = [
+            'id'            => $demande->id,
+            'titre'         => $demande->titre,
+            'description'   => $demande->description,
+            'date_souhaite' => optional($demande->date_souhaite)->format('Y-m-d'),
+            'piece_jointe'  => $demande->piece_jointe_path,
+            'statut'        => $demande->statut,
+            'entreprise'    => [
+                'id'       => $demande->entreprise_id,
+                'nom'      => $demande->entreprise->nom_entreprise ?? null,
+                'logo'     => $logoPath,
+                'logo_url' => $logoUrl,
+            ],
+            'demandeur'     => [
+                'id'     => $demande->user_id,
+                'nom'    => $demande->user->nom ?? null,
+                'prenom' => $demande->user->prenom ?? null,
+                'email'  => $demande->user->email_professionnel ?? $demande->user->email,
+            ],
+        ];
+        // ⚠️ ne PAS faire: $demande = $demandeData;
+
+        // Destinataires (emails pro valides, uniques)
         $destinataires = User::where('entreprise_id', $validated['entreprise_id'])
-            ->whereNotNull('email_professionnel')
-            ->where('email_professionnel', '!=', '')
+            ->whereNotNull('email_professionnel')->where('email_professionnel', '!=', '')
             ->get(['id', 'email_professionnel', 'nom', 'prenom'])
-
-            // garder seulement les emails valides
-            ->filter(function ($u) {
-                return filter_var($u->email_professionnel, FILTER_VALIDATE_EMAIL);
-            })
-
-            // éviter les doublons éventuels
-            ->unique('email_professionnel')
-            ->values();
+            ->filter(fn($u) => filter_var($u->email_professionnel, FILTER_VALIDATE_EMAIL))
+            ->unique('email_professionnel')->values();
 
         if ($destinataires->isEmpty()) {
             return back()->with('error', "Aucun destinataire valide trouvé pour l'entreprise.");
         }
 
-        // 5) Envoi + journalisation (un seul passage)
+        // Envoi + journalisation
         foreach ($destinataires as $user) {
             try {
-                Mail::to($user->email_professionnel)->queue(new DemandeAssistance($demande));
-
+                Mail::to($user->email_professionnel)->queue(new DemandeAssistance($demande)); // <- on passe le Model
                 DemandeInterventionNotification::create([
                     'demande_intervention_id' => $demande->id,
                     'user_id'                 => $user->id,
@@ -407,9 +447,7 @@ class DocumentController extends Controller
                     'status'                  => 'queued',
                 ]);
             } catch (\Throwable $e) {
-                // log + marquer failed
                 report($e);
-
                 DemandeInterventionNotification::create([
                     'demande_intervention_id' => $demande->id,
                     'user_id'                 => $user->id,

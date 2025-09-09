@@ -28,11 +28,6 @@
                 <table width="100%">
                     <tr>
                         <td>Nouvelle demande d’assistance</td>
-                        <td align="right">
-                            <!-- Logo de l’entreprise -->
-                                <img src="{{ asset('storage/' . $entreprise_logo) }}" 
-                                     alt="Logo entreprise" style="height:40px;">
-                        </td>
                     </tr>
                 </table>
             </div>

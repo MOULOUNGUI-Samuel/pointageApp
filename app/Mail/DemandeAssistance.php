@@ -34,9 +34,16 @@ class DemandeAssistance extends Mailable implements ShouldQueue
 
     public function attachments(): array
     {
-        return !empty($this->demande->piece_jointe_path)
-            ? [Attachment::fromStorage($this->demande->piece_jointe_path)
-                ->as(basename($this->demande->piece_jointe_path))]
-            : [];
+        if (empty($this->demande->piece_jointe_path)) {
+            return [];
+        }
+
+        $disk = 'public';
+        $path = $this->demande->piece_jointe_path;
+
+        return [
+            Attachment::fromStorageDisk($disk, $path)
+                ->as(basename($path)),   // pas de ->withMime(...)
+        ];
     }
 }

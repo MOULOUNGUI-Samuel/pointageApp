@@ -286,7 +286,8 @@
                         const ext = (f.name.split('.').pop() || '').toLowerCase();
                         if (!allowed.includes(ext)) {
                             alert(
-                                "Format non autorisé. Autorisés: images (jpg, jpeg, png, webp, gif) et documents (pdf, docx, xlsx, pptx, odt, ...).");
+                                "Format non autorisé. Autorisés: images (jpg, jpeg, png, webp, gif) et documents (pdf, docx, xlsx, pptx, odt, ...)."
+                                );
                             this.value = ''; // reset
                         }
                     });
@@ -317,7 +318,7 @@
                     function applyFilters() {
                         const q = (input.value || '').toLowerCase().trim();
                         const stat = (filter.value || '')
-                            .trim(); // '' | en_attente | en_cours | traitee | annulee | en_retard
+                    .trim(); // '' | en_attente | en_cours | traitee | annulee | en_retard
                         const onlyMine = !!mineTgl?.checked;
 
                         rows.forEach(row => {
@@ -354,11 +355,67 @@
                         }
                     }
 
-                    // --- Actions statut (AJAX)
+                    // =========================
+                    //  Effet de chargement + anti double-clic
+                    // =========================
+                    const inflightByDemande = new Map(); // idDemande -> true si requête en cours
+
+                    function setLoading(btn, loading = true) {
+                        if (loading) {
+                            const w = btn.getBoundingClientRect().width; // fige la largeur
+                            btn.style.width = w + 'px';
+                            btn.dataset._label = btn.innerHTML;
+                            btn.innerHTML =
+                                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
+                                (btn.getAttribute('data-loading-text') || '…');
+                            btn.disabled = true;
+                            btn.classList.add('disabled');
+                            btn.style.pointerEvents = 'none';
+                        } else {
+                            if (btn.dataset._label) btn.innerHTML = btn.dataset._label;
+                            btn.style.width = '';
+                            btn.disabled = false;
+                            btn.classList.remove('disabled');
+                            btn.style.pointerEvents = '';
+                            delete btn.dataset._label;
+                        }
+                    }
+
+                    function toggleGroup(group, disabled) {
+                        if (!group) return;
+                        group.querySelectorAll('.btn-set-status').forEach(b => {
+                            if (disabled) {
+                                b.disabled = true;
+                                b.style.pointerEvents = 'none';
+                            } else {
+                                if (b.getAttribute('data-loading') !== '1') {
+                                    b.disabled = false;
+                                    b.style.pointerEvents = '';
+                                }
+                            }
+                        });
+                    }
+
+                    // --- Actions statut (AJAX) avec loader
                     document.querySelectorAll('.btn-set-status').forEach(btn => {
                         btn.addEventListener('click', function() {
                             const id = this.dataset.id;
                             const newStatus = this.dataset.status;
+                            if (!id || !newStatus) return;
+
+                            // Empêche plusieurs clics sur la même demande pendant la requête
+                            if (inflightByDemande.get(id)) return;
+                            inflightByDemande.set(id, true);
+
+                            const group = this.closest('[data-actions]');
+                            const clickedBtn = this;
+
+                            // Marqueur pour ne pas réactiver ce bouton trop tôt
+                            clickedBtn.setAttribute('data-loading', '1');
+
+                            // Désactive tout le groupe + spinner sur le bouton cliqué
+                            toggleGroup(group, true);
+                            setLoading(clickedBtn, true);
 
                             fetch(`{{ url('/demande-interventions') }}/${id}/status`, {
                                     method: 'PATCH',
@@ -391,32 +448,19 @@
                                             // 1) Badge principal = toujours le statut cliqué
                                             const badge = row.querySelector('[data-status-badge]');
                                             if (badge) {
-                                                const cls = s => {
-                                                    switch (s) {
-                                                        case 'en_attente':
-                                                            return 'bg-secondary';
-                                                        case 'en_cours':
-                                                            return 'bg-info';
-                                                        case 'traitee':
-                                                            return 'bg-success';
-                                                        case 'annulee':
-                                                            return 'bg-dark';
-                                                        default:
-                                                            return 'bg-secondary';
-                                                    }
-                                                };
-                                                badge.className = `badge ${cls(newStatus)} fw-normal`;
+                                                badge.className =
+                                                    `badge ${badgeClassFor(newStatus)} fw-normal`;
                                                 badge.textContent = newStatus.replace('_', ' ').replace(
                                                     /\b\w/g, c => c.toUpperCase());
                                             }
 
                                             // 2) Indicateur "Retard" : jamais pour Traitee/Annulee
                                             const overdueFlag = row.querySelector(
-                                                '[data-overdue-flag]');
+                                            '[data-overdue-flag]');
                                             const shouldShowOverdue =
                                                 (body.demande.statut_effectif === 'en_retard') &&
                                                 (newStatus === 'en_attente' || newStatus ===
-                                                    'en_cours');
+                                                'en_cours');
                                             if (overdueFlag) {
                                                 overdueFlag.style.display = shouldShowOverdue ? '' :
                                                     'none';
@@ -453,17 +497,26 @@
                                             }
                                         }
 
-                                        applyFilters(); // re-filtre si besoin
+                                        // Re-filtre si besoin
+                                        applyFilters();
                                     } else if (status === 422) {
                                         showToast('Statut invalide.', true);
                                     } else {
-                                        showToast(body.message || 'Erreur lors de la mise à jour.',
+                                        showToast(body?.message || 'Erreur lors de la mise à jour.',
                                             true);
                                     }
-
                                 })
-
-                                .catch(() => showToast('Erreur de connexion.', true));
+                                .catch(() => showToast('Erreur de connexion.', true))
+                                .finally(() => {
+                                    inflightByDemande.delete(id);
+                                    // Retirer le loader
+                                    setLoading(clickedBtn, false);
+                                    clickedBtn.removeAttribute('data-loading');
+                                    // Réactiver le groupe si toujours présent
+                                    if (group && document.body.contains(group)) {
+                                        toggleGroup(group, false);
+                                    }
+                                });
                         });
                     });
 
@@ -523,6 +576,7 @@
                     applyFilters();
                 });
             </script>
+
         </div>
     </div>
 </div>
