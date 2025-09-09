@@ -9,17 +9,21 @@ use Illuminate\Support\Str;
 class CategorieDommaine extends Model
 {
     use HasFactory;
+
     protected $table = 'categorie_domaines';
     protected $keyType = 'string';
     public $incrementing = false;
+
     protected $fillable = [
         'nom_categorie',
-        'user_add_id',
-        'user_update_id',
         'code_categorie',
         'description',
         'statut',
+        'user_add_id',
+        'user_update_id',
+        'domaine_id',     // ✅ nouveau
     ];
+
     protected static function boot()
     {
         parent::boot();
@@ -27,16 +31,20 @@ class CategorieDommaine extends Model
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
-    public function user_add()
+
+    // ✅ relations hiérarchiques
+    public function domaine()
     {
-        return $this->belongsTo(User::class, 'user_add_id');
+        return $this->belongsTo(Domaine::class, 'domaine_id');
     }
-    public function user_update()
-    {
-        return $this->belongsTo(User::class, 'user_update_id');
-    }
+
+    public function user_add()    { return $this->belongsTo(User::class, 'user_add_id'); }
+    public function user_update() { return $this->belongsTo(User::class, 'user_update_id'); }
+
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Item::class, 'categorie_domaine_id');
     }
+    
 }
+

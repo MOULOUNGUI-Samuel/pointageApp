@@ -523,9 +523,6 @@
                     applyFilters();
                 });
             </script>
-
-
-
         </div>
     </div>
 </div>

@@ -53,13 +53,13 @@ class Entreprise extends Model
     }
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'domaine_item_entreprises')
+        return $this->belongsToMany(Item::class, 'categorie_item_entreprises')
             ->withPivot('statut')
             ->withTimestamps();
     }
     public function domaines()
     {
-        return $this->belongsToMany(Domaine::class, 'domaine_item_entreprises')
+        return $this->belongsToMany(Domaine::class, 'categorie_item_entreprises')
             ->withPivot('statut')
             ->withTimestamps();
     }
@@ -67,5 +67,4 @@ class Entreprise extends Model
     {
         return $this->hasMany(EvaluationEntreprise::class);
     }
-
 }

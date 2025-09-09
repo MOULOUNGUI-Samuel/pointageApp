@@ -176,4 +176,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(CategorieDommaine::class);
     }
+
+    public function demandesInterventionRecues() {
+        return $this->belongsToMany(\App\Models\Demande_intervention::class, 'demande_intervention_recipients')
+            ->withPivot(['type','selected_at']);
+    }
+    
 }

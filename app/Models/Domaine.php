@@ -13,7 +13,6 @@ class Domaine extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $fillable = [
-        'entreprise_id',
         'user_add_id',
         'user_update_id',
         'nom_domaine',
@@ -37,15 +36,19 @@ class Domaine extends Model
     }
     public function entreprises()
     {
-        return $this->belongsToMany(Entreprise::class, 'domaine_item_entreprises')
+        return $this->belongsToMany(Entreprise::class, 'categorie_item_entreprises')
             ->withPivot('statut')
             ->withTimestamps();
     }
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'domaine_item_entreprises')
+        return $this->belongsToMany(Item::class, 'categorie_item_entreprises')
             ->withPivot('statut')
             ->withTimestamps();
+    }
+    public function categorie_domaines()
+    {
+        return $this->belongsTo(CategorieDommaine::class);
     }
     
 }

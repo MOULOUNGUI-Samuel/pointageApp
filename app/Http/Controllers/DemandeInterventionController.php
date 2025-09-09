@@ -6,7 +6,9 @@ namespace App\Http\Controllers;
 use App\Models\Demande_intervention;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use App\Mail\DemandeStatutMiseAJour;
+use Illuminate\Support\Facades\Mail;
+use App\Models\DemandeInterventionNotification;
 class DemandeInterventionController extends Controller
 {
     // public function index(Request $request)
@@ -43,20 +45,54 @@ class DemandeInterventionController extends Controller
         $validated = $request->validate([
             'statut' => ['required', Rule::in(['en_attente', 'en_cours', 'traitee', 'annulee'])],
         ]);
-        // DemandeInterventionController@updateStatus
+
         if (in_array($demande->statut, ['traitee', 'annulee'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cette demande est finalisée et ne peut plus être modifiée.'
             ], 409);
         }
+
         $demande->update(['statut' => $validated['statut']]);
+        $demande->refresh();
 
-        $demande->refresh(); // recalcul des attributs virtuels en vue/JSON
+        // 🔔 Envoi mail aux personnels de l’entreprise
+        $destinataires = \App\Models\User::where('entreprise_id', $demande->entreprise_id)
+            ->whereNotNull('email_professionnel')
+            ->get();
 
+        foreach ($destinataires as $user) {
+            Mail::to($user->email_professionnel)->queue(new DemandeStatutMiseAJour($demande));
+        }
+        $destinataires = \App\Models\User::where('entreprise_id',  $demande->entreprise_id)
+            ->whereNotNull('email_professionnel')
+            ->get();
+
+        foreach ($destinataires as $user) {
+            try {
+                Mail::to($user->email_professionnel)->queue(new \App\Mail\DemandeStatutMiseAJour($demande));
+
+                \App\Models\DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $user->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                    'status'                  => 'queued',
+                ]);
+            } catch (\Throwable $e) {
+                \App\Models\DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $user->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeStatutMiseAJour::class,
+                    'status'                  => 'failed',
+                    'error'                   => $e->getMessage(),
+                ]);
+            }
+        }
         return response()->json([
             'success' => true,
-            'message' => 'Statut mis à jour.',
+            'message' => 'Statut mis à jour et notifications envoyées.',
             'demande' => [
                 'id'               => $demande->id,
                 'statut'           => $demande->statut,
@@ -66,4 +102,16 @@ class DemandeInterventionController extends Controller
             ],
         ]);
     }
+    public function showNotifications(Demande_intervention $demande)
+    {
+        $destinataires = $demande->destinataires()->with('entreprise')->get();
+
+        $logs = DemandeInterventionNotification::with('user')
+            ->where('demande_intervention_id', $demande->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('admin.demandes.notifications', compact('demande', 'destinataires', 'logs'));
+    }
+
 }

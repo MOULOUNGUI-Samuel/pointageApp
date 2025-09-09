@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('domaine_item_entreprises', function (Blueprint $table) {
+        Schema::create('categorie_item_entreprises', function (Blueprint $table) {
             $table->uuid('item_id');
             $table->uuid('entreprise_id');
-            $table->uuid('domaine_id');
+            $table->uuid('categorie_id');
             $table->string('statut')->default(1);
             $table->timestamps();
 
@@ -28,12 +28,12 @@ return new class extends Migration
                 ->references('id')
                 ->on('entreprises')
                 ->onDelete('cascade');
-            $table->foreign('domaine_id')
+            $table->foreign('categorie_id')
                 ->references('id')
-                ->on('domaines')
+                ->on('categorie_domaines')
                 ->onDelete('cascade');
             // 🔹 Clé primaire composite (évite les doublons)
-            $table->primary(['item_id', 'entreprise_id', 'domaine_id']);
+            $table->primary(['item_id', 'entreprise_id', 'categorie_id']);
         });
     }
     /**
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('domaine_item_entreprises');
+        Schema::dropIfExists('categorie_item_entreprises');
     }
 };

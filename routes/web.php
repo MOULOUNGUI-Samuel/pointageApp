@@ -264,6 +264,8 @@ Route::middleware('auth')->group(
 
         Route::post('/demande-interventions', [DocumentController::class, 'storeDemandeIntervention'])
             ->name('envoi_demande');
+
+            
         Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
             ->name('push.subscribe');
         Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
@@ -278,9 +280,16 @@ Route::middleware('auth')->group(
         Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/read/{id}', [NotificationsController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all', [NotificationsController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+        Route::get('/config-audit', function () {
+            return view('components.configuration.config-audit');
+        })->name('config-audit');
     }
 
 );
+Route::get('/admin/demandes/{demande}/notifications', [DemandeInterventionController::class, 'showNotifications'])
+    ->middleware(['auth', 'can:admin'])
+    ->name('admin.demandes.notifications');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 Route::post('/logout_module/{id}', [AuthenticatedSessionController::class, 'logout_module'])->name('logout_module');
 

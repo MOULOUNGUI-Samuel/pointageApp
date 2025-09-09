@@ -13,7 +13,7 @@ class Item extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $fillable = [
-        'categorie_item_id',
+        'categorie_domaine_id',
         'type_item_id',
         'user_add_id',
         'user_update_id',
@@ -28,13 +28,9 @@ class Item extends Model
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
-    public function categorieDomaine()
+    public function CategorieDommaine()
     {
-        return $this->belongsTo(CategorieDommaine::class);
-    }
-    public function typeItem()
-    {
-        return $this->belongsTo(TypeItem::class);
+        return $this->belongsTo(CategorieDommaine::class, 'categorie_domaine_id');
     }
     public function entreprises()
     {
@@ -60,8 +56,25 @@ class Item extends Model
     }
     public function domaines()
     {
-        return $this->belongsToMany(Domaine::class, 'domaine_item_entreprises')
+        return $this->belongsToMany(Domaine::class, 'categorie_item_entreprises')
             ->withPivot('statut')
             ->withTimestamps();
+    }
+    // app/Models/Item.php
+    public function periodes()
+    {
+        return $this->hasMany(PeriodeItem::class, 'item_id');
+    }
+
+    public function periodeActive() // pratique pour l’affichage rapide
+    {
+        return $this->hasOne(PeriodeItem::class)
+            ->where('statut', '1')
+            ->whereDate('debut_periode', '<=', now())
+            ->whereDate('fin_periode', '>=', now());
+    }
+    public function typeItem()
+    {
+        return $this->belongsTo(TypeItem::class, 'type_item_id');
     }
 }

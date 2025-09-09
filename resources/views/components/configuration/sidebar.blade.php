@@ -60,6 +60,12 @@
                                 <i class="fa fa-users"></i><span>Catégories Professionnelles</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('config-audit') }}" class="{{ request()->routeIs('config-audit') ? 'active' : '' }}">
+                                <i class="fa fa-shield"></i>
+                                <span>Configuration audit</span>
+                            </a>
+                        </li>
 
                         {{-- Lien 6 : Gestion des permissions --}}
                         <li>

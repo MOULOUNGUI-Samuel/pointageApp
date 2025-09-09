@@ -94,7 +94,10 @@ class Demande_intervention extends Model
         if ($this->est_en_retard) return 'en_retard'; // prime si dépassement
         return $this->statut ?: 'en_attente';
     }
-
+    public function destinataires() {
+        return $this->belongsToMany(\App\Models\User::class, 'demande_intervention_recipients')
+            ->withPivot(['type','selected_at']);
+    }
     public function getDeadlineLabelAttribute(): ?string
     {
         if (!isset($this->jours_restant)) return null;

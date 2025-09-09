@@ -27,6 +27,19 @@ class PeriodeItem extends Model
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
+    protected $casts = [
+        'debut_periode' => 'date',
+        'fin_periode'   => 'date',
+    ];
+
+    /** Période en cours (today ∈ [debut, fin]) ET statut=1 */
+    public function getIsActiveAttribute(): bool
+    {
+        if ($this->statut !== '1') return false;
+        $today = now()->startOfDay();
+        return $this->debut_periode?->startOfDay() <= $today
+            && $this->fin_periode?->endOfDay()   >= $today;
+    }
     public function item()
     {
         return $this->belongsTo(Item::class);

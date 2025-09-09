@@ -15,6 +15,9 @@ use Normalizer;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Mail\DemandeAssistance;
+use Illuminate\Support\Facades\Mail;
+use App\Models\DemandeInterventionNotification;
 
 class DocumentController extends Controller
 {
@@ -340,40 +343,28 @@ class DocumentController extends Controller
     }
     public function storeDemandeIntervention(Request $request)
     {
-        // Validation
+        // 1) Validation
         $validated = $request->validate([
-            'titre'          => ['required', 'string', 'max:255'],
-            'entreprise_id'  => ['required', 'uuid', Rule::exists('entreprises', 'id')],
-            'description'    => ['nullable', 'string'],
-            'date_souhaite'  => ['required', 'date'],
-            'piece_jointe' => [
-        'nullable',
-        'file',
-        'max:10240', // 10 Mo
-        // Autorisés: PDF + Office + OpenDocument + RTF + images
-        'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,jpg,jpeg,png,webp,gif'
-    ],
-        ]
-    );
+            'titre'         => ['required', 'string', 'max:255'],
+            'entreprise_id' => ['required', 'uuid', Rule::exists('entreprises', 'id')],
+            'description'   => ['nullable', 'string'],
+            'date_souhaite' => ['required', 'date'],
+            'piece_jointe'  => [
+                'nullable',
+                'file',
+                'max:10240',
+                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,rtf,jpg,jpeg,png,webp,gif'
+            ],
+        ]);
 
-        // (Optionnel) Sécurité multi-structure : s'assurer que l'entreprise appartient
-        // bien à la structure en session (si ton schéma a bien `entreprises.structure_id`)
-        // $structureId = session('structure_id');
-        // abort_unless(
-        //     Entreprise::where('id', $validated['entreprise_id'])
-        //               ->where('structure_id', $structureId)
-        //               ->exists(),
-        //     403, 'Entreprise invalide pour cette structure.'
-        // );
-
-        // Upload fichier si fourni
+        // 2) Upload éventuel
         $pieceJointePath = null;
         if ($request->hasFile('piece_jointe')) {
-            // nécessite: php artisan storage:link
+            // nécessite: php artisan storage:link + disk 'public' configuré
             $pieceJointePath = $request->file('piece_jointe')->store('demande_interventions', 'public');
         }
 
-        // Création
+        // 3) Création
         $demande = Demande_intervention::create([
             'titre'             => $validated['titre'],
             'entreprise_id'     => $validated['entreprise_id'],
@@ -381,8 +372,54 @@ class DocumentController extends Controller
             'description'       => $validated['description'] ?? null,
             'date_souhaite'     => $validated['date_souhaite'],
             'piece_jointe_path' => $pieceJointePath,
-            'statut'            => 'en_attente', // par défaut
+            'statut'            => 'en_attente',
         ]);
+
+        // 4) Destinataires = personnels de l’entreprise AVEC email pro valide
+        $destinataires = User::where('entreprise_id', $validated['entreprise_id'])
+            ->whereNotNull('email_professionnel')
+            ->where('email_professionnel', '!=', '')
+            ->get(['id', 'email_professionnel', 'nom', 'prenom'])
+
+            // garder seulement les emails valides
+            ->filter(function ($u) {
+                return filter_var($u->email_professionnel, FILTER_VALIDATE_EMAIL);
+            })
+
+            // éviter les doublons éventuels
+            ->unique('email_professionnel')
+            ->values();
+
+        if ($destinataires->isEmpty()) {
+            return back()->with('error', "Aucun destinataire valide trouvé pour l'entreprise.");
+        }
+
+        // 5) Envoi + journalisation (un seul passage)
+        foreach ($destinataires as $user) {
+            try {
+                Mail::to($user->email_professionnel)->queue(new DemandeAssistance($demande));
+
+                DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $user->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeAssistance::class,
+                    'status'                  => 'queued',
+                ]);
+            } catch (\Throwable $e) {
+                // log + marquer failed
+                report($e);
+
+                DemandeInterventionNotification::create([
+                    'demande_intervention_id' => $demande->id,
+                    'user_id'                 => $user->id,
+                    'channel'                 => 'mail',
+                    'mailable'                => \App\Mail\DemandeAssistance::class,
+                    'status'                  => 'failed',
+                    'error'                   => $e->getMessage(),
+                ]);
+            }
+        }
 
         return back()->with('success', 'Votre demande a été enregistrée avec succès.');
     }
