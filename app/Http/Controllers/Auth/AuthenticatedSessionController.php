@@ -331,6 +331,7 @@ class AuthenticatedSessionController extends Controller
                     if ($entreprise) {
                         session()->put('entreprise_nom', $entreprise->nom_entreprise);
                         session()->put('entreprise_logo', $entreprise->logo);
+                        session()->put('entreprise_code', $entreprise->code_entreprise);
                         session()->put('entreprise_id', $entreprise->id);
                     } else {
                         $request->session()->invalidate();

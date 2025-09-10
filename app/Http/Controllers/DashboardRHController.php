@@ -118,6 +118,7 @@ class DashboardRHController extends Controller
         $entreprise = Entreprise::find($entreprise_id);
         session()->put('entreprise_nom', $entreprise->nom_entreprise);
         session()->put('entreprise_logo', $entreprise->logo);
+        session()->put('entreprise_code', $entreprise->code_entreprise);
         return redirect()->back();
     }
 }
