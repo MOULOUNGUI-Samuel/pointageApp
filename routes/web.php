@@ -58,28 +58,28 @@ Route::get(
     [DashboardRHController::class, 'index_dashboard']
 )->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/beams/test', function () {
-//     $beams = new PushNotifications([
-//         'instanceId' => env('BEAMS_INSTANCE_ID'),
-//         'secretKey'  => env('BEAMS_SECRET_KEY'),
-//     ]);
+Route::get('/beams/test', function () {
+    $beams = new PushNotifications([
+        'instanceId' => env('BEAMS_INSTANCE_ID'),
+        'secretKey'  => env('BEAMS_SECRET_KEY'),
+    ]);
 
-//     $res = $beams->publishToInterests(
-//         ['hello'], // intérêt sur lequel ton navigateur est abonné
-//         [
-//             'web' => [
-//                 'notification' => [
-//                     'title' => 'Hello',
-//                     'body'  => 'Hello, world!',
-//                     // 'icon'  => asset('assets/img/authentication/mobile.png'),
-//                     // 'deep_link' => url('/notifications'), // optionnel
-//                 ],
-//             ],
-//         ]
-//     );
+    $res = $beams->publishToInterests(
+        ['hello'], // intérêt sur lequel ton navigateur est abonné
+        [
+            'web' => [
+                'notification' => [
+                    'title' => 'Hello',
+                    'body'  => 'Hello, world!',
+                    // 'icon'  => asset('assets/img/authentication/mobile.png'),
+                    // 'deep_link' => url('/notifications'), // optionnel
+                ],
+            ],
+        ]
+    );
 
-//     return 'OK'; // $res contient un publishId si tu veux l’afficher
-// })->middleware('auth');
+    return 'OK'; // $res contient un publishId si tu veux l’afficher
+})->middleware('auth');
 Route::get('/beams/token', function () {
     abort_unless(auth()->check(), 401);
     $userId = (string) auth()->id();
