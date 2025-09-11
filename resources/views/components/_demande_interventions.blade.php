@@ -126,7 +126,7 @@
                                                         data-user-id="{{ $d->user_id }}">
                                                         <td class="fw-semibold">{{ $d->titre }}</td>
                                                         <td>{{ $ent }}
-                                                            ({{ Auth::user()->entreprise_id === $d->entreprise_id ? 'interne' : 'externe' }})
+                                                            ({{ (Auth::user()->entreprise_id == $d->entreprise_id) ? 'interne' : 'externe' }})
 
                                                         </td>
                                                         <td>{{ $who }}</td>
