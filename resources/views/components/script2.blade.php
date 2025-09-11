@@ -3,6 +3,7 @@
 <script>
     const beamsClient = new PusherPushNotifications.Client({
       instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
+    //   instanceId: '25348889-07c7-4944-82ee-a51fdfa239ca',
     });
   
     beamsClient.start()

@@ -61,10 +61,12 @@
   
     <!-- Metas nécessaires -->
     <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="sw-beams" content="{{ asset('service-worker.js') }}">
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="entreprise-id" content="{{ session('entreprise_id') }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
+
   
     @livewireStyles
   </head>

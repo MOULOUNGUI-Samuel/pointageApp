@@ -420,12 +420,12 @@ class Manager extends Component
             ]);
 
             // ---- Contenu commun
-            $title = 'Demande mise à jour';
+            $title = 'Demande créée';
             $entreprise_id = $this->forCompanyId;
-            $body = "La demande de type : {$this->type}, a été mise à jour pour : "
+            $body = "Une demande de type : {$this->type}, a été créée pour : "
                 . ($this->form_user_id ? User::find($this->form_user_id)->nom . ' ' . User::find($this->form_user_id)->prenom : 'un utilisateur')
                 . ", par " . (Auth::user() ? Auth::user()->nom . ' ' . Auth::user()->prenom : 'un administrateur') . ".";
-            $url  = url('/services');
+            $url  = url('/notifications');
 
             // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
             $uids = User::where('entreprise_id', $entreprise_id)
@@ -445,7 +445,7 @@ class Manager extends Component
                         'requireInteraction' => true,
                         'data'  => [
                             'url' => $url,
-                            'type' => 'request_updated',
+                            'type' => 'request_created',
                             'entreprise' => $entreprise_id,
                         ],
                     ],
