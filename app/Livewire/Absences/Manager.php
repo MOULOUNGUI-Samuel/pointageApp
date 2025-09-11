@@ -501,6 +501,7 @@ class Manager extends Component
         $a = $this->findInCompany($id);
         if (in_array($a->status, ['brouillon', 'rejeté'])) {
             $a->update(['status' => 'soumis']);
+            
             session()->flash('success', 'Demande soumise.');
             $this->dispatch('absencesUpdated'); // Livewire v3
             $this->resetPage();

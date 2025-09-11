@@ -96,7 +96,30 @@
                             aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
                     </li>
                     <!-- /Search -->
+                    <li class="d-flex justify-content-center align-items-center gap-3">
+                        {{-- @auth
+                            <button class="btn btn-primary" onclick="enablePush()">Activer les notifications</button>
+                        @endauth --}}
+                        @php $unread = auth()->user()?->unreadNotifications()->count() ?? 0; @endphp
 
+                        <a href="{{ route('notifications.index') }}" class="btn btn-sm position-relative">
+                            Notifications
+                            <span id="notifBadge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $unread ? '' : 'd-none' }}">
+                                {{ $unread }}
+                            </span>
+                        </a>
+
+                        {{-- zone d’affichage des toasts --}}
+                        <div id="toast-area" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
+
+                        {{-- bouton d’abonnement push (si tu veux le garder) --}}
+                        @auth
+                            <button class="btn btn-primary btn-sm ms-2" onclick="enablePush()">Activer les
+                                notifications</button>
+                        @endauth
+
+                    </li>
                     <!-- Nav List -->
                     <li class="nav-item nav-list">
                         <ul class="nav">

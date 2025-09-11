@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Services\Beams; 
+use App\Services\Beams;
 use App\Notifications\NewAlert; // Import the NewAlert class
 use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
 use Illuminate\Support\Facades\Notification; // Import the Notification facade
@@ -42,15 +42,15 @@ class DemandeInterventionController extends Controller
         $pieceJointePath = null;
         if ($request->hasFile('piece_jointe')) {
             $file = $request->file('piece_jointe');
-        
+
             // 1) Variante simple : juste enlever les espaces
             $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $ext  = strtolower($file->getClientOriginalExtension());
             $safe = str_replace(' ', '_', $base) . '_' . now()->format('YmdHis') . '.' . $ext;
-        
+
             // 2) Variante plus robuste (accents/signes -> slug)
             // $safe = Str::slug($base) . '_' . now()->format('YmdHis') . '.' . $ext;
-        
+
             $pieceJointePath = $file->storeAs('demande_interventions', $safe, 'public');
         }
 
@@ -75,11 +75,11 @@ class DemandeInterventionController extends Controller
         $logoPath = $demande->entreprise->logo ?? null;
 
         $logoUrl = $logoPath
-            ? (Str::startsWith($logoPath, ['http://','https://'])
+            ? (Str::startsWith($logoPath, ['http://', 'https://'])
                 ? $logoPath
-                : asset('storage/'.$logoPath))   // ← fonctionne avec le disk "public"
+                : asset('storage/' . $logoPath))   // ← fonctionne avec le disk "public"
             : null;
-            
+
 
         $demandeData = [
             'id'            => $demande->id,
@@ -103,64 +103,66 @@ class DemandeInterventionController extends Controller
         ];
 
         $title = 'Demande d\'intervention';
-            $entreprise_id = $demande->entreprise_id;
-            $body = "Une demande d'intervention a été envoyé par : "
-                . ($demandeData['demandeur']['nom'] ? ($demandeData['demandeur']['nom'].' '.$demandeData['demandeur']['prenom']) : 'Utilisateur')
-                . ". Elle a pour titre :  " .$demande->titre;
-            $url  = url('/notifications');
+        $entreprise_id = $demande->entreprise_id;
+        $body = "Une demande d'intervention a été envoyé par : "
+            . ($demandeData['demandeur']['nom'] ? ($demandeData['demandeur']['nom'] . ' ' . $demandeData['demandeur']['prenom']) : 'Utilisateur')
+            . ". Elle a pour 'titre' :  [ " . $demande->titre . " ]. Voici une 'description' [ " . $demande->description . "]";
+        $url  = url('/notifications');
 
-            // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
-            $uids = User::where('entreprise_id', $entreprise_id)
+        // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
+        $uids = User::where('entreprise_id', $entreprise_id)
             ->where('id', '!=', Auth::id())
             ->pluck('id')
             ->map(fn($id) => (string) $id)   // Beams exige des strings
             ->All();
 
-            // Beams : publier vers les users (par batch si beaucoup d’IDs)
-            foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable
-                app(Beams::class)->publishToUsers(
-                    $batch,
-                    [
+        // Beams : publier vers les users (par batch si beaucoup d’IDs)
+        foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable
+            app(Beams::class)->publishToUsers(
+                $batch,
+                [
+                    'title' => $title,
+                    'body'  => $body,
+                    'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                    'requireInteraction' => true,
+                    'data'  => [
+                        'url' => $url,
+                        'type' => 'request_created',
+                        'entreprise' => $entreprise_id,
+                    ],
+                ],
+                $url // deep_link
+            );
+        }
+        // B) TEMPS RÉEL IN-APP + HISTORIQUE
+        $recipients = User::where('entreprise_id', $entreprise_id)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        Notification::send($recipients, new NewAlert($title, $body, $url));
+        // Option : historiser aussi chez l’auteur
+        $author = request()->user();
+        $author?->notify(new NewAlert($title, $body, $url));
+        $beams = new PushNotifications([
+            'instanceId' => env('BEAMS_INSTANCE_ID'),
+            'secretKey'  => env('BEAMS_SECRET_KEY'),
+        ]);
+        $res = $beams->publishToInterests(
+            ['hello'], // intérêt sur lequel ton navigateur est abonné
+            [
+                'web' => [
+                    'notification' => [
                         'title' => $title,
                         'body'  => $body,
                         'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
-                        'requireInteraction' => true,
-                        'data'  => [
-                            'url' => $url,
-                            'type' => 'request_created',
-                            'entreprise' => $entreprise_id,
-                        ],
+                        'deep_link' => url('/notifications'), // optionnel
                     ],
-                    $url // deep_link
-                );
-            }
-            // B) TEMPS RÉEL IN-APP + HISTORIQUE
-            $recipients = User::where('entreprise_id', $entreprise_id)
-                ->get();
-            Notification::send($recipients, new NewAlert($title, $body, $url));
-            // Option : historiser aussi chez l’auteur
-            $author = request()->user();
-            $author?->notify(new NewAlert($title, $body, $url));
-            $beams = new PushNotifications([
-                'instanceId' => env('BEAMS_INSTANCE_ID'),
-                'secretKey'  => env('BEAMS_SECRET_KEY'),
-            ]);
-            $res = $beams->publishToInterests(
-                ['hello'], // intérêt sur lequel ton navigateur est abonné
-                [
-                    'web' => [
-                        'notification' => [
-                            'title' => $title,
-                            'body'  => $body,
-                            'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
-                            'deep_link' => url('/notifications'), // optionnel
-                        ],
-                    ],
-                ]
-            );
+                ],
+            ]
+        );
 
-            // C) (Optionnel) événement broadcast "entreprise.{id}" si tu l’utilises pour d'autres listeners
-            broadcast(new ServiceCreated($demande->titre, $entreprise_id));
+        // C) (Optionnel) événement broadcast "entreprise.{id}" si tu l’utilises pour d'autres listeners
+        broadcast(new ServiceCreated($demande->titre, $entreprise_id));
 
         // ⚠️ ne PAS faire: $demande = $demandeData;
 
@@ -218,6 +220,127 @@ class DemandeInterventionController extends Controller
         $demande->update(['statut' => $validated['statut']]);
         $demande->refresh();
 
+        // Relations pour l’email (logo etc.)
+        $demande->loadMissing([
+            'entreprise:id,nom_entreprise,logo',
+            'user:id,nom,prenom,email,email_professionnel',
+        ]);
+
+        // Optionnel : tableau prêt pour JSON/vue
+        $logoPath = $demande->entreprise->logo ?? null;
+
+        $logoUrl = $logoPath
+            ? (Str::startsWith($logoPath, ['http://', 'https://'])
+                ? $logoPath
+                : asset('storage/' . $logoPath))   // ← fonctionne avec le disk "public"
+            : null;
+
+        $demandeData = [
+            'id'            => $demande->id,
+            'titre'         => $demande->titre,
+            'description'   => $demande->description,
+            'date_souhaite' => optional($demande->date_souhaite)->format('Y-m-d'),
+            'piece_jointe'  => $demande->piece_jointe_path,
+            'statut'        => $demande->statut,
+            'entreprise'    => [
+                'id'       => $demande->entreprise_id,
+                'nom'      => $demande->entreprise->nom_entreprise ?? null,
+                'logo'     => $logoPath,
+                'logo_url' => $logoUrl,
+            ],
+            'demandeur'     => [
+                'id'     => $demande->user_id,
+                'nom'    => $demande->user->nom ?? null,
+                'prenom' => $demande->user->prenom ?? null,
+                'email'  => $demande->user->email_professionnel ?? $demande->user->email,
+            ],
+        ];
+
+        $statutLabels = [
+            0 => 'En attente',
+            1 => 'En cours',
+            2 => 'Traitée',
+            3 => 'En retard',
+            4 => 'Annulée',
+        ];
+        $statutLabel = $statutLabels[$demande->statut] ?? (string)$demande->statut;
+
+        // 3) Contexte interne / externe + message body concis
+        $actor      = Auth::user();
+        $demandeur  = $demande->user;
+        $entActor   = $actor?->entreprise->nom_entreprise ?? $demande->entreprise->nom_entreprise ?? '—';
+        $entDemandeur = $demande->entreprise->nom_entreprise ?? $demandeur?->entreprise->nom_entreprise ?? '—';
+
+        $interne = ($entActor === $entDemandeur);
+        $context = $interne ? 'Intervention interne' : 'Intervention externe';
+
+        $title = "Suivi de demande d'intervention";
+        $body  = "{$context} • Par {$actor?->nom} {$actor?->prenom} ({$entActor}) • "
+            . "Demandeur : {$demandeur?->nom} {$demandeur?->prenom} ({$entDemandeur}) • "
+            . "Statut : {$statutLabel} • « {$demande->titre} »";
+
+        // 4) URL cible
+        $url  = url('/notifications');
+        $entrepriseId = $demande->entreprise_id
+            ?? $demande->user->entreprise_id
+            ?? $actor?->entreprise_id
+            ?? null;
+        // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
+        $uids = User::where('entreprise_id', $entrepriseId)
+            ->where('id', '!=', Auth::id())
+            ->pluck('id')
+            ->map(fn($id) => (string) $id)   // Beams exige des strings
+            ->All();
+
+        // Beams : publier vers les users (par batch si beaucoup d’IDs)
+        foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable
+            app(Beams::class)->publishToUsers(
+                $batch,
+                [
+                    'title' => $title,
+                    'body'  => $body,
+                    'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                    'requireInteraction' => true,
+                    'data'  => [
+                        'url' => $url,
+                        'type' => 'request_created',
+                        'entreprise' => $entrepriseId,
+                    ],
+                ],
+                $url // deep_link
+            );
+        }
+        // B) TEMPS RÉEL IN-APP + HISTORIQUE
+        $recipients = User::where('entreprise_id', $entrepriseId)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        Notification::send($recipients, new NewAlert($title, $body, $url));
+        // Option : historiser aussi chez l’auteur
+        $author = request()->user();
+        $author?->notify(new NewAlert($title, $body, $url));
+        $beams = new PushNotifications([
+            'instanceId' => env('BEAMS_INSTANCE_ID'),
+            'secretKey'  => env('BEAMS_SECRET_KEY'),
+        ]);
+        $res = $beams->publishToInterests(
+            ['hello'], // intérêt sur lequel ton navigateur est abonné
+            [
+                'web' => [
+                    'notification' => [
+                        'title' => $title,
+                        'body'  => $body,
+                        'icon'  => asset('assets/img/authentication/logo_notif.JPG'),
+                        'deep_link' => url('/notifications'), // optionnel
+                    ],
+                ],
+            ]
+        );
+
+        // 9) Broadcast "entreprise.{id}" (uniquement si l’ID est défini) — corrige l’erreur NULL
+        if (!is_null($entrepriseId)) {
+            broadcast(new \App\Events\ServiceCreated($demande->titre, (string)$entrepriseId));
+        }
         // 🔔 Envoi mail aux personnels de l’entreprise
         $destinataire = \App\Models\User::where('id', $demande->user_id)
             ->whereNotNull('email_professionnel')
