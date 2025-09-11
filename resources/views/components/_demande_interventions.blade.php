@@ -125,7 +125,10 @@
                                                         data-statut-effectif="{{ $effective }}"
                                                         data-user-id="{{ $d->user_id }}">
                                                         <td class="fw-semibold">{{ $d->titre }}</td>
-                                                        <td>{{ $ent }}</td>
+                                                        <td>{{ $ent }}
+                                                            ({{ Auth::user()->entreprise_id === $d->entreprise_id ? 'interne' : 'externe' }})
+
+                                                        </td>
                                                         <td>{{ $who }}</td>
                                                         <td>
                                                             <div>{{ $d->date_souhaite?->format('d/m/Y') ?? '-' }}</div>
@@ -142,20 +145,20 @@
                                                         </td>
                                                         <td>
                                                             @if (!$isFinal)
-                                                            <div class="btn-group btn-group-sm" data-actions>
-                                                                    @if ($d->user->id !== Auth::id() && $d->entreprise_id=== $entreprise_id)
-                                                                    <button
-                                                                        class="btn btn-outline-secondary btn-set-status"
-                                                                        data-id="{{ $d->id }}"
-                                                                        data-status="en_attente">Attente</button>
-                                                                    <button class="btn btn-outline-info btn-set-status"
-                                                                        data-id="{{ $d->id }}"
-                                                                        data-status="en_cours">En cours</button>
-                                                                    <button
-                                                                        class="btn btn-outline-success btn-set-status"
-                                                                        data-id="{{ $d->id }}"
-                                                                        data-status="traitee">Traiter</button>
-                                                                        
+                                                                <div class="btn-group btn-group-sm" data-actions>
+                                                                    @if ($d->user->id !== Auth::id() && $d->entreprise_id === $entreprise_id)
+                                                                        <button
+                                                                            class="btn btn-outline-secondary btn-set-status"
+                                                                            data-id="{{ $d->id }}"
+                                                                            data-status="en_attente">Attente</button>
+                                                                        <button
+                                                                            class="btn btn-outline-info btn-set-status"
+                                                                            data-id="{{ $d->id }}"
+                                                                            data-status="en_cours">En cours</button>
+                                                                        <button
+                                                                            class="btn btn-outline-success btn-set-status"
+                                                                            data-id="{{ $d->id }}"
+                                                                            data-status="traitee">Traiter</button>
                                                                     @endif
                                                                     @if ($d->user->id === Auth::id() && $effective !== 'traitee')
                                                                         <button
@@ -290,7 +293,7 @@
                         if (!allowed.includes(ext)) {
                             alert(
                                 "Format non autorisé. Autorisés: images (jpg, jpeg, png, webp, gif) et documents (pdf, docx, xlsx, pptx, odt, ...)."
-                                );
+                            );
                             this.value = ''; // reset
                         }
                     });
@@ -321,7 +324,7 @@
                     function applyFilters() {
                         const q = (input.value || '').toLowerCase().trim();
                         const stat = (filter.value || '')
-                    .trim(); // '' | en_attente | en_cours | traitee | annulee | en_retard
+                            .trim(); // '' | en_attente | en_cours | traitee | annulee | en_retard
                         const onlyMine = !!mineTgl?.checked;
 
                         rows.forEach(row => {
@@ -459,11 +462,11 @@
 
                                             // 2) Indicateur "Retard" : jamais pour Traitee/Annulee
                                             const overdueFlag = row.querySelector(
-                                            '[data-overdue-flag]');
+                                                '[data-overdue-flag]');
                                             const shouldShowOverdue =
                                                 (body.demande.statut_effectif === 'en_retard') &&
                                                 (newStatus === 'en_attente' || newStatus ===
-                                                'en_cours');
+                                                    'en_cours');
                                             if (overdueFlag) {
                                                 overdueFlag.style.display = shouldShowOverdue ? '' :
                                                     'none';
