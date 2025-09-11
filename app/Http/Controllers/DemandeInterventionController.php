@@ -20,6 +20,7 @@ use App\Notifications\NewAlert; // Import the NewAlert class
 use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
 use Illuminate\Support\Facades\Notification; // Import the Notification facade
 use App\Events\ServiceCreated; // Import the ServiceCreated event
+use App\Models\Entreprise;
 
 class DemandeInterventionController extends Controller
 {
@@ -271,9 +272,13 @@ class DemandeInterventionController extends Controller
      
         $context = (Auth::id()===$demande->user_id) ? 'Intervention interne' : 'Intervention externe';
 
+        $demandeurEntreprise=User::with('entreprise')
+        ->where('id', $demande->user_id)
+        ->first()?->entreprise?->nom_entreprise;
+
         $title = "Suivi de demande d'intervention";
         $body  = "{$context} • Par {$actor?->nom} {$actor?->prenom} (".Auth::user()->entreprise->nom_entreprise.") • "
-            . "Demandeur : {$demandeur?->nom} {$demandeur?->prenom} ({$demande->entreprise->nom_entreprise}) • "
+            . "Demandeur : {$demandeur?->nom} {$demandeur?->prenom} ({$demandeurEntreprise}) • "
             . "Statut : {$statutLabel} • « {$demande->titre} »";
 
         // 4) URL cible
