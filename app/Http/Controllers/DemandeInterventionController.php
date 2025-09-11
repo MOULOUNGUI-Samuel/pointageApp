@@ -281,10 +281,7 @@ class DemandeInterventionController extends Controller
 
         // 4) URL cible
         $url  = url('/notifications');
-        $entrepriseId = $demande->entreprise_id
-            ?? $demande->user->entreprise_id
-            ?? $actor?->entreprise_id
-            ?? null;
+        $entrepriseId = (Auth::id()===$demande->user->entreprise_id) ?$demande->entreprise_id : $demande->user->entreprise_id;
         // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
         $uids = User::where('entreprise_id', $entrepriseId)
             ->where('id', '!=', Auth::id())
