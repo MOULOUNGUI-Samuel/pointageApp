@@ -142,7 +142,8 @@
                                                         </td>
                                                         <td>
                                                             @if (!$isFinal)
-                                                                <div class="btn-group btn-group-sm" data-actions>
+                                                            <div class="btn-group btn-group-sm" data-actions>
+                                                                    @if ($d->user->id !== Auth::id() && $d->entreprise_id=== $entreprise_id)
                                                                     <button
                                                                         class="btn btn-outline-secondary btn-set-status"
                                                                         data-id="{{ $d->id }}"
@@ -154,6 +155,8 @@
                                                                         class="btn btn-outline-success btn-set-status"
                                                                         data-id="{{ $d->id }}"
                                                                         data-status="traitee">Traiter</button>
+                                                                        
+                                                                    @endif
                                                                     @if ($d->user->id === Auth::id() && $effective !== 'traitee')
                                                                         <button
                                                                             class="btn btn-outline-dark btn-set-status"

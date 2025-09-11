@@ -268,20 +268,18 @@ class DemandeInterventionController extends Controller
         // 3) Contexte interne / externe + message body concis
         $actor      = Auth::user();
         $demandeur  = $demande->user;
-        $entActor   = $actor?->entreprise->nom_entreprise ?? $demande->entreprise->nom_entreprise ?? '—';
-        $entDemandeur = $demande->entreprise->nom_entreprise ?? $demandeur?->entreprise->nom_entreprise ?? '—';
-
-        $interne = ($entActor === $entDemandeur);
-        $context = $interne ? 'Intervention interne' : 'Intervention externe';
+     
+        $context = (Auth::user()->entreprise_id===$demande->entreprise_id) ? 'Intervention interne' : 'Intervention externe';
 
         $title = "Suivi de demande d'intervention";
-        $body  = "{$context} • Par {$actor?->nom} {$actor?->prenom} ({$entActor}) • "
-            . "Demandeur : {$demandeur?->nom} {$demandeur?->prenom} ({$entDemandeur}) • "
+        $body  = "{$context} • Par {$actor?->nom} {$actor?->prenom} (".Auth::user()->entreprise->nom_entreprise.") • "
+            . "Demandeur : {$demandeur?->nom} {$demandeur?->prenom} ({$demande->entreprise->nom_entreprise}) • "
             . "Statut : {$statutLabel} • « {$demande->titre} »";
 
         // 4) URL cible
         $url  = url('/notifications');
-        $entrepriseId = (Auth::id()===$demande->user->entreprise_id) ?$demande->entreprise_id : $demande->user->entreprise_id;
+
+        $entrepriseId = (Auth::user()->entreprise_id===$demande->entreprise_id) ?$demande->entreprise_id : $demande->user->entreprise_id;
         // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
         $uids = User::where('entreprise_id', $entrepriseId)
             ->where('id', '!=', Auth::id())
