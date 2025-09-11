@@ -110,7 +110,11 @@ class DemandeInterventionController extends Controller
             $url  = url('/notifications');
 
             // IDs des destinataires = tous les users de l'entreprise SAUF l'auteur
-            $uids = User::where('entreprise_id', $entreprise_id)->get();
+            $uids = User::where('entreprise_id', $entreprise_id)
+            ->where('id', '!=', Auth::id())
+            ->pluck('id')
+            ->map(fn($id) => (string) $id)   // Beams exige des strings
+            ->All();
 
             // Beams : publier vers les users (par batch si beaucoup d’IDs)
             foreach (array_chunk($uids, 1000) as $batch) {          // 1000 = limite confortable

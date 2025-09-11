@@ -1,16 +1,15 @@
-
 @livewireScripts
 <script>
     const beamsClient = new PusherPushNotifications.Client({
-    //   instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
-      instanceId: '6546287e-5b26-46fe-86d4-7c3aac85c0c0',
+        // instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
+          instanceId: '6546287e-5b26-46fe-86d4-7c3aac85c0c0',
     });
-  
+
     beamsClient.start()
-      .then(() => beamsClient.addDeviceInterest('hello'))
-      .then(() => console.log('Successfully registered and subscribed!'))
-      .catch(console.error);
-  </script>
+        .then(() => beamsClient.addDeviceInterest('hello'))
+        .then(() => console.log('Successfully registered and subscribed!'))
+        .catch(console.error);
+</script>
 <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
 <script>
     let dotCount = 1;
@@ -56,7 +55,8 @@
                         // Si le formulaire n'est pas valide, empêche l'action par défaut
                         event.preventDefault();
                         event.stopPropagation();
-                        form.classList.add('was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
+                        form.classList.add(
+                        'was-validated'); // Ajoute la classe Bootstrap pour afficher les erreurs
                         return;
                     }
                 }
@@ -145,7 +145,8 @@
 
 <!-- Sticky-sidebar -->
 <script src="{{ asset('assets/plugins/theia-sticky-sidebar/ResizeSensor.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js') }}" type="text/javascript">
+</script>
 
 <!-- Masked Input JS -->
 <script src="{{ asset('assets/js/jquery.maskedinput.min.js') }}" type="text/javascript"></script>
@@ -161,7 +162,6 @@
 <script src="{{ asset('assets/js/theme-colorpicker.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
 @env('production')
-  <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" crossorigin="anonymous"></script>
 @endenv
-
