@@ -1,8 +1,8 @@
 @livewireScripts
 <script>
     const beamsClient = new PusherPushNotifications.Client({
-        // instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
-          instanceId: '6546287e-5b26-46fe-86d4-7c3aac85c0c0',
+        instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',
+        //   instanceId: '6546287e-5b26-46fe-86d4-7c3aac85c0c0',
     });
 
     beamsClient.start()

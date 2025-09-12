@@ -3,6 +3,7 @@
 // app/Http/Controllers/NotificationsController.php
 namespace App\Http\Controllers;
 
+use App\Models\Module;
 use Illuminate\Http\Request;
 
 class NotificationsController extends Controller
@@ -12,6 +13,13 @@ class NotificationsController extends Controller
         $user = $request->user();
         $notifications = $user->notifications()->latest()->paginate(15);
         $unreadCount = $user->unreadNotifications()->count();
+
+        if(session()->has('module_id')){
+
+        }else{
+            $modules = Module::orderBy('created_at', 'asc')->first();
+            session()->put('module_id', $modules->id);
+        }
         return view('notifications.index', compact('notifications','unreadCount'));
     }
 
