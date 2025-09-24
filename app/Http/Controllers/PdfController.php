@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Entreprise;
@@ -16,6 +18,390 @@ require_once base_path('vendor/setasign/fpdf/fpdf.php');
 /**
  * Classe FPDF personnalisée
  */
+
+class PdfPayslip extends \FPDF
+{
+    public string $logoPath   = '';
+    public string $title      = 'BULLETIN DE PAIE';
+    public string $printedBy  = 'Système';
+
+    // Encodage FPDF (ISO-8859-1)
+    protected function t($text)
+    {
+        return mb_convert_encoding($text ?? '', 'ISO-8859-1', 'UTF-8');
+    }
+
+    // Cellule clé/valeur simple (infos entreprise / salarié)
+    public function kvRow($x, $y, $label, $value, $wLabel = 34, $wValue = 70, $boldValue = true)
+    {
+        $this->SetXY($x, $y);
+        $this->SetFont('Arial', '', 10);
+        $this->Cell($wLabel, 6, $this->t($label), 0, 0, 'L');
+        $this->SetFont('Arial', $boldValue ? 'B' : '', 10);
+        $this->Cell($wValue, 6, $this->t($value), 0, 0, 'L');
+    }
+
+    public function money($v)
+    {
+        return number_format((float)$v, 0, ',', ' ');
+    }
+
+    // ======== HEADER / FOOTER ========
+    public function Header()
+    {
+        // IMPORTANT : on ne dessine RIEN ici pour éviter tout chevauchement
+        // avec drawCompanyTitleCentered(), drawRightIdentityCard(), etc.
+        // Si tu veux un logo global sur toutes les pages, décommenter :
+        // if ($this->logoPath && @is_file($this->logoPath)) {
+        //     $this->Image($this->logoPath, 12, 10, 20);
+        // }
+    }
+    // --- Titre BULLETIN DE PAIE centré + 2 lignes période/paiement
+    public function drawBulletinTitleAndPeriod(array $periode, float $y = 15): float
+    {
+        // Titre
+        $this->SetFont('Arial', 'B', 24);
+        $title = $this->t('BULLETIN DE PAIE');
+
+        // Utiliser une largeur de cellule qui remplit toute la page pour faciliter le centrage
+        $this->SetXY(0, $y);
+        $this->Cell(300, -10, $title, 0, 1, 'C'); // Largeur = largeur de la page, Alignement = Centre
+
+        // Deux lignes centrées (mêmes polices que ton exemple)
+        $this->SetFont('Arial', '', 8);
+        $l1 = $this->t('Période du   ' . $periode['du'] . '   au   ' . $periode['au']);
+        $l2 = $this->t('Paiement le   ' . $periode['paiement'] . '   par   ' . $periode['mode']);
+
+        // Espacement vertical entre les lignes
+        $lineSpacing = 4;
+
+        // Calcul des positions Y pour les lignes
+        $y1 = $y ;
+        $y2 = $y  + $lineSpacing;
+
+        // Affichage des lignes
+        $this->SetXY(125, $y1);
+        $this->Cell($this->GetStringWidth($l1), 6, $l1, 0, 1, 'L'); // Conserver l'alignement à gauche pour que le calcul du centrage fonctionne
+        $this->SetXY(125, $y2);
+        $this->Cell($this->GetStringWidth($l2), 6, $l2, 0, 1, 'L');
+
+        // Renvoie le Y à partir duquel tu peux continuer à dessiner
+        return $y + 16 + ($lineSpacing * 2);
+    }
+
+    public function Footer()
+    {
+        $this->SetY(-16);
+        $this->SetFont('Arial', '', 8);
+        $this->Cell(0, 6, $this->t("Pour vous aider à faire valoir vos droits, conservez ce bulletin de paie sans limitation de durée."), 0, 1, 'L');
+        $this->SetFont('Arial', 'I', 8);
+        $this->Cell(0, 6, $this->t('Page ') . $this->PageNo() . '/' . '{nb}', 0, 0, 'R');
+    }
+
+    /* ====== ENTÊTE (dessinée dans le corps de page) ====== */
+
+    // Titre société centré (trois lignes)
+    public function drawCompanyTitleCentered(array $e): void
+{
+    $left  = 12;   // marge gauche du bloc
+    $top   = 4;   // y de départ pour le logo
+    $gap   = 3;    // espace entre logo et texte (mm)
+    $logoH = 14;   // hauteur du logo (garde les proportions)
+
+    // Logo au-dessus
+    $yText = $top; // y du texte (sera ajusté si logo)
+    if ($this->logoPath && @is_file($this->logoPath)) {
+        // w=0, h=$logoH -> conserve les proportions
+        $this->Image($this->logoPath, $left, $top, 0, $logoH);
+        $yText = $top + $logoH + $gap;
+    }
+
+    // Nom de la société
+    $this->SetXY($left, $yText);
+    $this->SetFont('Arial', 'B', 16);
+    $this->Cell(0, 7, $this->t($e['nom'] ?? ''), 0, 1, 'L');
+
+    // Adresse / téléphone
+    $this->SetFont('Arial', '', 12);
+    $this->SetXY($left, $this->GetY());
+    $this->Cell(0, 6, $this->t('Boite Postale : ' . ($e['bp'] ?? '') . '     ' . ($e['ville'] ?? '')), 0, 1, 'L');
+    $this->SetXY($left, $this->GetY());
+    $this->Cell(0, 6, $this->t('TEL : ' . ($e['tel'] ?? '')), 0, 1, 'L');
+}
+
+    
+
+    // Carte identité salarié à droite (nom en gras en haut)
+    public function drawRightIdentityCard(array $id): void
+    {
+        // Cadre à droite
+        $x = 110;           // position X du cadre
+        $y = 25;            // position Y du cadre
+        $w = 90;            // largeur du cadre
+
+        // Géométrie interne
+        $m      = 3;                    // marge interne
+        $ix     = $x + $m;              // X interne
+        $iy     = $y + $m;              // Y interne
+        $innerW = $w - 2 * $m;            // largeur utile
+        $lh     = 5;                    // hauteur de ligne
+        $wLabel = 26;                   // largeur des libellés
+        $wVal   = $innerW - $wLabel;    // largeur des valeurs
+
+        // Calcule la hauteur nécessaire (nom + naissance + 4 lignes kv + marge basse)
+        $neededH = 6 /*nom*/ + $lh /*naissance*/ + 4 * $lh /*4 lignes*/
+            + $m; // marge basse
+
+        $h = max(35, $neededH);         // hauteur du cadre (min 38mm)
+        $this->Rect($x, $y, $w, $h);
+
+        // Contenu du cadre
+        // 1) Nom en gras
+        $this->SetXY($ix, $iy);
+        $this->SetFont('Arial', 'B', 12);
+        $this->Cell($innerW, 6, $this->t(($id['civilite'] ?? '') . '  ' . ($id['nom'] ?? '')), 0, 1, 'L');
+
+        // 2) Ligne naissance (tout sur une seule ligne, à l'intérieur du cadre)
+        $this->SetFont('Arial', '', 10);
+        $this->SetXY($ix, $this->GetY());
+        $naiss = 'Né(e) le: ' . ($id['naissance'] ?? '') . '   à ' . ($id['lieu'] ?? '');
+        $this->MultiCell($innerW, $lh, $this->t($naiss), 0, 'L');  // MultiCell pour rester dans la largeur
+
+        // 3) Paires libellé/valeur
+        $rows = [
+            ['N° CNSS',   $id['cnss']      ?? ''],
+            ['Matricule', $id['matricule'] ?? ''],
+            ['Poste',     $id['poste']     ?? ''],
+            ['Téléphone', $id['telephone'] ?? ''],
+        ];
+
+        foreach ($rows as [$label, $value]) {
+            $this->SetXY($ix, $this->GetY());
+            $this->SetFont('Arial', '', 10);
+            $this->Cell($wLabel, $lh, $this->t($label), 0, 0, 'L');
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell($wVal,   $lh, $this->t($value), 0, 1, 'L');
+        }
+    }
+
+
+    // Bloc infos “Département / Si.Fam / Enfants / Parts / Catégorie / Horaire” (à gauche)
+    public function drawLeftEmployeeMeta(array $m): void
+    {
+        $x = 12;
+        $y = 45;
+        $this->SetXY($x, $y);
+        $this->SetFont('Arial', '', 11);
+
+        $this->Cell(30, 6, $this->t('Département'), 0, 0, 'L');
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell(70, 6, $this->t($m['departement'] ?? ''), 0, 1, 'L');
+
+        $this->SetFont('Arial', '', 11);
+        $this->Cell(20, 6, $this->t('Si.Fam'), 0, 0, 'L');
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell(38, 6, $this->t($m['situation_fam'] ?? ''), 0, 0, 'L');
+
+        $this->SetFont('Arial', '', 11);
+        $this->Cell(32, 6, $this->t("Nbres d'enfants"), 0, 0, 'L');
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell(16, 6, $this->t($m['nb_enfants'] ?? ''), 0, 0, 'L');
+$this->Ln(5);
+        $this->SetFont('Arial', '', 11);
+        $this->Cell(24, 6, $this->t('Catégorie'), 0, 0, 'L');
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell(30, 6, $this->t($m['categorie'] ?? ''), 0, 0, 'L');
+
+        $this->SetFont('Arial', '', 11);
+        $this->Cell(18, 6, $this->t('Horaire'), 0, 0, 'L');
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell(0, 6,  $this->t($m['horaire'] ?? ''), 0, 1, 'L');
+    }
+
+    /* ====== TABLEAU PRINCIPAL ====== */
+    public function drawTableHeader(float $yStart = 68): array
+    {
+        $x = 12;
+        $y = $yStart;
+        $h1 = 7;
+        $h2 = 7;
+        $w = [12, 54, 16, 24, 12, 24, 16, 12, 16];
+
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetXY($x, $y);
+        $this->Cell($w[0], $h1, $this->t('N°'), 1, 0, 'C');
+        $this->Cell($w[1], $h1, $this->t('Désignation'), 1, 0, 'C');
+        $this->Cell($w[2], $h1, $this->t('Nombre'), 1, 0, 'C');
+        $this->Cell($w[3], $h1, $this->t('Base'), 1, 0, 'C');
+        $this->Cell($w[4] + $w[5] + $w[6], $h1, $this->t('Part salariale'), 1, 0, 'C');
+        $this->Cell($w[7] + $w[8], $h1, $this->t('Part patronale'), 1, 1, 'C');
+
+        $this->SetXY($x + $w[0] + $w[1] + $w[2] + $w[3], $y + $h1);
+        $this->Cell($w[4], $h2, $this->t('Taux'),    1, 0, 'C');
+        $this->Cell($w[5], $h2, $this->t('Gain'),    1, 0, 'C');
+        $this->Cell($w[6], $h2, $this->t('Retenue'), 1, 0, 'C');
+        $this->Cell($w[7], $h2, $this->t('Taux'),    1, 0, 'C');
+        $this->Cell($w[8], $h2, $this->t('Retenue'), 1, 1, 'C');
+
+        return ['y' => $y + $h1 + $h2, 'w' => $w];
+    }
+
+
+    public function drawRow(array $w, float $y, array $row, int $rh = 6): float
+    {
+        $this->SetXY(12, $y);
+        $this->SetFont('Arial', '', 9);
+        $align = ['C', 'L', 'C', 'R', 'C', 'R', 'R', 'C', 'R'];
+        foreach ($row as $i => $val) {
+            $this->Cell($w[$i], $rh, $this->t($val ?? ''), 1, 0, $align[$i]);
+        }
+        $this->Ln($rh);
+        return $y + $rh;
+    }
+
+    /* ====== BAS DE PAGE ====== */
+
+    // === Cumuls + NET A PAYER (avec espace entre les deux) ===
+    public function drawCumulsAndNet(array $cumuls, $net, float $yStart = null): float
+    {
+        $x = 12;
+        $y = $yStart ?? ($this->GetPageHeight() - 88); // ancré vers le bas mais avec marge
+        $headerH = 5;   // 2 lignes d’en-tête
+        $rowH    = 6;   // 2 lignes de données
+        $netW    = 28;  // colonne NET
+        $gapNet  = 2;   // espace entre Cumuls et NET
+
+        // Largeurs colonnes CUMULS (somme = 146)
+        $widths = [15, 18, 18, 18, 22, 18, 22, 25]; // = 146
+        $cumulsW = array_sum($widths);
+
+        // --- En-têtes (2 lignes via MultiCell) ---
+        $headers = [
+            "Cumuls\n.",
+            "Salaire\nbrut",
+            'Charges salariales',
+            'Charges patronales',
+            'Avantages en nature',
+            "Net\nimposable",
+            "Heures\ntravaillées",
+            "Heures\nsupplémentaires",
+        ];
+        $this->SetFont('Arial', 'B', 8);
+        $this->SetFillColor(225, 225, 225);
+        $this->SetXY($x, $y);
+        foreach ($headers as $i => $h) {
+            $cx = $this->GetX();
+            $cy = $this->GetY();
+            $this->MultiCell($widths[$i], $headerH, $this->t($h), 1, 'C', true);
+            $this->SetXY($cx + $widths[$i], $cy);
+        }
+        // position sous l’en-tête (2 lignes)
+        $this->SetXY($x, $y + $headerH * 2);
+
+        // --- Ligne Période ---
+        $this->SetFont('Arial', '', 8);
+        $p = [
+            'Période',
+            $this->money($cumuls['periode']['brut'] ?? 0),
+            $this->money($cumuls['periode']['charges_sal'] ?? 0),
+            $this->money($cumuls['periode']['charges_pat'] ?? 0),
+            $this->money($cumuls['periode']['avantages'] ?? 0),
+            $this->money($cumuls['periode']['net_imposable'] ?? 0),
+            (string)($cumuls['periode']['heures_trav'] ?? 0),
+            (string)($cumuls['periode']['heures_sup'] ?? 0),
+        ];
+        foreach ($p as $i => $v) {
+            $this->Cell($widths[$i], $rowH, $this->t($v), 1, 0, ($i >= 1 && $i <= 5) ? 'R' : 'C');
+        }
+        $this->Ln($rowH);
+
+        // --- Ligne Année ---
+        $this->SetX($x);
+        $a = [
+            'Année',
+            $this->money($cumuls['annee']['brut'] ?? 0),
+            $this->money($cumuls['annee']['charges_sal'] ?? 0),
+            $this->money($cumuls['annee']['charges_pat'] ?? 0),
+            $this->money($cumuls['annee']['avantages'] ?? 0),
+            $this->money($cumuls['annee']['net_imposable'] ?? 0),
+            (string)($cumuls['annee']['heures_trav'] ?? 0),
+            (string)($cumuls['annee']['heures_sup'] ?? 0),
+        ];
+        foreach ($a as $i => $v) {
+            $this->Cell($widths[$i], $rowH, $this->t($v), 1, 0, ($i >= 1 && $i <= 5) ? 'R' : 'C');
+        }
+
+        // --- Bloc NET A PAYER à droite avec un espace ---
+        $netX = $x + $cumulsW + $gapNet;
+        $netY = $y;
+        $this->SetXY($netX, $netY);
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetFillColor(210, 210, 210);
+        $this->Cell($netW, $headerH * 2, $this->t('NET A PAYER'), 1, 2, 'C', true);
+
+        $this->SetX($netX);
+        $this->SetFont('Arial', 'B', 12);
+        $this->Cell($netW, $rowH * 2, $this->t($this->money($net)), 1, 1, 'C');
+
+        // Y juste sous le bloc cumuls+net
+        $yNext = $y + $headerH * 2 + $rowH * 2;
+        $this->SetY($yNext);
+        return $yNext;
+    }
+
+    // === Compteurs + Signatures (placés avec un yStart donné) ===
+    public function drawCountersAndSignatures(array $compteurs, ?float $yStart = null): void
+    {
+        $x = 12;
+        $y = $yStart ?? ($this->GetY() + 6);
+
+        $headers = ['Compteurs', 'Pris', 'Restant', 'Acquis'];
+        $widths  = [35, 26, 26, 28]; // = 106
+        $headerH = 7;
+        $rowH = 7;
+
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetFillColor(230, 230, 230);
+        $this->SetXY($x, $y);
+        foreach ($headers as $i => $h) {
+            $this->Cell($widths[$i], $headerH, $this->t($h), 1, 0, 'C', true);
+        }
+        $this->Ln($headerH);
+
+        $this->SetFont('Arial', '', 9);
+        foreach (['Congés', 'Repos compensateur'] as $k) {
+            $row = $compteurs[$k] ?? ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '0,000'];
+            $this->SetX($x);
+            $this->Cell($widths[0], $rowH, $this->t($k), 1, 0, 'L');
+            $this->Cell($widths[1], $rowH, $this->t($row['pris']), 1, 0, 'C');
+            $this->Cell($widths[2], $rowH, $this->t($row['restant']), 1, 0, 'C');
+            $this->Cell($widths[3], $rowH, $this->t($row['acquis']), 1, 1, 'C');
+        }
+
+        $tableH = $headerH + $rowH * 2;
+
+        // Pavés à droite du tableau (avec un petit gap horizontal)
+        $gap = 2;
+        $xSign = $x + array_sum($widths) + $gap;
+        $right = $this->GetPageWidth() - 12;
+        $signW = max(0, $right - $xSign);
+        $wBox  = $signW / 2;
+
+        $this->Rect($xSign,         $y, $wBox, $tableH);
+        $this->Rect($xSign + $wBox, $y, $wBox, $tableH);
+
+        $this->SetFont('Arial', 'B', 11);
+        $this->SetXY($xSign, $y + 2);
+        $this->Cell($wBox, 6, $this->t('Employeur'), 0, 0, 'C');
+        $this->SetXY($xSign + $wBox, $y + 2);
+        $this->Cell($wBox, 6, $this->t('Employé'),   0, 0, 'C');
+
+        $this->SetY($y + $tableH + 2);
+    }
+}
+
+
+
 class PdfList extends \FPDF
 {
     public string $logoPath = '';
@@ -191,6 +577,7 @@ class PdfList extends \FPDF
     }
 }
 
+
 /**
  * Controller
  */
@@ -331,10 +718,6 @@ class PdfController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="presents.pdf"');
     }
-
-
-
-
 
     public function payrollTablePdf(Request $request, string $ticket)
     {
@@ -571,10 +954,10 @@ class PdfController extends Controller
 
         // 1) Période depuis le ticket
         $periode = PeriodePaie::where('entreprise_id', $entrepriseId)
-        ->where('ticket', $ticket)
-        ->first()
-        ?? PeriodePaie::where('entreprise_id', $entrepriseId)
-        ->latest('created_at')
+            ->where('ticket', $ticket)
+            ->first()
+            ?? PeriodePaie::where('entreprise_id', $entrepriseId)
+            ->latest('created_at')
             ->firstOrFail();
 
         // 2) Employés actifs de l’entreprise (mêmes que dans l’écran)
@@ -713,5 +1096,140 @@ class PdfController extends Controller
         return response($pdf->Output('S'))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="détail-employé-' . $ticket . '.pdf"');
+    }
+
+
+    public function ficheDePaieDemo(Request $request)
+    {
+        // ==== ENTÊTE ====
+        $entreprise = [
+            'nom'   => 'QUEEN TRANSIT',
+            'bp'    => '0001',
+            'ville' => 'OWENDO',
+            'tel'   => '+241 74 05 94 06',
+        ];
+
+        $identite = [
+            'civilite'  => 'M',
+            'nom'       => 'MOUSSAVOU GUY ROGER',
+            'naissance' => '15/12/75',
+            'lieu'      => '',
+            'cnss'      => '012081562',
+            'matricule' => 'P01',
+            'poste'     => 'Assistant Comptable',
+            'telephone' => '077234045',
+        ];
+
+        $meta = [
+            'departement'   => 'Comptabilité et Fiscalité',
+            'situation_fam' => 'Marié(e)',
+            'nb_enfants'    => '3',
+            'nb_parts'      => '0,00',
+            'categorie'     => 'AM1',
+            'horaire'       => '173,333',
+        ];
+
+        // ==== TABLEAU ====
+        // Colonnes: [code, libellé, nombre, base, taux_s, gain_s, ret_s, taux_p, ret_p]
+        $rows = [
+            ['1000', 'Salaire de base', '', '229 687', '',      '229 687', '',     '',     ''],
+            ['1015', 'Sursalaire mensuel', '', '100 000,00', '30,00', '100 000', '',     '',     ''],
+            ['1150', 'Prime d\'ancienneté', '', '150 000,00', '13,000', '19 500', '',    '',     ''],
+            ['1194', 'Indemnité transport imposab', '', '20 000', '',      '20 000', '',     '',     ''],
+            ['1195', 'Indemnité logement imposa.', '', '24 325', '',       '24 325', '',     '',     ''],
+            ['1225', 'Prime de Risque', '', '70 000,00', '100,000', '70 000', '',    '',     ''],
+            ['1500', 'Indemnité aide au logement', '', '175 675,00', '100,000', '175 675', '', '',    ''],
+            ['1524', 'Indemnité de Nourriture', '', '20 000,00', '100,000', '20 000', '',   '',     ''],
+            ['2005', 'Rappel congés payés', '', '50 000', '',      '50 000', '',     '',     ''],
+
+            ['', 'Total Brut', '', '', '', '709 187', '', '', ''],
+
+            ['2515', 'CNSS', '', '709 187,00', '2,500', '', '17 730', '16,000', '113 470'],
+            ['2516', 'CNAMGS', '', '513 512,00', '2,000', '', '10 270', '4,100', '21 054'],
+            ['2520', 'FNH', '',   '709 187,00', '0,000', '', '0', '3,000', '21 276'],
+            ['2525', 'CFP', '',   '709 187,00', '0,000', '', '0', '0,500', '3 546'],
+
+            ['', 'Total Cotisations', '', '', '', '', '28 000', '', '159 346'],
+
+            ['3149', 'Base TCS', '1,00', '485 512,00', '', '485 512', '', '1,00', ''],
+            ['3150', 'TCS', '', '', '', '', '16 776', '', ''],
+            ['3380', '****** Salaire net *********', '', '664 411,00', '', '664 411', '', '', ''],
+            ['3405', 'Indemnité de transport', '', '35 000,00', '30,00', '35 000', '', '', ''],
+            ['4500', 'Arrondi précédent', '', '', '', '', '48', '', ''],
+            ['4515', 'Arrondi du mois', '', '', '', '', '637', '', ''],
+        ];
+
+        // ==== CUMULS & NET ====
+        $cumuls = [
+            'periode' => [
+                'brut' => 709187,
+                'charges_sal' => 28000,
+                'charges_pat' => 159346,
+                'avantages' => 0,
+                'net_imposable' => 681187,
+                'heures_trav' => 173,
+                'heures_sup'  => 0,
+            ],
+            'annee' => [
+                'brut' => 3305386,
+                'charges_sal' => 131915,
+                'charges_pat' => 745576,
+                'avantages' => 315519,
+                'net_imposable' => 315519,
+                'heures_trav' => 3173471,
+                'heures_sup'  => 0,
+            ],
+        ];
+        $netAPayer = 700000;
+
+        $compteurs = [
+            'Congés'             => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '10,000'],
+            'Repos compensateur' => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '0,000'],
+        ];
+
+        // ==== PDF ====
+        $pdf = new PdfPayslip('P', 'mm', 'A4');
+        $pdf->AliasNbPages();
+        $pdf->SetMargins(16, 10, 12);
+        $pdf->logoPath = public_path('assets/img/authentication/logo_nedcore.JPG'); // facultatif
+
+        $pdf->AddPage();
+
+        $periode = ['du' => '01/08/25', 'au' => '31/08/25', 'paiement' => '31/08/25', 'mode' => 'Espèces'];
+
+        // Appel de la fonction pour dessiner le titre et la période
+        $currentY = $pdf->drawBulletinTitleAndPeriod($periode);
+        // ② Si tu veux UNIQUEMENT ce style (comme ta capture),
+        //    NE PAS appeler drawCompanyTitleCentered / drawRightIdentityCard / drawLeftEmployeeMeta
+        // Entête
+        $pdf->drawCompanyTitleCentered($entreprise);
+        $pdf->drawRightIdentityCard($identite);
+        $pdf->drawLeftEmployeeMeta($meta);
+        // ③ En-tête du tableau juste en dessous du bloc (un peu d'air)
+        $startY = max($currentY + 10, 65); // ~50mm sous le haut
+        ['y' => $y, 'w' => $w] = $pdf->drawTableHeader($startY);
+
+        // ④ Lignes du tableau (inchangé)
+        $curY = $y;
+        foreach ($rows as $r) {
+            if ($curY > ($pdf->GetPageHeight() - 98)) {
+                $pdf->AddPage();
+                // Re-dessiner le titre en haut de la nouvelle page si tu veux,
+                // sinon juste le tableau :
+                ['y' => $y, 'w' => $w] = $pdf->drawTableHeader(20);
+                $curY = $y;
+            }
+            $curY = $pdf->drawRow($w, $curY, $r, 6);
+        }
+
+
+        // Bas de page
+        $yAfterCumuls = $pdf->drawCumulsAndNet($cumuls, $netAPayer); // -> renvoie le Y bas
+        $pdf->drawCountersAndSignatures($compteurs, $yAfterCumuls + 4); // +4 mm d’espace
+
+
+        return response($pdf->Output('S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="bulletin_paie_bon_modele.pdf"');
     }
 }

@@ -347,6 +347,10 @@
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-undo mr-2"></i>Reset
                             </button>
+                            {{-- <a href="{{route('ficheDePaieDemo')}}"
+                                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-undo mr-2"></i>Fiche de paie
+                            </a> --}}
                             
                             {{-- <a href="{{ route('payrollTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">

@@ -242,10 +242,11 @@ Route::middleware('auth')->group(
         Route::get('/pdf/absent', [PdfController::class, 'absentsPdf'])->name('absentsPdf');
         Route::get('/pdf/presentPdf', [PdfController::class, 'presentPdf'])->name('presentPdf');
         Route::get('/pdf/payrollTablePdf/{ticket}', [PdfController::class, 'payrollTablePdf'])
-            ->name('payrollTablePdf');
+        ->name('payrollTablePdf');
         Route::get('/pdf/detailParEmployerTablePdf/{ticket}', [PdfController::class, 'detailParEmployerTablePdf'])
-            ->name('detailParEmployerTablePdf');
-
+        ->name('detailParEmployerTablePdf');
+        
+        Route::get('/pdf/fichePaie', [PdfController::class, 'ficheDePaieDemo'])->name('ficheDePaieDemo');
 
 
         // --- Routes pour l'employé ---
