@@ -29,27 +29,9 @@
     {{-- Catégories de domaines --}}
     @livewire('settings.categories-manager')
 
-    {{-- Types d’items --}}
-    @livewire('settings.type-items-manager')
-
     {{-- Items --}}
     @livewire('settings.items-manager')
-    <div class="modal fade" id="periodesModal" tabindex="-1" aria-labelledby="periodesModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">
-                  Périodes de validité — <span class="text-muted" wire:ignore.self>
-                  </span>
-              </h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-              <livewire:settings.periodes-manager />
-            </div>
-          </div>
-        </div>
-      </div>
+ 
       
       
       
@@ -67,16 +49,6 @@
             });
         });
     </script>
-    @push('scripts')
-    <script>
-        // si tu veux piloter l’ouverture depuis Livewire:
-        window.Livewire?.on('showPeriodeModal', () => {
-            const el = document.getElementById('periodeModal');
-            if (!el) return;
-            const modal = bootstrap.Modal.getOrCreateInstance(el);
-            modal.show();
-        });
-    </script>
-    @endpush
+
     <!-- End Email Statistic area-->
 @endsection

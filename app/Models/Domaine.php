@@ -34,21 +34,13 @@ class Domaine extends Model
     {
         return $this->belongsTo(User::class, 'user_update_id');
     }
-    public function entreprises()
+    public function categories()
     {
-        return $this->belongsToMany(Entreprise::class, 'categorie_item_entreprises')
-            ->withPivot('statut')
-            ->withTimestamps();
+        return $this->hasMany(CategorieDommaine::class, 'domaine_id');
     }
-    public function items()
-    {
-        return $this->belongsToMany(Item::class, 'categorie_item_entreprises')
-            ->withPivot('statut')
-            ->withTimestamps();
-    }
+
     public function categorie_domaines()
     {
         return $this->belongsTo(CategorieDommaine::class);
     }
-    
 }

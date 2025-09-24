@@ -1,6 +1,6 @@
 <div class="modal fade custom-modal file-manager-modal upload-modal" id="partageLabelsModal" tabindex="-1" role="dialog"
     aria-labelledby="partageLabelsModal" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h4 class="modal-title" id="partageLabelsModal" style="color: white">
@@ -67,6 +67,7 @@
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th>Titre</th>
+                                                    <th>Description</th>
                                                     <th>Entreprise</th>
                                                     <th>Demandeur</th>
                                                     <th>Échéance</th>
@@ -125,6 +126,24 @@
                                                         data-statut-effectif="{{ $effective }}"
                                                         data-user-id="{{ $d->user_id }}">
                                                         <td class="fw-semibold">{{ $d->titre }}</td>
+                                                        <td class="fw-semibold">
+                                                            <button class="btn btn-sm btn-outline-primary" 
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseOptions{{ $d->id }}"
+                                                            aria-expanded="false"
+                                                            aria-controls="collapseOptions{{ $d->id }}">
+                                                        description <i class="fas fa-eye"></i>
+                                                    </button>
+                                            
+                                                    <div class="collapse mt-2" id="collapseOptions{{ $d->id }}">
+                                                        <div class="card card-body">
+                                                            <p >
+                                                                {!! nl2br(e(wordwrap($d->description, 70, "\n", true))) !!}
+                                                            </p>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                        </td>
                                                         <td>{{ $ent }}
                                                         </td>
                                                         <td>{{ $who }}</td>

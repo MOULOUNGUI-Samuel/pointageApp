@@ -47,24 +47,27 @@ class Entreprise extends Model
     {
         return $this->hasMany(User::class);
     }
+    public function periodeItem()
+    {
+        return $this->hasMany(PeriodeItem::class);
+    }
     public function demande_interventions()
     {
         return $this->hasMany(Demande_intervention::class);
     }
-    public function items()
-    {
-        return $this->belongsToMany(Item::class, 'categorie_item_entreprises')
-            ->withPivot('statut')
-            ->withTimestamps();
-    }
     public function domaines()
     {
-        return $this->belongsToMany(Domaine::class, 'categorie_item_entreprises')
-            ->withPivot('statut')
-            ->withTimestamps();
+        return $this->belongsToMany(Domaine::class, 'entreprise_domaines')
+            ->withPivot('statut')->withTimestamps();
     }
-    public function evaluationEntreprises()
+    public function categories()
     {
-        return $this->hasMany(EvaluationEntreprise::class);
+        return $this->belongsToMany(CategorieDommaine::class, 'entreprise_categorie_domaines')
+            ->withPivot('statut')->withTimestamps();
+    }
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'entreprise_items')
+            ->withPivot('statut')->withTimestamps();
     }
 }

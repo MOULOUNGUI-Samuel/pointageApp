@@ -58,7 +58,18 @@
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @endif
-  
+      {{-- <!-- Daterangepikcer CSS -->
+	<link rel="stylesheet" href="{{asset('assets/plugins/daterangepicker/daterangepicker.css')}}">
+
+  <!-- Choices CSS -->
+  <link rel="stylesheet" href="{{asset('assets/plugins/choices.js/public/assets/styles/choices.min.css')}}">
+
+  <!-- Tabler Icon CSS -->
+  <link rel="stylesheet" href="{{asset('assets/plugins/tabler-icons/tabler-icons.min.css')}}">
+
+  <!-- Simplebar CSS -->
+  <link rel="stylesheet" href="{{asset('assets/plugins/simplebar/simplebar.min.css')}}"> --}}
+
     <!-- Metas nécessaires -->
     <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">

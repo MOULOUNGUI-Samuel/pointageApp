@@ -199,7 +199,7 @@
                                         {{-- MODALE UNIQUE POUR CE USER --}}
                                         <div class="modal fade" id="absenceModal-{{ $user->id }}" tabindex="-1"
                                             role="dialog" aria-hidden="true" wire:ignore.self>
-                                            <div class="modal-dialog modal-fullscreen p-3" role="document">
+                                            <div class="modal-dialog modal-fullscreen modal-dialog-scrollable p-3" role="document">
                                                 <div class="modal-content" style="background-color: rgb(240, 243, 243)">
                                                     <div class="modal-header" style="background-color:white">
                                                         <h4 class="modal-title">Demandes d'absence : {{ $user->nom }}

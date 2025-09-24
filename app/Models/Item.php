@@ -14,8 +14,8 @@ class Item extends Model
     public $incrementing = false;
     protected $fillable = [
         'categorie_domaine_id',
-        'type_item_id',
         'user_add_id',
+        'type',
         'user_update_id',
         'nom_item',
         'description',
@@ -42,10 +42,7 @@ class Item extends Model
     {
         return $this->hasMany(PeriodeItem::class);
     }
-    public function evaluationEntreprises()
-    {
-        return $this->hasMany(EvaluationEntreprise::class);
-    }
+
     public function user_add()
     {
         return $this->belongsTo(User::class, 'user_add_id');
@@ -65,7 +62,15 @@ class Item extends Model
     {
         return $this->hasMany(PeriodeItem::class, 'item_id');
     }
+    public function options()
+    {
+        return $this->hasMany(ItemOption::class, 'item_id')->orderBy('position');
+    }
 
+    public function needsOptions(): bool
+    {
+        return in_array($this->type, ['liste', 'checkbox'], true);
+    }
     public function periodeActive() // pratique pour l’affichage rapide
     {
         return $this->hasOne(PeriodeItem::class)
@@ -73,8 +78,10 @@ class Item extends Model
             ->whereDate('debut_periode', '<=', now())
             ->whereDate('fin_periode', '>=', now());
     }
-    public function typeItem()
+
+    public function lastSubmission()
     {
-        return $this->belongsTo(TypeItem::class, 'type_item_id');
+        return $this->hasOne(\App\Models\ConformitySubmission::class)
+            ->latestOfMany(); // dernière soumission
     }
 }

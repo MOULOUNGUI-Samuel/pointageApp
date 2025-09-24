@@ -38,13 +38,17 @@ class CategorieDommaine extends Model
         return $this->belongsTo(Domaine::class, 'domaine_id');
     }
 
-    public function user_add()    { return $this->belongsTo(User::class, 'user_add_id'); }
-    public function user_update() { return $this->belongsTo(User::class, 'user_update_id'); }
+    public function user_add()
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function user_update()
+    {
+        return $this->belongsTo(User::class, 'user_update_id');
+    }
 
     public function items()
     {
         return $this->hasMany(Item::class, 'categorie_domaine_id');
     }
-    
 }
-

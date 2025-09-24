@@ -6,10 +6,16 @@
             <div class="text-muted">{{ $itemLabel ?: '—' }}</div>
         </div>
         <div class="w-50">
-            <input type="text" class="form-control" placeholder="Rechercher (dates)…"
+            <input type="text" class="form-control" placeholder="Rechercher par date (YYYY-MM-DD)…"
                    wire:model.debounce.400ms="search">
         </div>
     </div>
+
+    {{-- Si aucun item n'est sélectionné --}}
+    @if(!$itemId)
+        <div class="alert alert-warning">Veuillez d’abord sélectionner un item.</div>
+        @php return; @endphp
+    @endif
 
     {{-- Formulaire période --}}
     <form wire:submit.prevent="save" class="card mb-3">
@@ -37,9 +43,11 @@
         </div>
         <div class="card-footer d-flex gap-2">
             <button class="btn btn-primary" type="submit">
-                {{ $isEditing ? 'Mettre à jour' : 'Créer' }}
+                <i class="fas fa-save me-1"></i>{{ $isEditing ? 'Mettre à jour' : 'Créer' }}
             </button>
-            <button class="btn btn-secondary" type="button" wire:click="openForm">Réinitialiser</button>
+            <button class="btn btn-secondary" type="button" wire:click="openForm()">
+                <i class="fas fa-rotate me-1"></i>Réinitialiser
+            </button>
         </div>
     </form>
 
@@ -60,7 +68,7 @@
                     <td>{{ optional($p->debut_periode)->format('d/m/Y') }}</td>
                     <td>{{ optional($p->fin_periode)->format('d/m/Y') }}</td>
                     <td>
-                        @if($p->statut === '1')
+                        @if((int) $p->statut === 1)
                             <span class="badge bg-success">Actif</span>
                         @else
                             <span class="badge bg-secondary">Annulé</span>
@@ -71,7 +79,7 @@
                             <button class="btn btn-outline-primary" wire:click="openForm('{{ $p->id }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            @if($p->statut === '1')
+                            @if((int) $p->statut === 1)
                                 <button class="btn btn-outline-warning" wire:click="cancel('{{ $p->id }}')"
                                         title="Annuler cette période">
                                     <i class="fas fa-ban"></i>
@@ -98,7 +106,7 @@
         {{ $list->links() }}
     </div>
 
-    {{-- Modale de confirmation suppression --}}
+    {{-- Modale de confirmation suppression (simple) --}}
     <div class="modal @if($confirmingDeleteId) show d-block @endif" tabindex="-1"
          @if(!$confirmingDeleteId) style="display:none;" @endif>
         <div class="modal-dialog">

@@ -1,6 +1,6 @@
 <div class="modal fade" id="absenceModal" tabindex="-1" role="dialog" aria-labelledby="absenceLabel" aria-hidden="true"
     wire:ignore.self>
-    <div class="modal-dialog modal-fullscreen p-3" role="document">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable p-3" role="document">
         <div class="modal-content" style="background-color: rgb(240, 243, 243)">
             <div class="modal-header" style="background-color:white">
                 <h5 class="modal-title" id="absenceLabel">

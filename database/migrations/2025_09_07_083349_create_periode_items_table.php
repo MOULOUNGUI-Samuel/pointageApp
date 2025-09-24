@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('item_id');
             $table->uuid('user_add_id')->nullable();
             $table->uuid('user_update_id')->nullable();
+            $table->uuid('entreprise_id')->nullable();
             $table->date('debut_periode');
             $table->date('fin_periode');
             $table->string('statut')->default(1);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->foreign('user_add_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('user_update_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('entreprise_id')->references('id')->on('entreprises')->onDelete('cascade');
         });
     }
 

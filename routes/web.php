@@ -284,6 +284,10 @@ Route::middleware('auth')->group(
         Route::get('/config-audit', function () {
             return view('components.configuration.config-audit');
         })->name('config-audit');
+
+        Route::get('/entreprise-audit', function () {
+            return view('components.configuration.entreprise-audit');
+        })->name('entreprise-audit');
     }
 
 );

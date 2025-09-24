@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('categorie_domaine_id');
-            $table->uuid('type_item_id');
+            // type statique
+            $table->string('type', 20)->default('texte')->after('categorie_domaine_id');
             $table->uuid('user_add_id')->nullable();
             $table->uuid('user_update_id')->nullable();
             $table->string('nom_item');
@@ -23,7 +24,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('categorie_domaine_id')->references('id')->on('categorie_domaines')->onDelete('cascade');
-            $table->foreign('type_item_id')->references('id')->on('type_items')->onDelete('cascade');
             $table->foreign('user_add_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('user_update_id')->references('id')->on('users')->onDelete('cascade');
         });

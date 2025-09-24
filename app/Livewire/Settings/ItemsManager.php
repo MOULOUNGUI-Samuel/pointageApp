@@ -3,7 +3,6 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Item;
-use App\Models\TypeItem;
 use App\Models\CategorieDommaine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -31,8 +30,11 @@ class ItemsManager extends Component
 
     // Selects dynamiques
     public array $categories = [];
-    public array $types      = [];
 
+    public string $type = 'texte';          // texte|documents|liste|checkbox
+    public array $options = [];
+    // Nouveau flag
+    public bool $showOptions = false;
     // UI
     public string  $search = '';
     public ?string $confirmingDeleteId = null;
@@ -62,6 +64,55 @@ class ItemsManager extends Component
         $this->dispatch('items-updated');
     }
 
+    // Déclenché par le wire:click
+    public function afficheButtonAjouter(): void
+    {
+        // On affiche uniquement si le type est liste ou checkbox
+        if (in_array($this->type, ['liste', 'checkbox'], true)) {
+            $this->showOptions = true;
+
+            // Si aucune option, on initialise une première ligne
+            if (empty($this->options)) {
+                $this->options = [
+                    ['label' => '', 'value' => '', 'position' => 1],
+                ];
+            }
+        } else {
+            $this->showOptions = false;
+            $this->options = [];
+        }
+    }
+    // Écoute automatiquement les changements du <select wire:model="type">
+    public function updatedType(string $value): void
+    {
+        if (in_array($value, ['liste', 'checkbox'], true)) {
+            // Si on passe à liste/checkbox et qu'il n'y a aucune option, on préremplit une ligne
+            if (empty($this->options)) {
+                $this->options = [
+                    ['label' => '', 'value' => '', 'position' => 1],
+                ];
+            }
+        } else {
+            // Pour texte/documents: on masque et on vide les options
+            $this->options = [];
+        }
+    }
+
+    public function addOption(): void
+    {
+        $this->options[] = ['label' => '', 'value' => '', 'position' => count($this->options) + 1];
+    }
+    public function removeOption(int $index): void
+    {
+        if (isset($this->options[$index])) {
+            array_splice($this->options, $index, 1);
+            // re-numérote les positions
+            foreach ($this->options as $k => &$opt) {
+                $opt['position'] = $k + 1;
+            }
+        }
+    }
+
     /** Ouvrir la modale des périodes sur l’item */
     public function openPeriodeManager(string $itemId): void
     {
@@ -75,13 +126,12 @@ class ItemsManager extends Component
     {
         $this->resetPage();
     }
-    
+
 
     public function mount(): void
     {
         $this->entrepriseId = (string) session('entreprise_id');
         $this->reloadCategories();
-        $this->reloadTypes();
     }
 
     /** Recharge la liste des catégories */
@@ -93,16 +143,6 @@ class ItemsManager extends Component
             ->all();
     }
 
-    /** Recharge la liste des types */
-    public function reloadTypes(): void
-    {
-        $this->types = TypeItem::orderBy('nom_type')
-            ->get(['id', 'nom_type'])
-            ->map(fn($t) => ['id' => $t->id, 'label' => $t->nom_type])
-            ->all();
-    }
-
-    /** ------ Listeners de synchronisation (catégories/types) ------ */
 
     #[On('categories-updated')]
     public function onCategoriesUpdated(): void
@@ -119,37 +159,27 @@ class ItemsManager extends Component
         }
     }
 
-    #[On('types-updated')]
-    public function onTypesUpdated(): void
-    {
-        $this->reloadTypes();
-    }
-
-    #[On('types-deleted')]
-    public function onTypesDeleted(string $id): void
-    {
-        $this->reloadTypes();
-        if ($this->type_item_id === $id) {
-            $this->type_item_id = null;
-        }
-    }
-
     /** ----------------------------------------------------------- */
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'categorie_domaine_id' => 'required|uuid|exists:categorie_domaines,id',
-            'type_item_id'         => 'required|uuid|exists:type_items,id',
-            'nom_item'             => [
-                'required',
-                'string',
-                'max:190',
-                Rule::unique('items', 'nom_item')->ignore($this->selectedId),
-            ],
+            'type'                 => 'required|in:texte,documents,liste,checkbox',
+            'nom_item'             => ['required', 'string', 'max:190', Rule::unique('items', 'nom_item')->ignore($this->selectedId)],
             'description'          => 'nullable|string|max:1000',
             'statut'               => 'required|in:0,1',
         ];
+
+        // règles conditionnelles si options nécessaires
+        if (in_array($this->type, ['liste', 'checkbox'], true)) {
+            $rules['options'] = 'array|min:1';
+            $rules['options.*.label'] = 'required|string|max:190';
+            $rules['options.*.value'] = 'nullable|string|max:190';
+            $rules['options.*.position'] = 'nullable|integer|min:1';
+        }
+
+        return $rules;
     }
 
     public function openForm(?string $id = null): void
@@ -158,24 +188,32 @@ class ItemsManager extends Component
         $this->isEditing = false;
         $this->selectedId = null;
         $this->categorie_domaine_id = null;
-        $this->type_item_id = null;
+        $this->type = 'texte';
         $this->nom_item = '';
         $this->description = null;
         $this->statut = '1';
+        $this->options = [];
 
         // Toujours recharger à l’ouverture (si une autre modale a modifié la base)
         $this->reloadCategories();
-        $this->reloadTypes();
 
         if ($id) {
-            $i = Item::findOrFail($id);
+            $i = Item::with('options')->findOrFail($id);
             $this->isEditing = true;
             $this->selectedId = $i->id;
             $this->categorie_domaine_id = $i->categorie_domaine_id;
-            $this->type_item_id = $i->type_item_id;
+            $this->type = $i->type;
             $this->nom_item = $i->nom_item;
             $this->description = $i->description;
             $this->statut = (string) $i->statut;
+
+            if ($i->needsOptions()) {
+                $this->options = $i->options->map(fn($o) => [
+                    'label' => $o->label,
+                    'value' => $o->value,
+                    'position' => $o->position,
+                ])->values()->toArray();
+            }
         }
     }
 
@@ -187,22 +225,29 @@ class ItemsManager extends Component
             $i = Item::findOrFail($this->selectedId);
             $i->update([
                 'categorie_domaine_id' => $this->categorie_domaine_id,
-                'type_item_id'         => $this->type_item_id,
+                'type'                 => $this->type,
                 'nom_item'             => $this->nom_item,
                 'description'          => $this->description,
                 'statut'               => $this->statut,
                 'user_update_id'       => Auth::id(),
             ]);
+
+            // sync options
+            $this->syncOptions($i);
+
             session()->flash('success', 'Item mis à jour.');
         } else {
-            Item::create([
+            $i = Item::create([
                 'categorie_domaine_id' => $this->categorie_domaine_id,
-                'type_item_id'         => $this->type_item_id,
+                'type'                 => $this->type,
                 'nom_item'             => $this->nom_item,
                 'description'          => $this->description,
                 'statut'               => $this->statut,
                 'user_add_id'          => Auth::id(),
             ]);
+
+            $this->syncOptions($i);
+
             session()->flash('success', 'Item créé.');
         }
 
@@ -211,27 +256,43 @@ class ItemsManager extends Component
         $this->dispatch('items-updated');
     }
 
+    private function syncOptions(Item $i): void
+    {
+        // si le type n’a pas d’options -> on supprime tout
+        if (!in_array($this->type, ['liste', 'checkbox'], true)) {
+            $i->options()->delete();
+            return;
+        }
+
+        // stratégie simple : on efface puis recrée (OK vu la petite taille)
+        $i->options()->delete();
+
+        foreach ($this->options as $k => $opt) {
+            $i->options()->create([
+                'kind'     => $this->type, // 'liste' ou 'checkbox'
+                'label'    => $opt['label'],
+                'value'    => $opt['value'] ?? null,
+                'position' => ($opt['position'] ?? ($k + 1)),
+                'statut'   => '1',
+            ]);
+        }
+    }
+
+
     public function render()
-{
-    $today = now()->toDateString();
+    {
+        $today = now()->toDateString();
 
-    $items = Item::query()
-        ->with([
-            'categorieDommaine:id,nom_categorie',
-            'typeItem:id,nom_type',
-            'periodeActive',                     // <- relation hasOne filtrée
-        ])
-        ->withCount([
-            'periodes as periodes_actives_count' => function ($q) use ($today) {
-                $q->where('statut', '1')
-                  ->whereDate('debut_periode', '<=', $today)
-                  ->whereDate('fin_periode',   '>=', $today);
-            },
-        ])
-        ->orderBy('nom_item')
-        ->paginate(8, pageName: 'items_p');
+        $items = Item::query()
+            ->with(['categorieDommaine:id,nom_categorie', 'options']) // options utile si besoin
+            ->with(['periodeActive'])
+            ->withCount(['periodes as periodes_actives_count' => function ($q) {
+                $today = now()->toDateString();
+                $q->where('statut', '1')->whereDate('debut_periode', '<=', $today)->whereDate('fin_periode', '>=', $today);
+            }])
+            ->orderBy('nom_item')
+            ->paginate(8, pageName: 'items_p');
 
-    return view('livewire.settings.items-manager', compact('items'));
-}
-
+        return view('livewire.settings.items-manager', compact('items'));
+    }
 }

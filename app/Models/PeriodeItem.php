@@ -12,9 +12,11 @@ class PeriodeItem extends Model
     protected $table = 'periode_items';
     protected $keyType = 'string';
     public $incrementing = false;
+   
     protected $fillable = [
         'item_id',
         'user_add_id',
+        'entreprise_id',
         'user_update_id',
         'debut_periode',
         'fin_periode',
@@ -48,8 +50,9 @@ class PeriodeItem extends Model
     {
         return $this->belongsTo(User::class, 'user_add_id');
     }
-    public function user_update()
+
+    public function entreprise()
     {
-        return $this->belongsTo(User::class, 'user_update_id');
+        return $this->belongsTo(Entreprise::class, 'entreprise_id');
     }
 }

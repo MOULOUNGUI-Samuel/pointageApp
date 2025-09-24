@@ -161,6 +161,18 @@
 <!-- Custom JS -->
 <script src="{{ asset('assets/js/theme-colorpicker.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
+<script src="{{asset('cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js')}}" data-cf-settings="ca6489927051845bc7a9daaa-|49" defer></script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"97e90219ca614193","version":"2025.8.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}' crossorigin="anonymous"></script>
+
+{{-- <!-- Choices Js -->	
+<script src="{{asset('assets/plugins/choices.js/public/assets/scripts/choices.min.js')}}" type="d2dd5d147621af618fbbb249-text/javascript"></script>
+
+<!-- Simplebar JS -->
+<script src="{{asset('assets/plugins/simplebar/simplebar.min.js')}}" type="d2dd5d147621af618fbbb249-text/javascript"></script>
+
+<!-- Flatpickr JS -->
+<script src="{{asset('assets/plugins/flatpickr/flatpickr.min.js')}}" type="d2dd5d147621af618fbbb249-text/javascript"></script>
+ --}}
+
 @env('production')
     <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js" crossorigin="anonymous"></script>

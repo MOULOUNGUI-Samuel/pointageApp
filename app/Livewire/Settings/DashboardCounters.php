@@ -13,7 +13,6 @@ class DashboardCounters extends Component
 {
     public int $domainesCount = 0;
     public int $categoriesCount = 0;
-    public int $typesCount = 0;
     public int $itemsCount = 0;
 
     public function mount(): void
@@ -25,7 +24,6 @@ class DashboardCounters extends Component
     {
         $this->domainesCount   = Domaine::count();
         $this->categoriesCount = CategorieDommaine::count();
-        $this->typesCount      = TypeItem::count();
         $this->itemsCount      = Item::count();
     }
 

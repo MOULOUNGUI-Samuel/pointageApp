@@ -41,26 +41,6 @@
 
     <div class="col-lg-3 col-md-6 d-flex">
         <div class="card flex-fill shadow">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#addTypeItemModal">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center overflow-hidden">
-                        <div>
-                            <h4 class="fw-medium mb-1 text-truncate">Type items</h4>
-                            <h4>{{ $typesCount }}</h4>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="avatar avatar-lg bg-success flex-shrink-0">
-                            <i class="fa fa-tags fa-2x"></i>
-                        </span>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <div class="col-lg-3 col-md-6 d-flex">
-        <div class="card flex-fill shadow">
             <a href="#" data-bs-toggle="modal" data-bs-target="#addItemModal">
                 <div class="card-body d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center overflow-hidden">
@@ -78,4 +58,6 @@
             </a>
         </div>
     </div>
+      
+      
 </div>
