@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('categorie_domaine_id');
             // type statique
-            $table->string('type', 20)->default('texte')->after('categorie_domaine_id');
+            $table->string('type', 20)->default('texte');
             $table->uuid('user_add_id')->nullable();
             $table->uuid('user_update_id')->nullable();
             $table->string('nom_item');
