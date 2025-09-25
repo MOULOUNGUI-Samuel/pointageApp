@@ -125,16 +125,40 @@ class CaisseWebController extends Controller
 
     public function storeAjax(Request $request)
     {
-        // Toujours retourner du JSON (évite redirections Blade)
-        $validator = Validator::make($request->all(), [
-            'nom_variable' => ['required', 'string', 'max:150'],
-            'type'         => ['required', 'in:gain,deduction'],
-            'categorie_id' => ['required', 'uuid', 'exists:categories,id'],
+        // Normalise le taux côté serveur aussi (sécurité / robustesse)
+        $payload = $request->all();
+        if (isset($payload['tauxVariable']) && $payload['tauxVariable'] !== null) {
+            $payload['tauxVariable'] = str_replace(',', '.', trim($payload['tauxVariable']));
+        }
+        if (isset($payload['tauxVariableEntreprise']) && $payload['tauxVariableEntreprise'] !== null) {
+            $payload['tauxVariableEntreprise'] = str_replace(',', '.', trim($payload['tauxVariableEntreprise']));
+        }
+
+        $validator = Validator::make($payload, [
+            'nom_variable'       => ['required', 'string', 'max:150'],
+            'type'               => ['required', 'in:gain,deduction'],
+            'categorie_id'       => ['required', 'uuid', 'exists:categories,id'],
+            'statutVariable'     => ['sometimes', 'boolean'], // case à cocher
+            'variableImposable'  => ['sometimes', 'boolean'],
+            // taux requis si statutVariable = true|1 ; bornes 0..100
+            'tauxVariable'       => ['nullable', 'numeric', 'gte:0', 'lte:100', 'required_if:statutVariable,1'],
+            'tauxVariableEntreprise'       => ['nullable', 'numeric', 'gte:0', 'lte:100', 'required_if:statutVariable,1'],
         ], [
-            'nom_variable.required' => 'Le nom de la variable est requis.',
-            'type.in'               => 'Type invalide.',
-            'categorie_id.required' => 'La catégorie est requise.',
-            'categorie_id.exists'   => 'Catégorie introuvable.',
+            'nom_variable.required'  => 'Le nom de la variable est requis.',
+            'type.required'          => 'Veuillez choisir un type.',
+            'type.in'                => 'Type invalide.',
+            'categorie_id.required'  => 'La catégorie est requise.',
+            'categorie_id.exists'    => 'Catégorie introuvable.',
+
+            'tauxVariable.required_if' => 'Le taux est requis pour une variable de cotisation.',
+            'tauxVariable.numeric'     => 'Le taux doit être un nombre valide.',
+            'tauxVariable.gte'         => 'Le taux doit être supérieur ou égal à 0.',
+            'tauxVariable.lte'         => 'Le taux doit être inférieur ou égal à 100.',
+
+            'tauxVariableEntreprise.required_if' => 'Le taux est requis pour une variable de cotisation.',
+            'tauxVariableEntreprise.numeric'     => 'Le taux doit être un nombre valide.',
+            'tauxVariableEntreprise.gte'         => 'Le taux doit être supérieur ou égal à 0.',
+            'tauxVariableEntreprise.lte'         => 'Le taux doit être inférieur ou égal à 100.',
         ]);
 
         if ($validator->fails()) {
@@ -146,17 +170,91 @@ class CaisseWebController extends Controller
 
         $data = $validator->validated();
 
+        // Si ce n’est pas une variable de cotisation, on force le taux à NULL (ou 0 si la colonne n’est pas nullable)
+        $isCotisation = !empty($data['statutVariable']) && (int)$data['statutVariable'] === 1;
+        $taux = $isCotisation ? ($data['tauxVariable'] ?? null) : null; // ou 0 si colonne NOT NULL
+        $taux1 = $isCotisation ? ($data['tauxVariableEntreprise'] ?? null) : null; // ou 0 si colonne NOT NULL
+
         $variable = Variable::create([
-            'nom_variable' => $data['nom_variable'],
-            'type'         => $data['type'],
-            'categorie_id' => $data['categorie_id'],
-            'statut'       => true,
-        ])->load('categorie'); // pour renvoyer le nom de la catégorie
+            'categorie_id'       => $data['categorie_id'],
+            'nom_variable'       => $data['nom_variable'],
+            'type'               => $data['type'],
+            'statutVariable'     => $isCotisation,
+            'variableImposable'  => !empty($data['variableImposable']),
+            'tauxVariable'       => $taux, // ou 0.00 si NOT NULL
+            'tauxVariableEntreprise'       => $taux1, // ou 0.00 si NOT NULL
+            'statut'             => true,
+        ])->load('categorie');
 
-
-        return response()->json(['data' => $variable, 'message' => 'Variable créée avec succès'], 201);
+        return response()->json([
+            'data'    => $variable,
+            'message' => 'Variable créée avec succès',
+        ], 201);
     }
+    public function updateAjax(Request $request, Variable $variable)
+    {
+        $payload = $request->all();
+        if (isset($payload['tauxVariable']) && $payload['tauxVariable'] !== null) {
+            $payload['tauxVariable'] = str_replace(',', '.', trim($payload['tauxVariable']));
+        }
+        if (isset($payload['tauxVariableEntreprise']) && $payload['tauxVariableEntreprise'] !== null) {
+            $payload['tauxVariableEntreprise'] = str_replace(',', '.', trim($payload['tauxVariableEntreprise']));
+        }
+    
+        $validator = Validator::make($payload, [
+            'nom_variable'       => ['required', 'string', 'max:150'],
+            'type'               => ['required', 'in:gain,deduction'],
+            'categorie_id'       => ['required', 'uuid', 'exists:categories,id'],
+            'statutVariable'     => ['sometimes', 'boolean'],
+            'variableImposable'  => ['sometimes', 'boolean'],
+            'tauxVariable'       => ['nullable','numeric','gte:0','lte:100','required_if:statutVariable,1'],
+            'tauxVariableEntreprise'       => ['nullable','numeric','gte:0','lte:100','required_if:statutVariable,1'],
+        ], [
+            'nom_variable.required'  => 'Le nom de la variable est requis.',
+            'type.required'          => 'Veuillez choisir un type.',
+            'type.in'                => 'Type invalide.',
+            'categorie_id.required'  => 'La catégorie est requise.',
+            'categorie_id.exists'    => 'Catégorie introuvable.',
+            'tauxVariable.required_if' => 'Le taux est requis pour une variable de cotisation.',
+            'tauxVariable.numeric'     => 'Le taux doit être un nombre valide.',
+            'tauxVariable.gte'         => 'Le taux doit être ≥ 0.',
+            'tauxVariable.lte'         => 'Le taux doit être ≤ 100.',
 
+            'tauxVariableEntreprise.required_if' => 'Le taux est requis pour une variable de cotisation.',
+            'tauxVariableEntreprise.numeric'     => 'Le taux doit être un nombre valide.',
+            'tauxVariableEntreprise.gte'         => 'Le taux doit être ≥ 0.',
+            'tauxVariableEntreprise.lte'         => 'Le taux doit être ≤ 100.',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+    
+        $data = $validator->validated();
+        $isCotisation = !empty($data['statutVariable']) && (int)$data['statutVariable'] === 1;
+    
+        $variable->update([
+            'nom_variable'       => $data['nom_variable'],
+            'type'               => $data['type'],
+            'categorie_id'       => $data['categorie_id'],
+            'statutVariable'     => $isCotisation,
+            'variableImposable'  => !empty($data['variableImposable']),
+            'tauxVariable'       => $isCotisation ? ($data['tauxVariable'] ?? null) : null, // ou 0.00 si NOT NULL
+            'tauxVariableEntreprise'       => $isCotisation ? ($data['tauxVariableEntreprise'] ?? null) : null, // ou 0.00 si NOT NULL
+            'statut'             => $variable->statut ?? true,
+        ]);
+    
+        $variable->load('categorie');
+    
+        return response()->json([
+            'data'    => $variable,
+            'message' => 'Variable mise à jour avec succès',
+        ], 200);
+    }
+    
     public function variables()
     {
         $variables = Variable::with('categorie')->get(); // Charger la relation "categorie"

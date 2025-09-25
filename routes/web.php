@@ -230,6 +230,7 @@ Route::middleware('auth')->group(
 
         Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
         Route::post('/variables', [CaisseWebController::class, 'storeAjax'])->name('variables.store');
+        Route::put('/variables/{variable}', [CaisseWebController::class, 'updateAjax'])->name('variables.updateAjax');
         Route::delete('/variables/{id}', [CaisseWebController::class, 'destroy'])->name('variables.destroy');
         Route::post('/payroll/save-ticket', [CaisseWebController::class, 'saveByTicket'])->name('payroll.saveByTicket');
         Route::get('/payroll/tickets/replaceable', [CaisseWebController::class, 'listReplaceableTickets'])->name('payroll.tickets.replaceable');

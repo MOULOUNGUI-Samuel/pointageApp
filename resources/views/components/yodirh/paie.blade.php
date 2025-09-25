@@ -1,4 +1,3 @@
-
 @extends('layouts.master2')
 @section('content2')
     <style>
@@ -272,7 +271,7 @@
                             oninput="filterEmployees()">
                     </div>
                 </div>
-                <div  style="max-height: 450px; overflow-y: auto;">
+                <div style="max-height: 450px; overflow-y: auto;">
                     <table id="example2" class="w-full table table-striped table-bordered">
                         <thead class="bg-gray-50">
                             <tr>
@@ -347,16 +346,16 @@
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-undo mr-2"></i>Reset
                             </button>
-                            <a href="{{route('ficheDePaieDemo')}}"
+                            <a href="{{ route('ficheDePaieDemo') }}"
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 Fiche de paie
                             </a>
-                            
+
                             {{-- <a href="{{ route('payrollTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                                 <i class="fas fa-file-excel mr-2"></i>Importer Excel
                              </a> --}}
-                             
+
                         </div>
 
                     </div>
@@ -987,6 +986,11 @@
         let payrollVariables = (rawVariables || []).map(v => ({
             id: v.id,
             name: v.nom_variable,
+            statutVariable: v.statutVariable,
+            variableImposable: v.variableImposable,
+            variableImposable: v.variableImposable,
+            tauxVariable: v.tauxVariable,
+            tauxVariableEntreprise: v.tauxVariableEntreprise,
             type: v.type, // 'gain' | 'deduction'
             categoryId: v.categorie ? v.categorie.id : null,
             categoryName: v.categorie ? v.categorie.nom_categorie : '(Sans catégorie)'
@@ -1266,7 +1270,6 @@
         function renderVariablesGrid() {
             const container = document.getElementById('variablesContainer');
 
-            // 1) Préparer les groupes avec toutes les catégories (même vides)
             const groupsMap = new Map();
             (rawCategories || []).forEach(cat => {
                 groupsMap.set(cat.id, {
@@ -1276,15 +1279,13 @@
                 });
             });
 
-            // 2) Groupe spécial pour les variables sans catégorie
             const UNCAT_KEY = '__uncat__';
 
-            // 3) Répartir les variables dans leurs groupes
             (payrollVariables || []).forEach((variable, index) => {
                 const item = {
                     ...variable,
                     index
-                }; // on garde l’index pour deleteVariable(index)
+                };
                 if (variable.categoryId && groupsMap.has(variable.categoryId)) {
                     groupsMap.get(variable.categoryId).items.push(item);
                 } else {
@@ -1299,41 +1300,61 @@
                 }
             });
 
-            // 4) Construire le HTML (ordre: catégories connues puis "(Sans catégorie)" s'il existe)
             const orderedGroups = [
                 ...[...groupsMap.entries()].filter(([k]) => k !== UNCAT_KEY),
                 ...[...groupsMap.entries()].filter(([k]) => k === UNCAT_KEY),
             ];
 
             container.innerHTML = orderedGroups.map(([key, group]) => `
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h4 class="font-semibold text-primary mb-3 flex items-center">
-          <i class="fas fa-folder mr-2"></i>${group.label}
-        </h4>
+                <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-primary mb-3 flex items-center">
+                    <i class="fas fa-folder mr-2"></i>${group.label}
+                </h4>
 
-        ${
-          group.items.length
-          ? `<div class="space-y-2">
-                                                                                              ${group.items.map(variable => `
-                <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(variable.type)}">
-                  <div class="flex items-center">
-                    <i class="fas ${getVariableIcon(variable.type)} mr-2 ${getVariableIconColor(variable.type)}"></i>
-                    <span class="text-sm font-medium">${variable.name}</span>
-                  </div>
-                  <button onclick="deleteVariable(${variable.index})" class="text-red-500 hover:text-red-700 no-print">
-                    <i class="fas fa-times"></i>
-                  </button>
+                ${
+                    group.items.length
+                    ? `<div class="space-y-2">
+                                            ${group.items.map(v => `
+                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
+                            <div class="items-center gap-2">
+                                <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
+                                <span class="text-sm font-medium">${
+                                    v.name.length > 40 
+                            ? v.name.substring(0, 40) + "..." 
+                            : v.name}</span>
+                            <br>
+                                ${
+                                    v.statutVariable
+                                    ? `<span class="badge bg-info text-dark">Taux salarial:  ${v.tauxVariable ?? 0}%</span>`
+                                    : ''
+                                }
+                                ${
+                                    v.statutVariable
+                                    ? `<span class="badge bg-info text-dark">Taux patronal:  ${v.tauxVariableEntreprise ?? 0}%</span>`
+                                    : ''
+                                }
+                                ${v.variableImposable ? `<span class="badge bg-warning text-dark">Imposable</span>` : ``}
+                            </div>
+                            <div class="flex items-center gap-2 no-print">
+                            <button class="text-primary hover:text-primary-emphasis btn btn-sm btn-light" onclick="openEditVariable(${v.index})" title="Modifier">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="text-danger hover:text-danger-emphasis btn btn-sm btn-light" onclick="deleteVariable(${v.index})" title="Supprimer">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            </div>
+                        </div>
+                        `).join('')}
+                                        </div>`
+                    : `
+                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                            <span>Aucune variable dans cette catégorie</span>
+                                        </div>`
+                }
                 </div>
-              `).join('')}
-                                                    </div>`
-          : `
-                                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                        <span>Aucune variable dans cette catégorie</span>
-                                                    </div>`
+            `).join('');
         }
-      </div>
-    `).join('');
-        }
+
 
         // Pré-sélectionner la catégorie dans le modal d’ajout
         function openAddVariableWithCategory(catId) {
@@ -1383,61 +1404,296 @@
             document.getElementById('newVariableCategory').value = 'Primes';
         }
 
-        async function addVariable() {
-            const name = document.getElementById('newVariableName').value.trim();
-            const type = document.getElementById('newVariableType').value;
-            const category = document.getElementById('newVariableCategory').value;
+        (function() {
+            // Références champs
+            const modalEl = document.getElementById('floatingLabelsModal');
+            const titleSpan = document.getElementById('modalTitleText');
+            const formModeEl = document.getElementById('formMode');
+            const currentIdEl = document.getElementById('currentVariableId');
 
-            if (!name) {
-                showNotification('Veuillez entrer un nom pour la variable', 'error');
-                return;
+            const nameEl = document.getElementById('newVariableName');
+            const typeEl = document.getElementById('newVariableType');
+            const catEl = document.getElementById('newVariableCategory');
+            const cotisEl = document.getElementById('customCheckcolor1');
+            const tauxWrapEl = document.getElementById('variableCotisation');
+            const tauxEl = document.getElementById('newVariableTaux');
+            const tauxEl1 = document.getElementById('newVariableTauxEntreprise');
+            const imposEl = document.getElementById('customCheckcolor2');
+
+            const btnSave = document.getElementById('btnSubmitVariable') ||
+                document.querySelector('#floatingLabelsModal .modal-footer .btn.btn-primary');
+
+            const errName = document.getElementById('errName');
+            const errType = document.getElementById('errType');
+            const errCat = document.getElementById('errCategory');
+            const errTaux = document.getElementById('errTaux');
+
+            // Helpers erreurs
+            function hideErr(box) {
+                if (box) {
+                    box.textContent = '';
+                    box.classList.add('d-none');
+                }
             }
 
-            // *** NOUVELLE SECTION : APPEL AJAX ***
-            try {
-                const res = await fetch("{{ route('variables.store') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    body: JSON.stringify({
-                        nom_variable: name,
-                        type: type,
-                        categorie_id: category
-                    })
-                });
+            function showErr(el, box, msg) {
+                if (el) el.classList.add('is-invalid');
+                if (box) {
+                    box.textContent = msg;
+                    box.classList.remove('d-none');
+                }
+            }
 
-                const data = await res.json();
+            function clearErrors() {
+                [nameEl, typeEl, catEl, tauxEl, tauxEl1].forEach(el => el && el.classList.remove('is-invalid'));
+                [errName, errType, errCat, errTaux].forEach(hideErr);
+            }
 
-                if (!res.ok) {
-                    showNotification(data.message || 'Erreur lors de l\'ajout de la variable', 'error');
-                    return;
+            function applyServerErrors(e) {
+                if (!e) return;
+                if (e.nom_variable) showErr(nameEl, errName, e.nom_variable[0]);
+                if (e.type) showErr(typeEl, errType, e.type[0]);
+                if (e.categorie_id) showErr(catEl, errCat, e.categorie_id[0]);
+                if (e.tauxVariable) showErr(tauxEl, errTaux, e.tauxVariable[0]);
+                if (e.tauxVariableEntreprise) showErr(tauxEl1, errTaux, e.tauxVariableEntreprise[0]);
+            }
+
+            // Affiche/masque le champ taux
+            function toggleTauxVisibility() {
+                if (cotisEl && cotisEl.checked) {
+                    tauxWrapEl?.classList.remove('d-none');
+                    if (tauxEl) {
+                        tauxEl.required = true;
+                        tauxEl.setAttribute('aria-required', 'true');
+                    }
+                    if (tauxEl1) {
+                        tauxEl1.required = true;
+                        tauxEl1.setAttribute('aria-required', 'true');
+                    }
+                } else {
+                    tauxWrapEl?.classList.add('d-none');
+                    if (tauxEl) {
+                        tauxEl.required = false;
+                        tauxEl.removeAttribute('aria-required');
+                    }
+                    if (tauxEl1) {
+                        tauxEl1.required = false;
+                        tauxEl1.removeAttribute('aria-required');
+                    }
+                    hideErr(errTaux);
+                    tauxEl?.classList.remove('is-invalid');
+                    tauxEl1?.classList.remove('is-invalid');
+                }
+            }
+
+            function isValidTaux(value) {
+                if (value === null || value === undefined) return false;
+                const normalized = String(value).trim().replace(',', '.');
+                if (normalized === '') return false;
+                const num = Number(normalized);
+                return Number.isFinite(num) && num >= 0 && num <= 100;
+            }
+
+            // Validation + data-bs-dismiss
+            function validateAndToggleDismiss() {
+                clearErrors();
+                let ok = true;
+
+                if (!nameEl?.value.trim()) {
+                    showErr(nameEl, errName, 'Veuillez entrer un nom.');
+                    ok = false;
+                }
+                if (!typeEl?.value) {
+                    showErr(typeEl, errType, 'Veuillez choisir un type.');
+                    ok = false;
+                }
+                if (!catEl?.value) {
+                    showErr(catEl, errCat, 'Veuillez choisir une catégorie.');
+                    ok = false;
                 }
 
-                // après succès AJAX de création
-                const created = data.data; // { id, nom_variable, type, categorie:{ id, nom_categorie } }
+                if (cotisEl?.checked) {
+                    const val = tauxEl?.value ?? '';
+                    if (!isValidTaux(val)) {
+                        showErr(tauxEl, errTaux, 'Veuillez renseigner un taux valide entre 0 et 100.');
+                        ok = false;
+                    } else {
+                        tauxEl.value = String(val).trim().replace(',', '.');
+                    }
+                }
 
-                payrollVariables.push({
-                    id: created.id,
-                    name: created.nom_variable,
-                    type: created.type,
-                    categoryId: created.categorie ? created.categorie.id : null,
-                    categoryName: created.categorie ? created.categorie.nom_categorie : '(Sans catégorie)'
-                });
-
-                renderVariablesGrid();
-                closefloatingLabelsModal();
-                showNotification('Variable ajoutée avec succès', 'success');
-
-            } catch (error) {
-                console.error('Erreur:', error);
-                showNotification('Erreur lors de l\'ajout de la variable (réseau)', 'error');
+                if (btnSave) {
+                    if (ok) btnSave.setAttribute('data-bs-dismiss', 'modal');
+                    else btnSave.removeAttribute('data-bs-dismiss');
+                }
+                return ok;
             }
-            // *** FIN NOUVELLE SECTION ***
-        }
+
+            // Écoutes live
+            ['input', 'change'].forEach(evt => {
+                [nameEl, typeEl, catEl, tauxEl, tauxEl1].forEach(el => el && el.addEventListener(evt,
+                    validateAndToggleDismiss));
+            });
+            cotisEl?.addEventListener('change', () => {
+                toggleTauxVisibility();
+                validateAndToggleDismiss();
+            });
+
+            // API publique: ouvrir en création pré-sélectionnée
+            window.openAddVariableWithCategory = function(catId) {
+                formModeEl.value = 'create';
+                currentIdEl.value = '';
+                titleSpan.textContent = 'Ajouter une Variable';
+
+                // reset
+                nameEl.value = '';
+                typeEl.value = '';
+                catEl.value = catId || '';
+                cotisEl.checked = false;
+                tauxEl.value = '';
+                tauxEl1.value = '';
+                imposEl.checked = false;
+
+                toggleTauxVisibility();
+                clearErrors();
+                validateAndToggleDismiss();
+
+                const ModalCtor = window.bootstrap?.Modal;
+                ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).show() : (modalEl.classList.add('show'), modalEl
+                    .style.display = 'block', modalEl.removeAttribute('aria-hidden'));
+            };
+
+            // API publique: ouvrir en édition depuis la grille
+            window.openEditVariable = function(index) {
+                const v = payrollVariables[index];
+                if (!v) return;
+
+                formModeEl.value = 'edit';
+                currentIdEl.value = v.id || '';
+                titleSpan.textContent = 'Modifier la Variable';
+
+                // remplir
+                nameEl.value = v.name || '';
+                typeEl.value = v.type || '';
+                catEl.value = v.categoryId || '';
+                cotisEl.checked = !!v.statutVariable;
+                tauxEl.value = v.statutVariable ? (v.tauxVariable ?? '') : '';
+                tauxEl1.value = v.statutVariable ? (v.tauxVariableEntreprise ?? '') : '';
+                imposEl.checked = !!v.variableImposable;
+
+                toggleTauxVisibility();
+                clearErrors();
+                validateAndToggleDismiss();
+
+                const ModalCtor = window.bootstrap?.Modal;
+                ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).show() : (modalEl.classList.add('show'), modalEl
+                    .style.display = 'block', modalEl.removeAttribute('aria-hidden'));
+            };
+
+            // Sauvegarde (create/update)
+            window.saveVariable = async function() {
+                if (!validateAndToggleDismiss()) return;
+
+                const mode = formModeEl.value || 'create';
+                const id = currentIdEl.value || null;
+
+                const payload = {
+                    nom_variable: (nameEl.value || '').trim(),
+                    type: (typeEl.value || '').trim(),
+                    categorie_id: (catEl.value || '').trim(),
+                    statutVariable: cotisEl.checked ? 1 : 0,
+                    variableImposable: imposEl.checked ? 1 : 0,
+                };
+                if (cotisEl.checked) payload.tauxVariable = (tauxEl.value || '').trim().replace(',', '.');
+                if (cotisEl.checked) payload.tauxVariableEntreprise = (tauxEl1.value || '').trim().replace(',',
+                    '.');
+
+                // UI spinner
+                const label = btnSave?.querySelector('.label');
+                const spin = btnSave?.querySelector('.spinner-border');
+                if (btnSave) btnSave.disabled = true;
+                label?.classList.add('d-none');
+                spin?.classList.remove('d-none');
+
+                try {
+                    const url = mode === 'edit' ?
+                        "{{ url('/variables') }}/" + encodeURIComponent(id) :
+                        "{{ route('variables.store') }}";
+                    const method = mode === 'edit' ? 'PUT' : 'POST';
+
+                    const res = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content'),
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        if (res.status === 422 && data?.errors) applyServerErrors(data.errors);
+                        showNotification(data.message || 'Erreur lors de l’enregistrement', 'error');
+                        return;
+                    }
+
+                    const obj = data.data; // renvoyé par l’API
+                    // Met à jour le cache local (ajout ou remplacement)
+                    if (mode === 'create') {
+                        payrollVariables.push({
+                            id: obj.id,
+                            name: obj.nom_variable,
+                            type: obj.type,
+                            categoryId: obj.categorie ? obj.categorie.id : null,
+                            categoryName: obj.categorie ? obj.categorie.nom_categorie :
+                                '(Sans catégorie)',
+                            statutVariable: !!obj.statutVariable,
+                            variableImposable: !!obj.variableImposable,
+                            tauxVariable: obj.tauxVariable ?? null,
+                            tauxVariableEntreprise: obj.tauxVariableEntreprise ?? null,
+                        });
+                    } else {
+                        const idx = payrollVariables.findIndex(x => x.id === obj.id);
+                        const updated = {
+                            id: obj.id,
+                            name: obj.nom_variable,
+                            type: obj.type,
+                            categoryId: obj.categorie ? obj.categorie.id : null,
+                            categoryName: obj.categorie ? obj.categorie.nom_categorie : '(Sans catégorie)',
+                            statutVariable: !!obj.statutVariable,
+                            variableImposable: !!obj.variableImposable,
+                            tauxVariable: obj.tauxVariable ?? null,
+                            tauxVariableEntreprise: obj.tauxVariableEntreprise ?? null,
+                        };
+                        if (idx >= 0) payrollVariables[idx] = updated;
+                    }
+
+                    renderVariablesGrid();
+
+                    // Fermer la modale
+                    const ModalCtor = window.bootstrap?.Modal;
+                    ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).hide() : (modalEl.classList.remove(
+                        'show'), modalEl.style.display = 'none', modalEl.setAttribute('aria-hidden',
+                        'true'));
+
+                    showNotification(mode === 'edit' ? 'Variable mise à jour' : 'Variable ajoutée', 'success');
+                } catch (e) {
+                    console.error(e);
+                    showNotification('Erreur réseau', 'error');
+                } finally {
+                    if (btnSave) btnSave.disabled = false;
+                    label?.classList.remove('d-none');
+                    spin?.classList.add('d-none');
+                }
+            };
+
+            // état initial
+            toggleTauxVisibility();
+            validateAndToggleDismiss();
+        })();
+
 
         function deleteVariable(index) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
@@ -1478,67 +1734,110 @@
             const thead = document.getElementById('payrollTableHead');
             const tbody = document.getElementById('payrollTableBody');
 
+            // En-tête
             let headerHTML = `
-                <tr>
+                    <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">Employé</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Salaire de Base</th>
-            `;
+                `;
 
             payrollVariables.forEach(variable => {
+                const badge = variable.statutVariable ?
+                    ` <span class="badge bg-info text-dark ms-1" title="Variable de cotisation">%</span>` :
+                    '';
                 headerHTML += `
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ${getVariableIconColor(variable.type)}" title="${variable.category}">
-                        ${variable.name}
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ${getVariableIconColor(variable.type)}"
+                        title="${variable.categoryName}">
+                        ${
+                            variable.name.length > 30 
+                            ? variable.name.substring(0, 30) + "..." 
+                            : variable.name
+                        }${badge}
                     </th>
-                `;
+                    `;
             });
 
             headerHTML += `
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Net à Payer</th>
-                </tr>
-            `;
-
+                    </tr>
+                `;
             thead.innerHTML = headerHTML;
 
+            // Corps
             tbody.innerHTML = employees.map(employee => {
                 let rowHTML = `
                     <tr class="hover:bg-gray-50" data-employee-id="${employee.id}">
                         <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white z-10">
-                            ${employee.lastName} ${employee.firstName}
+                        ${employee.lastName} ${employee.firstName}
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-medium">
-                            ${formatCurrency(employee.baseSalary)}
-                        </td>
-                `;
-
-                payrollVariables.forEach((variable, index) => {
-                    const value = employeeData[employee.id] && employeeData[employee.id][variable.name] ||
-                        0;
-                    rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <input type="number"
-                                   class="w-24 px-2 py-1 text-sm text-right border border-gray-300 rounded input-focus" 
-                                   placeholder="0" 
-                                   min="0" 
-                                   step="1000"
-                                   value="${value}"
-                                   data-employee-id="${employee.id}" 
-                                   data-variable-name="${variable.name}"
-                                   onchange="handleGlobalInput(this)">
+                        ${formatCurrency(employee.baseSalary)}
                         </td>
                     `;
+
+                payrollVariables.forEach(variable => {
+                    const currentValue = (employeeData[employee.id] && employeeData[employee.id][variable
+                        .name
+                    ]) || 0;
+
+                    if (variable.statutVariable) {
+                        // 🔒 Verrouillé : affiche juste le pourcentage, pas de calcul par employé
+                        const pct = (variable.tauxVariable ?? 0);
+                        const pct1 = (variable.tauxVariableEntreprise ?? 0);
+                        rowHTML += `
+                        <td class="px-4 py-4 whitespace-nowrap text-center">
+                            <div>
+                                <label class="form-label">Tx salariale</label>
+                                
+                                <input type="text"
+                                    class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
+                                    value="${pct} %"
+                                    title="Variable de cotisation (verrouillée)"
+                                    readonly disabled
+                                    data-locked="1"
+                                    data-variable-id="${variable.id}">
+                            </div>
+                            <div>
+                                     <label class="form-label">Tx patronale</label>
+                                <input type="text"
+                                class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
+                                value="${pct1} %"
+                                title="Variable de cotisation (verrouillée)"
+                                readonly disabled
+                                data-locked="1"
+                                data-variable-id="${variable.id}">
+                            </div>
+                        </td>
+                        `;
+                    } else {
+                        // ✍️ Libre : champ éditable (gains/retenues classiques)
+                        rowHTML += `
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <input type="number"
+                                class="w-24 px-2 py-1 text-sm text-right border border-gray-300 rounded input-focus"
+                                placeholder="0"
+                                min="0"
+                                step="1000"
+                                value="${currentValue}"
+                                data-employee-id="${employee.id}"
+                                data-variable-name="${variable.name}"
+                                onchange="handleGlobalInput(this)">
+                        </td>
+                        `;
+                    }
                 });
 
                 const netSalary = calculateEmployeeNet(employee.id);
                 rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold " data-net-salary="${employee.id}">
-                            ${formatCurrency(netSalary)}
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold" data-net-salary="${employee.id}">
+                        ${formatCurrency(netSalary)}
                         </td>
                     </tr>
-                `;
-
+                    `;
                 return rowHTML;
             }).join('');
         }
+
 
         function handleGlobalInput(input) {
             const employeeId = input.getAttribute('data-employee-id');
@@ -1659,32 +1958,70 @@
             deductionsForm.innerHTML = '';
 
             payrollVariables.forEach(variable => {
-                const value = employeeData[emp.id] && employeeData[emp.id][variable.name] || 0;
+                const value = (employeeData[emp.id] && employeeData[emp.id][variable.name]) || 0;
+                let fieldHTML = '';
 
-                const fieldHTML = `
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">${variable.name}</label>
-                        <div class="relative">
-                            <input type="number" 
-                                   class="detail-variable-input w-full px-4 py-3 border border-gray-300 rounded-lg text-right text-lg input-focus" 
-                                   placeholder="0" 
-                                   min="0" 
-                                   value="${value}"
-                                   data-variable-name="${variable.name}"
-                                   oninput="handleDetailInput(this)">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 text-sm">F CFA</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                if (variable.statutVariable) {
+                    // 🔒 Verrouillé : afficher seulement les taux
+                    const pctSal = (variable.tauxVariable ?? 0);
+                    const pctPat = (variable.tauxVariableEntreprise ?? 0);
+
+                    fieldHTML = `
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">${variable.name}</label>
+
+        <div class="grid grid-cols-1 gap-3">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Tx salariale</label>
+            <input type="text"
+                   class="detail-variable-input w-full px-4 py-3 border border-gray-300 rounded-lg text-right text-lg bg-gray-100"
+                   value="${pctSal} %"
+                   title="Variable de cotisation (verrouillée)"
+                   readonly disabled
+                   data-locked="1"
+                   data-variable-id="${variable.id}">
+          </div>
+
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Tx patronale</label>
+            <input type="text"
+                   class="detail-variable-input w-full px-4 py-3 border border-gray-300 rounded-lg text-right text-lg bg-gray-100"
+                   value="${pctPat} %"
+                   title="Variable de cotisation (verrouillée)"
+                   readonly disabled
+                   data-locked="1"
+                   data-variable-id="${variable.id}">
+          </div>
+        </div>
+      </div>
+    `;
+                } else {
+                    // ✍️ Libre : champ éditable (gains/retenues classiques)
+                    fieldHTML = `
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">${variable.name}</label>
+        <div class="relative">
+          <input type="number"
+                 class="detail-variable-input w-full px-4 py-3 border border-gray-300 rounded-lg text-right text-lg input-focus"
+                 placeholder="0"
+                 min="0"
+                 step="1000"
+                 value="${value}"
+                 data-employee-id="${emp.id}"
+                 data-variable-name="${variable.name}"
+                 oninput="handleDetailInput(this)">
+        </div>
+      </div>
+    `;
+                }
 
                 if (variable.type === 'gain') {
-                    gainsForm.innerHTML += fieldHTML;
+                    gainsForm.insertAdjacentHTML('beforeend', fieldHTML);
                 } else {
-                    deductionsForm.innerHTML += fieldHTML;
+                    deductionsForm.insertAdjacentHTML('beforeend', fieldHTML);
                 }
             });
+
         }
         const replaceTicketSelect = document.getElementById('replaceTicket');
 
