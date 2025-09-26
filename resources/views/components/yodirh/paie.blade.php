@@ -547,11 +547,86 @@
                         <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
                             <i class="fas fa-users mr-2 "></i>Détail par Employé
                         </h3>
-                        <a href="{{ route('detailParEmployerTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
-                            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                            <i class="fas fa-file-excel mr-2"></i>Importer Excel
-                        </a>
+
+                        <a
+  id="btnImportExcel"
+  data-href-template="{{ route('detailParEmployerTablePdf', ['ticket' => '___TICKET___']) }}"
+  href="#" target="_blank"
+  class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors opacity-50 pointer-events-none"
+  title="Renseignez un ticket">
+  <i class="fas fa-file-excel mr-2"></i>Importer Excel
+</a>
+
                     </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                          const input = document.getElementById('periodTicket');
+                          const btn   = document.getElementById('btnImportExcel');
+                          if (!input || !btn) return;
+                        
+                          const tpl   = btn.dataset.hrefTemplate; // ex: ".../detailParEmployerTablePdf/Tk-___TICKET___"
+                          const disabledClasses = ['opacity-50', 'pointer-events-none'];
+                        
+                          function enableBtn(url) {
+                            btn.href = url;
+                            btn.classList.remove(...disabledClasses);
+                            btn.removeAttribute('title');
+                          }
+                        
+                          function disableBtn() {
+                            btn.href = '#';
+                            btn.classList.add(...disabledClasses);
+                            btn.setAttribute('title', 'Renseignez un ticket');
+                          }
+                        
+                          function computeUrl(ticket) {
+                            return tpl.replace('___TICKET___', encodeURIComponent(ticket));
+                          }
+                        
+                          function updateHref() {
+                            const t = (input.value || '').trim();
+                            if (t) enableBtn(computeUrl(t));
+                            else   disableBtn();
+                          }
+                        
+                          // 1) Init immédiate
+                          updateHref();
+                        
+                          // 2) Écoutes “classiques”
+                          ['input', 'change', 'paste', 'keyup'].forEach(evt =>
+                            input.addEventListener(evt, updateHref)
+                          );
+                        
+                          // 3) Hooks Livewire (si présent)
+                          document.addEventListener('livewire:load', () => {
+                            if (window.Livewire && Livewire.hook) {
+                              Livewire.hook('message.processed', () => {
+                                // Livewire vient de patcher le DOM → resynchroniser
+                                updateHref();
+                              });
+                            }
+                          });
+                        
+                          // 4) Polling léger pour les MAJ silencieuses (propriété value modifiée sans event)
+                          let last = input.value;
+                          setInterval(() => {
+                            if (input.value !== last) {
+                              last = input.value;
+                              updateHref();
+                            }
+                          }, 300);
+                        
+                          // 5) Garde-fou au clic
+                          btn.addEventListener('click', (e) => {
+                            if (!input.value || !input.value.trim()) {
+                              e.preventDefault();
+                              alert("Veuillez d'abord renseigner le ticket.");
+                            }
+                          });
+                        });
+                        </script>
+                        
+                        
                     <div style="max-height: 450px; overflow-y: auto;">
                         <div class="table-responsive">
 
@@ -1314,7 +1389,7 @@
                 ${
                     group.items.length
                     ? `<div class="space-y-2">
-                                            ${group.items.map(v => `
+                                                ${group.items.map(v => `
                         <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
                             <div class="items-center gap-2">
                                 <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
@@ -1345,11 +1420,11 @@
                             </div>
                         </div>
                         `).join('')}
-                                        </div>`
+                                            </div>`
                     : `
-                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                            <span>Aucune variable dans cette catégorie</span>
-                                        </div>`
+                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                <span>Aucune variable dans cette catégorie</span>
+                                            </div>`
                 }
                 </div>
             `).join('');
