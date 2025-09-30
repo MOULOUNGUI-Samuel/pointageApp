@@ -115,11 +115,10 @@
       @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
   
       <div class="d-flex justify-content-end gap-2 mt-3">
-        <button class="btn btn-success" wire:click="approve" wire:loading.attr="disabled">
+        <button class="btn btn-success" wire:click="approve">
           <span class="spinner-border spinner-border-sm me-2" wire:loading></span>Approuver
         </button>
-        <button class="btn btn-danger" wire:click="reject" wire:loading.attr="disabled">
-          <span class="spinner-border spinner-border-sm me-2" wire:loading></span>Rejeter
+        <button class="btn btn-danger" wire:click="reject">Rejeter
         </button>
       </div>
     </div>

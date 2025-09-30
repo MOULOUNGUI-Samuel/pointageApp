@@ -33,10 +33,10 @@ class ReviewForm extends Component
         $this->dispatch('settings-reviewed', id: $s->id);
         
         // ⬇️ Fermer la modale correspondante
-        $this->dispatch('close-review-modal', submissionId: $s->id);
+        // $this->dispatch('close-review-modal', submissionId: $s->id);
         
         $this->reset('notes');
-        // $this->dispatch('wizard-config-reload');
+        $this->dispatch('wizard-config-reload');
     }
 
     public function reject(): void
@@ -58,7 +58,7 @@ class ReviewForm extends Component
         // $this->dispatch('wizard-config-reload');
 
         // ⬇️ Fermer la modale correspondante
-        $this->dispatch('close-review-modal', submissionId: $s->id);
+        // $this->dispatch('close-review-modal', submissionId: $s->id);
     }
 
 

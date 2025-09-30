@@ -1099,4 +1099,430 @@ class PdfController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="détail-employé-' . $ticket . '.pdf"');
     }
+
+    /**
+     * Génère des données détaillées de paie avec des totaux calculés automatiquement.
+     *
+     * @param string $userId        L'ID de l'utilisateur (employé).
+     * @param string $tiketPeriode  Le ticket/identifiant pour la période de paie.
+     *
+     * @return array Un tableau contenant les données de paie et les totaux calculés.
+     */
+    function generateDetailedPayrollData(string $userId, string $tiketPeriode): array
+    {
+        // 1) Période
+        $period = DB::table('periodes_paie')->where('ticket', $tiketPeriode)->first();
+        if (!$period) return [];
+
+        // 2) Variables
+        $variables = DB::table('variables')
+            ->select([
+                'id',
+                'numeroVariable',
+                'nom_variable',
+                'tauxVariable',
+                'tauxVariableEntreprise',
+                'type',
+                'statutVariable',
+                'variableImposable'
+            ])
+            ->orderBy('numeroVariable')->get()->keyBy('id');
+
+        // 3) Montants saisis pour l’utilisateur sur la période
+        $montants = DB::table('variable_periode_users')
+            ->where('user_id', $userId)
+            ->where('periode_paie_id', $period->id)
+            ->pluck('montant', 'variable_id')->toArray();
+
+        // 4) Associations -> base = somme des montants associés (on additionne tout, tu peux filtrer si besoin)
+        $assocs = [];
+        foreach (DB::table('variable_associers')->select(['variableBase_id', 'variableAssocier_id'])->get() as $r) {
+            $assocs[$r->variableBase_id][] = $r->variableAssocier_id;
+        }
+
+        // 5) Salaire de base (ligne statique n°99)
+        $user = \App\Models\User::find($userId);
+        $baseSalary = (float)($user->salairebase ?? 0);
+
+        // 6) Accumulateurs
+        $preBrut = [];     // salaire de base + gains imposables
+        $cotis   = [];     // déductions de cotisation (statutVariable = 1)
+        $autres  = [];     // le reste (si besoin plus tard)
+
+        $totalBrut         = 0.0; // somme des gains avant "Total Brut"
+        $cotisBaseTotal    = 0.0; // somme des bases de cotisations (demandé)
+        $retenuesSalTotal  = 0.0; // somme retenues salariales (info)
+        $retenuesPatTotal  = 0.0; // somme retenues patronales (info)
+        $avantagesNature   = 0.0; // gains non imposables (info)
+
+        // ---- 6.a) Ajouter la ligne Salaire de base (99)
+        if ($baseSalary > 0) {
+            $preBrut[] = [
+                'numero'         => 99,
+                'designation'    => 'Salaire de base',
+                'base'           => round($baseSalary, 2),
+                'taux_salarial'  => null,
+                'gain_salarial'  => round($baseSalary, 2),
+                'retenue_sal'    => null,
+                'taux_patronal'  => null,
+                'retenue_pat'    => null,
+                'type'           => 'gain',
+                'statutVariable' => 0,
+                'variableImposable' => 1,
+            ];
+            $totalBrut += $baseSalary;
+        }
+
+        // ---- 6.b) Parcours des variables
+        foreach ($variables as $id => $v) {
+            // base : somme des montants associés s’ils existent, sinon son propre montant
+            $base = 0.0;
+            if (!empty($assocs[$id])) {
+                foreach ($assocs[$id] as $assocId) {
+                    $base += (float)($montants[$assocId] ?? 0);
+                }
+            } else {
+                $base = (float)($montants[$id] ?? 0);
+            }
+
+            // rien à afficher si tout est à zéro
+            if ($base == 0 && (is_null($v->tauxVariable) || (float)$v->tauxVariable == 0)) {
+                continue;
+            }
+
+            $tSal = is_null($v->tauxVariable)           ? null : (float)$v->tauxVariable;
+            $tPat = is_null($v->tauxVariableEntreprise) ? null : (float)$v->tauxVariableEntreprise;
+
+            $gainSal = null;
+            $retSal = null;
+            $retPat = null;
+
+            if ($v->type === 'gain') {
+                // gain = base si pas de taux, sinon base * taux
+                $gainSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
+                $totalBrut += $gainSal;
+
+                if ((int)$v->variableImposable === 1) {
+                    // à placer AVANT Total Brut
+                    $preBrut[] = [
+                        'numero'         => $v->numeroVariable,
+                        'designation'    => $v->nom_variable,
+                        'base'           => round($base, 2),
+                        'taux_salarial'  => $tSal,
+                        'gain_salarial'  => $gainSal,
+                        'retenue_sal'    => null,
+                        'taux_patronal'  => $tPat,
+                        'retenue_pat'    => null,
+                        'type'           => 'gain',
+                        'statutVariable' => (int)$v->statutVariable,
+                        'variableImposable' => (int)$v->variableImposable,
+                    ];
+                } else {
+                    $avantagesNature += $gainSal;
+                    $autres[] = [
+                        'numero'         => $v->numeroVariable,
+                        'designation'    => $v->nom_variable,
+                        'base'           => round($base, 2),
+                        'taux_salarial'  => $tSal,
+                        'gain_salarial'  => $gainSal,
+                        'retenue_sal'    => null,
+                        'taux_patronal'  => $tPat,
+                        'retenue_pat'    => null,
+                        'type'           => 'gain',
+                        'statutVariable' => (int)$v->statutVariable,
+                        'variableImposable' => (int)$v->variableImposable,
+                    ];
+                }
+            } elseif ($v->type === 'deduction') {
+                // déduction
+                if ((int)$v->statutVariable === 1) {
+                    // COTISATION -> après Total Brut
+                    $retSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
+                    $retPat = $tPat !== null ? round($base * $tPat / 100, 2) : 0.0;
+
+                    $cotis[] = [
+                        'numero'         => $v->numeroVariable,
+                        'designation'    => $v->nom_variable,
+                        'base'           => round($base, 2),
+                        'taux_salarial'  => $tSal,
+                        'gain_salarial'  => null,
+                        'retenue_sal'    => $retSal,
+                        'taux_patronal'  => $tPat,
+                        'retenue_pat'    => $retPat,
+                        'type'           => 'deduction',
+                        'statutVariable' => 1,
+                        'variableImposable' => (int)$v->variableImposable,
+                    ];
+
+                    $cotisBaseTotal   += $base;   // << demandé: Total Cotisations = somme des bases
+                    $retenuesSalTotal += $retSal;
+                    $retenuesPatTotal += $retPat;
+                } else {
+                    // déduction sans part patronale (ex: TCS)
+                    $retSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
+                    $retenuesSalTotal += $retSal;
+
+                    $autres[] = [
+                        'numero'         => $v->numeroVariable,
+                        'designation'    => $v->nom_variable,
+                        'base'           => round($base, 2),
+                        'taux_salarial'  => $tSal,
+                        'gain_salarial'  => null,
+                        'retenue_sal'    => $retSal,
+                        'taux_patronal'  => $tPat,
+                        'retenue_pat'    => 0.0,
+                        'type'           => 'deduction',
+                        'statutVariable' => 0,
+                        'variableImposable' => (int)$v->variableImposable,
+                    ];
+                }
+            }
+        }
+
+        // Ordonner par numéro dans chaque bloc
+        usort($preBrut, fn($a, $b) => ($a['numero'] <=> $b['numero']));
+        usort($cotis,   fn($a, $b) => ($a['numero'] <=> $b['numero']));
+        usort($autres,  fn($a, $b) => ($a['numero'] <=> $b['numero']));
+
+        // Totaux principaux
+        $salaireBrut = round($totalBrut, 2); // = Total Brut
+        $netImposable = round($salaireBrut - $retenuesSalTotal, 2);
+
+        // Lignes finales ORDONNÉES (avec totaux insérés au bon endroit)
+        $rows = [];
+        // 1) AVANT total brut
+        array_push($rows, ...$preBrut);
+
+        // 2) TOTAL BRUT
+        $rows[] = [
+            'numero'         => null,
+            'designation'    => 'Total Brut',
+            'base'           => null,
+            'taux_salarial'  => null,
+            'gain_salarial'  => round($totalBrut, 2),
+            'retenue_sal'    => null,
+            'taux_patronal'  => null,
+            'retenue_pat'    => null,
+            'is_total'       => true,
+            'total_key'      => 'total_brut',
+        ];
+
+        // 3) Cotisations APRÈS total brut
+        array_push($rows, ...$cotis);
+
+        // 4) TOTAL COTISATIONS (somme des bases, + infos de retenues)
+        $rows[] = [
+            'numero'         => null,
+            'designation'    => 'Total Cotisations',
+            'base'           => round($cotisBaseTotal, 2),              // <<< demandé
+            'taux_salarial'  => null,
+            'gain_salarial'  => null,
+            'retenue_sal'    => round($retenuesSalTotal, 2),            // info
+            'taux_patronal'  => null,
+            'retenue_pat'    => round($retenuesPatTotal, 2),            // info
+            'is_total'       => true,
+            'total_key'      => 'total_cotisations',
+        ];
+
+        // 5) Le reste (facultatif, si tu veux les afficher ailleurs)
+        array_push($rows, ...$autres);
+
+        // Heures (si tu souhaites les exploiter ici)
+        $attendance = new AttendanceService();
+        $status = $attendance->getUserStatusForDate($user, new Carbon($period->date_debut));
+
+        return [
+            'rows' => $rows, // déjà dans l’ordre avec “Total Brut” puis cotisations puis “Total Cotisations”
+            'totals' => [
+                'Total Brut'          => round($totalBrut, 2),
+                'Total Cotisations'   => [
+                    'base' => round($cotisBaseTotal, 2),
+                    'sal'  => round($retenuesSalTotal, 2),
+                    'pat'  => round($retenuesPatTotal, 2),
+                ],
+                'Salaire brut'        => $salaireBrut,
+                'Charges salariales'  => round($retenuesSalTotal, 2),
+                'Charges patronales'  => round($retenuesPatTotal, 2),
+                'Avantages en nature' => round($avantagesNature, 2),
+                'Net imposable'       => $netImposable,
+            ],
+            'periodTicketId' => $period->id,
+            'userStatus'     => $status,
+        ];
+    }
+    public function ficheDePaieDemo(string $userId, string $tiketPeriode)
+    {
+        // ---- Données calculées (lignes déjà ordonnées + totaux)
+        $data = $this->generateDetailedPayrollData($userId, $tiketPeriode);
+        if (empty($data)) {
+            abort(404, 'Période introuvable ou données indisponibles.');
+        }
+
+        // ---- Contexte période / utilisateur / entreprise
+        $period = DB::table('periodes_paie')->where('ticket', $tiketPeriode)->first();
+        if (!$period) {
+            abort(404, 'Ticket de période invalide.');
+        }
+
+        /** @var User $user */
+        $user = User::findOrFail($userId);
+        $entreprise = DB::table('entreprises')->where('id', $user->entreprise_id)->first();
+
+        // ---- En-têtes (entreprise / identité / méta)
+        $entrepriseHead = [
+            'nom'   => $entreprise->nom_entreprise ?? '—',
+            'bp'    => $entreprise->code_entreprise ?? '—',
+            'ville' => '', // ajoute si tu as une ville en base
+            'tel'   => $user->telephone_professionnel ?? $user->telephone ?? '',
+        ];
+
+        $identite = [
+            'civilite'  => '', // renseigne si tu as l’info
+            'nom'       => trim(($user->nom ?? '') . ' ' . ($user->prenom ?? '')) ?: '—',
+            'naissance' => $user->date_naissance ? Carbon::parse($user->date_naissance)->format('d/m/Y') : '',
+            'lieu'      => $user->lieu_naissance ?? '',
+            'cnss'      => $user->numero_securite_sociale ?? '',
+            'matricule' => $user->matricule ?? '',
+            'poste'     => $user->fonction ?? '',
+            'telephone' => $user->telephone ?? '',
+        ];
+
+        $meta = [
+            'departement'   => '', // si tu relies service_id → services
+            'situation_fam' => $user->etat_civil ?? '',
+            'nb_enfants'    => (string)($user->nombre_enfant ?? '0'),
+            'nb_parts'      => '0,00',
+            'categorie'     => '', // si tu relies categorie_professionel_id
+            'horaire'       => '', // si tu calcules les heures normées
+        ];
+
+        $periode = [
+            'du'       => Carbon::parse($period->date_debut)->format('d/m/Y'),
+            'au'       => Carbon::parse($period->date_fin)->format('d/m/Y'),
+            'paiement' => Carbon::parse($period->date_fin)->format('d/m/Y'),
+            'mode'     => $user->mode_paiement ?? 'Espèces',
+        ];
+
+        // ---- Lignes du tableau (déjà triées par generateDetailedPayrollData)
+        $rows = [];
+        foreach ($data['rows'] as $r) {
+            $rows[] = [
+                $r['numero'] ?? '',           // N°
+                $r['designation'] ?? '',      // Désignation
+                '',                           // Nombre (si tu veux le gérer plus tard)
+                $r['base'] ?? '',             // Base
+                $r['taux_salarial'] ?? '',    // Part salariale - Taux
+                $r['gain_salarial'] ?? '',    // Part salariale - Gain
+                $r['retenue_sal'] ?? '',      // Part salariale - Retenue
+                $r['taux_patronal'] ?? '',    // Part patronale - Taux
+                $r['retenue_pat'] ?? '',      // Part patronale - Retenue
+            ];
+        }
+
+        // ---- Totaux / cumuls
+        $totalBrut       = (float)($data['totals']['Total Brut'] ?? 0);
+        $totCotisBase    = (float)($data['totals']['Total Cotisations']['base'] ?? 0);
+        $chargesSal      = (float)($data['totals']['Total Cotisations']['sal']  ?? 0);
+        $chargesPat      = (float)($data['totals']['Total Cotisations']['pat']  ?? 0);
+        $salaireBrut     = (float)($data['totals']['Salaire brut'] ?? $totalBrut);
+        $netImposable    = (float)($data['totals']['Net imposable'] ?? max(0, $salaireBrut - $chargesSal));
+        $avantagesNature = (float)($data['totals']['Avantages en nature'] ?? 0);
+
+        // Ligne “Salaire net” (si tu veux l’afficher comme dans la maquette)
+        $rows[] = ['3380', '****** Salaire net *********', '', $salaireBrut, '', $salaireBrut, '', '', ''];
+
+        // Exemple d’ajouts conditionnels (évite doublons si déjà dans $data['rows'])
+        $already = collect($data['rows'])->pluck('designation')->map('strtolower')->all();
+        $periodId = $data['periodTicketId'];
+
+        $maybeAdd = function (string $varName, string $code, ?string $tauxAffiche = null) use (&$rows, $userId, $periodId, $already) {
+            if (in_array(strtolower($varName), $already, true)) return;
+            $row = DB::table('variable_periode_users')
+                ->join('variables', 'variable_periode_users.variable_id', '=', 'variables.id')
+                ->where('user_id', $userId)
+                ->where('periode_paie_id', $periodId)
+                ->where('variables.nom_variable', $varName)
+                ->select('variable_periode_users.montant')
+                ->first();
+            if ($row) {
+                $rows[] = [
+                    $code,
+                    $varName,
+                    '',
+                    (float)$row->montant,
+                    $tauxAffiche,
+                    (float)$row->montant,
+                    '',
+                    '',
+                    ''
+                ];
+            }
+        };
+
+        // Exemples (facultatifs)
+        $maybeAdd('Indemnité de transport', '3405', '30,00');
+        $maybeAdd('Arrondi précédent',      '4500', null);
+        $maybeAdd('Arrondi du mois',        '4515', null);
+
+        // Cumuls affichés en pied de tableau (mets tes vraies valeurs annuelles si tu les as)
+        $cumuls = [
+            'periode' => [
+                'brut'           => $salaireBrut,
+                'charges_sal'    => $chargesSal,
+                'charges_pat'    => $chargesPat,
+                'avantages'      => $avantagesNature,
+                'net_imposable'  => $netImposable,
+                'heures_trav'    => 0,
+                'heures_sup'     => 0,
+            ],
+            'annee' => [
+                'brut'           => 0,
+                'charges_sal'    => 0,
+                'charges_pat'    => 0,
+                'avantages'      => 0,
+                'net_imposable'  => 0,
+                'heures_trav'    => 0,
+                'heures_sup'     => 0,
+            ],
+        ];
+
+        // Net à payer (généralement salaire brut – charges salariales)
+        $netAPayer = max(0, $salaireBrut - $chargesSal);
+
+        // ---- PDF
+        $pdf = new PdfPayslip('P', 'mm', 'A4');
+        $pdf->AliasNbPages();
+        $pdf->SetMargins(16, 10, 12);
+        $pdf->logoPath = public_path('assets/img/authentication/logo_nedcore.JPG'); // optionnel
+
+        $pdf->AddPage();
+
+        $currentY = $pdf->drawBulletinTitleAndPeriod($periode);
+        $pdf->drawCompanyTitleCentered($entrepriseHead);
+        $pdf->drawRightIdentityCard($identite);
+        $pdf->drawLeftEmployeeMeta($meta);
+
+        $startY = max($currentY + 10, 65);
+        ['y' => $y, 'w' => $w] = $pdf->drawTableHeader($startY);
+
+        $curY = $y;
+        foreach ($rows as $r) {
+            if ($curY > ($pdf->GetPageHeight() - 98)) {
+                $pdf->AddPage();
+                ['y' => $y, 'w' => $w] = $pdf->drawTableHeader(20);
+                $curY = $y;
+            }
+            $curY = $pdf->drawRow($w, $curY, $r, 6);
+        }
+
+        $yAfterCumuls = $pdf->drawCumulsAndNet($cumuls, $netAPayer);
+        $pdf->drawCountersAndSignatures([
+            'Congés'               => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '10,000'],
+            'Repos compensateur'   => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '0,000'],
+        ], $yAfterCumuls + 4);
+
+        return response($pdf->Output('S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="bulletin_paie.pdf"');
+    }
 }

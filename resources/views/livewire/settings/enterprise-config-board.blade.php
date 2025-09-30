@@ -96,7 +96,7 @@
                                 <div class="col-md-4">
                                     <div class="d-flex align-items-center">
                                         <span class="avatar avatar-lg border me-2 flex-shrink-0">
-                                            <img src="{{ asset('assets/img/icons/mail-01.svg') }}"
+                                            <img src="{{ asset('assets/img/item.png') }}"
                                                 class="w-auto h-auto rounded-0" alt="">
                                         </span>
                                         <div>
