@@ -128,38 +128,38 @@ class VariablesManager extends Component
     {
         $v = Variable::with('categorie')->findOrFail($id);
 
-        $this->mode = 'edit';
-        $this->currentId        = $v->id;
-        $this->numeroVariable   = $v->numeroVariable ?? $this->nextNumero();
-        $this->nom_variable     = $v->nom_variable;
-        $this->type             = $v->type ?? '';
-        $this->categorie_id     = $v->categorie_id;
-        $this->variableImposable = (bool)$v->variableImposable;
+        $this->mode              = 'edit';
+        $this->currentId         = $v->id;
+        $this->numeroVariable    = $v->numeroVariable ?? $this->nextNumero();
+        $this->nom_variable      = $v->nom_variable;
+        $this->type              = $v->type ?? ''; // peut être vide
+        $this->categorie_id      = $v->categorie_id;
+        $this->variableImposable = (bool) $v->variableImposable;
 
-        if ($this->type === 'deduction') {
-            if ($v->statutVariable) {
-                $this->statutMode = 'cotisation';
-                $this->tauxVariable = (string)$v->tauxVariable;
-                $this->tauxVariableEntreprise = (string)$v->tauxVariableEntreprise;
-            } else {
-                $this->statutMode = 'sans_cotisation';
-                $this->tauxVariable = (string)$v->tauxVariable;
-                $this->tauxVariableEntreprise = null;
-            }
+        // 👉 Important : on positionne le mode d'après la DB,
+        //    sans conditionner à $this->type === 'deduction'
+        if ((bool) $v->statutVariable === true) {
+            // Variable de cotisation
+            $this->statutMode              = 'cotisation';
+            $this->tauxVariable            = $v->tauxVariable !== null ? (string) $v->tauxVariable : null;
+            $this->tauxVariableEntreprise  = $v->tauxVariableEntreprise !== null ? (string) $v->tauxVariableEntreprise : null;
         } else {
-            $this->statutMode = null;
-            $this->tauxVariable = $this->tauxVariableEntreprise = null;
+            // Variable sans cotisation (avec taux possible)
+            $this->statutMode              = 'sans_cotisation';
+            $this->tauxVariable            = $v->tauxVariable !== null ? (string) $v->tauxVariable : null;
+            $this->tauxVariableEntreprise  = null; // pas de patronal en "sans"
         }
 
+        // Associations déjà choisies
         $this->selectedVariables = DB::table('variable_associers')
             ->where('variableBase_id', $v->id)
             ->pluck('variableAssocier_id')
             ->toArray();
 
-            $this->loadData();
-
+        $this->loadData();
         $this->dispatch('show-variable-modal');
     }
+
 
     public function save(): void
     {
@@ -168,11 +168,11 @@ class VariablesManager extends Component
 
         $variable = DB::transaction(function () use ($isCotisation) {
             if ($this->mode === 'create') {
-            $v = Variable::create([
-                'categorie_id'           => $this->categorie_id,
-                'nom_variable'           => $this->nom_variable,
-                'type'                   => $this->type,
-                'statutVariable'         => $isCotisation ? 1 : 0,
+                $v = Variable::create([
+                    'categorie_id'           => $this->categorie_id,
+                    'nom_variable'           => $this->nom_variable,
+                    'type'                   => $this->type,
+                    'statutVariable'         => $isCotisation ? 1 : 0,
                     'variableImposable'      => $this->variableImposable,
                     'tauxVariable'           => $this->tauxVariable,
                     'tauxVariableEntreprise' => $isCotisation ? $this->tauxVariableEntreprise : null,
@@ -237,7 +237,7 @@ class VariablesManager extends Component
             ],
             'numeroVariable' => $variable->numeroVariable,
         ];
- $this->loadData();
+        $this->loadData();
         $this->dispatch('hide-variable-modal');
         // Ajout d'un délai de 100ms
         usleep(100000); // 100 millisecondes

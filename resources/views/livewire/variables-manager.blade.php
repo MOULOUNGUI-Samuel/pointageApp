@@ -1,6 +1,6 @@
 <div>
     {{-- BOUTON D’AJOUT EXEMPLE --}}
-    
+
 
     {{-- GRILLE / LISTE (ex. groupée par catégorie) --}}
     {{-- @php
@@ -226,9 +226,9 @@
                                                 <div class="form-check">
                                                     <input type="checkbox" class="form-check-input selected-var"
                                                         id="assoc_{{ $v['id'] }}" value="{{ $v['id'] }}"
-                                                        wire:model="selectedVariables" @disabled(!$canAssociate)>
+                                                        wire:model="selectedVariables" disabled>
                                                     <label class="form-check-label" for="assoc_{{ $v['id'] }}"
-                                                        style="cursor: {{ $canAssociate ? 'pointer' : 'not-allowed' }}; opacity: {{ $canAssociate ? '1' : '.7' }}">
+                                                        style="cursor:not-allowed;opacity:.7">
                                                         {{ $v['name'] }}
                                                     </label>
                                                 </div>
@@ -249,11 +249,12 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
 
-                        <button type="button" class="btn btn-primary" wire:click="save" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-primary" wire:click="save"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove>Enregistrer</span>
                             <span class="spinner-border spinner-border-sm" wire:loading></span>
-                          </button>
-                          
+                        </button>
+
                     </div>
                 </form>
 
@@ -298,117 +299,82 @@
 </script>
 <script>
     (() => {
-        const root = document.getElementById('floatingLabelsModal');
-        if (!root) return;
-
-        const q = sel => root.querySelector(sel);
-        const qa = sel => Array.from(root.querySelectorAll(sel));
-
-        // refs
-        const typeEl = q('#newVariableType');
-        const radiosWr = q('#cotisationCheckWrapper');
-        const rCotis = q('#customRadio1'); // "Variable de cotisation"
-        const rSans = q('#customRadio2'); // "Variable sans cotisation avec taux"
-
-        const secCotis = q('#variableCotisation'); // bloc sal/pat
-        const secSans = q('#variableSansCotisation'); // bloc taux "sans"
-
-        const tauxSal = q('#newVariableTauxCotSal');
-        const tauxPat = q('#newVariableTauxCotPat');
-        const tauxSans = q('#newVariableTauxSans');
-
-        const assocHelp = q('#assocHelp');
-        const assocCbs = qa('.selected-var, [name="selectedVariables"]');
-
-        // helpers
-        const show = el => el && el.classList.remove('d-none');
-        const hide = el => el && el.classList.add('d-none');
-        const req = (el, on) => {
-            if (!el) return;
-            el.toggleAttribute('required', !!on);
-            if (on) el.setAttribute('aria-required', 'true');
-            else el.removeAttribute('aria-required');
-        };
-        const enableAssoc = on => {
-            assocCbs.forEach(cb => {
-                cb.disabled = !on;
-                const lab = root.querySelector(`label[for="${cb.id}"]`);
-                if (lab) {
-                    lab.style.cursor = on ? 'pointer' : 'not-allowed';
-                    lab.style.opacity = on ? '1' : '.7';
-                }
-                // si on préfère garder les sélections quand on désactive, commentez la ligne suivante
-                if (!on) cb.checked = false;
-            });
-        };
-
-        const showAssocHelp = on => assocHelp && assocHelp.classList.toggle('d-none', !on);
-
-        // radios exclusifs
-        if (rCotis && rSans) rCotis.name = rSans.name = rCotis.name || rSans.name || 'statutVariable';
-
-        function syncUI() {
-            const isDeduction = typeEl && typeEl.value === 'deduction';
-
-            if (!isDeduction) {
-                hide(radiosWr);
-                hide(secCotis);
-                hide(secSans);
-                req(tauxSal, false);
-                req(tauxPat, false);
-                req(tauxSans, false);
-                if (rCotis) rCotis.checked = false;
-                if (rSans) rSans.checked = false;
-                enableAssoc(false);
-                showAssocHelp(false);
-                return;
-            }
-
-            show(radiosWr);
-
-            if (rCotis && rCotis.checked) {
-                // Variable de cotisation
-                show(secCotis);
-                hide(secSans);
-                req(tauxSal, true);
-                req(tauxPat, true);
-                req(tauxSans, false);
-                enableAssoc(true); // => cases activées UNIQUEMENT si un radio est coché
-                showAssocHelp(true);
-            } else if (rSans && rSans.checked) {
-                // Variable sans cotisation (avec taux)
-                hide(secCotis);
-                show(secSans);
-                req(tauxSal, false);
-                req(tauxPat, false);
-                req(tauxSans, true);
-                enableAssoc(true);
-                showAssocHelp(true);
-            } else {
-                // aucun radio coché
-                hide(secCotis);
-                hide(secSans);
-                req(tauxSal, false);
-                req(tauxPat, false);
-                req(tauxSans, false);
-                enableAssoc(false);
-                showAssocHelp(false);
-            }
-        }
-
-        // événements
-        root.addEventListener('change', e => {
-            if (e.target === typeEl || e.target === rCotis || e.target === rSans) syncUI();
+      const root = document.getElementById('floatingLabelsModal');
+      if (!root) return;
+    
+      const q  = sel => root.querySelector(sel);
+      const qa = sel => Array.from(root.querySelectorAll(sel));
+    
+      const typeEl   = q('#newVariableType');
+      const rCotisWr = q('#cotisationCheckWrapper');   // colonne contenant #customRadio1
+      const rCotis   = q('#customRadio1');
+      const rSans    = q('#customRadio2');
+    
+      const secCotis = q('#variableCotisation');
+      const secSans  = q('#variableSansCotisation');
+    
+      const tauxSal  = q('#newVariableTauxCotSal');
+      const tauxPat  = q('#newVariableTauxCotPat');
+      const tauxSans = q('#newVariableTauxSans');
+    
+      const assocHelp = q('#assocHelp');
+      const assocCbs  = qa('.selected-var, [name="selectedVariables"]');
+    
+      const shown = (el,on)=> el && el.classList.toggle('d-none', !on);
+      const req   = (el,on)=>{
+        if (!el) return;
+        el.toggleAttribute('required', !!on);
+        if (on) el.setAttribute('aria-required','true'); else el.removeAttribute('aria-required');
+      };
+      const enableAssoc = on => {
+        assocCbs.forEach(cb => {
+          cb.disabled = !on;
+          const lab = root.querySelector(`label[for="${cb.id}"]`);
+          if (lab){ lab.style.cursor = on ? 'pointer' : 'not-allowed'; lab.style.opacity = on ? '1' : '.7'; }
+          // on conserve les cases cochées quand on désactive
         });
-        root.addEventListener('input', e => {
-            if (e.target === rCotis || e.target === rSans) syncUI();
-        });
-
-        // quand la modale s'ouvre (create/edit)
-        root.addEventListener('shown.bs.modal', () => setTimeout(syncUI, 0));
-        window.addEventListener('show-variable-modal', () => setTimeout(syncUI, 0));
-
-        // 1er passage (au cas où la modale est déjà visible)
-        syncUI();
+        if (assocHelp) assocHelp.classList.toggle('d-none', !on);
+      };
+    
+      if (rCotis && rSans) rCotis.name = rSans.name = rCotis.name || rSans.name || 'statutVariable';
+    
+      function syncUI(){
+        const isDeduction = typeEl && typeEl.value === 'deduction';
+    
+        // 1) Le radio "cotisation" n'est visible/valable que si Type = Retenue
+        shown(rCotisWr, !!isDeduction);
+        if (!isDeduction && rCotis) rCotis.checked = false;
+    
+        // 2) Sections :
+        //    - Cotisation => uniquement si Type = Retenue ET radio cotis coché
+        shown(secCotis, isDeduction && !!rCotis?.checked);
+        //    - Sans cotisation => visible si radio sans coché (peu importe le type)
+        shown(secSans, !!rSans?.checked);
+    
+        // 3) Required :
+        req(tauxSal,  isDeduction && !!rCotis?.checked);
+        req(tauxPat,  isDeduction && !!rCotis?.checked);
+        req(tauxSans, isDeduction && !!rSans?.checked); // requis seulement si Retenue + sans
+    
+        // 4) Associations activées si :
+        //    - rSans coché (quel que soit le type) OU
+        //    - (Type = Retenue et rCotis coché)
+        const canAssociate = (!!rSans?.checked) || (isDeduction && !!rCotis?.checked);
+        enableAssoc(canAssociate);
+      }
+    
+      root.addEventListener('change', e => {
+        if (e.target === typeEl || e.target === rCotis || e.target === rSans) syncUI();
+      });
+      root.addEventListener('input', e => {
+        if (e.target === rCotis || e.target === rSans) syncUI();
+      });
+    
+      root.addEventListener('shown.bs.modal', () => setTimeout(syncUI, 0));
+      window.addEventListener('show-variable-modal', () => setTimeout(syncUI, 0));
+    
+      syncUI();
     })();
-</script>
+    </script>
+    
+    

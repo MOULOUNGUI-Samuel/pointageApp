@@ -1372,7 +1372,7 @@ class PdfController extends Controller
         $entrepriseHead = [
             'nom'   => $entreprise->nom_entreprise ?? '—',
             'bp'    => $entreprise->code_entreprise ?? '—',
-            'ville' => '', // ajoute si tu as une ville en base
+            'ville' => $user->ville->nom_ville, // ajoute si tu as une ville en base
             'tel'   => $user->telephone_professionnel ?? $user->telephone ?? '',
         ];
 
