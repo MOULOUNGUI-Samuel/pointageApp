@@ -309,10 +309,14 @@
                             <i class="fas fa-list mr-2 "></i>Variables de Paie
                         </h2>
                         <div class="flex gap-2 no-print">
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#floatingLabelsModal"
+                            {{-- <button type="button" data-bs-toggle="modal" data-bs-target="#floatingLabelsModal"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
                                 <i class="fas fa-plus mr-2"></i>Ajouter Variable
-                            </button>
+                            </button> --}}
+                            <div class="">
+                                <button class="btn btn-primary" onclick="openCreateVariable()"><i
+                                        class="fas fa-plus mr-2"></i> Nouvelle variable</button>
+                            </div>
                             <button data-bs-toggle="modal" data-bs-target="#floatingLabelsModalCategori"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors no-print">
                                 <i class="fas fa-plus mr-2"></i>Ajouter une categorie
@@ -323,11 +327,12 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="variablesContainer">
                     </div>
+                    @livewire('variables-manager')
                 </div>
             </div>
         </div>
         @include('components.yodirh._categorie')
-        @include('components.yodirh._variable', $categories)
+        {{-- @include('components.yodirh._variable', $categories) --}}
         <!-- Tab: Saisie Globale -->
         <div id="content-saisie-globale" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-lg">
@@ -346,10 +351,10 @@
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-undo mr-2"></i>Reset
                             </button>
-                            <a href="{{ route('ficheDePaieDemo') }}"
+                            {{-- <a href="{{ route('ficheDePaieDemo') }}"
                                 class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 Fiche de paie
-                            </a>
+                            </a> --}}
 
                             {{-- <a href="{{ route('payrollTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
@@ -548,85 +553,84 @@
                             <i class="fas fa-users mr-2 "></i>Détail par Employé
                         </h3>
 
-                        <a
-  id="btnImportExcel"
-  data-href-template="{{ route('detailParEmployerTablePdf', ['ticket' => '___TICKET___']) }}"
-  href="#" target="_blank"
-  class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors opacity-50 pointer-events-none"
-  title="Renseignez un ticket">
-  <i class="fas fa-file-excel mr-2"></i>Importer Excel
-</a>
+                        <a id="btnImportExcel"
+                            data-href-template="{{ route('detailParEmployerTablePdf', ['ticket' => '___TICKET___']) }}"
+                            href="#" target="_blank"
+                            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors opacity-50 pointer-events-none"
+                            title="Renseignez un ticket">
+                            <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                        </a>
 
                     </div>
                     <script>
                         document.addEventListener('DOMContentLoaded', () => {
-                          const input = document.getElementById('periodTicket');
-                          const btn   = document.getElementById('btnImportExcel');
-                          if (!input || !btn) return;
-                        
-                          const tpl   = btn.dataset.hrefTemplate; // ex: ".../detailParEmployerTablePdf/Tk-___TICKET___"
-                          const disabledClasses = ['opacity-50', 'pointer-events-none'];
-                        
-                          function enableBtn(url) {
-                            btn.href = url;
-                            btn.classList.remove(...disabledClasses);
-                            btn.removeAttribute('title');
-                          }
-                        
-                          function disableBtn() {
-                            btn.href = '#';
-                            btn.classList.add(...disabledClasses);
-                            btn.setAttribute('title', 'Renseignez un ticket');
-                          }
-                        
-                          function computeUrl(ticket) {
-                            return tpl.replace('___TICKET___', encodeURIComponent(ticket));
-                          }
-                        
-                          function updateHref() {
-                            const t = (input.value || '').trim();
-                            if (t) enableBtn(computeUrl(t));
-                            else   disableBtn();
-                          }
-                        
-                          // 1) Init immédiate
-                          updateHref();
-                        
-                          // 2) Écoutes “classiques”
-                          ['input', 'change', 'paste', 'keyup'].forEach(evt =>
-                            input.addEventListener(evt, updateHref)
-                          );
-                        
-                          // 3) Hooks Livewire (si présent)
-                          document.addEventListener('livewire:load', () => {
-                            if (window.Livewire && Livewire.hook) {
-                              Livewire.hook('message.processed', () => {
-                                // Livewire vient de patcher le DOM → resynchroniser
-                                updateHref();
-                              });
+                            const input = document.getElementById('periodTicket');
+                            const btn = document.getElementById('btnImportExcel');
+                            if (!input || !btn) return;
+
+                            const tpl = btn.dataset.hrefTemplate; // ex: ".../detailParEmployerTablePdf/Tk-___TICKET___"
+                            const disabledClasses = ['opacity-50', 'pointer-events-none'];
+
+                            function enableBtn(url) {
+                                btn.href = url;
+                                btn.classList.remove(...disabledClasses);
+                                btn.removeAttribute('title');
                             }
-                          });
-                        
-                          // 4) Polling léger pour les MAJ silencieuses (propriété value modifiée sans event)
-                          let last = input.value;
-                          setInterval(() => {
-                            if (input.value !== last) {
-                              last = input.value;
-                              updateHref();
+
+                            function disableBtn() {
+                                btn.href = '#';
+                                btn.classList.add(...disabledClasses);
+                                btn.setAttribute('title', 'Renseignez un ticket');
                             }
-                          }, 300);
-                        
-                          // 5) Garde-fou au clic
-                          btn.addEventListener('click', (e) => {
-                            if (!input.value || !input.value.trim()) {
-                              e.preventDefault();
-                              alert("Veuillez d'abord renseigner le ticket.");
+
+                            function computeUrl(ticket) {
+                                return tpl.replace('___TICKET___', encodeURIComponent(ticket));
                             }
-                          });
+
+                            function updateHref() {
+                                const t = (input.value || '').trim();
+                                if (t) enableBtn(computeUrl(t));
+                                else disableBtn();
+                            }
+
+                            // 1) Init immédiate
+                            updateHref();
+
+                            // 2) Écoutes “classiques”
+                            ['input', 'change', 'paste', 'keyup'].forEach(evt =>
+                                input.addEventListener(evt, updateHref)
+                            );
+
+                            // 3) Hooks Livewire (si présent)
+                            document.addEventListener('livewire:load', () => {
+                                if (window.Livewire && Livewire.hook) {
+                                    Livewire.hook('message.processed', () => {
+                                        // Livewire vient de patcher le DOM → resynchroniser
+                                        updateHref();
+                                    });
+                                }
+                            });
+
+                            // 4) Polling léger pour les MAJ silencieuses (propriété value modifiée sans event)
+                            let last = input.value;
+                            setInterval(() => {
+                                if (input.value !== last) {
+                                    last = input.value;
+                                    updateHref();
+                                }
+                            }, 300);
+
+                            // 5) Garde-fou au clic
+                            btn.addEventListener('click', (e) => {
+                                if (!input.value || !input.value.trim()) {
+                                    e.preventDefault();
+                                    alert("Veuillez d'abord renseigner le ticket.");
+                                }
+                            });
                         });
-                        </script>
-                        
-                        
+                    </script>
+
+
                     <div style="max-height: 450px; overflow-y: auto;">
                         <div class="table-responsive">
 
@@ -648,6 +652,9 @@
                                         <th
                                             class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Salaire Net</th>
+                                        <th
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="employeeDetailsBody" class="bg-white divide-y divide-gray-200">
@@ -1346,7 +1353,7 @@
             const container = document.getElementById('variablesContainer');
 
             const groupsMap = new Map();
-            (rawCategories || []).forEach(cat => {
+            (rawCategories || []).forEach(cat => { // Safe check. If rawCategories is undefined, use [].
                 groupsMap.set(cat.id, {
                     label: cat.nom_categorie,
                     items: [],
@@ -1361,8 +1368,8 @@
                     ...variable,
                     index
                 };
-                if (variable.categoryId && groupsMap.has(variable.categoryId)) {
-                    groupsMap.get(variable.categoryId).items.push(item);
+                if (item.categoryId && groupsMap.has(item.categoryId)) { // Use item.categoryId here.
+                    groupsMap.get(item.categoryId).items.push(item);
                 } else {
                     if (!groupsMap.has(UNCAT_KEY)) {
                         groupsMap.set(UNCAT_KEY, {
@@ -1381,55 +1388,71 @@
             ];
 
             container.innerHTML = orderedGroups.map(([key, group]) => `
-                <div class="bg-gray-50 rounded-lg p-4">
-                <h4 class="font-semibold text-primary mb-3 flex items-center">
-                    <i class="fas fa-folder mr-2"></i>${group.label}
-                </h4>
+            <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-primary mb-3 flex items-center">
+                <i class="fas fa-folder mr-2"></i>${group.label}
+            </h4>
 
-                ${
-                    group.items.length
-                    ? `<div class="space-y-2">
-                                                ${group.items.map(v => `
-                        <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
-                            <div class="items-center gap-2">
-                                <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
-                                <span class="text-sm font-medium">${
-                                    v.name.length > 40 
-                            ? v.name.substring(0, 40) + "..." 
-                            : v.name}</span>
-                            <br>
-                                ${
-                                    v.statutVariable
-                                    ? `<span class="badge bg-info text-dark">Taux salarial:  ${v.tauxVariable ?? 0}%</span>`
-                                    : ''
-                                }
-                                ${
-                                    v.statutVariable
-                                    ? `<span class="badge bg-info text-dark">Taux patronal:  ${v.tauxVariableEntreprise ?? 0}%</span>`
-                                    : ''
-                                }
-                                ${v.variableImposable ? `<span class="badge bg-warning text-dark">Imposable</span>` : ``}
-                            </div>
-                            <div class="flex items-center gap-2 no-print">
-                            <button class="text-primary hover:text-primary-emphasis btn btn-sm btn-light" onclick="openEditVariable(${v.index})" title="Modifier">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button class="text-danger hover:text-danger-emphasis btn btn-sm btn-light" onclick="deleteVariable(${v.index})" title="Supprimer">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            </div>
+            ${
+                group.items.length
+                ? `<div class="space-y-2">
+                                                                            ${group.items.map(v => `
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
+                        <div class="items-center gap-2">
+                            <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
+                            <span class="text-sm font-medium">${
+                                v.name?.length > 40 // Add ? to avoid error on v.name
+                        ? v.name.substring(0, 40) + "..."
+                        : v.name}</span>
+                        <br>
+                            ${
+                                v.statutVariable
+                                ? `<span class="badge bg-info text-dark">Taux salarial:  ${v.tauxVariable ?? 0}%</span>`
+                                : ''
+                            }
+                            ${
+                                v.statutVariable
+                                ? `<span class="badge bg-info text-dark">Taux patronal:  ${v.tauxVariableEntreprise ?? 0}%</span>`
+                                : ''
+                            }
+                            ${v.variableImposable ? `<span class="badge bg-warning text-dark">Imposable</span>` : ``}
                         </div>
-                        `).join('')}
-                                            </div>`
-                    : `
-                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                <span>Aucune variable dans cette catégorie</span>
-                                            </div>`
-                }
-                </div>
-            `).join('');
+                        <div class="flex items-center gap-2 no-print">
+                        <button
+class="text-primary hover:text-primary-emphasis btn btn-sm btn-light"
+onclick="Livewire.dispatch('open-edit', { id: '${v.id}' })"
+title="Modifier">
+<i class="fas fa-pen"></i>
+</button>
+
+<button
+class="text-danger hover:text-danger-emphasis btn btn-sm btn-light"
+onclick="confirmDeleteVariable('${v.id}')"
+title="Supprimer">
+<i class="fas fa-times"></i>
+</button>
+
+                        </div>
+                    </div>
+                    `).join('')}
+                                                                        </div>`
+                : `
+                                                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                                            <span>Aucune variable dans cette catégorie</span>
+                                                                        </div>`
+            }
+            </div>
+        `).join('');
         }
 
+        function confirmDeleteVariable(id) {
+            if (confirm('Supprimer cette variable ?')) {
+                // Le composant VariablesManager écoute #[On('delete-variable')]
+                Livewire.dispatch('delete-variable', {
+                    id
+                });
+            }
+        }
 
         // Pré-sélectionner la catégorie dans le modal d’ajout
         function openAddVariableWithCategory(catId) {
@@ -1479,376 +1502,105 @@
             document.getElementById('newVariableCategory').value = 'Primes';
         }
 
-        (function() {
-            // Références champs
-            const modalEl = document.getElementById('floatingLabelsModal');
-            const titleSpan = document.getElementById('modalTitleText');
-            const formModeEl = document.getElementById('formMode');
-            const currentIdEl = document.getElementById('currentVariableId');
-
-            const nameEl = document.getElementById('newVariableName');
-            const typeEl = document.getElementById('newVariableType');
-            const catEl = document.getElementById('newVariableCategory');
-            const cotisEl = document.getElementById('customCheckcolor1');
-            const tauxWrapEl = document.getElementById('variableCotisation');
-            const tauxEl = document.getElementById('newVariableTaux');
-            const tauxEl1 = document.getElementById('newVariableTauxEntreprise');
-            const imposEl = document.getElementById('customCheckcolor2');
-
-            const btnSave = document.getElementById('btnSubmitVariable') ||
-                document.querySelector('#floatingLabelsModal .modal-footer .btn.btn-primary');
-
-            const errName = document.getElementById('errName');
-            const errType = document.getElementById('errType');
-            const errCat = document.getElementById('errCategory');
-            const errTaux = document.getElementById('errTaux');
-
-            // Helpers erreurs
-            function hideErr(box) {
-                if (box) {
-                    box.textContent = '';
-                    box.classList.add('d-none');
-                }
-            }
-
-            function showErr(el, box, msg) {
-                if (el) el.classList.add('is-invalid');
-                if (box) {
-                    box.textContent = msg;
-                    box.classList.remove('d-none');
-                }
-            }
-
-            function clearErrors() {
-                [nameEl, typeEl, catEl, tauxEl, tauxEl1].forEach(el => el && el.classList.remove('is-invalid'));
-                [errName, errType, errCat, errTaux].forEach(hideErr);
-            }
-
-            function applyServerErrors(e) {
-                if (!e) return;
-                if (e.nom_variable) showErr(nameEl, errName, e.nom_variable[0]);
-                if (e.type) showErr(typeEl, errType, e.type[0]);
-                if (e.categorie_id) showErr(catEl, errCat, e.categorie_id[0]);
-                if (e.tauxVariable) showErr(tauxEl, errTaux, e.tauxVariable[0]);
-                if (e.tauxVariableEntreprise) showErr(tauxEl1, errTaux, e.tauxVariableEntreprise[0]);
-            }
-
-            // Affiche/masque le champ taux
-            function toggleTauxVisibility() {
-                if (cotisEl && cotisEl.checked) {
-                    tauxWrapEl?.classList.remove('d-none');
-                    if (tauxEl) {
-                        tauxEl.required = true;
-                        tauxEl.setAttribute('aria-required', 'true');
-                    }
-                    if (tauxEl1) {
-                        tauxEl1.required = true;
-                        tauxEl1.setAttribute('aria-required', 'true');
-                    }
-                } else {
-                    tauxWrapEl?.classList.add('d-none');
-                    if (tauxEl) {
-                        tauxEl.required = false;
-                        tauxEl.removeAttribute('aria-required');
-                    }
-                    if (tauxEl1) {
-                        tauxEl1.required = false;
-                        tauxEl1.removeAttribute('aria-required');
-                    }
-                    hideErr(errTaux);
-                    tauxEl?.classList.remove('is-invalid');
-                    tauxEl1?.classList.remove('is-invalid');
-                }
-            }
-
-            function isValidTaux(value) {
-                if (value === null || value === undefined) return false;
-                const normalized = String(value).trim().replace(',', '.');
-                if (normalized === '') return false;
-                const num = Number(normalized);
-                return Number.isFinite(num) && num >= 0 && num <= 100;
-            }
-
-            // Validation + data-bs-dismiss
-            function validateAndToggleDismiss() {
-                clearErrors();
-                let ok = true;
-
-                if (!nameEl?.value.trim()) {
-                    showErr(nameEl, errName, 'Veuillez entrer un nom.');
-                    ok = false;
-                }
-                if (!typeEl?.value) {
-                    showErr(typeEl, errType, 'Veuillez choisir un type.');
-                    ok = false;
-                }
-                if (!catEl?.value) {
-                    showErr(catEl, errCat, 'Veuillez choisir une catégorie.');
-                    ok = false;
-                }
-
-                if (cotisEl?.checked) {
-                    const val = tauxEl?.value ?? '';
-                    if (!isValidTaux(val)) {
-                        showErr(tauxEl, errTaux, 'Veuillez renseigner un taux valide entre 0 et 100.');
-                        ok = false;
-                    } else {
-                        tauxEl.value = String(val).trim().replace(',', '.');
-                    }
-                }
-
-                if (btnSave) {
-                    if (ok) btnSave.setAttribute('data-bs-dismiss', 'modal');
-                    else btnSave.removeAttribute('data-bs-dismiss');
-                }
-                return ok;
-            }
-
-            // Écoutes live
-            ['input', 'change'].forEach(evt => {
-                [nameEl, typeEl, catEl, tauxEl, tauxEl1].forEach(el => el && el.addEventListener(evt,
-                    validateAndToggleDismiss));
+        // Ouvrir la modale depuis "paie"
+        function openCreateVariable(catId = null) {
+            Livewire.dispatch('open-create', {
+                categorieId: catId
             });
-            cotisEl?.addEventListener('change', () => {
-                toggleTauxVisibility();
-                validateAndToggleDismiss();
-            });
-
-            // API publique: ouvrir en création pré-sélectionnée
-            window.openAddVariableWithCategory = function(catId) {
-                formModeEl.value = 'create';
-                currentIdEl.value = '';
-                titleSpan.textContent = 'Ajouter une Variable';
-
-                // reset
-                nameEl.value = '';
-                typeEl.value = '';
-                catEl.value = catId || '';
-                cotisEl.checked = false;
-                tauxEl.value = '';
-                tauxEl1.value = '';
-                imposEl.checked = false;
-
-                toggleTauxVisibility();
-                clearErrors();
-                validateAndToggleDismiss();
-
-                const ModalCtor = window.bootstrap?.Modal;
-                ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).show() : (modalEl.classList.add('show'), modalEl
-                    .style.display = 'block', modalEl.removeAttribute('aria-hidden'));
-            };
-
-            // API publique: ouvrir en édition depuis la grille
-            window.openEditVariable = function(index) {
-                const v = payrollVariables[index];
-                if (!v) return;
-
-                formModeEl.value = 'edit';
-                currentIdEl.value = v.id || '';
-                titleSpan.textContent = 'Modifier la Variable';
-
-                // remplir
-                nameEl.value = v.name || '';
-                typeEl.value = v.type || '';
-                catEl.value = v.categoryId || '';
-                cotisEl.checked = !!v.statutVariable;
-                tauxEl.value = v.statutVariable ? (v.tauxVariable ?? '') : '';
-                tauxEl1.value = v.statutVariable ? (v.tauxVariableEntreprise ?? '') : '';
-                imposEl.checked = !!v.variableImposable;
-
-                toggleTauxVisibility();
-                clearErrors();
-                validateAndToggleDismiss();
-
-                const ModalCtor = window.bootstrap?.Modal;
-                ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).show() : (modalEl.classList.add('show'), modalEl
-                    .style.display = 'block', modalEl.removeAttribute('aria-hidden'));
-            };
-
-            // Sauvegarde (create/update)
-            window.saveVariable = async function() {
-                if (!validateAndToggleDismiss()) return;
-
-                const mode = formModeEl.value || 'create';
-                const id = currentIdEl.value || null;
-
-                const payload = {
-                    nom_variable: (nameEl.value || '').trim(),
-                    type: (typeEl.value || '').trim(),
-                    categorie_id: (catEl.value || '').trim(),
-                    statutVariable: cotisEl.checked ? 1 : 0,
-                    variableImposable: imposEl.checked ? 1 : 0,
-                };
-                if (cotisEl.checked) payload.tauxVariable = (tauxEl.value || '').trim().replace(',', '.');
-                if (cotisEl.checked) payload.tauxVariableEntreprise = (tauxEl1.value || '').trim().replace(',',
-                    '.');
-
-                // UI spinner
-                const label = btnSave?.querySelector('.label');
-                const spin = btnSave?.querySelector('.spinner-border');
-                if (btnSave) btnSave.disabled = true;
-                label?.classList.add('d-none');
-                spin?.classList.remove('d-none');
-
-                try {
-                    const url = mode === 'edit' ?
-                        "{{ url('/variables') }}/" + encodeURIComponent(id) :
-                        "{{ route('variables.store') }}";
-                    const method = mode === 'edit' ? 'PUT' : 'POST';
-
-                    const res = await fetch(url, {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content'),
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    const data = await res.json();
-
-                    if (!res.ok) {
-                        if (res.status === 422 && data?.errors) applyServerErrors(data.errors);
-                        showNotification(data.message || 'Erreur lors de l’enregistrement', 'error');
-                        return;
-                    }
-
-                    const obj = data.data; // renvoyé par l’API
-                    // Met à jour le cache local (ajout ou remplacement)
-                    if (mode === 'create') {
-                        payrollVariables.push({
-                            id: obj.id,
-                            name: obj.nom_variable,
-                            type: obj.type,
-                            categoryId: obj.categorie ? obj.categorie.id : null,
-                            categoryName: obj.categorie ? obj.categorie.nom_categorie :
-                                '(Sans catégorie)',
-                            statutVariable: !!obj.statutVariable,
-                            variableImposable: !!obj.variableImposable,
-                            tauxVariable: obj.tauxVariable ?? null,
-                            tauxVariableEntreprise: obj.tauxVariableEntreprise ?? null,
-                        });
-                    } else {
-                        const idx = payrollVariables.findIndex(x => x.id === obj.id);
-                        const updated = {
-                            id: obj.id,
-                            name: obj.nom_variable,
-                            type: obj.type,
-                            categoryId: obj.categorie ? obj.categorie.id : null,
-                            categoryName: obj.categorie ? obj.categorie.nom_categorie : '(Sans catégorie)',
-                            statutVariable: !!obj.statutVariable,
-                            variableImposable: !!obj.variableImposable,
-                            tauxVariable: obj.tauxVariable ?? null,
-                            tauxVariableEntreprise: obj.tauxVariableEntreprise ?? null,
-                        };
-                        if (idx >= 0) payrollVariables[idx] = updated;
-                    }
-
-                    renderVariablesGrid();
-
-                    // Fermer la modale
-                    const ModalCtor = window.bootstrap?.Modal;
-                    ModalCtor ? ModalCtor.getOrCreateInstance(modalEl).hide() : (modalEl.classList.remove(
-                        'show'), modalEl.style.display = 'none', modalEl.setAttribute('aria-hidden',
-                        'true'));
-
-                    showNotification(mode === 'edit' ? 'Variable mise à jour' : 'Variable ajoutée', 'success');
-                } catch (e) {
-                    console.error(e);
-                    showNotification('Erreur réseau', 'error');
-                } finally {
-                    if (btnSave) btnSave.disabled = false;
-                    label?.classList.remove('d-none');
-                    spin?.classList.add('d-none');
-                }
-            };
-
-            // état initial
-            toggleTauxVisibility();
-            validateAndToggleDismiss();
-        })();
-
-
-        function deleteVariable(index) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
-                const variableToDelete = payrollVariables[index];
-
-                // *** NOUVELLE SECTION : APPEL AJAX ***
-                fetch("{{ route('variables.destroy', ['id' => '__ID__']) }}".replace('__ID__', variableToDelete
-                        .id), { // IMPORTANT : remplacer __ID__
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur lors de la suppression de la variable.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Si la suppression sur le serveur réussit, on peut supprimer la variable du tableau et recharger
-                        payrollVariables.splice(index, 1);
-                        renderVariablesGrid();
-                        showNotification('Variable supprimée avec succès', 'success');
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        showNotification('Erreur lors de la suppression de la variable (réseau)', 'error');
-                    });
-                // *** FIN NOUVELLE SECTION ***
-            }
         }
+
+        function openEditVariableById(id) {
+            Livewire.dispatch('open-edit', {
+                id
+            });
+        }
+
+        // Normalisation Livewire -> objet utilisé par ta grille
+        function normalizeFromLW(obj) {
+            return {
+                id: obj.id,
+                name: obj.name,
+                statutVariable: !!obj.statutVariable,
+                variableImposable: !!obj.variableImposable,
+                tauxVariable: obj.tauxVariable,
+                tauxVariableEntreprise: obj.tauxVariableEntreprise,
+                type: obj.type,
+                categoryId: obj.categorie?.id || null,
+                categoryName: obj.categorie?.nom_categorie || '(Sans catégorie)',
+                numeroVariable: obj.numeroVariable ?? null,
+            };
+        }
+
+        // Upsert dans payrollVariables puis re-render
+        function upsertVariable(v) {
+            const idx = payrollVariables.findIndex(x => x.id === v.id);
+            if (idx >= 0) payrollVariables[idx] = v;
+            else payrollVariables.push(v);
+            renderVariablesGrid();
+        }
+
+        // Supprimer de payrollVariables puis re-render
+        function removeVariable(id) {
+            const idx = payrollVariables.findIndex(x => x.id === id);
+            if (idx >= 0) payrollVariables.splice(idx, 1);
+            renderVariablesGrid();
+        }
+
+        // Écoute des events envoyés par le composant
+        window.addEventListener('variable-upserted', (e) => {
+            const v = normalizeFromLW(e.detail);
+            upsertVariable(v);
+        });
+        window.addEventListener('variable-deleted', (e) => {
+            removeVariable(e.detail?.id);
+        });
 
         // --- SAISIE GLOBALE ---
         function renderPayrollTable() {
+            console.log('renderPayrollTable called', payrollVariables);
             const thead = document.getElementById('payrollTableHead');
             const tbody = document.getElementById('payrollTableBody');
 
             // En-tête
             let headerHTML = `
-                    <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">Employé</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Salaire de Base</th>
-                `;
+                               <tr>
+                               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">Employé</th>
+                               <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Salaire de Base</th>
+                           `;
 
             payrollVariables.forEach(variable => {
                 const badge = variable.statutVariable ?
                     ` <span class="badge bg-info text-dark ms-1" title="Variable de cotisation">%</span>` :
                     '';
                 headerHTML += `
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ${getVariableIconColor(variable.type)}"
-                        title="${variable.categoryName}">
-                        ${
-                            variable.name.length > 30 
-                            ? variable.name.substring(0, 30) + "..." 
-                            : variable.name
-                        }${badge}
-                    </th>
-                    `;
+                               <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ${getVariableIconColor(variable.type)}"
+                                   title="${variable.categoryName}">
+                                   ${
+                                       variable.name?.length > 30  // Use optional chaining
+                                       ? variable.name.substring(0, 30) + "..."
+                                       : variable.name
+                                   }${badge}
+                               </th>
+                               `;
             });
 
             headerHTML += `
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Net à Payer</th>
-                    </tr>
-                `;
+                               <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Net à Payer</th>
+                               </tr>
+                           `;
             thead.innerHTML = headerHTML;
 
             // Corps
             tbody.innerHTML = employees.map(employee => {
                 let rowHTML = `
-                    <tr class="hover:bg-gray-50" data-employee-id="${employee.id}">
-                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white z-10">
-                        ${employee.lastName} ${employee.firstName}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-medium">
-                        ${formatCurrency(employee.baseSalary)}
-                        </td>
-                    `;
+                               <tr class="hover:bg-gray-50" data-employee-id="${employee.id}">
+                                   <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white z-10">
+                                   ${employee.lastName} ${employee.firstName}
+                                   </td>
+                                   <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-medium">
+                                   ${formatCurrency(employee.baseSalary)}
+                                   </td>
+                               `;
 
                 payrollVariables.forEach(variable => {
                     const currentValue = (employeeData[employee.id] && employeeData[employee.id][variable
@@ -1860,58 +1612,59 @@
                         const pct = (variable.tauxVariable ?? 0);
                         const pct1 = (variable.tauxVariableEntreprise ?? 0);
                         rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap text-center">
-                            <div>
-                                <label class="form-label">Tx salariale</label>
-                                
-                                <input type="text"
-                                    class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
-                                    value="${pct} %"
-                                    title="Variable de cotisation (verrouillée)"
-                                    readonly disabled
-                                    data-locked="1"
-                                    data-variable-id="${variable.id}">
-                            </div>
-                            <div>
-                                     <label class="form-label">Tx patronale</label>
-                                <input type="text"
-                                class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
-                                value="${pct1} %"
-                                title="Variable de cotisation (verrouillée)"
-                                readonly disabled
-                                data-locked="1"
-                                data-variable-id="${variable.id}">
-                            </div>
-                        </td>
-                        `;
+                               <td class="px-4 py-4 whitespace-nowrap text-center">
+                                   <div>
+                                       <label class="form-label">Tx salariale</label>
+                                       
+                                       <input type="text"
+                                           class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
+                                           value="${pct} %"
+                                           title="Variable de cotisation (verrouillée)"
+                                           readonly disabled
+                                           data-locked="1"
+                                           data-variable-id="${variable.id}">
+                                   </div>
+                                   <div>
+                                            <label class="form-label">Tx patronale</label>
+                                       <input type="text"
+                                       class="w-24 px-2 py-1 text-sm text-center border border-gray-300 rounded bg-light"
+                                       value="${pct1} %"
+                                       title="Variable de cotisation (verrouillée)"
+                                       readonly disabled
+                                       data-locked="1"
+                                       data-variable-id="${variable.id}">
+                                   </div>
+                               </td>
+                               `;
                     } else {
                         // ✍️ Libre : champ éditable (gains/retenues classiques)
                         rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <input type="number"
-                                class="w-24 px-2 py-1 text-sm text-right border border-gray-300 rounded input-focus"
-                                placeholder="0"
-                                min="0"
-                                step="1000"
-                                value="${currentValue}"
-                                data-employee-id="${employee.id}"
-                                data-variable-name="${variable.name}"
-                                onchange="handleGlobalInput(this)">
-                        </td>
-                        `;
+                               <td class="px-4 py-4 whitespace-nowrap">
+                                   <input type="number"
+                                       class="w-24 px-2 py-1 text-sm text-right border border-gray-300 rounded input-focus"
+                                       placeholder="0"
+                                       min="0"
+                                       step="1000"
+                                       value="${currentValue}"
+                                       data-employee-id="${employee.id}"
+                                       data-variable-name="${variable.name}"
+                                       onchange="handleGlobalInput(this)">
+                               </td>
+                               `;
                     }
                 });
 
                 const netSalary = calculateEmployeeNet(employee.id);
                 rowHTML += `
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold" data-net-salary="${employee.id}">
-                        ${formatCurrency(netSalary)}
-                        </td>
-                    </tr>
-                    `;
+                               <td class="px-4 py-4 whitespace-nowrap text-sm text-right font-bold" data-net-salary="${employee.id}">
+                               ${formatCurrency(netSalary)}
+                               </td>
+                           </tr>
+                           `;
                 return rowHTML;
             }).join('');
         }
+
 
 
         function handleGlobalInput(input) {
@@ -1980,8 +1733,8 @@
             employees.forEach((emp, index) => {
                 const card = document.createElement('div');
                 card.className = `employee-card p-4 rounded-lg cursor-pointer transition-all ${
-                    index === currentEmployeeIndex ? 'selected' : ''
-                }`;
+                index === currentEmployeeIndex ? 'selected' : ''
+            }`;
                 card.onclick = () => selectEmployee(index);
 
                 card.innerHTML = `
@@ -2109,6 +1862,7 @@
                 employeeData = {};
                 renderPayrollTable();
             }
+
         });
         async function loadTicketData(ticket) {
             try {
@@ -2221,6 +1975,26 @@
             renderEmployeeDetail();
         }
 
+
+        // ex: "/pdf/fichePaie/__USER__/__PERIODE__"
+        const PAYSLIP_URL_TEMPLATE = @json(route('ficheDePaieDemo', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
+
+        const periodTicketInput = document.getElementById('periodTicket');
+
+        function buildPayslipUrl(userId, tiketPeriode) {
+            return PAYSLIP_URL_TEMPLATE
+                .replace('__USER__', encodeURIComponent(userId))
+                .replace('__PERIODE__', encodeURIComponent(tiketPeriode));
+        }
+
+        function openPayslip(userId) {
+            const ticket = (periodTicketInput?.value || '').trim();
+            if (!ticket) {
+                alert("Veuillez d'abord renseigner un ticket/période.");
+                return;
+            }
+            window.open(buildPayslipUrl(userId, ticket), '_blank', 'noopener');
+        }
         // --- SYNTHÈSE ---
         function calculateSynthesis() {
             let totalBaseSalary = 0;
@@ -2278,19 +2052,47 @@
 
             // Mise à jour du tableau détaillé
             const tbody = document.getElementById('employeeDetailsBody');
-            tbody.innerHTML = employeeDetails.map(detail => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        ${detail.employee.lastName} ${detail.employee.firstName}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
-                        ${formatCurrency(detail.employee.baseSalary)}
-                        </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">${formatCurrency(detail.gains)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">${formatCurrency(detail.deductions)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold ">${formatCurrency(detail.netSalary)}</td>
-                </tr>
-            `).join('');
+            const ticket = (periodTicketInput?.value || '').trim();
+            const canOpen = !!ticket;
+
+            tbody.innerHTML = employeeDetails.map(detail => {
+                const btnHtml = canOpen ?
+                    `<button type="button"
+               class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-primary"
+               onclick="openPayslip('${detail.employee.id}')">
+         Fiche de paie
+       </button>` :
+                    `<button type="button"
+               class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-gray-300 text-gray-600 cursor-not-allowed"
+               title="Renseignez d'abord le ticket/période"
+               disabled>
+         Fiche de paie
+       </button>`;
+
+                return `
+    <tr class="hover:bg-gray-50">
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        ${detail.employee.lastName} ${detail.employee.firstName}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+        ${formatCurrency(detail.employee.baseSalary)}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">
+        ${formatCurrency(detail.gains)}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">
+        ${formatCurrency(detail.deductions)}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold">
+        ${formatCurrency(detail.netSalary)}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+        ${btnHtml}
+      </td>
+    </tr>
+  `;
+            }).join('');
+
 
             // Répartition par service
             renderServiceBreakdown(serviceData);
@@ -2512,5 +2314,143 @@
         //     // Initialiser la première vue
         //     switchTab('periode');
         // });
+    </script>
+
+    <script>
+        // — util : normalise l’objet variable reçu
+        function normalizeVariablePayload(p) {
+            const normalized = {
+                id: p.id ?? null,
+                name: p.name ?? '',
+                statutVariable: !!p.statutVariable,
+                variableImposable: !!p.variableImposable,
+                tauxVariable: p.tauxVariable ?? null,
+                tauxVariableEntreprise: p.tauxVariableEntreprise ?? null,
+                type: p.type ?? undefined,
+                categoryId: p.categorie?.id || null,
+                categoryName: p.categorie?.nom_categorie || '(Sans catégorie)',
+                numeroVariable: p.numeroVariable ?? null,
+            };
+            console.log('normalizeVariablePayload - normalized:', normalized); // Ajout
+            return normalized;
+        }
+
+        function ensureCategoryExists(cat) {
+            if (!cat || !cat.id) return;
+            if (!(rawCategories || []).some(c => c.id === cat.id)) {
+                rawCategories.push({
+                    id: cat.id,
+                    nom_categorie: cat.nom_categorie
+                });
+            }
+        }
+
+        function renameEmployeeDataKey(oldName, newName) {
+            if (!oldName || oldName === newName) return;
+            for (const empId in (window.employeeData || {})) {
+                const row = employeeData[empId];
+                if (row && Object.prototype.hasOwnProperty.call(row, oldName)) {
+                    row[newName] = row[oldName];
+                    delete row[oldName];
+                }
+            }
+        }
+
+        function dropEmployeeDataForVariable(varName) {
+            for (const empId in (window.employeeData || {})) {
+                const row = employeeData[empId];
+                if (row && Object.prototype.hasOwnProperty.call(row, varName)) {
+                    delete row[varName];
+                }
+            }
+        }
+
+        function sortPayrollVariables() {
+            payrollVariables.sort((a, b) => {
+                const cA = (a.categoryName || '').localeCompare(b.categoryName || '');
+                return cA !== 0 ? cA : (a.name || '').localeCompare(b.name || '');
+            });
+        }
+
+        function refreshAllViews() {
+            if (typeof renderVariablesGrid === 'function') renderVariablesGrid();
+            if (typeof renderPayrollTable === 'function') renderPayrollTable();
+            if (typeof renderEmployeeSelector === 'function' && typeof renderEmployeeDetail === 'function') {
+                renderEmployeeSelector();
+                renderEmployeeDetail();
+            }
+            if (typeof calculateSynthesis === 'function') calculateSynthesis();
+        }
+
+
+        // — upsert / delete
+
+        function upsertPayrollVariable(payload) {
+            const v = normalizeVariablePayload(payload);
+            if (payload.categorie) ensureCategoryExists(payload.categorie);
+
+            const idx = payrollVariables.findIndex(x => x.id === v.id);
+            console.log('upsertPayrollVariable - index trouvé:', idx); // Ajout
+
+            if (idx >= 0) {
+                const oldName = payrollVariables[idx].name;
+                if (oldName !== v.name) renameEmployeeDataKey(oldName, v.name);
+                payrollVariables[idx] = v;
+                console.log('upsertPayrollVariable - variable mise à jour:', v); // Ajout
+            } else {
+                payrollVariables.push(v);
+                console.log('upsertPayrollVariable - variable ajoutée:', v); // Ajout
+            }
+            sortPayrollVariables();
+            sortPayrollVariables();
+            refreshAllViews();
+        }
+
+        function removePayrollVariableById(id) {
+            const idx = payrollVariables.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            dropEmployeeDataForVariable(payrollVariables[idx]?.name);
+            payrollVariables.splice(idx, 1);
+            refreshAllViews();
+        }
+
+        // — listeners robustes (Livewire v3 browser event)
+        function handleUpsertEvt(e) {
+            const payload = e?.detail?.payload ?? e?.detail ?? null;
+            console.log('handleUpsertEvt - payload:', payload); // Add this
+            if (!payload) {
+                console.warn('variable-upserted sans payload', e);
+                return;
+            }
+            upsertPayrollVariable(payload);
+        }
+
+        function handleDeleteEvt(e) {
+            const id = e?.detail?.id ?? e?.detail ?? null;
+            if (!id) {
+                console.warn('variable-deleted sans id', e);
+                return;
+            }
+            removePayrollVariableById(id);
+        }
+
+        window.addEventListener('variable-upserted', handleUpsertEvt);
+        window.addEventListener('variable-deleted', handleDeleteEvt);
+
+        // Fallback Livewire.on (au cas où)
+        document.addEventListener('livewire:init', () => {
+            if (window.Livewire?.on) {
+                Livewire.on('variable-upserted', payload => handleUpsertEvt({
+                    detail: {
+                        payload
+                    }
+                }));
+                Livewire.on('variable-deleted', id => handleDeleteEvt({
+                    detail: {
+                        id
+                    }
+                }));
+            }
+        });
     </script>
 @endsection

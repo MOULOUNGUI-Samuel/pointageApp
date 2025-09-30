@@ -4,8 +4,8 @@
         $moduleNom = strtolower($module_nom);
     @endphp
     @switch($moduleNom)
-        @case('smi')
-            @include('components/smi/dashboard')
+        @case('audit de conformité')
+            @include('components/audit/dashboard')
         @break
 
         @case('rh')

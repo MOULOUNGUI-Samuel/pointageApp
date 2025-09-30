@@ -225,11 +225,18 @@ Route::middleware('auth')->group(
 
         Route::post('/categories/multiple', [CaisseWebController::class, 'storeMultiple'])
             ->name('categories.storeMultiple');
-        Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
-            ->name('variables.ajax.store');
+
+        // Route::post('/variables/ajax', [CaisseWebController::class, 'storeAjax'])
+        //     ->name('variables.ajax.store');
 
         Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
         Route::post('/variables', [CaisseWebController::class, 'storeAjax'])->name('variables.store');
+        Route::get('/variables/{variable}', [CaisseWebController::class, 'showAjax'])
+             ->name('variables.showAjax');
+        // web.php
+        Route::get('/variables/next-number', [CaisseWebController::class, 'nextNumber'])->name('variables.nextNumber');
+// web.php
+
         Route::put('/variables/{variable}', [CaisseWebController::class, 'updateAjax'])->name('variables.updateAjax');
         Route::delete('/variables/{id}', [CaisseWebController::class, 'destroy'])->name('variables.destroy');
         Route::post('/payroll/save-ticket', [CaisseWebController::class, 'saveByTicket'])->name('payroll.saveByTicket');
@@ -243,11 +250,11 @@ Route::middleware('auth')->group(
         Route::get('/pdf/absent', [PdfController::class, 'absentsPdf'])->name('absentsPdf');
         Route::get('/pdf/presentPdf', [PdfController::class, 'presentPdf'])->name('presentPdf');
         Route::get('/pdf/payrollTablePdf/{ticket}', [PdfController::class, 'payrollTablePdf'])
-        ->name('payrollTablePdf');
+            ->name('payrollTablePdf');
         Route::get('/pdf/detailParEmployerTablePdf/{ticket}', [PdfController::class, 'detailParEmployerTablePdf'])
-        ->name('detailParEmployerTablePdf');
-        
-        Route::get('/pdf/fichePaie', [PdfController::class, 'ficheDePaieDemo'])->name('ficheDePaieDemo');
+            ->name('detailParEmployerTablePdf');
+
+        Route::get('/pdf/fichePaie/{userId}/{tiketPeriode}', [PdfController::class, 'ficheDePaieDemo'])->name('ficheDePaieDemo');
 
 
         // --- Routes pour l'employé ---
@@ -267,7 +274,7 @@ Route::middleware('auth')->group(
         Route::post('/demande-interventions', [DemandeInterventionController::class, 'storeDemandeIntervention'])
             ->name('envoi_demande');
 
-            
+
         Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
             ->name('push.subscribe');
         Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
@@ -287,9 +294,7 @@ Route::middleware('auth')->group(
             return view('components.configuration.config-audit');
         })->name('config-audit');
 
-        Route::get('/entreprise-audit', function () {
-            return view('components.configuration.entreprise-audit');
-        })->name('entreprise-audit');
+       
     }
 
 );

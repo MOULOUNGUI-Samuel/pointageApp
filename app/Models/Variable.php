@@ -20,6 +20,7 @@ class Variable extends Model
     'tauxVariable',
     'tauxVariableEntreprise',
     'variableImposable',
+    'numeroVariable',
      'statut'];
 
      protected $casts = [
@@ -39,4 +40,5 @@ class Variable extends Model
     {
         return $this->hasMany(VariablePeriodeUser::class);
     }
+    
 }

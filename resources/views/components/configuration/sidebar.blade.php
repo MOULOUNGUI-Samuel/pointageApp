@@ -61,12 +61,6 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('entreprise-audit') }}" class="{{ request()->routeIs('entreprise-audit') ? 'active' : '' }}">
-                                <i class="fa fa-shield"></i>
-                                <span>Config audit entreprise</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('config-audit') }}" class="{{ request()->routeIs('config-audit') ? 'active' : '' }}">
                                 <i class="fa fa-shield"></i>
                                 <span>Configuration audit</span>

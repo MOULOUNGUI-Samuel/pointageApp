@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\Variable;
+use App\Services\AttendanceService;
 
 require_once base_path('vendor/setasign/fpdf/fpdf.php');
 
@@ -28,7 +30,7 @@ class PdfPayslip extends \FPDF
     // Encodage FPDF (ISO-8859-1)
     protected function t($text)
     {
-        return mb_convert_encoding($text ?? '', 'ISO-8859-1', 'UTF-8');
+        return mb_convert_encoding((string)($text ?? ''), 'ISO-8859-1', 'UTF-8');
     }
 
     // Cellule clé/valeur simple (infos entreprise / salarié)
@@ -76,7 +78,7 @@ class PdfPayslip extends \FPDF
         $lineSpacing = 4;
 
         // Calcul des positions Y pour les lignes
-        $y1 = $y ;
+        $y1 = $y;
         $y2 = $y  + $lineSpacing;
 
         // Affichage des lignes
@@ -102,34 +104,34 @@ class PdfPayslip extends \FPDF
 
     // Titre société centré (trois lignes)
     public function drawCompanyTitleCentered(array $e): void
-{
-    $left  = 12;   // marge gauche du bloc
-    $top   = 4;   // y de départ pour le logo
-    $gap   = 3;    // espace entre logo et texte (mm)
-    $logoH = 14;   // hauteur du logo (garde les proportions)
+    {
+        $left  = 12;   // marge gauche du bloc
+        $top   = 4;   // y de départ pour le logo
+        $gap   = 3;    // espace entre logo et texte (mm)
+        $logoH = 14;   // hauteur du logo (garde les proportions)
 
-    // Logo au-dessus
-    $yText = $top; // y du texte (sera ajusté si logo)
-    if ($this->logoPath && @is_file($this->logoPath)) {
-        // w=0, h=$logoH -> conserve les proportions
-        $this->Image($this->logoPath, $left, $top, 0, $logoH);
-        $yText = $top + $logoH + $gap;
+        // Logo au-dessus
+        $yText = $top; // y du texte (sera ajusté si logo)
+        if ($this->logoPath && @is_file($this->logoPath)) {
+            // w=0, h=$logoH -> conserve les proportions
+            $this->Image($this->logoPath, $left, $top, 0, $logoH);
+            $yText = $top + $logoH + $gap;
+        }
+
+        // Nom de la société
+        $this->SetXY($left, $yText);
+        $this->SetFont('Arial', 'B', 16);
+        $this->Cell(0, 7, $this->t($e['nom'] ?? ''), 0, 1, 'L');
+
+        // Adresse / téléphone
+        $this->SetFont('Arial', '', 12);
+        $this->SetXY($left, $this->GetY());
+        $this->Cell(0, 6, $this->t('Boite Postale : ' . ($e['bp'] ?? '') . '     ' . ($e['ville'] ?? '')), 0, 1, 'L');
+        $this->SetXY($left, $this->GetY());
+        $this->Cell(0, 6, $this->t('TEL : ' . ($e['tel'] ?? '')), 0, 1, 'L');
     }
 
-    // Nom de la société
-    $this->SetXY($left, $yText);
-    $this->SetFont('Arial', 'B', 16);
-    $this->Cell(0, 7, $this->t($e['nom'] ?? ''), 0, 1, 'L');
 
-    // Adresse / téléphone
-    $this->SetFont('Arial', '', 12);
-    $this->SetXY($left, $this->GetY());
-    $this->Cell(0, 6, $this->t('Boite Postale : ' . ($e['bp'] ?? '') . '     ' . ($e['ville'] ?? '')), 0, 1, 'L');
-    $this->SetXY($left, $this->GetY());
-    $this->Cell(0, 6, $this->t('TEL : ' . ($e['tel'] ?? '')), 0, 1, 'L');
-}
-
-    
 
     // Carte identité salarié à droite (nom en gras en haut)
     public function drawRightIdentityCard(array $id): void
@@ -206,7 +208,7 @@ class PdfPayslip extends \FPDF
         $this->Cell(32, 6, $this->t("Nbres d'enfants"), 0, 0, 'L');
         $this->SetFont('Arial', 'B', 11);
         $this->Cell(16, 6, $this->t($m['nb_enfants'] ?? ''), 0, 0, 'L');
-$this->Ln(5);
+        $this->Ln(5);
         $this->SetFont('Arial', '', 11);
         $this->Cell(24, 6, $this->t('Catégorie'), 0, 0, 'L');
         $this->SetFont('Arial', 'B', 11);
@@ -1096,140 +1098,5 @@ class PdfController extends Controller
         return response($pdf->Output('S'))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="détail-employé-' . $ticket . '.pdf"');
-    }
-
-
-    public function ficheDePaieDemo(Request $request)
-    {
-        // ==== ENTÊTE ====
-        $entreprise = [
-            'nom'   => 'QUEEN TRANSIT',
-            'bp'    => '0001',
-            'ville' => 'OWENDO',
-            'tel'   => '+241 74 05 94 06',
-        ];
-
-        $identite = [
-            'civilite'  => 'M',
-            'nom'       => 'MOUSSAVOU GUY ROGER',
-            'naissance' => '15/12/75',
-            'lieu'      => '',
-            'cnss'      => '012081562',
-            'matricule' => 'P01',
-            'poste'     => 'Assistant Comptable',
-            'telephone' => '077234045',
-        ];
-
-        $meta = [
-            'departement'   => 'Comptabilité et Fiscalité',
-            'situation_fam' => 'Marié(e)',
-            'nb_enfants'    => '3',
-            'nb_parts'      => '0,00',
-            'categorie'     => 'AM1',
-            'horaire'       => '173,333',
-        ];
-
-        // ==== TABLEAU ====
-        // Colonnes: [code, libellé, nombre, base, taux_s, gain_s, ret_s, taux_p, ret_p]
-        $rows = [
-            ['1000', 'Salaire de base', '', '229 687', '',      '229 687', '',     '',     ''],
-            ['1015', 'Sursalaire mensuel', '', '100 000,00', '30,00', '100 000', '',     '',     ''],
-            ['1150', 'Prime d\'ancienneté', '', '150 000,00', '13,000', '19 500', '',    '',     ''],
-            ['1194', 'Indemnité transport imposab', '', '20 000', '',      '20 000', '',     '',     ''],
-            ['1195', 'Indemnité logement imposa.', '', '24 325', '',       '24 325', '',     '',     ''],
-            ['1225', 'Prime de Risque', '', '70 000,00', '100,000', '70 000', '',    '',     ''],
-            ['1500', 'Indemnité aide au logement', '', '175 675,00', '100,000', '175 675', '', '',    ''],
-            ['1524', 'Indemnité de Nourriture', '', '20 000,00', '100,000', '20 000', '',   '',     ''],
-            ['2005', 'Rappel congés payés', '', '50 000', '',      '50 000', '',     '',     ''],
-
-            ['', 'Total Brut', '', '', '', '709 187', '', '', ''],
-
-            ['2515', 'CNSS', '', '709 187,00', '2,500', '', '17 730', '16,000', '113 470'],
-            ['2516', 'CNAMGS', '', '513 512,00', '2,000', '', '10 270', '4,100', '21 054'],
-            ['2520', 'FNH', '',   '709 187,00', '0,000', '', '0', '3,000', '21 276'],
-            ['2525', 'CFP', '',   '709 187,00', '0,000', '', '0', '0,500', '3 546'],
-
-            ['', 'Total Cotisations', '', '', '', '', '28 000', '', '159 346'],
-
-            ['3149', 'Base TCS', '1,00', '485 512,00', '', '485 512', '', '1,00', ''],
-            ['3150', 'TCS', '', '', '', '', '16 776', '', ''],
-            ['3380', '****** Salaire net *********', '', '664 411,00', '', '664 411', '', '', ''],
-            ['3405', 'Indemnité de transport', '', '35 000,00', '30,00', '35 000', '', '', ''],
-            ['4500', 'Arrondi précédent', '', '', '', '', '48', '', ''],
-            ['4515', 'Arrondi du mois', '', '', '', '', '637', '', ''],
-        ];
-
-        // ==== CUMULS & NET ====
-        $cumuls = [
-            'periode' => [
-                'brut' => 709187,
-                'charges_sal' => 28000,
-                'charges_pat' => 159346,
-                'avantages' => 0,
-                'net_imposable' => 681187,
-                'heures_trav' => 173,
-                'heures_sup'  => 0,
-            ],
-            'annee' => [
-                'brut' => 3305386,
-                'charges_sal' => 131915,
-                'charges_pat' => 745576,
-                'avantages' => 315519,
-                'net_imposable' => 315519,
-                'heures_trav' => 3173471,
-                'heures_sup'  => 0,
-            ],
-        ];
-        $netAPayer = 700000;
-
-        $compteurs = [
-            'Congés'             => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '10,000'],
-            'Repos compensateur' => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '0,000'],
-        ];
-
-        // ==== PDF ====
-        $pdf = new PdfPayslip('P', 'mm', 'A4');
-        $pdf->AliasNbPages();
-        $pdf->SetMargins(16, 10, 12);
-        $pdf->logoPath = public_path('assets/img/authentication/logo_nedcore.JPG'); // facultatif
-
-        $pdf->AddPage();
-
-        $periode = ['du' => '01/08/25', 'au' => '31/08/25', 'paiement' => '31/08/25', 'mode' => 'Espèces'];
-
-        // Appel de la fonction pour dessiner le titre et la période
-        $currentY = $pdf->drawBulletinTitleAndPeriod($periode);
-        // ② Si tu veux UNIQUEMENT ce style (comme ta capture),
-        //    NE PAS appeler drawCompanyTitleCentered / drawRightIdentityCard / drawLeftEmployeeMeta
-        // Entête
-        $pdf->drawCompanyTitleCentered($entreprise);
-        $pdf->drawRightIdentityCard($identite);
-        $pdf->drawLeftEmployeeMeta($meta);
-        // ③ En-tête du tableau juste en dessous du bloc (un peu d'air)
-        $startY = max($currentY + 10, 65); // ~50mm sous le haut
-        ['y' => $y, 'w' => $w] = $pdf->drawTableHeader($startY);
-
-        // ④ Lignes du tableau (inchangé)
-        $curY = $y;
-        foreach ($rows as $r) {
-            if ($curY > ($pdf->GetPageHeight() - 98)) {
-                $pdf->AddPage();
-                // Re-dessiner le titre en haut de la nouvelle page si tu veux,
-                // sinon juste le tableau :
-                ['y' => $y, 'w' => $w] = $pdf->drawTableHeader(20);
-                $curY = $y;
-            }
-            $curY = $pdf->drawRow($w, $curY, $r, 6);
-        }
-
-
-        // Bas de page
-        $yAfterCumuls = $pdf->drawCumulsAndNet($cumuls, $netAPayer); // -> renvoie le Y bas
-        $pdf->drawCountersAndSignatures($compteurs, $yAfterCumuls + 4); // +4 mm d’espace
-
-
-        return response($pdf->Output('S'))
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="bulletin_paie_bon_modele.pdf"');
     }
 }

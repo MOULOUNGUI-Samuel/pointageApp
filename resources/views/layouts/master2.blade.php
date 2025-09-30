@@ -35,11 +35,10 @@
     </div>
     @php
         $moduleNom = strtolower($module_nom);
-
     @endphp
     @switch($moduleNom)
-        @case('smi')
-            @include('components/smi/sidebar')
+        @case('audit de conformité')
+            @include('components/audit/sidebar')
         @break
 
         @case('rh')
