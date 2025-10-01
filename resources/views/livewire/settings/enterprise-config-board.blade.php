@@ -14,10 +14,15 @@
                 @forelse($domains as $d)
                     <li class="nav-item me-3">
                         <a href="javascript:void(0)"
-                            class="nav-link p-2 {{ $selectedDomainId === $d['id'] ? 'active' : '' }}"
+                            class="nav-link p-2 shadow-sm rounded {{ $selectedDomainId === $d['id'] ? 'active' : '' }}"
                             wire:click="selectDomain('{{ $d['id'] }}')" wire:loading.attr="disabled"
-                            wire:target="selectDomain">
+                            wire:target="selectDomain" style="transition: background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='#fce9e6';"
+                            onmouseout="if (!this.classList.contains('active')) this.style.backgroundColor='';">
                             <i class="ti ti-folder me-2"></i>{{ $d['label'] }}
+                            <span wire:loading wire:target="selectDomain('{{ $d['id'] }}')">
+                                <i class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></i>
+                            </span>
                         </a>
                     </li>
                 @empty
@@ -32,7 +37,7 @@
         <div class="col-xl-3 col-lg-12">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="mb-3 fs-17">Categories</h5>
+                    <h5 class="mb-3 fs-17">Categories : {{ $this->getSelectedDomainName() }}</h5>
 
                     <input type="text" class="form-control mb-2" placeholder="Rechercher…"
                         wire:model.debounce.300ms="searchCategory">
@@ -40,10 +45,16 @@
                     <div class="list-group list-group-flush">
                         @forelse ($categories as $c)
                             <a href="javascript:void(0)"
-                                class="d-block p-2 fw-medium {{ $selectedCategoryId === $c['id'] ? 'active' : '' }}"
+                                class="d-block p-2 mb-1 shadow-sm rounded fw-medium {{ $selectedCategoryId === $c['id'] ? 'active' : '' }}"
                                 wire:click="selectCategory('{{ $c['id'] }}')" wire:loading.attr="disabled"
-                                wire:target="selectCategory">
+                                wire:target="selectCategory" style="transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#fce9e6';"
+                                onmouseout="if (!this.classList.contains('active')) this.style.backgroundColor='';">
                                 {{ $c['label'] }}
+                                <span wire:loading wire:target="selectCategory('{{ $c['id'] }}')">
+                                    <i class="spinner-border spinner-border-sm ms-2" role="status"
+                                        aria-hidden="true"></i>
+                                </span>
                             </a>
                         @empty
                             <span class="text-muted">Aucune catégorie.</span>
@@ -59,7 +70,7 @@
                 <div class="card-body">
                     <div
                         class="border-bottom mb-3 pb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <h5 class="mb-0 fs-17">Items</h5>
+                        <h5 class="mb-0 fs-17">Items : {{ $this->getSelectedCategoryName() }}</h5>
                         <input type="text" class="form-control w-auto" style="min-width:260px"
                             placeholder="Rechercher…" wire:model.debounce.300ms="searchItem">
                     </div>
@@ -110,7 +121,7 @@
                                             @elseif ($isExpired)
                                                 <span class="badge bg-danger">Période expirée</span>
                                             @else
-                                                <span class="badge bg-dark">Hors periode</span>
+                                                <span class="badge bg-dark">Hors période</span>
                                             @endif
 
                                             {{-- Badge Conformité (dernière décision) --}}
@@ -137,8 +148,6 @@
                                                 class="text-primary">{{ $latestRange }}</span>
                                         </div>
                                     @endif
-
-
                                 </div>
 
                                 {{-- Col droite: actions --}}
@@ -153,18 +162,20 @@
                                                     data-bs-target="#desc-{{ $i->id }}"><i
                                                         class="ti ti-info-circle-filled me-1"></i></a>
                                             @endif
-                                            @if ($lastStatus !== 'approuvé' && $hasPeriods)
+                                            @if (($lastStatus !== 'approuvé') || !$isExpired)
                                                 {{-- Déclarer / Modifier (soumission) --}}
-                                                @if ($i->latest_pending_submission_id)
-                                                    <a href="#" class="btn btn-light" data-bs-toggle="modal"
-                                                        data-bs-target="#modalSubmitCompliance-{{ $i->id }}">
-                                                        <i class="ti ti-edit me-1"></i>Modifier la soumission
-                                                    </a>
-                                                @else
-                                                    <a href="#" class="btn btn-light" data-bs-toggle="modal"
-                                                        data-bs-target="#modalSubmitCompliance-{{ $i->id }}">
-                                                        <i class="ti ti-tool me-1"></i>Conformité
-                                                    </a>
+                                                @if ($hasPeriods && !$isExpired)
+                                                    @if ($i->latest_pending_submission_id || ($hasPeriods && !$isExpired))
+                                                        <a href="#" class="btn btn-light" data-bs-toggle="modal"
+                                                            data-bs-target="#modalSubmitCompliance-{{ $i->id }}">
+                                                            <i class="ti ti-edit me-1"></i>Modifier la soumission
+                                                        </a>
+                                                    @else
+                                                        <a href="#" class="btn btn-light" data-bs-toggle="modal"
+                                                            data-bs-target="#modalSubmitCompliance-{{ $i->id }}">
+                                                            <i class="ti ti-tool me-1"></i>Conformité
+                                                        </a>
+                                                    @endif
                                                 @endif
 
                                                 {{-- Évaluer si un pending existe --}}
@@ -197,14 +208,15 @@
 
                                         {{-- Switch activation pour l’entreprise --}}
                                         <div class="form-check form-switch ps-0">
-                                            @if ($lastStatus === 'approuvé')
+                                            @if ($lastStatus === 'approuvé' && !$isExpired)
                                                 <input class="form-check-input ms-0 mt-0" type="checkbox"
                                                     role="switch" @checked(true)
                                                     wire:click="toggleItem('{{ $i->id }}')"
                                                     wire:loading.attr="disabled" wire:target="toggleItem">
                                             @else
                                                 <input class="form-check-input ms-0 mt-0" type="checkbox"
-                                                    role="switch" wire:click="toggleItem('{{ $i->id }}')">
+                                                    role="switch" wire:click="toggleItem('{{ $i->id }}')"
+                                                    @disabled($isExpired)>
                                             @endif
                                         </div>
                                     </div>

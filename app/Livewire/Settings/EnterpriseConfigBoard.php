@@ -119,6 +119,7 @@ class EnterpriseConfigBoard extends Component
         $this->domains = $rows->map(fn($d) => ['id'=>$d->id,'label'=>$d->nom_domaine])->all();
     }
 
+
     /** Catégories activées pour le domaine sélectionné */
     public function loadCategories(): void
     {
@@ -148,6 +149,13 @@ class EnterpriseConfigBoard extends Component
         }
     }
 
+    /** Nom du domaine sélectionné */
+    public function getSelectedDomainName(): ?string
+    {
+        $domain = collect($this->domains)->firstWhere('id', $this->selectedDomainId);
+        return $domain['label'] ?? null;
+    }
+
     /** Items activés pour la catégorie sélectionnée */
     public function loadItems(): void
     {
@@ -158,6 +166,18 @@ class EnterpriseConfigBoard extends Component
 
         $today = now()->toDateString();
         $eid   = $this->entrepriseId;
+
+        // Mettre à jour le statut des périodes expirées
+        PeriodeItem::where('entreprise_id', $eid)
+            ->where('statut', '1')
+            ->whereDate('fin_periode', '<', $today)
+            ->update(['statut' => '0']);
+
+        // Récupérer la dernière date de fin de période active
+        $latestActiveEndDate = PeriodeItem::where('entreprise_id', $eid)
+            ->where('statut', '1')
+            ->orderByDesc('fin_periode')
+            ->value('fin_periode');
 
         $q = Item::query()
             ->join('entreprise_items as ei', 'ei.item_id', '=', 'items.id')
@@ -275,6 +295,12 @@ class EnterpriseConfigBoard extends Component
         }
 
         $this->items = $q->get(['items.*']);
+    }
+    /** Nom de la catégorie sélectionnée */
+    public function getSelectedCategoryName(): ?string
+    {
+        $category = collect($this->categories)->firstWhere('id', $this->selectedCategoryId);
+        return $category['label'] ?? null;
     }
 
     /** ————— ACTIONS UI ————— */
