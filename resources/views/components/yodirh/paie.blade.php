@@ -125,6 +125,37 @@
 
 
         }
+
+        /* Scrollbar plus épaisse et stylée (Chrome/Edge/Safari) */
+        .payrollScroll::-webkit-scrollbar {
+            height: 14px;
+            /* ÉPAISSEUR de la barre horizontale */
+        }
+
+        .payrollScroll::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            /* gris-200 */
+        }
+
+        .payrollScroll::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            /* gris-400 */
+            border-radius: 9999px;
+            border: 3px solid #e5e7eb;
+            /* crée un effet "pilule" */
+        }
+
+        .payrollScroll:hover::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            /* gris-500 au survol */
+        }
+
+        /* Firefox : largeur par défaut (plus visible que 'thin') + couleurs */
+        .payrollScroll {
+            scrollbar-width: auto;
+            scrollbar-color: #9ca3af #e5e7eb;
+            /* thumb / track */
+        }
     </style>
     <!-- Header -->
     <header class="bg-primary rounded shadow">
@@ -261,17 +292,16 @@
                             </button>
                             <button onclick="importEmployees()"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                                <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                                <i class="fas fa-file-excel mr-2"></i>Importer en pdf
                             </button>
                         </div>
                     </div>
                     <div class="mt-4 no-print">
                         <input type="text" id="searchEmployee" placeholder="Rechercher un employé..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus"
-                            oninput="filterEmployees()">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus">
                     </div>
                 </div>
-                <div style="max-height: 450px; overflow-y: auto;">
+                <div class="payrollScroll" style="max-height: 450px; overflow-y: auto;">
                     <table id="example2" class="w-full table table-striped table-bordered">
                         <thead class="bg-gray-50">
                             <tr>
@@ -296,6 +326,32 @@
                         </tbody>
                     </table>
                 </div>
+                <script>
+                    (function() {
+                        const input = document.getElementById('searchEmployee');
+                        const tbody = document.getElementById('employeesTableBody');
+
+                        // Normalise le texte: minuscules + suppression des accents
+                        const norm = (s) =>
+                            (s || '')
+                            .toString()
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .trim();
+
+                        input.addEventListener('input', function() {
+                            const q = norm(this.value);
+                            const rows = tbody.querySelectorAll('tr');
+
+                            rows.forEach((tr) => {
+                                const text = norm(tr.innerText); // filtre sur tout le contenu de la ligne
+                                tr.style.display = !q || text.includes(q) ? '' : 'none';
+                            });
+                        });
+                    })();
+                </script>
+
             </div>
         </div>
 
@@ -358,14 +414,15 @@
 
                             {{-- <a href="{{ route('payrollTablePdf', ['ticket' => 'Tk-180825-310825']) }}"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                                <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                                <i class="fas fa-file-excel mr-2"></i>Importer en pdf
                              </a> --}}
 
                         </div>
 
                     </div>
                 </div>
-                <div class="overflow-x-auto">
+
+                <div class="payrollScroll overflow-x-auto" style="max-height: 450px; overflow-y: auto;">
                     <table class="w-full" id="payrollTable">
                         <thead class="bg-gray-50" id="payrollTableHead">
                         </thead>
@@ -549,16 +606,22 @@
                 <!-- Détail par employé -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <div class="d-flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
-                            <i class="fas fa-users mr-2 "></i>Détail par Employé
-                        </h3>
-
+                        <div class="d-flex">
+                            <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                                <i class="fas fa-users mr-2 "></i>Détail par Employé
+                            </h3>
+                            <div class="mb-2 no-print">
+                                <input type="text" id="searchEmployeeDetails"
+                                    placeholder="Rechercher (employé, poste, montants, etc.)…"
+                                    class="px-4 py-2 border border-gray-300 rounded-lg input-focus shadow" style="width: 500px; margin-left: 20px;">
+                            </div>
+                        </div>
                         <a id="btnImportExcel"
                             data-href-template="{{ route('detailParEmployerTablePdf', ['ticket' => '___TICKET___']) }}"
                             href="#" target="_blank"
                             class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors opacity-50 pointer-events-none"
                             title="Renseignez un ticket">
-                            <i class="fas fa-file-excel mr-2"></i>Importer Excel
+                            <i class="fas fa-file-excel mr-2"></i>Importer en pdf
                         </a>
 
                     </div>
@@ -631,14 +694,16 @@
                     </script>
 
 
-                    <div style="max-height: 450px; overflow-y: auto;">
-                        <div class="table-responsive">
+                    <div class="payrollScroll" style="max-height: 450px; overflow-y: auto;">
+                        <!-- Champ de recherche pour ce tableau -->
+                        
 
+                        <div class="table-responsive">
                             <table id="example2" class="w-full table table-striped table-bordered">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left  text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Employé</th>
                                         <th
                                             class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -658,10 +723,49 @@
                                     </tr>
                                 </thead>
                                 <tbody id="employeeDetailsBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- lignes <tr> -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+                    <script>
+                        (function() {
+                            const input = document.getElementById('searchEmployeeDetails');
+                            const tbody = document.getElementById('employeeDetailsBody');
+
+                            // Normalisation: minuscules + suppression des accents
+                            const norm = (s) =>
+                                (s || '')
+                                .toString()
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[\u0300-\u036f]/g, '')
+                                .trim();
+
+                            // (Optionnel) petit debounce pour éviter de trop filer lors d'une saisie rapide
+                            let t = null;
+                            input.addEventListener('input', function() {
+                                clearTimeout(t);
+                                t = setTimeout(() => {
+                                    const q = norm(this.value);
+                                    const rows = tbody.querySelectorAll('tr');
+
+                                    rows.forEach((tr) => {
+                                        // Si tu préfères cibler seulement la 1re colonne (Employé) :
+                                        // const cellText = tr.querySelector('td')?.innerText || '';
+                                        // const text = norm(cellText);
+
+                                        // Sinon: filtrer sur TOUTE la ligne
+                                        const text = norm(tr.innerText);
+
+                                        tr.style.display = !q || text.includes(q) ? '' : 'none';
+                                    });
+                                }, 80);
+                            });
+                        })();
+                    </script>
+
                 </div>
 
                 <!-- Répartition par service -->
@@ -1232,9 +1336,6 @@
             }
         }
 
-        function filterEmployees() {
-            renderEmployeesTable();
-        }
 
         function showAddEmployeeModal() {
             document.getElementById('addEmployeeModal').classList.remove('hidden');
@@ -1396,7 +1497,7 @@
             ${
                 group.items.length
                 ? `<div class="space-y-2">
-                                                                            ${group.items.map(v => `
+                                                                                ${group.items.map(v => `
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
                         <div class="items-center gap-2">
                             <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
@@ -1435,11 +1536,11 @@ title="Supprimer">
                         </div>
                     </div>
                     `).join('')}
-                                                                        </div>`
+                                                                            </div>`
                 : `
-                                                                        <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                                            <span>Aucune variable dans cette catégorie</span>
-                                                                        </div>`
+                                                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                                                <span>Aucune variable dans cette catégorie</span>
+                                                                            </div>`
             }
             </div>
         `).join('');

@@ -145,7 +145,7 @@ class VariablesManager extends Component
             $this->tauxVariableEntreprise  = $v->tauxVariableEntreprise !== null ? (string) $v->tauxVariableEntreprise : null;
         } else {
             // Variable sans cotisation (avec taux possible)
-            $this->statutMode              = 'sans_cotisation';
+            $this->statutMode              = $v->tauxVariable==true ?'sans_cotisation':null;
             $this->tauxVariable            = $v->tauxVariable !== null ? (string) $v->tauxVariable : null;
             $this->tauxVariableEntreprise  = null; // pas de patronal en "sans"
         }

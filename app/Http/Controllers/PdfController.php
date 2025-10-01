@@ -1493,7 +1493,7 @@ class PdfController extends Controller
         $pdf = new PdfPayslip('P', 'mm', 'A4');
         $pdf->AliasNbPages();
         $pdf->SetMargins(16, 10, 12);
-        $pdf->logoPath = public_path('assets/img/authentication/logo_nedcore.JPG'); // optionnel
+        $pdf->logoPath = public_path('storage/' . session('entreprise_logo')); // optionnel
 
         $pdf->AddPage();
 
