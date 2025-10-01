@@ -395,9 +395,17 @@
                 <div class="p-6 border-b border-gray">
                     <div
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-semibold text-primary flex items-center">
-                            <i class="fas fa-table mr-2 "></i>Saisie Globale des Variables
-                        </h2>
+                        <div class="flex">
+                            <h2 class="text-xl font-semibold text-primary flex items-center">
+                                <i class="fas fa-table mr-2 "></i>Saisie Globale des Variables
+                            </h2>
+                            <!-- Champ de recherche -->
+                            <div class="mt-4 mb-2 no-print">
+                                <input type="text" id="searchPayroll"
+                                    placeholder="Rechercher (nom, prénom, montants, etc.)…"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus shadow" style="width: 500px; margin-left: 20px;">
+                            </div>
+                        </div>
                         <div class="flex flex-wrap gap-2 no-print">
                             <button onclick="calculateAll()"
                                 class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
@@ -422,14 +430,58 @@
                     </div>
                 </div>
 
+
+
                 <div class="payrollScroll overflow-x-auto" style="max-height: 450px; overflow-y: auto;">
                     <table class="w-full" id="payrollTable">
-                        <thead class="bg-gray-50" id="payrollTableHead">
-                        </thead>
-                        <tbody id="payrollTableBody" class="bg-white divide-y divide-gray-200">
-                        </tbody>
+                        <thead class="bg-gray-50" id="payrollTableHead"></thead>
+                        <tbody id="payrollTableBody" class="bg-white divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
+
+                <script>
+                    (function() {
+                        const input = document.getElementById('searchPayroll');
+                        const tbody = document.getElementById('payrollTableBody');
+
+                        // Normalise le texte: minuscules + suppression des accents
+                        const norm = (s) =>
+                            (s || '')
+                            .toString()
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .trim();
+
+                        // Récupère le texte d'une ligne : contenu + valeurs des champs
+                        const rowText = (tr) => {
+                            let txt = tr.textContent || '';
+                            tr.querySelectorAll('input, select, textarea').forEach(el => {
+                                const val = (el.type === 'checkbox') ?
+                                    (el.checked ? '1 true oui checked' : '0 false non') :
+                                    (el.value || el.textContent || '');
+                                txt += ' ' + val;
+                            });
+                            return norm(txt);
+                        };
+
+                        // Debounce léger pour la saisie
+                        let t = null;
+                        input.addEventListener('input', function() {
+                            clearTimeout(t);
+                            t = setTimeout(() => {
+                                const q = norm(this.value);
+                                const rows = tbody.querySelectorAll('tr');
+
+                                rows.forEach((tr) => {
+                                    const text = rowText(tr);
+                                    tr.style.display = !q || text.includes(q) ? '' : 'none';
+                                });
+                            }, 80);
+                        });
+                    })();
+                </script>
+
             </div>
         </div>
 
@@ -613,7 +665,8 @@
                             <div class="mb-2 no-print">
                                 <input type="text" id="searchEmployeeDetails"
                                     placeholder="Rechercher (employé, poste, montants, etc.)…"
-                                    class="px-4 py-2 border border-gray-300 rounded-lg input-focus shadow" style="width: 500px; margin-left: 20px;">
+                                    class="px-4 py-2 border border-gray-300 rounded-lg input-focus shadow"
+                                    style="width: 500px; margin-left: 20px;">
                             </div>
                         </div>
                         <a id="btnImportExcel"
@@ -696,7 +749,7 @@
 
                     <div class="payrollScroll" style="max-height: 450px; overflow-y: auto;">
                         <!-- Champ de recherche pour ce tableau -->
-                        
+
 
                         <div class="table-responsive">
                             <table id="example2" class="w-full table table-striped table-bordered">
@@ -1497,7 +1550,7 @@
             ${
                 group.items.length
                 ? `<div class="space-y-2">
-                                                                                ${group.items.map(v => `
+                                                                                        ${group.items.map(v => `
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg border ${getVariableClass(v.type)}">
                         <div class="items-center gap-2">
                             <i class="fas ${getVariableIcon(v.type)} ${getVariableIconColor(v.type)}"></i>
@@ -1536,11 +1589,11 @@ title="Supprimer">
                         </div>
                     </div>
                     `).join('')}
-                                                                            </div>`
+                                                                                    </div>`
                 : `
-                                                                            <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
-                                                                                <span>Aucune variable dans cette catégorie</span>
-                                                                            </div>`
+                                                                                    <div class="p-3 bg-white rounded-lg border border-dashed text-sm text-gray-500 flex items-center justify-between">
+                                                                                        <span>Aucune variable dans cette catégorie</span>
+                                                                                    </div>`
             }
             </div>
         `).join('');
