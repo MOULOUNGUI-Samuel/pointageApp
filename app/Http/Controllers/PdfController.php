@@ -222,44 +222,61 @@ class PdfPayslip extends \FPDF
 
     /* ====== TABLEAU PRINCIPAL ====== */
     public function drawTableHeader(float $yStart = 68): array
-    {
-        $x = 12;
-        $y = $yStart;
-        $h1 = 7;
-        $h2 = 7;
-        $w = [12, 54, 16, 24, 12, 24, 16, 12, 16];
+{
+    $x = 12;
+    $y = $yStart;
+    $h1 = 7;              // hauteur ligne 1 (titres de groupes)
+    $h2 = 7;              // hauteur ligne 2 (sous-titres)
+    $mergeH = $h1 + $h2;  // hauteur fusionnée
+    $w = [12, 54, 16, 24, 12, 24, 16, 12, 16];
 
-        $this->SetFont('Arial', 'B', 10);
-        $this->SetXY($x, $y);
-        $this->Cell($w[0], $h1, $this->t('N°'), 1, 0, 'C');
-        $this->Cell($w[1], $h1, $this->t('Désignation'), 1, 0, 'C');
-        $this->Cell($w[2], $h1, $this->t('Nombre'), 1, 0, 'C');
-        $this->Cell($w[3], $h1, $this->t('Base'), 1, 0, 'C');
-        $this->Cell($w[4] + $w[5] + $w[6], $h1, $this->t('Part salariale'), 1, 0, 'C');
-        $this->Cell($w[7] + $w[8], $h1, $this->t('Part patronale'), 1, 1, 'C');
+    $this->SetFont('Arial', 'B', 10);
 
-        $this->SetXY($x + $w[0] + $w[1] + $w[2] + $w[3], $y + $h1);
-        $this->Cell($w[4], $h2, $this->t('Taux'),    1, 0, 'C');
-        $this->Cell($w[5], $h2, $this->t('Gain'),    1, 0, 'C');
-        $this->Cell($w[6], $h2, $this->t('Retenue'), 1, 0, 'C');
-        $this->Cell($w[7], $h2, $this->t('Taux'),    1, 0, 'C');
-        $this->Cell($w[8], $h2, $this->t('Retenue'), 1, 1, 'C');
+    // ---------- Ligne 1 : colonnes fusionnées + entêtes de groupes ----------
+    $this->SetXY($x, $y);
+    // Colonnes fusionnées sur 2 lignes
+    $this->Cell($w[0], $mergeH, $this->t('N°'),           1, 0, 'C');
+    $this->Cell($w[1], $mergeH, $this->t('Désignation'),  1, 0, 'C');
+    $this->Cell($w[2], $mergeH, $this->t('Nombre'),       1, 0, 'C');
+    $this->Cell($w[3], $mergeH, $this->t('Base'),         1, 0, 'C');
 
-        return ['y' => $y + $h1 + $h2, 'w' => $w];
-    }
+    // Entêtes de groupes (sur h1 seulement)
+    $this->Cell($w[4] + $w[5] + $w[6], $h1, $this->t('Part salariale'), 1, 0, 'C');
+    $this->Cell($w[7] + $w[8],         $h1, $this->t('Part patronale'), 1, 1, 'C');
+
+    // ---------- Ligne 2 : sous-titres des groupes ----------
+    $xSub = $x + $w[0] + $w[1] + $w[2] + $w[3]; // on démarre après les 4 colonnes fusionnées
+    $this->SetXY($xSub, $y + $h1);
+    $this->Cell($w[4], $h2, $this->t('Taux'),    1, 0, 'C');
+    $this->Cell($w[5], $h2, $this->t('Gain'),    1, 0, 'C');
+    $this->Cell($w[6], $h2, $this->t('Retenue'), 1, 0, 'C');
+    $this->Cell($w[7], $h2, $this->t('Taux'),    1, 0, 'C');
+    $this->Cell($w[8], $h2, $this->t('Retenue'), 1, 1, 'C');
+
+    // La prochaine ligne de données commencera après mergeH
+    return ['y' => $y + $mergeH, 'w' => $w];
+}
 
 
-    public function drawRow(array $w, float $y, array $row, int $rh = 6): float
+
+    public function drawRow(array $w, float $y, array $row, int $rh = 6, bool $isLast = false): float
     {
         $this->SetXY(12, $y);
         $this->SetFont('Arial', '', 9);
+
+        // Ajuste selon tes colonnes ; défaut 'L' si non défini
         $align = ['C', 'L', 'C', 'R', 'C', 'R', 'R', 'C', 'R'];
+
+        // Bordure: lignes intermédiaires = 'LR', dernière = 'LRB'
+        $border = $isLast ? 'LRB' : 'LR';
+
         foreach ($row as $i => $val) {
-            $this->Cell($w[$i], $rh, $this->t($val ?? ''), 1, 0, $align[$i]);
+            $this->Cell($w[$i] ?? 0, $rh, $this->t($val ?? ''), $border, 0, $align[$i] ?? 'L');
         }
         $this->Ln($rh);
         return $y + $rh;
     }
+
 
     /* ====== BAS DE PAGE ====== */
 
@@ -1114,6 +1131,9 @@ class PdfController extends Controller
         $period = DB::table('periodes_paie')->where('ticket', $tiketPeriode)->first();
         if (!$period) return [];
 
+        $periodStart = Carbon::parse($period->date_debut)->startOfDay();
+        $periodEnd   = Carbon::parse($period->date_fin)->endOfDay();
+
         // 2) Variables
         $variables = DB::table('variables')
             ->select([
@@ -1134,48 +1154,49 @@ class PdfController extends Controller
             ->where('periode_paie_id', $period->id)
             ->pluck('montant', 'variable_id')->toArray();
 
-        // 4) Associations -> base = somme des montants associés (on additionne tout, tu peux filtrer si besoin)
+        // 4) Associations
         $assocs = [];
         foreach (DB::table('variable_associers')->select(['variableBase_id', 'variableAssocier_id'])->get() as $r) {
             $assocs[$r->variableBase_id][] = $r->variableAssocier_id;
         }
 
         // 5) Salaire de base (ligne statique n°99)
-        $user = \App\Models\User::find($userId);
+        /** @var User $user */
+        $user = User::find($userId);
         $baseSalary = (float)($user->salairebase ?? 0);
 
         // 6) Accumulateurs
-        $preBrut = [];     // salaire de base + gains imposables
-        $cotis   = [];     // déductions de cotisation (statutVariable = 1)
-        $autres  = [];     // le reste (si besoin plus tard)
+        $preBrut = [];     // à afficher AVANT “Total Brut” (imposables + salaire base)
+        $cotis   = [];     // cotisations (déductions statutVariable = 1)
+        $autres  = [];     // autres (avantages non imposables, TCS, …)
 
-        $totalBrut         = 0.0; // somme des gains avant "Total Brut"
-        $cotisBaseTotal    = 0.0; // somme des bases de cotisations (demandé)
-        $retenuesSalTotal  = 0.0; // somme retenues salariales (info)
-        $retenuesPatTotal  = 0.0; // somme retenues patronales (info)
-        $avantagesNature   = 0.0; // gains non imposables (info)
+        $totalBrut         = 0.0;
+        $cotisBaseTotal    = 0.0; // << demandé : somme des bases de cotisations
+        $retenuesSalTotal  = 0.0;
+        $retenuesPatTotal  = 0.0;
+        $avantagesNature   = 0.0;
 
-        // ---- 6.a) Ajouter la ligne Salaire de base (99)
+        // 6.a) Salaire de base
         if ($baseSalary > 0) {
             $preBrut[] = [
-                'numero'         => 99,
-                'designation'    => 'Salaire de base',
-                'base'           => round($baseSalary, 2),
-                'taux_salarial'  => null,
-                'gain_salarial'  => round($baseSalary, 2),
-                'retenue_sal'    => null,
-                'taux_patronal'  => null,
-                'retenue_pat'    => null,
-                'type'           => 'gain',
+                'numero' => 99,
+                'designation' => 'Salaire de base',
+                'base' => round($baseSalary, 2),
+                'taux_salarial' => null,
+                'gain_salarial' => round($baseSalary, 2),
+                'retenue_sal' => null,
+                'taux_patronal' => null,
+                'retenue_pat' => null,
+                'type' => 'gain',
                 'statutVariable' => 0,
                 'variableImposable' => 1,
             ];
             $totalBrut += $baseSalary;
         }
 
-        // ---- 6.b) Parcours des variables
+        // 6.b) Variables
         foreach ($variables as $id => $v) {
-            // base : somme des montants associés s’ils existent, sinon son propre montant
+            // Base = somme des associés si présents sinon son propre montant
             $base = 0.0;
             if (!empty($assocs[$id])) {
                 foreach ($assocs[$id] as $assocId) {
@@ -1185,7 +1206,7 @@ class PdfController extends Controller
                 $base = (float)($montants[$id] ?? 0);
             }
 
-            // rien à afficher si tout est à zéro
+            // ignorer si rien de pertinent
             if ($base == 0 && (is_null($v->tauxVariable) || (float)$v->tauxVariable == 0)) {
                 continue;
             }
@@ -1198,46 +1219,33 @@ class PdfController extends Controller
             $retPat = null;
 
             if ($v->type === 'gain') {
-                // gain = base si pas de taux, sinon base * taux
                 $gainSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
                 $totalBrut += $gainSal;
 
+                $line = [
+                    'numero'         => $v->numeroVariable,
+                    'designation'    => $v->nom_variable,
+                    'base'           => round($base, 2),
+                    'taux_salarial'  => $tSal,
+                    'gain_salarial'  => $gainSal,
+                    'retenue_sal'    => null,
+                    'taux_patronal'  => $tPat,
+                    'retenue_pat'    => null,
+                    'type'           => 'gain',
+                    'statutVariable' => (int)$v->statutVariable,
+                    'variableImposable' => (int)$v->variableImposable,
+                ];
+
                 if ((int)$v->variableImposable === 1) {
-                    // à placer AVANT Total Brut
-                    $preBrut[] = [
-                        'numero'         => $v->numeroVariable,
-                        'designation'    => $v->nom_variable,
-                        'base'           => round($base, 2),
-                        'taux_salarial'  => $tSal,
-                        'gain_salarial'  => $gainSal,
-                        'retenue_sal'    => null,
-                        'taux_patronal'  => $tPat,
-                        'retenue_pat'    => null,
-                        'type'           => 'gain',
-                        'statutVariable' => (int)$v->statutVariable,
-                        'variableImposable' => (int)$v->variableImposable,
-                    ];
+                    $preBrut[] = $line; // imposables AVANT Total Brut
                 } else {
                     $avantagesNature += $gainSal;
-                    $autres[] = [
-                        'numero'         => $v->numeroVariable,
-                        'designation'    => $v->nom_variable,
-                        'base'           => round($base, 2),
-                        'taux_salarial'  => $tSal,
-                        'gain_salarial'  => $gainSal,
-                        'retenue_sal'    => null,
-                        'taux_patronal'  => $tPat,
-                        'retenue_pat'    => null,
-                        'type'           => 'gain',
-                        'statutVariable' => (int)$v->statutVariable,
-                        'variableImposable' => (int)$v->variableImposable,
-                    ];
+                    $autres[] = $line;  // non imposables ailleurs
                 }
             } elseif ($v->type === 'deduction') {
-                // déduction
+                $retSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
                 if ((int)$v->statutVariable === 1) {
-                    // COTISATION -> après Total Brut
-                    $retSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
+                    // COTISATIONS (après Total Brut)
                     $retPat = $tPat !== null ? round($base * $tPat / 100, 2) : 0.0;
 
                     $cotis[] = [
@@ -1253,15 +1261,11 @@ class PdfController extends Controller
                         'statutVariable' => 1,
                         'variableImposable' => (int)$v->variableImposable,
                     ];
-
-                    $cotisBaseTotal   += $base;   // << demandé: Total Cotisations = somme des bases
+                    $cotisBaseTotal   += $base;
                     $retenuesSalTotal += $retSal;
                     $retenuesPatTotal += $retPat;
                 } else {
-                    // déduction sans part patronale (ex: TCS)
-                    $retSal = $tSal !== null ? round($base * $tSal / 100, 2) : round($base, 2);
-                    $retenuesSalTotal += $retSal;
-
+                    // Déductions sans part patronale (ex: TCS)
                     $autres[] = [
                         'numero'         => $v->numeroVariable,
                         'designation'    => $v->nom_variable,
@@ -1275,64 +1279,155 @@ class PdfController extends Controller
                         'statutVariable' => 0,
                         'variableImposable' => (int)$v->variableImposable,
                     ];
+                    $retenuesSalTotal += $retSal;
                 }
             }
         }
 
-        // Ordonner par numéro dans chaque bloc
+        // Ordonner par numéro
         usort($preBrut, fn($a, $b) => ($a['numero'] <=> $b['numero']));
         usort($cotis,   fn($a, $b) => ($a['numero'] <=> $b['numero']));
         usort($autres,  fn($a, $b) => ($a['numero'] <=> $b['numero']));
 
-        // Totaux principaux
-        $salaireBrut = round($totalBrut, 2); // = Total Brut
+        // Totaux
+        $salaireBrut  = round($totalBrut, 2);
         $netImposable = round($salaireBrut - $retenuesSalTotal, 2);
 
-        // Lignes finales ORDONNÉES (avec totaux insérés au bon endroit)
+        // Construction des lignes dans l’ordre
         $rows = [];
-        // 1) AVANT total brut
         array_push($rows, ...$preBrut);
-
-        // 2) TOTAL BRUT
         $rows[] = [
-            'numero'         => null,
-            'designation'    => 'Total Brut',
-            'base'           => null,
-            'taux_salarial'  => null,
-            'gain_salarial'  => round($totalBrut, 2),
-            'retenue_sal'    => null,
-            'taux_patronal'  => null,
-            'retenue_pat'    => null,
-            'is_total'       => true,
-            'total_key'      => 'total_brut',
+            'numero' => null,
+            'designation' => 'Total Brut',
+            'base' => null,
+            'taux_salarial' => null,
+            'gain_salarial' => round($totalBrut, 2),
+            'retenue_sal' => null,
+            'taux_patronal' => null,
+            'retenue_pat' => null,
+            'is_total' => true,
+            'total_key' => 'total_brut'
         ];
-
-        // 3) Cotisations APRÈS total brut
         array_push($rows, ...$cotis);
-
-        // 4) TOTAL COTISATIONS (somme des bases, + infos de retenues)
         $rows[] = [
-            'numero'         => null,
-            'designation'    => 'Total Cotisations',
-            'base'           => round($cotisBaseTotal, 2),              // <<< demandé
-            'taux_salarial'  => null,
-            'gain_salarial'  => null,
-            'retenue_sal'    => round($retenuesSalTotal, 2),            // info
-            'taux_patronal'  => null,
-            'retenue_pat'    => round($retenuesPatTotal, 2),            // info
-            'is_total'       => true,
-            'total_key'      => 'total_cotisations',
+            'numero' => null,
+            'designation' => 'Total Cotisations',
+            'base' => round($cotisBaseTotal, 2),
+            'taux_salarial' => null,
+            'gain_salarial' => null,
+            'retenue_sal' => round($retenuesSalTotal, 2),
+            'taux_patronal' => null,
+            'retenue_pat' => round($retenuesPatTotal, 2),
+            'is_total' => true,
+            'total_key' => 'total_cotisations'
         ];
-
-        // 5) Le reste (facultatif, si tu veux les afficher ailleurs)
         array_push($rows, ...$autres);
 
-        // Heures (si tu souhaites les exploiter ici)
+        // ---------- CALCULS HEURES (période & année) ----------
+        // Norme journalière d’après l’entreprise
+        $company = DB::table('entreprises')->where('id', $user->entreprise_id)->first();
+        $dailyNormMinutes = (function ($c) {
+            if (!$c || !$c->heure_ouverture || !$c->heure_fin) return 8 * 60; // fallback 8h
+            $start = Carbon::parse($c->heure_ouverture);
+            $end   = Carbon::parse($c->heure_fin);
+            $mins  = $end->diffInMinutes($start);
+            if ($c->heure_debut_pose && $c->heure_fin_pose) {
+                $p1 = Carbon::parse($c->heure_debut_pose);
+                $p2 = Carbon::parse($c->heure_fin_pose);
+                $mins -= max(0, $p2->diffInMinutes($p1));
+            }
+            return max(0, $mins);
+        })($company);
+
+        // Helper: heures d’un intervalle
+        $computeHours = function (Carbon $from, Carbon $to) use ($userId, $dailyNormMinutes) {
+            // Pointages (travail réel)
+            $pts = DB::table('pointages')
+                ->where('user_id', $userId)
+                ->whereDate('date_arriver', '<=', $to->toDateString())
+                ->where(function ($q) use ($from) {
+                    $q->whereNull('date_fin')
+                        ->orWhereDate('date_fin', '>=', $from->toDateString());
+                })->get();
+
+            $workedPerDay = []; // minutes par jour
+            foreach ($pts as $p) {
+                // bornes
+                $startDT = Carbon::parse(($p->date_arriver ?: $from->toDateString()) . ' ' . ($p->heure_arriver ?: '00:00:00'));
+                $endDT   = Carbon::parse((($p->date_fin ?: $p->date_arriver) ?: $to->toDateString()) . ' ' . ($p->heure_fin ?: '00:00:00'));
+                if ($endDT->lt($from) || $startDT->gt($to)) continue;
+
+                $startDT = $startDT->max($from);
+                $endDT   = $endDT->min($to);
+                $mins    = max(0, $endDT->diffInMinutes($startDT));
+
+                // pauses
+                $breaks = DB::table('pointages_intermediaires')->where('pointage_id', $p->id)->get();
+                $breakM = 0;
+                foreach ($breaks as $b) {
+                    if (!$b->heure_sortie || !$b->heure_entrer) continue;
+                    $s = Carbon::parse($b->heure_sortie);
+                    $e = Carbon::parse($b->heure_entrer);
+                    $breakM += max(0, $e->diffInMinutes($s));
+                }
+                $mins = max(0, $mins - $breakM);
+
+                $day = Carbon::parse($p->date_arriver ?: $startDT)->toDateString();
+                $workedPerDay[$day] = ($workedPerDay[$day] ?? 0) + $mins;
+            }
+
+            $workedMinutes = array_sum($workedPerDay);
+
+            // Heures sup = excédent par jour au-dessus de la norme journalière
+            $overtimeMinutes = 0;
+            foreach ($workedPerDay as $d => $m) {
+                $overtimeMinutes += max(0, $m - $dailyNormMinutes);
+            }
+
+            // Absences approuvées (chevauchement)
+            $absences = DB::table('absences')
+                ->where('user_id', $userId)
+                ->where('status', 'approuvé') // adapte si 'approuvee' chez toi
+                ->where(function ($q) use ($from, $to) {
+                    $q->whereBetween('start_datetime', [$from, $to])
+                        ->orWhereBetween('end_datetime',   [$from, $to])
+                        ->orWhere(function ($qq) use ($from, $to) {
+                            $qq->where('start_datetime', '<=', $from)
+                                ->where('end_datetime', '>=', $to);
+                        });
+                })->get();
+
+            $absenceMinutes = 0;
+            foreach ($absences as $a) {
+                $s = Carbon::parse($a->start_datetime)->max($from);
+                $e = Carbon::parse($a->end_datetime)->min($to);
+                if ($e->gt($s)) $absenceMinutes += $e->diffInMinutes($s);
+            }
+
+            // Retour en heures (2 décimales)
+            $toHours = fn($m) => round($m / 60, 2);
+
+            return [
+                'worked'    => $toHours($workedMinutes),
+                'overtime'  => $toHours($overtimeMinutes),
+                'absence'   => $toHours($absenceMinutes),
+            ];
+        };
+
+        // Période
+        $hoursPeriod = $computeHours($periodStart, $periodEnd);
+
+        // Année civile de la période
+        $yearStart = $periodStart->copy()->startOfYear();
+        $yearEnd   = $periodStart->copy()->endOfYear();
+        $hoursYear = $computeHours($yearStart, $yearEnd);
+
+        // Attendance service (facultatif)
         $attendance = new AttendanceService();
         $status = $attendance->getUserStatusForDate($user, new Carbon($period->date_debut));
 
         return [
-            'rows' => $rows, // déjà dans l’ordre avec “Total Brut” puis cotisations puis “Total Cotisations”
+            'rows' => $rows,
             'totals' => [
                 'Total Brut'          => round($totalBrut, 2),
                 'Total Cotisations'   => [
@@ -1346,10 +1441,25 @@ class PdfController extends Controller
                 'Avantages en nature' => round($avantagesNature, 2),
                 'Net imposable'       => $netImposable,
             ],
+            'hours' => [
+                'period' => $hoursPeriod, // ['worked','overtime','absence'] en heures
+                'year'   => $hoursYear,
+            ],
+            // Raccourcis pour compatibilité avec ton rendu PDF actuel
+            'heuresTravaillees'       => $hoursPeriod['worked'],
+            'heuresSupplementaires'   => $hoursPeriod['overtime'],
+            'heuresAbsence'           => $hoursPeriod['absence'],
+
+            'heuresTravailleesAnnee'     => $hoursYear['worked'],
+            'heuresSupplementairesAnnee' => $hoursYear['overtime'],
+            'heuresAbsenceAnnee'         => $hoursYear['absence'],
+
             'periodTicketId' => $period->id,
             'userStatus'     => $status,
         ];
     }
+
+
     public function ficheDePaieDemo(string $userId, string $tiketPeriode)
     {
         // ---- Données calculées (lignes déjà ordonnées + totaux)
@@ -1464,6 +1574,9 @@ class PdfController extends Controller
         $maybeAdd('Arrondi précédent',      '4500', null);
         $maybeAdd('Arrondi du mois',        '4515', null);
 
+        $heuresTravaillees = (float)($data['heuresTravaillees'] ?? 0);
+        $heuresSup       = (float)($data['heuresSupplementaires'] ?? 0);
+        $heuresAbs       = (float)($data['heuresAbsence'] ?? 0);
         // Cumuls affichés en pied de tableau (mets tes vraies valeurs annuelles si tu les as)
         $cumuls = [
             'periode' => [
@@ -1472,8 +1585,8 @@ class PdfController extends Controller
                 'charges_pat'    => $chargesPat,
                 'avantages'      => $avantagesNature,
                 'net_imposable'  => $netImposable,
-                'heures_trav'    => 0,
-                'heures_sup'     => 0,
+                'heures_trav'    => $heuresTravaillees,
+                'heures_sup'     => $heuresSup,
             ],
             'annee' => [
                 'brut'           => 0,
@@ -1481,8 +1594,8 @@ class PdfController extends Controller
                 'charges_pat'    => 0,
                 'avantages'      => 0,
                 'net_imposable'  => 0,
-                'heures_trav'    => 0,
-                'heures_sup'     => 0,
+                'heures_trav'    => $heuresTravailleesAnnee ?? 0,
+                'heures_sup'     => $heuresSupplementairesAnnee ?? 0,
             ],
         ];
 
@@ -1506,19 +1619,49 @@ class PdfController extends Controller
         ['y' => $y, 'w' => $w] = $pdf->drawTableHeader($startY);
 
         $curY = $y;
+        $limitY = $pdf->GetPageHeight() - 98;
+        $rh = 6;
+
+        $rowsCount = count($rows);
+        $idx = 0;
+        $buffer = null;
+
         foreach ($rows as $r) {
-            if ($curY > ($pdf->GetPageHeight() - 98)) {
+            if ($buffer === null) { // prime la première
+                $buffer = $r;
+                $idx++;
+                continue;
+            }
+
+            // Est-ce que la PROCHAINE ligne (r) tiendra sur la page courante ?
+            $willBreak = ($curY + $rh > $limitY);
+
+            // Si la prochaine ligne ne tient pas, on ferme la ligne buffer avec 'LRB' (fin de page)
+            $isEndOfChunk = $willBreak;
+
+            $curY = $pdf->drawRow($w, $curY, $buffer, $rh, $isEndOfChunk);
+
+            if ($willBreak) {
                 $pdf->AddPage();
                 ['y' => $y, 'w' => $w] = $pdf->drawTableHeader(20);
                 $curY = $y;
             }
-            $curY = $pdf->drawRow($w, $curY, $r, 6);
+
+            // décale le buffer
+            $buffer = $r;
+            $idx++;
         }
+
+        // Dernière ligne du tableau : bordure basse 'LRB'
+        if ($buffer !== null) {
+            $curY = $pdf->drawRow($w, $curY, $buffer, $rh, true);
+        }
+
 
         $yAfterCumuls = $pdf->drawCumulsAndNet($cumuls, $netAPayer);
         $pdf->drawCountersAndSignatures([
-            'Congés'               => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '10,000'],
-            'Repos compensateur'   => ['pris' => '0,000', 'restant' => '0,000', 'acquis' => '0,000'],
+            'Congés'               => ['pris' => '0', 'restant' => '0', 'acquis' => '0'],
+            'Repos compensateur'   => ['pris' => '0', 'restant' => '0', 'acquis' => '0'],
         ], $yAfterCumuls + 4);
 
         return response($pdf->Output('S'))
