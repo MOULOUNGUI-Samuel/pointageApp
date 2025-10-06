@@ -4,12 +4,13 @@ namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
-
+use Laravel\Passport\Passport;
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
+     
     public function register(): void
     {
         //
@@ -18,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot()
+    public function boot(): void
     {
         // Partager automatiquement les variables de session avec toutes les vues
         View::composer('*', function ($view) {
@@ -30,5 +31,25 @@ class AppServiceProvider extends ServiceProvider
             $view->with('entreprise_code', Session::get('entreprise_code'));
             $view->with('entreprise_id', Session::get('entreprise_id'));
         });
+
+        // $this->registerPolicies();
+    
+        // Passport::routes(); // expose /oauth/authorize, /oauth/token, etc.
+        // $this->registerPolicies();
+    
+        // Passport::routes(); // expose /oauth/authorize, /oauth/token, etc.
+        Passport::tokensCan([
+            'openid'        => 'OIDC basic',
+            'profile'       => 'Nom, username, avatar',
+            'email'         => 'Email',
+            'entreprise'    => 'Claims métier entreprise',
+            'offline_access'=> 'Refresh tokens',
+        ]);
+        Passport::setDefaultScope(['openid', 'profile', 'email']);
+
     }
+
+
+
+
 }

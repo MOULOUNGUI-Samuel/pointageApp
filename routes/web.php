@@ -24,6 +24,12 @@ use App\Http\Controllers\PushSubscriptionController;
 use App\Models\User;
 use App\Notifications\NewAlert;
 use App\Http\Controllers\NotificationsController;
+
+use App\Http\Controllers\OIDC\DiscoveryController;
+use App\Http\Controllers\OIDC\UserInfoController;
+use App\Http\Controllers\OIDC\JwksController;
+use App\Http\Controllers\OIDC\LogoutController;
+use App\Http\Controllers\OIDC\TokenProxyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -105,6 +111,8 @@ Route::middleware('auth')->group(
         Route::get('/modules', [ParamettreController::class, 'modules'])->name('ModuleAdmin');
         Route::get('/liste_presence', [pointeController::class, 'liste_presence'])->name('liste_presence');
         Route::get('/sortie_intermediaire', [pointeController::class, 'sortie_intermediaire'])->name('sortie_intermediaire');
+        Route::get('/liste-presence-imprime/{date_start}/{date_end}', [PdfController::class, 'imprimeListePresence'])->name('imprimeListe_presence');
+        Route::get('/liste-presence-imprime/{date_start}/{date_end}/{userId}', [PdfController::class, 'imprimeListePresenceUser'])->name('imprimeListePresenceUser');
 
         Route::get('/liste_entreprise', [ParamettreController::class, 'liste_entreprise'])->name('liste_entreprise');
         Route::put('/modifier_entreprise/{id}', [ParamettreController::class, 'modifier_entreprise'])->name('modifier_entreprise');
@@ -294,7 +302,13 @@ Route::middleware('auth')->group(
             return view('components.configuration.config-audit');
         })->name('config-audit');
 
-       
+       // ================================== OIDC avec Passport =================================
+       // Proxy pour ajouter id_token RS256 à la réponse Passport
+       Route::post('/oidc/token', [TokenProxyController::class, 'exchange']);
+        Route::get('/.well-known/openid-configuration', [DiscoveryController::class, 'show']);
+Route::middleware('auth:api')->get('/oauth/userinfo', [UserInfoController::class, 'show']);
+Route::get('/oauth/jwks.json', [JwksController::class, 'show']);
+Route::match(['GET','POST'], '/oauth/logout', [LogoutController::class, 'logout']);
     }
 
 );

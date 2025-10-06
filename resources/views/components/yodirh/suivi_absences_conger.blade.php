@@ -180,10 +180,8 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-2 mb-4">
                                 <div class="d-flex align-items-center flex-wrap row-gap-2">
                                     <div class="dropdown me-2">
-
                                         <label for="filtre-date" class="me-2 mb-0">Date début :</label>
                                         <input type="date" id="filtre-date" name="date_debut" class="form-control">
-
                                     </div>
                                     <div class="icon-form">
                                         <label for="filtre-date1" class="me-2 mb-0">Date fin :</label>
@@ -191,33 +189,59 @@
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center flex-wrap row-gap-2 mt-4">
-                                    <div class="dropdown me-2 mt-1">
+                                    {{-- <div class="dropdown me-2 mt-1">
                                         <button type="button" class="btn btn-primary" style="margin-bottom: 5px;"
                                             data-bs-toggle="modal" data-bs-target="#sortiesIntermediairesModal">
-                                            <i class="fa fa-plus"></i> Sorties intermediaires
+                                            <i class="fa fa-plus me-2"></i> Sorties intermediaires
                                         </button>
-
-                                    </div>
-                                    <div class="form-sorts dropdown">
-                                        <a href="javascript:void(0);" class="dropdown-toggle"
-                                            data-bs-toggle="dropdown"><i
-                                                class="ti ti-package-export me-2"></i>Exporter</a>
-                                        <div class="dropdown-menu  dropdown-menu-end">
-                                            <ul>
-                                                <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item"><i
-                                                            class="ti ti-file-type-pdf text-danger me-1"></i>Exporter
-                                                        en PDF</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item"><i
-                                                            class="ti ti-file-type-xls text-green me-1"></i>Exporter
-                                                        en Excel </a>
-                                                </li>
-                                            </ul>
-                                        </div>
+                                    </div> --}}
+                                    <div class="dropdown me-2 mt-1">
+                                        <a id="btn-pdf" target="_blank"
+                                            href="{{ route('imprimeListe_presence', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            data-template="{{ route('imprimeListe_presence', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            class="btn btn-outline-primary" style="margin-bottom: 5px;">
+                                            <i class="ti ti-file-type-pdf text-primary me-2" style="font-size: 20px"></i>
+                                            Imprimer en PDF
+                                        </a>
                                     </div>
                                 </div>
+                                <script>
+                                    (function() {
+                                        const inputStart = document.getElementById('filtre-date');
+                                        const inputEnd = document.getElementById('filtre-date1');
+                                        const btn = document.getElementById('btn-pdf');
+
+                                        // URL modèle générée par Laravel avec placeholders
+                                        const template = btn.dataset.template; // ex: /liste-presence-imprime/__START__/__END__
+
+                                        function buildUrl() {
+                                            return template
+                                                .replace('__START__', encodeURIComponent(inputStart.value))
+                                                .replace('__END__', encodeURIComponent(inputEnd.value));
+                                        }
+
+                                        function hasBothDates() {
+                                            return Boolean(inputStart.value && inputEnd.value);
+                                        }
+
+                                        // Met à jour le href quand les dates changent (pratique pour survol/ouvrir dans nouvel onglet)
+                                        [inputStart, inputEnd].forEach(el => {
+                                            el.addEventListener('change', () => {
+                                                if (hasBothDates()) btn.href = buildUrl();
+                                            });
+                                        });
+
+                                        // S’assure que le href est correct au clic + petite validation
+                                        btn.addEventListener('click', function(e) {
+                                            if (!hasBothDates()) {
+                                                e.preventDefault();
+                                                alert('Veuillez sélectionner une date de début et une date de fin.');
+                                                return;
+                                            }
+                                            this.href = buildUrl();
+                                        });
+                                    })();
+                                </script>
                             </div>
                             <div class="table-responsive">
                                 <table id="data-table-basic" class="table table-striped">

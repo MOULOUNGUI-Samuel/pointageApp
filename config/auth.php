@@ -43,7 +43,8 @@ return [
         'api' => [
             'driver' => 'passport', // <-- CETTE LIGNE EST TRÈS IMPORTANTE
             'provider' => 'users',
-        ],
+            'hash' => false,
+    ],
     ],
 
     /*

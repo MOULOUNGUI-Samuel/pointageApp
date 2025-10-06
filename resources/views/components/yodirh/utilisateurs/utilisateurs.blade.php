@@ -183,6 +183,14 @@
                                                                 d'absence
                                                             </a>
                                                         </li>
+                                                        <li class="mb-1">
+                                                            <a class="dropdown-item" href="#"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#Historique-{{ $user->id }}">
+                                                                <i class="fas fa-file-signature me-2"></i> Historique
+                                                                d'absence
+                                                            </a>
+                                                        </li>
 
 
                                                         <li>
@@ -197,9 +205,91 @@
                                             </td>
                                         </tr>
                                         {{-- MODALE UNIQUE POUR CE USER --}}
+                                        <div class="modal fade" id="Historique-{{ $user->id }}" tabindex="-1"
+                                            role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog modal-md p-3"
+                                                role="document">
+                                                <div class="modal-content" style="background-color: rgb(240, 243, 243)">
+                                                    <div class="modal-header bg-primary" style="background-color:white">
+                                                        <h4 class="modal-title text-white">Historique d'absence : {{ $user->nom }}
+                                                            {{ $user->prenom }}</h4>
+
+                                                        <button type="button" class="btn-close p-2 bg-light rounded"
+                                                            data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body p-0 mx-3">
+                                                        <div class="d-flex align-items-center justify-content-between row-gap-2 my-3">
+                                                            <div class="dropdown me-2">
+                                                                <label for="filtre-dat{{ $user->id }}" class="me-2 mb-0" style="font-size: 15px">Date début
+                                                                    :</label>
+                                                                <input type="date" id="filtre-dat{{ $user->id }}" name="date_debut"
+                                                                    class="form-control shadow" style="width: 200px;font-size: 15px">
+                                                            </div>
+                                                            <div class="icon-form">
+                                                                <label for="filtre-date{{ $user->id }}" class="me-2 mb-0" style="font-size: 15px">Date fin
+                                                                    :</label>
+                                                                <input type="date" id="filtre-date{{ $user->id }}" name="date_fin"
+                                                                    class="form-control shadow" style="width: 200px;font-size: 15px">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a id="btn-pdf{{ $user->id }}" target="_blank"
+                                                                href="{{ route('imprimeListePresenceUser', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
+                                                                data-template="{{ route('imprimeListePresenceUser', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
+                                                                class="btn btn-outline-primary"
+                                                                style="margin-bottom: 5px;">
+                                                                <i class="ti ti-file-type-pdf text-primary me-2"
+                                                                    style="font-size: 20px"></i>
+                                                                Imprimer en PDF
+                                                            </a>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script>
+                                                    (function() {
+                                                        const inputStart = document.getElementById('filtre-dat{{ $user->id }}');
+                                                        const inputEnd = document.getElementById('filtre-date{{ $user->id }}');
+                                                        const btn = document.getElementById('btn-pdf{{ $user->id }}');
+                                                        
+                
+                                                        // URL modèle générée par Laravel avec placeholders
+                                                        const template = btn.dataset.template; // ex: /liste-presence-imprime/__START__/__END__
+                
+                                                        function buildUrl() {
+                                                            return template
+                                                                .replace('__START__', encodeURIComponent(inputStart.value))
+                                                                .replace('__END__', encodeURIComponent(inputEnd.value));
+                                                        }
+                
+                                                        function hasBothDates() {
+                                                            return Boolean(inputStart.value && inputEnd.value);
+                                                        }
+                
+                                                        // Met à jour le href quand les dates changent (pratique pour survol/ouvrir dans nouvel onglet)
+                                                        [inputStart, inputEnd].forEach(el => {
+                                                            el.addEventListener('change', () => {
+                                                                if (hasBothDates()) btn.href = buildUrl();
+                                                            });
+                                                        });
+                
+                                                        // S’assure que le href est correct au clic + petite validation
+                                                        btn.addEventListener('click', function(e) {
+                                                            if (!hasBothDates()) {
+                                                                e.preventDefault();
+                                                                alert('Veuillez sélectionner une date de début et une date de fin.');
+                                                                return;
+                                                            }
+                                                            this.href = buildUrl();
+                                                        });
+                                                    })();
+                                                </script>
+                                            </div>
+                                        </div>
                                         <div class="modal fade" id="absenceModal-{{ $user->id }}" tabindex="-1"
                                             role="dialog" aria-hidden="true" wire:ignore.self>
-                                            <div class="modal-dialog modal-fullscreen modal-dialog-scrollable p-3" role="document">
+                                            <div class="modal-dialog modal-fullscreen modal-dialog-scrollable p-3"
+                                                role="document">
                                                 <div class="modal-content" style="background-color: rgb(240, 243, 243)">
                                                     <div class="modal-header" style="background-color:white">
                                                         <h4 class="modal-title">Demandes d'absence : {{ $user->nom }}
