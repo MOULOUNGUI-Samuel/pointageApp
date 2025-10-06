@@ -187,7 +187,7 @@
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#Historique-{{ $user->id }}">
-                                                                <i class="fas fa-file-signature me-2"></i> Historique
+                                                                <i class="ti ti-file-type-pdf me-2"></i> Historique
                                                                 d'absence
                                                             </a>
                                                         </li>
