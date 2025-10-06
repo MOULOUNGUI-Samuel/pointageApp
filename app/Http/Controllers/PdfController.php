@@ -1049,399 +1049,443 @@ class PdfController extends Controller
 }
 
 
-    public function imprimeListePresenceUser(Request $request, string $date_start, string $date_end, string $userId)
-    {
-        // ----- Utilisateur + entreprise (pour les horaires)
-        $user       = User::findOrFail($userId);
-        $entreprise = Entreprise::findOrFail($user->entreprise_id);
-    
-        try {
-            $start = Carbon::parse($date_start)->startOfDay();
-            $end   = Carbon::parse($date_end)->endOfDay();
-            if ($end->lt($start)) {
-                [$start, $end] = [$end, $start];
-            }
-        } catch (\Throwable $e) {
-            abort(422, 'Dates invalides.');
+public function imprimeListePresenceUser(Request $request, string $date_start, string $date_end, string $userId)
+{
+    // ----- Utilisateur + entreprise (pour les horaires)
+    $user       = User::findOrFail($userId);
+    $entreprise = Entreprise::findOrFail($user->entreprise_id);
+
+    try {
+        $start = Carbon::parse($date_start)->startOfDay();
+        $end   = Carbon::parse($date_end)->endOfDay();
+        if ($end->lt($start)) {
+            [$start, $end] = [$end, $start];
         }
-    
-        Carbon::setLocale('fr');
-        $periodeTxt = $start->translatedFormat('l d F Y') . ' / ' . $end->translatedFormat('l d F Y');
-        $printedBy  = Auth::user()->nom ?? 'Système';
-    
-        // ----- utilitaires jours ouvrés (sans WE ni jours fériés FR)
-        $yasumiCache = [];
-        $isHoliday = function (Carbon $d) use (&$yasumiCache): bool {
-            $y = $d->year;
-            if (!isset($yasumiCache[$y])) {
-                $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y);
-            }
-            return $yasumiCache[$y]->isHoliday($d);
-        };
-        $isWorkingDay = function (Carbon $d) use ($isHoliday): bool {
-            return !$d->isWeekend() && !$isHoliday($d);
-        };
-    
-        // ----- 1) POINTAGES du seul utilisateur
-        $pointagesRaw = Pointage::with('user:id,nom,prenom')
-            ->where('user_id', $userId)
-            ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
-            ->orderBy('date_arriver')
-            ->orderBy('heure_arriver')
-            ->get();
-    
-        // ----- Paramètres entreprise
-        $heureDebutJour = $entreprise->heure_ouverture;
-        $heureFinJour   = $entreprise->heure_fin;
-        $pauseDebut     = $entreprise->heure_debut_pose;
-        $pauseFin       = $entreprise->heure_fin_pose;
-        $toleranceMin   = (int)($entreprise->minute_pointage_limite ?? 0);
-    
-        $totalWorkedSec  = 0;
-        $totalOverSec    = 0;
-        $totalLateSec    = 0;
-        $expectedWorkSec = 0;
-    
-        // util: chevauchement
-        $overlapSeconds = function (?Carbon $a1, ?Carbon $a2, ?Carbon $b1, ?Carbon $b2): int {
-            if (!$a1 || !$a2 || !$b1 || !$b2) return 0;
-            if ($a2->lte($a1) || $b2->lte($b1)) return 0;
-            $s = $a1->gt($b1) ? $a1->copy() : $b1->copy();
-            $e = $a2->lt($b2) ? $a2->copy() : $b2->copy();
-            return $e->gt($s) ? $e->diffInSeconds($s) : 0;
-        };
-    
-        // ----- Heures prévues (jours ouvrés)
-        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-            if (!$isWorkingDay($d) || !$heureDebutJour || !$heureFinJour) continue;
-            $jourStart = Carbon::parse($d->toDateString() . ' ' . $heureDebutJour);
-            $jourEnd   = Carbon::parse($d->toDateString() . ' ' . $heureFinJour);
-            if ($jourEnd->lte($jourStart)) continue;
-    
-            $daily = $jourEnd->diffInSeconds($jourStart);
-            if ($pauseDebut && $pauseFin) {
-                $pauseS = Carbon::parse($d->toDateString() . ' ' . $pauseDebut);
-                $pauseE = Carbon::parse($d->toDateString() . ' ' . $pauseFin);
-                $daily -= $overlapSeconds($jourStart, $jourEnd, $pauseS, $pauseE);
-            }
-            $expectedWorkSec += max(0, $daily);
-        }
-    
-        // ----- Calculs par pointage + marquage statut & dates pointées
-        $datesAvecPointage = []; // pour absences injustifiées
-        foreach ($pointagesRaw as $p) {
-            $date = Carbon::parse($p->date_arriver);
-            if (!$isWorkingDay($date)) continue;
-    
-            $jourStart = $heureDebutJour ? Carbon::parse($date->toDateString() . ' ' . $heureDebutJour) : null;
-            $jourEnd   = $heureFinJour   ? Carbon::parse($date->toDateString() . ' ' . $heureFinJour)   : null;
-            $pauseS    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseDebut) : null;
-            $pauseE    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseFin)   : null;
-    
-            $inDT  = $p->heure_arriver ? Carbon::parse($date->toDateString() . ' ' . $p->heure_arriver) : null;
-            $outDT = $p->heure_fin     ? Carbon::parse($date->toDateString() . ' ' . $p->heure_fin)     : null;
-    
-            $outEff = $outDT ?: ($inDT && $jourEnd ? $jourEnd : null);
-    
-            if ($inDT && $outEff && $outEff->gt($inDT)) {
-                $worked = $outEff->diffInSeconds($inDT);
-                $worked -= $overlapSeconds($inDT, $outEff, $pauseS, $pauseE);
-                if ($worked < 0) $worked = 0;
-                $totalWorkedSec += $worked;
-            }
-            if ($outEff && $jourEnd && $outEff->gt($jourEnd)) {
-                $totalOverSec += $outEff->diffInSeconds($jourEnd);
-            }
-    
-            // --- Statut "À l'heure" / "En retard" basé sur heure d'ouverture + tolérance
-            $p->computed_statut = '';
-            $p->computed_late_s = 0;
-    
-            if ($inDT && $jourStart) {
-                $limite = $jourStart->copy()->addMinutes($toleranceMin);
-                if ($inDT->gt($limite)) {
-                    $p->computed_statut = 'En retard';
-                    $p->computed_late_s = $inDT->diffInSeconds($limite);
-                    $totalLateSec      += $p->computed_late_s;
-                } else {
-                    $p->computed_statut = 'À l\'heure';
-                }
-            }
-    
-            $datesAvecPointage[$date->toDateString()] = true;
-        }
-    
-        // ----- Lignes d'affichage (jours ouvrés) + fallback heure fin entreprise
-        $pointages = $pointagesRaw
-            ->filter(fn($p) => $isWorkingDay(Carbon::parse($p->date_arriver)))
-            ->map(function ($p) use ($entreprise) {
-                $u    = $p->user;
-                $date = Carbon::parse($p->date_arriver);
-    
-                $in = $p->heure_arriver
-                    ? Carbon::parse($p->heure_arriver)->format('H:i:s')
-                    : '-- : -- : --';
-    
-                $out = $p->heure_fin
-                    ? Carbon::parse($p->heure_fin)->format('H:i:s')
-                    : ($p->heure_arriver && $entreprise->heure_fin
-                        ? Carbon::parse("{$p->date_arriver} {$entreprise->heure_fin}")->format('H:i:s')
-                        : '-- : -- : --');
-    
-                // Priorité au statut calculé ; sinon celui en base ; sinon vide
-                $statut = $p->computed_statut ?? '';
-                if (!$statut) {
-                    $raw = $p->statut ?? '';
-                    $statut = is_numeric($raw) ? (string)$raw : (string)$raw;
-                }
-    
-                return [
-                    'user_id' => $p->user_id,
-                    'nom'     => trim($u->nom ?? ''),
-                    'prenom'  => trim($u->prenom ?? ''),
-                    'date'    => $date->translatedFormat('l d F Y'),
-                    'in'      => $in,
-                    'out'     => $out,
-                    'statut'  => $statut,
-                    'sortkey' => $date->format('Y-m-d') . ' 1',
-                ];
-            });
-    
-        // ----- Absences approuvées (jours ouvrés)
-        $absences = Absence::with('user:id,nom,prenom')
-            ->where('user_id', $userId)
-            ->where('status', 'approuvé')
-            ->where(function ($q) use ($start, $end) {
-                $q->whereDate('start_datetime', '<=', $end)
-                  ->whereDate('end_datetime', '>=', $start);
-            })
-            ->get();
-    
-        $datesAbsencesOK = [];
-        $absenceRows = collect();
-        foreach ($absences as $a) {
-            $u     = $a->user;
-            $from  = Carbon::parse($a->start_datetime)->startOfDay();
-            $to    = Carbon::parse($a->end_datetime)->endOfDay();
-            if ($from->lt($start)) $from = $start->copy();
-            if ($to->gt($end))     $to   = $end->copy();
-    
-            for ($d = $from->copy(); $d->lte($to); $d->addDay()) {
-                if (!$isWorkingDay($d)) continue;
-                $datesAbsencesOK[$d->toDateString()] = true;
-    
-                $absenceRows->push([
-                    'user_id' => $a->user_id,
-                    'nom'     => trim($u->nom ?? ''),
-                    'prenom'  => trim($u->prenom ?? ''),
-                    'date'    => $d->translatedFormat('l d F Y'),
-                    'in'      => '-- : -- : --',
-                    'out'     => '-- : -- : --',
-                    'statut'  => 'Absence approuvée',
-                    'sortkey' => $d->format('Y-m-d') . ' 0',
-                ]);
-            }
-        }
-    
-        // ----- Générer les "Absences injustifiées" (jours ouvrés sans pointage ni absence approuvée)
-        $absInjRows = collect();
-        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-            if (!$isWorkingDay($d)) continue;
-            $dStr = $d->toDateString();
-            $aUnPointage   = isset($datesAvecPointage[$dStr]);
-            $aUneAbsenceOK = isset($datesAbsencesOK[$dStr]);
-    
-            if (!$aUnPointage && !$aUneAbsenceOK) {
-                $absInjRows->push([
-                    'user_id' => $userId,
-                    'nom'     => trim($user->nom ?? ''),
-                    'prenom'  => trim($user->prenom ?? ''),
-                    'date'    => $d->translatedFormat('l d F Y'),
-                    'in'      => '-- : -- : --',
-                    'out'     => '-- : -- : --',
-                    'statut'  => 'Absent injustifié',
-                    'sortkey' => $d->format('Y-m-d') . ' 0',
-                ]);
-            }
-        }
-    
-        // ----- Fusion finale des lignes
-        $rows = $absenceRows
-            ->merge($absInjRows)
-            ->merge($pointages)
-            ->sortBy('sortkey')
-            ->values();
-    
-        // ----- PDF (A4 paysage) + chemins images
-        $logoPath = public_path(session('entreprise_logo')
-            ? 'storage/' . ltrim(session('entreprise_logo'), '/')
-            : 'src/image/logo.png');
-    
-        // photo utilisateur: essaie plusieurs attributs, fallback icône
-        $photoAttr = $user->photo ?? null;
-        $userPhotoPath = $photoAttr
-            ? public_path('storage/' . ltrim($photoAttr, '/'))
-            : public_path('src/images/user.jpg');
-        if (!is_file($userPhotoPath)) {
-            $userPhotoPath = public_path('src/images/user.jpg'); // ultime fallback
-        }
-    
-        $pdf = new class('L', 'mm', 'A4') extends FPDF {
-            public string $logoPath = '';
-            public string $entrepriseName = '';
-            public string $periode = '';
-            public string $printedBy = '';
-            public string $userName = '';
-            public string $userPhotoPath = '';
-    
-            public function Header()
-            {
-                // --- Gauche : logo
-                $logoX = 10;
-                $logoY = 8;
-                $logoW = 22;
-                if (is_file($this->logoPath)) {
-                    $this->Image($this->logoPath, $logoX, $logoY, $logoW);
-                }
-    
-                // --- Droite : photo user
-                $photoX = 266;
-                $photoY = 8;
-                $photoW = 18;
-                if (is_file($this->userPhotoPath)) {
-                    $this->Image($this->userPhotoPath, $photoX, $photoY, $photoW, $photoW);
-                }
-    
-                // --- Infos
-                $this->SetFont('Arial', 'B', 14);
-                // Nom entreprise (à gauche proprement)
-                $this->Text(10, 25, utf8_decode($this->entrepriseName));
-    
-                $this->SetFont('Arial', '', 10);
-                $this->Text(10, 30, utf8_decode('Période : ' . $this->periode));
-                $this->Text(10, 35, utf8_decode('Imprimé par : ' . $this->printedBy));
-    
-                // Limite du nom utilisateur (UTF-8) + affichage à droite
-                $nomLimite = mb_strimwidth($this->userName, 0, 29, '...', 'UTF-8');
-                $this->Text(235, 32, utf8_decode($nomLimite));
-    
-                // --- Saut sous le plus bas des visuels (logo / photo)
-                $bottomLeft = max($logoY + $logoW, $photoY + $photoW) + 8;
-                $this->SetY(max($bottomLeft, $this->GetY() + 4));
-    
-                // --- En-tête du tableau
-                $this->SetFont('Arial', 'B', 10);
-                $this->SetFillColor(230, 230, 230);
-                $this->SetDrawColor(200, 200, 200);
-    
-                $w = [
-                    'nom'    => 65,
-                    'prenom' => 45,
-                    'date'   => 60,
-                    'in'     => 35,
-                    'out'    => 35,
-                    'statut' => 37,
-                ];
-    
-                $this->Cell($w['nom'],    9, utf8_decode('Nom(s)'),        1, 0, 'L', true);
-                $this->Cell($w['prenom'], 9, utf8_decode('Prénom(s)'),     1, 0, 'L', true);
-                $this->Cell($w['date'],   9, utf8_decode('Date'),          1, 0, 'L', true);
-                $this->Cell($w['in'],     9, utf8_decode('Heure arrivée'), 1, 0, 'C', true);
-                $this->Cell($w['out'],    9, utf8_decode('Heure sortie'),  1, 0, 'C', true);
-                $this->Cell($w['statut'], 9, utf8_decode('Statut'),        1, 1, 'C', true);
-            }
-    
-            public function Footer()
-            {
-                $this->SetY(-15);
-                $this->SetFont('Arial', 'I', 8);
-                $this->SetTextColor(120, 120, 120);
-                $this->Cell(0, 10, utf8_decode('Page ' . $this->PageNo() . '/{nb}'), 0, 0, 'C');
-            }
-        };
-    
-        // --- Marges
-        $leftMargin  = 10;
-        $topMargin   = 25;
-        $rightMargin = 10;
-    
-        $pdf->AliasNbPages();
-        $pdf->SetMargins($leftMargin, $topMargin, $rightMargin);
-        $pdf->SetAutoPageBreak(true, 18);
-        $pdf->logoPath       = $logoPath;
-        $pdf->userPhotoPath  = $userPhotoPath;
-        $pdf->entrepriseName = $entreprise->nom_entreprise ?? 'Entreprise';
-        $pdf->periode        = $periodeTxt;
-        $pdf->printedBy      = $printedBy;
-        $pdf->userName       = trim(($user->nom ?? '') . ' ' . ($user->prenom ?? ''));
-    
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->SetDrawColor(220, 220, 220);
-    
-        $w = [
-            'nom'    => 65,
-            'prenom' => 45,
-            'date'   => 60,
-            'in'     => 35,
-            'out'    => 35,
-            'statut' => 37,
-        ];
-    
-        if ($rows->isEmpty()) {
-            $pdf->Ln(10);
-            $pdf->SetFont('Arial', 'I', 11);
-            $pdf->Cell(0, 10, utf8_decode("Aucune donnée sur la période."), 0, 1, 'C');
-        } else {
-            foreach ($rows as $r) {
-                $pdf->Cell($w['nom'],    8, utf8_decode((string)$r['nom']),    1, 0, 'L');
-                $pdf->Cell($w['prenom'], 8, utf8_decode((string)$r['prenom']), 1, 0, 'L');
-                $pdf->Cell($w['date'],   8, utf8_decode((string)$r['date']),   1, 0, 'L');
-                $pdf->Cell($w['in'],     8, utf8_decode((string)$r['in']),     1, 0, 'C');
-                $pdf->Cell($w['out'],    8, utf8_decode((string)$r['out']),    1, 0, 'C');
-    
-                // Coloration simple selon le libellé
-                $statText = (string)($r['statut'] ?? '');
-                $lower = mb_strtolower($statText, 'UTF-8');
-                if (strpos($lower, 'heure') !== false)       $pdf->SetTextColor(0, 128, 0);
-                elseif (strpos($lower, 'retard') !== false)  $pdf->SetTextColor(200, 0, 0);
-                elseif (strpos($lower, 'absence') !== false
-                     || strpos($lower, 'absent') !== false)  $pdf->SetTextColor(180, 120, 0);
-                else                                          $pdf->SetTextColor(80, 80, 80);
-    
-                $pdf->Cell($w['statut'], 8, utf8_decode($statText ?: '—'), 1, 1, 'C');
-                $pdf->SetTextColor(0, 0, 0);
-            }
-        }
-    
-        // ----- Synthèse (4 colonnes : travaillé / sup / retard / prévues)
-        $formatHM = function (int $seconds): string {
-            $h = intdiv($seconds, 3600);
-            $m = intdiv($seconds % 3600, 60);
-            return sprintf('%02d:%02d', $h, $m);
-        };
-    
-        $pdf->Ln(4);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->SetFillColor(230, 230, 230);
-        $pdf->SetDrawColor(200, 200, 200);
-    
-        $usable = $pdf->GetPageWidth() - $leftMargin - $rightMargin;
-        $col    = $usable / 4;
-    
-        $pdf->SetX($leftMargin);
-        $pdf->Cell($col, 9, utf8_decode('Total heures travaillées : ' . $formatHM($totalWorkedSec)), 1, 0, 'C', true);
-        $pdf->Cell($col, 9, utf8_decode('Heures supplémentaires : ' . $formatHM($totalOverSec)),     1, 0, 'C', true);
-        $pdf->Cell($col, 9, utf8_decode('Heures de retard : ' . $formatHM($totalLateSec)),            1, 0, 'C', true);
-        $pdf->Cell($col, 9, utf8_decode('Heures prévues : ' . $formatHM($expectedWorkSec)),           1, 1, 'C', true);
-    
-        // ----- Sortie
-        $filename = 'presence_user_' . $userId . '_' . $start->format('Ymd') . '-' . $end->format('Ymd') . '.pdf';
-    
-        return response($pdf->Output('S'))
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+    } catch (\Throwable $e) {
+        abort(422, 'Dates invalides.');
     }
+
+    Carbon::setLocale('fr');
+    $periodeTxt = $start->translatedFormat('l d F Y') . ' / ' . $end->translatedFormat('l d F Y');
+    $printedBy  = Auth::user()->nom ?? 'Système';
+
+    // ----- utilitaires jours ouvrés (sans WE ni jours fériés FR)
+    $yasumiCache = [];
+    $isHoliday = function (Carbon $d) use (&$yasumiCache): bool {
+        $y = $d->year;
+        if (!isset($yasumiCache[$y])) {
+            $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y);
+        }
+        return $yasumiCache[$y]->isHoliday($d);
+    };
+    $isWorkingDay = function (Carbon $d) use ($isHoliday): bool {
+        return !$d->isWeekend() && !$isHoliday($d);
+    };
+
+    // ----- 1) POINTAGES du seul utilisateur
+    $pointagesRaw = Pointage::with('user:id,nom,prenom')
+        ->where('user_id', $userId)
+        ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
+        ->orderBy('date_arriver')
+        ->orderBy('heure_arriver')
+        ->get();
+
+    // ----- Paramètres entreprise
+    $heureDebutJour = $entreprise->heure_ouverture;
+    $heureFinJour   = $entreprise->heure_fin;
+    $pauseDebut     = $entreprise->heure_debut_pose;
+    $pauseFin       = $entreprise->heure_fin_pose;
+    $toleranceMin   = (int)($entreprise->minute_pointage_limite ?? 0);
+
+    $totalWorkedSec  = 0;
+    $totalOverSec    = 0;
+    $totalLateSec    = 0;
+    $expectedWorkSec = 0;
+
+    $approvedAbsenceSec    = 0; // total absences approuvées (heures)
+    $unjustifiedAbsenceSec = 0; // total absences injustifiées (heures)
+
+    $expectedDailySecByDate = []; // 'Y-m-d' => seconds attendus ce jour
+    $workedSecByDate        = []; // 'Y-m-d' => seconds travaillés (somme des pointages du jour)
+    $datesAvecPointage      = []; // 'Y-m-d' => true si au moins un pointage
+    $datesAbsencesOK        = []; // 'Y-m-d' => true si absence approuvée couvre ce jour
+
+    // util: chevauchement (pour retirer la pause)
+    $overlapSeconds = function (?Carbon $a1, ?Carbon $a2, ?Carbon $b1, ?Carbon $b2): int {
+        if (!$a1 || !$a2 || !$b1 || !$b2) return 0;
+        if ($a2->lte($a1) || $b2->lte($b1)) return 0;
+        $s = $a1->gt($b1) ? $a1->copy() : $b1->copy();
+        $e = $a2->lt($b2) ? $a2->copy() : $b2->copy();
+        return $e->gt($s) ? $e->diffInSeconds($s) : 0;
+    };
+
+    // ----- Heures prévues (jours ouvrés) + mémoriser par date
+    for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+        if (!$isWorkingDay($d) || !$heureDebutJour || !$heureFinJour) continue;
+
+        $jourStart = Carbon::parse($d->toDateString() . ' ' . $heureDebutJour);
+        $jourEnd   = Carbon::parse($d->toDateString() . ' ' . $heureFinJour);
+        if ($jourEnd->lte($jourStart)) continue;
+
+        $daily = $jourEnd->diffInSeconds($jourStart);
+        if ($pauseDebut && $pauseFin) {
+            $pauseS = Carbon::parse($d->toDateString() . ' ' . $pauseDebut);
+            $pauseE = Carbon::parse($d->toDateString() . ' ' . $pauseFin);
+            $daily -= $overlapSeconds($jourStart, $jourEnd, $pauseS, $pauseE);
+        }
+        $daily = max(0, $daily);
+        $expectedWorkSec += $daily;
+        $expectedDailySecByDate[$d->toDateString()] = $daily;
+    }
+
+    // ----- Calculs par pointage (ignore WE/fériés) + statut
+    foreach ($pointagesRaw as $p) {
+        $date = Carbon::parse($p->date_arriver);
+        if (!$isWorkingDay($date)) continue;
+
+        $jourStart = $heureDebutJour ? Carbon::parse($date->toDateString() . ' ' . $heureDebutJour) : null;
+        $jourEnd   = $heureFinJour   ? Carbon::parse($date->toDateString() . ' ' . $heureFinJour)   : null;
+        $pauseS    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseDebut) : null;
+        $pauseE    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseFin)   : null;
+
+        $inDT  = $p->heure_arriver ? Carbon::parse($date->toDateString() . ' ' . $p->heure_arriver) : null;
+        $outDT = $p->heure_fin     ? Carbon::parse($date->toDateString() . ' ' . $p->heure_fin)     : null;
+
+        $outEff = $outDT ?: ($inDT && $jourEnd ? $jourEnd : null);
+
+        // total travaillé (et par jour)
+        if ($inDT && $outEff && $outEff->gt($inDT)) {
+            $worked = $outEff->diffInSeconds($inDT);
+            $worked -= $overlapSeconds($inDT, $outEff, $pauseS, $pauseE);
+            if ($worked < 0) $worked = 0;
+            $totalWorkedSec += $worked;
+
+            $dKey = $date->toDateString();
+            $workedSecByDate[$dKey] = ($workedSecByDate[$dKey] ?? 0) + $worked;
+        }
+
+        // supplémentaires
+        if ($outEff && $jourEnd && $outEff->gt($jourEnd)) {
+            $totalOverSec += $outEff->diffInSeconds($jourEnd);
+        }
+
+        // statut "à l'heure" / "en retard" (basé sur heure d'ouverture + tolérance)
+        $p->computed_statut = '';
+        $p->computed_late_s = 0;
+        if ($inDT && $jourStart) {
+            $limite = $jourStart->copy()->addMinutes($toleranceMin);
+            if ($inDT->gt($limite)) {
+                $p->computed_statut = 'En retard';
+                $p->computed_late_s = $inDT->diffInSeconds($limite);
+                $totalLateSec      += $p->computed_late_s;
+            } else {
+                $p->computed_statut = 'À l\'heure';
+            }
+        }
+
+        $datesAvecPointage[$date->toDateString()] = true;
+    }
+
+    // ----- Lignes d'affichage (jours ouvrés) + fallback heure fin entreprise
+    $pointages = $pointagesRaw
+        ->filter(fn($p) => $isWorkingDay(Carbon::parse($p->date_arriver)))
+        ->map(function ($p) use ($entreprise) {
+            $u   = $p->user;
+            $date= Carbon::parse($p->date_arriver);
+
+            $in = $p->heure_arriver
+                ? Carbon::parse($p->heure_arriver)->format('H:i:s')
+                : '-- : -- : --';
+            $out = $p->heure_fin
+                ? Carbon::parse($p->heure_fin)->format('H:i:s')
+                : ($p->heure_arriver && $entreprise->heure_fin
+                    ? Carbon::parse("{$p->date_arriver} {$entreprise->heure_fin}")->format('H:i:s')
+                    : '-- : -- : --');
+
+            $statut = $p->computed_statut ?? '';
+            if (!$statut) {
+                $raw = $p->statut ?? '';
+                $statut = is_numeric($raw) ? (string)$raw : (string)$raw;
+            }
+
+            return [
+                'user_id' => $p->user_id,
+                'nom'     => trim($u->nom ?? ''),
+                'prenom'  => trim($u->prenom ?? ''),
+                'date'    => $date->translatedFormat('l d F Y'),
+                'in'      => $in,
+                'out'     => $out,
+                'statut'  => $statut,
+                'sortkey' => $date->format('Y-m-d') . ' 1',
+            ];
+        });
+
+    // ----- Absences approuvées
+    $absences = Absence::with('user:id,nom,prenom')
+        ->where('user_id', $userId)
+        ->where('status', 'approuvé')
+        ->where(function ($q) use ($start, $end) {
+            $q->whereDate('start_datetime', '<=', $end)
+              ->whereDate('end_datetime', '>=', $start);
+        })
+        ->get();
+
+    $absenceRows = collect();
+    foreach ($absences as $a) {
+        $u     = $a->user;
+        $from  = Carbon::parse($a->start_datetime)->startOfDay();
+        $to    = Carbon::parse($a->end_datetime)->endOfDay();
+        if ($from->lt($start)) $from = $start->copy();
+        if ($to->gt($end))     $to   = $end->copy();
+
+        for ($d = $from->copy(); $d->lte($to); $d->addDay()) {
+            if (!$isWorkingDay($d)) continue;
+            $dKey = $d->toDateString();
+            $datesAbsencesOK[$dKey] = true;
+
+            $absenceRows->push([
+                'user_id' => $a->user_id,
+                'nom'     => trim($u->nom ?? ''),
+                'prenom'  => trim($u->prenom ?? ''),
+                'date'    => $d->translatedFormat('l d F Y'),
+                'in'      => '-- : -- : --',
+                'out'     => '-- : -- : --',
+                'statut'  => 'Absence approuvée',
+                'sortkey' => $d->format('Y-m-d') . ' 0',
+            ]);
+        }
+    }
+
+    // ----- Absences injustifiées (jours ouvrés sans pointage ni absence approuvée)
+    $absInjRows = collect();
+    for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+        if (!$isWorkingDay($d)) continue;
+        $dKey = $d->toDateString();
+        $aUnPointage   = isset($datesAvecPointage[$dKey]);
+        $aUneAbsenceOK = isset($datesAbsencesOK[$dKey]);
+
+        if (!$aUnPointage && !$aUneAbsenceOK) {
+            $absInjRows->push([
+                'user_id' => $userId,
+                'nom'     => trim($user->nom ?? ''),
+                'prenom'  => trim($user->prenom ?? ''),
+                'date'    => $d->translatedFormat('l d F Y'),
+                'in'      => '-- : -- : --',
+                'out'     => '-- : -- : --',
+                'statut'  => 'Absent injustifié',
+                'sortkey' => $d->format('Y-m-d') . ' 0',
+            ]);
+        }
+    }
+
+    // ----- Fusion des lignes
+    $rows = $absenceRows->merge($absInjRows)->merge($pointages)->sortBy('sortkey')->values();
+
+    // ----- Calcul du total des heures d'absences (approuvées + injustifiées)
+    // Règle:
+    //  - Jour avec absence approuvée: absence = max(0, attendu - travaillé ce jour)
+    //  - Jour sans pointage et sans absence approuvée: absence = attendu
+    for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+        if (!$isWorkingDay($d)) continue;
+        $dKey = $d->toDateString();
+        $attendu = $expectedDailySecByDate[$dKey] ?? 0;
+        if ($attendu <= 0) continue;
+
+        $worked = $workedSecByDate[$dKey] ?? 0;
+
+        if (isset($datesAbsencesOK[$dKey])) {
+            $approvedAbsenceSec += max(0, $attendu - $worked);
+        } elseif (!isset($datesAvecPointage[$dKey])) {
+            $unjustifiedAbsenceSec += $attendu;
+        }
+    }
+    $totalAbsenceSec = $approvedAbsenceSec + $unjustifiedAbsenceSec;
+
+    // ----- PDF (A4 paysage) + chemins images
+    $logoPath = public_path(session('entreprise_logo')
+        ? 'storage/' . ltrim(session('entreprise_logo'), '/')
+        : 'src/image/logo.png');
+
+    // photo utilisateur: essaie plusieurs attributs, fallback icône
+    $photoAttr = $user->photo ?? null;
+    $userPhotoPath = $photoAttr
+        ? public_path('storage/' . ltrim($photoAttr, '/'))
+        : public_path('src/images/user.jpg');
+    if (!is_file($userPhotoPath)) {
+        $userPhotoPath = public_path('src/images/user.jpg'); // ultime fallback
+    }
+
+    $pdf = new class('L', 'mm', 'A4') extends FPDF {
+        public string $logoPath = '';
+        public string $entrepriseName = '';
+        public string $periode = '';
+        public string $printedBy = '';
+        public string $userName = '';
+        public string $userPhotoPath = '';
+
+        public function Header()
+        {
+            // --- Gauche : logo
+            $logoX = 10;
+            $logoY = 8;
+            $logoW = 22;
+            if (is_file($this->logoPath)) {
+                $this->Image($this->logoPath, $logoX, $logoY, $logoW);
+            }
+
+            // --- Droite : photo user
+            $photoX = 266;
+            $photoY = 8;
+            $photoW = 18;
+            if (is_file($this->userPhotoPath)) {
+                $this->Image($this->userPhotoPath, $photoX, $photoY, $photoW, $photoW);
+            }
+
+            // --- Infos (gauche par simplicité)
+            $this->SetFont('Arial', 'B', 14);
+            $this->Text(10, 25, utf8_decode($this->entrepriseName));
+
+            $this->SetFont('Arial', '', 10);
+            $this->Text(10, 30, utf8_decode('Période : ' . $this->periode));
+            $this->Text(10, 35, utf8_decode('Imprimé par : ' . $this->printedBy));
+
+            $nomLimite = mb_strimwidth($this->userName, 0, 29, '...', 'UTF-8');
+            $this->Text(235, 32, utf8_decode($nomLimite));
+
+            // --- Saut sous visuels
+            $bottomLeft = max($logoY + $logoW, $photoY + $photoW) + 8;
+            $this->SetY(max($bottomLeft, $this->GetY() + 4));
+
+            // --- En-tête du tableau
+            $this->SetFont('Arial', 'B', 10);
+            $this->SetFillColor(230, 230, 230);
+            $this->SetDrawColor(200, 200, 200);
+
+            $w = [
+                'nom'    => 65,
+                'prenom' => 45,
+                'date'   => 60,
+                'in'     => 35,
+                'out'    => 35,
+                'statut' => 37,
+            ];
+
+            $this->Cell($w['nom'],    9, utf8_decode('Nom(s)'),        1, 0, 'L', true);
+            $this->Cell($w['prenom'], 9, utf8_decode('Prénom(s)'),     1, 0, 'L', true);
+            $this->Cell($w['date'],   9, utf8_decode('Date'),          1, 0, 'L', true);
+            $this->Cell($w['in'],     9, utf8_decode('Heure arrivée'), 1, 0, 'C', true);
+            $this->Cell($w['out'],    9, utf8_decode('Heure sortie'),  1, 0, 'C', true);
+            $this->Cell($w['statut'], 9, utf8_decode('Statut'),        1, 1, 'C', true);
+        }
+
+        public function Footer()
+        {
+            $this->SetY(-15);
+            $this->SetFont('Arial', 'I', 8);
+            $this->SetTextColor(120, 120, 120);
+            $this->Cell(0, 10, utf8_decode('Page ' . $this->PageNo() . '/{nb}'), 0, 0, 'C');
+        }
+    };
+
+    // --- Marges
+    $leftMargin  = 10;
+    $topMargin   = 25;
+    $rightMargin = 10;
+
+    $pdf->AliasNbPages();
+    $pdf->SetMargins($leftMargin, $topMargin, $rightMargin);
+    $pdf->SetAutoPageBreak(true, 18);
+    $pdf->logoPath       = $logoPath;
+    $pdf->userPhotoPath  = $userPhotoPath;
+    $pdf->entrepriseName = $entreprise->nom_entreprise ?? 'Entreprise';
+    $pdf->periode        = $periodeTxt;
+    $pdf->printedBy      = $printedBy;
+    $pdf->userName       = trim(($user->nom ?? '') . ' ' . ($user->prenom ?? ''));
+
+    $pdf->AddPage();
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetDrawColor(220, 220, 220);
+
+    $w = [
+        'nom'    => 65,
+        'prenom' => 45,
+        'date'   => 60,
+        'in'     => 35,
+        'out'    => 35,
+        'statut' => 37,
+    ];
+
+    $statusMap = [
+        0 => "À l'heure",
+        1 => "En retard",
+        2 => "Absent injustifié",
+        3 => "Absence approuvée",
+    ];
+
+    if ($rows->isEmpty()) {
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->Cell(0, 10, utf8_decode("Aucune donnée sur la période."), 0, 1, 'C');
+    } else {
+        foreach ($rows as $r) {
+            $pdf->Cell($w['nom'],    8, utf8_decode((string)$r['nom']),    1, 0, 'L');
+            $pdf->Cell($w['prenom'], 8, utf8_decode((string)$r['prenom']), 1, 0, 'L');
+            $pdf->Cell($w['date'],   8, utf8_decode((string)$r['date']),   1, 0, 'L');
+            $pdf->Cell($w['in'],     8, utf8_decode((string)$r['in']),     1, 0, 'C');
+            $pdf->Cell($w['out'],    8, utf8_decode((string)$r['out']),    1, 0, 'C');
+
+            $raw      = $r['statut'] ?? '';
+            $statText = is_numeric($raw) ? ($statusMap[(int)$raw] ?? (string)$raw) : (string)$raw;
+
+            $lower = mb_strtolower($statText, 'UTF-8');
+            if (strpos($lower, 'heure') !== false)       $pdf->SetTextColor(0, 128, 0);
+            elseif (strpos($lower, 'retard') !== false)  $pdf->SetTextColor(200, 0, 0);
+            elseif (strpos($lower, 'absence') !== false) $pdf->SetTextColor(180, 120, 0);
+            else                                          $pdf->SetTextColor(80, 80, 80);
+
+            $pdf->Cell($w['statut'], 8, utf8_decode($statText ?: '—'), 1, 1, 'C');
+            $pdf->SetTextColor(0, 0, 0);
+        }
+    }
+
+    // ----- Synthèse (5 colonnes : travaillé / sup / retard / prévues / absences)
+    $formatHM = function (int $seconds): string {
+        $h = intdiv($seconds, 3600);
+        $m = intdiv($seconds % 3600, 60);
+        return sprintf('%02d:%02d', $h, $m);
+    };
+
+    $pdf->Ln(4);
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFillColor(230, 230, 230);
+    $pdf->SetDrawColor(200, 200, 200);
+
+    $usable = $pdf->GetPageWidth() - $leftMargin - $rightMargin;
+    $col    = $usable / 5;
+
+    $pdf->SetX($leftMargin);
+    $pdf->Cell($col, 9, utf8_decode('Total heures travaillées : ' . $formatHM($totalWorkedSec)),          1, 0, 'C', true);
+    $pdf->Cell($col, 9, utf8_decode('Heures supplémentaires : ' . $formatHM($totalOverSec)),               1, 0, 'C', true);
+    $pdf->Cell($col, 9, utf8_decode('Heures de retard : '       . $formatHM($totalLateSec)),               1, 0, 'C', true);
+    $pdf->Cell($col, 9, utf8_decode('Heures prévues : '         . $formatHM($expectedWorkSec)),            1, 0, 'C', true);
+    $pdf->Cell($col, 9, utf8_decode('Heures d\'absence : '      . $formatHM($approvedAbsenceSec + $unjustifiedAbsenceSec)), 1, 1, 'C', true);
+
+    // (option) petit rappel du détail juste en dessous
+    $pdf->SetFont('Arial', '', 9);
+    $pdf->Ln(2);
+    $pdf->Cell(0, 6, utf8_decode(
+        'Détail absences : Approuvées: ' . $formatHM($approvedAbsenceSec) .
+        ' | Injustifiées: ' . $formatHM($unjustifiedAbsenceSec)
+    ), 0, 1, 'C');
+
+    // ----- Sortie
+    $filename = 'presence_user_' . $userId . '_' . $start->format('Ymd') . '-' . $end->format('Ymd') . '.pdf';
+
+    return response($pdf->Output('S'))
+        ->header('Content-Type', 'application/pdf')
+        ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+}
+
     
 
 
