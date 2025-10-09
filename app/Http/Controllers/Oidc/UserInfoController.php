@@ -18,10 +18,10 @@ class UserInfoController extends Controller
 
         $claims = [
             "sub" => (string)$user->id,
-            "name" => $user->name,
-            "preferred_username" => $user->username ?? $user->email,
-            "email" => $user->email,
-            "picture" => $user->photo_url ?? null,
+            "name" => $user->nom,
+            "preferred_username" => $user->prenom ?? $user->email_professionnel,
+            "email" => $user->email_professionnel,
+            "picture" => $user->photo ?? null,
         ];
 
         if ($scopes->contains('entreprise')) {

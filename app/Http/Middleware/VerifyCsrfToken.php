@@ -13,6 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
-
+        'oidc/token',      // ⬅️ proxy token
+        'oauth/logout',    // (si tu postes dessus)
     ];
 }

@@ -30,6 +30,7 @@ use App\Http\Controllers\OIDC\UserInfoController;
 use App\Http\Controllers\OIDC\JwksController;
 use App\Http\Controllers\OIDC\LogoutController;
 use App\Http\Controllers\OIDC\TokenProxyController;
+use App\Http\Middleware\VerifyCsrfToken;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -96,8 +97,27 @@ Route::get('/beams/token', function () {
     ]);
     return $client->generateToken($userId);
 })->middleware('auth');
+
+// --- Endpoints publics (pas d'auth, pas de session) ---
+Route::get('/.well-known/openid-configuration', DiscoveryController::class);
+Route::get('/oauth/jwks.json', JwksController::class);
+
+// --- Endpoints stateless OIDC (API, pas de CSRF) ---
+Route::middleware('api')->group(function () {
+    // Proxy token : POST depuis l'app cliente → doit être SANS CSRF
+    Route::post('/oidc/token', [TokenProxyController::class, 'exchange'])->name('oidc.token');
+
+    // UserInfo : nécessite un access_token → guard API uniquement
+    Route::get('/oauth/userinfo', UserInfoController::class)
+        ->middleware('auth:api')
+        ->name('oidc.userinfo');
+
+    // Logout côté IdP si tu l’appelles en XHR/POST
+    Route::match(['GET', 'POST'], '/oauth/logout', [LogoutController::class, 'logout'])->name('oidc.logout');
+});
 Route::middleware('auth')->group(
     function () {
+
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
         Route::patch('/demande-interventions/{demande}/status', [DemandeInterventionController::class, 'updateStatus'])
             ->name('demande_interventions.update_status');
@@ -240,10 +260,10 @@ Route::middleware('auth')->group(
         Route::get('/variables/ajax', [CaisseWebController::class, 'variables'])->name('variables.ajax.index');
         Route::post('/variables', [CaisseWebController::class, 'storeAjax'])->name('variables.store');
         Route::get('/variables/{variable}', [CaisseWebController::class, 'showAjax'])
-             ->name('variables.showAjax');
+            ->name('variables.showAjax');
         // web.php
         Route::get('/variables/next-number', [CaisseWebController::class, 'nextNumber'])->name('variables.nextNumber');
-// web.php
+        // web.php
 
         Route::put('/variables/{variable}', [CaisseWebController::class, 'updateAjax'])->name('variables.updateAjax');
         Route::delete('/variables/{id}', [CaisseWebController::class, 'destroy'])->name('variables.destroy');
@@ -301,17 +321,13 @@ Route::middleware('auth')->group(
         Route::get('/config-audit', function () {
             return view('components.configuration.config-audit');
         })->name('config-audit');
-
-       // ================================== OIDC avec Passport =================================
-       // Proxy pour ajouter id_token RS256 à la réponse Passport
-       Route::post('/oidc/token', [TokenProxyController::class, 'exchange']);
-        Route::get('/.well-known/openid-configuration', [DiscoveryController::class, 'show']);
-Route::middleware('auth:api')->get('/oauth/userinfo', [UserInfoController::class, 'show']);
-Route::get('/oauth/jwks.json', [JwksController::class, 'show']);
-Route::match(['GET','POST'], '/oauth/logout', [LogoutController::class, 'logout']);
     }
 
 );
+// ================================== OIDC avec Passport =================================
+
+
+
 Route::get('/admin/demandes/{demande}/notifications', [DemandeInterventionController::class, 'showNotifications'])
     ->middleware(['auth', 'can:admin'])
     ->name('admin.demandes.notifications');

@@ -7,27 +7,42 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class TokenProxyController extends Controller
 {
-    //
     public function exchange(Request $request)
     {
-        $issuer = rtrim(config('app.url'), '/');
+        // 1) Appeler Passport /oauth/token SANS passer par le réseau
+        //    (évite le deadlock du serveur de dev)
+        $sub = Request::create('/oauth/token', 'POST', $request->all());
+        $sub->headers->set('Accept', 'application/json');
 
-        // 1) Appel du vrai /oauth/token (Passport)
-        $passportResp = Http::asForm()->post($issuer.'/oauth/token', $request->all());
-        if (!$passportResp->ok()) {
-            return response()->json($passportResp->json(), $passportResp->status());
+        $resp = app()->handle($sub);                    // sous-requête interne
+        $status = $resp->getStatusCode();
+
+        if ($status >= 400) {
+            // renvoyer l’erreur Passport telle quelle
+            return response($resp->getContent(), $status, $resp->headers->all());
         }
-        $data = $passportResp->json();
+
+        $data = json_decode($resp->getContent(), true);
         $accessToken = $data['access_token'] ?? null;
+        if (!$accessToken) {
+            return response()->json(['error' => 'server_error', 'hint' => 'no access_token'], 500);
+        }
 
-        // 2) UserInfo via access_token
-        $userInfo = Http::withToken($accessToken)->get($issuer.'/oauth/userinfo')->json();
+        // 2) Récup UserInfo
+        $issuer = rtrim(config('app.url'), '/');
+        $userInfo = Http::withToken($accessToken)
+            ->acceptJson()
+            ->get($issuer.'/oauth/userinfo')
+            ->json();
 
-        // 3) Construire ID Token RS256
-        $kid = config('oidc.kid');
+        // 3) Fabriquer l’ID Token RS256
+        $kid     = config('oidc.kid');
         $private = Storage::disk('local')->get('oidc/oidc-private.pem');
 
         $now = time();
@@ -37,14 +52,13 @@ class TokenProxyController extends Controller
             'sub'   => $userInfo['sub'] ?? null,
             'iat'   => $now,
             'exp'   => $now + 3600,
-            'nonce' => $request->input('nonce'),
+            // 'nonce' => $request->input('nonce'),
         ]);
 
         $idToken = JWT::encode($payload, $private, 'RS256', $kid);
 
-        // 4) Ajouter id_token à la réponse
+        // 4) Ajouter id_token et retourner la réponse complète
         $data['id_token'] = $idToken;
-
         return response()->json($data);
     }
 }
