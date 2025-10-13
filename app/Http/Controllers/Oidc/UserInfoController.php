@@ -11,7 +11,7 @@ class UserInfoController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $user = $request->user(); // via access_token (guard api/passport)
         $scopes = collect(optional($user->token())?->scopes ?? []);

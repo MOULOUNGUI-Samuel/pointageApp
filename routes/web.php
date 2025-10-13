@@ -122,7 +122,7 @@ Route::middleware('api')->group(function () {
     Route::post('/oidc/token', [TokenProxyController::class, 'exchange'])->name('oidc.token');
 
     // UserInfo : nécessite un access_token → guard API uniquement
-    Route::get('/oauth/userinfo', UserInfoController::class)
+    Route::get('/oauth/userinfo', [UserInfoController::class,'index'])
         ->middleware('auth:api')
         ->name('oidc.userinfo');
 
