@@ -2131,7 +2131,8 @@ title="Supprimer">
 
 
         // ex: "/pdf/fichePaie/__USER__/__PERIODE__"
-        const PAYSLIP_URL_TEMPLATE = @json(route('ficheDePaieDemo', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
+         const PAYSLIP_URL_TEMPLATE = @json(route('ficheDePaieDemo', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
+        // const PAYSLIP_URL_TEMPLATE = @json(route('attestationStage', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
 
         const periodTicketInput = document.getElementById('periodTicket');
 

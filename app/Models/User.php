@@ -168,10 +168,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(PeriodeItem::class);
     }
-    public function evaluationEntreprises()
-    {
-        return $this->hasMany(EvaluationEntreprise::class);
-    }
+    // public function evaluationEntreprises()
+    // {
+    //     return $this->hasMany(EvaluationEntreprise::class);
+    // }
     public function categorieDomaine()
     {
         return $this->hasMany(CategorieDommaine::class);

@@ -17,6 +17,7 @@ use App\Http\Controllers\CaisseWebController;
 use App\Http\Controllers\DemandeInterventionController;
 use App\Http\Controllers\Manager\ManagerAbsenceController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\AttestationStageController;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,7 @@ use App\Http\Controllers\OIDC\JwksController;
 use App\Http\Controllers\OIDC\LogoutController;
 use App\Http\Controllers\OIDC\TokenProxyController;
 use App\Http\Middleware\VerifyCsrfToken;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,6 +48,10 @@ use App\Http\Middleware\VerifyCsrfToken;
 Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
+
+Route::get('/connexion', function () {
+    return view('auth.mobile.login');
+})->name('login.view.mobile');
 
 Route::get('/', function () {
     return redirect('/loginGroupe');
@@ -283,6 +289,7 @@ Route::middleware('auth')->group(
             ->name('detailParEmployerTablePdf');
 
         Route::get('/pdf/fichePaie/{userId}/{tiketPeriode}', [PdfController::class, 'ficheDePaieDemo'])->name('ficheDePaieDemo');
+        Route::get('/attestation-stage/{userId}/{tiketPeriode}', [AttestationStageController::class, 'attestationStage'])->name('attestationStage');
 
 
         // --- Routes pour l'employé ---

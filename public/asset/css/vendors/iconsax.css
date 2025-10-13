@@ -1,0 +1,24 @@
+.iconsax {
+  display: inline-block;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: var(--iconsax-Size);
+  vertical-align: middle;
+}
+
+.iconsax svg {
+  display: block;
+  width: var(--iconsax-Size);
+  height: var(--iconsax-Size);
+}
+
+.iconsax svg [stroke] {
+  stroke: var(--iconsax-Color);
+}
+
+.iconsax svg [fill] {
+  fill: var(--iconsax-Color);
+}
