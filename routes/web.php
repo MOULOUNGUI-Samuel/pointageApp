@@ -133,6 +133,7 @@ Route::middleware('api')->group(function () {
     // Logout côté IdP si tu l’appelles en XHR/POST
     Route::match(['GET', 'POST'], '/oauth/logout', [LogoutController::class, 'logout'])->name('oidc.logout');
 });
+
 Route::middleware('auth')->group(
     function () {
 
