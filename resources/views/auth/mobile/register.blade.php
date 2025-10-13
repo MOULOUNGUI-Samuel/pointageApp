@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="my-3 flex">
-                <a href="choose-interest.html"
+                <a href="#"
                     class="flex-1 py-3 bg-b300 dark:bg-darkB300 text-white text-center rounded-xl font-semibold">
                     S'inscrire
                 </a>
