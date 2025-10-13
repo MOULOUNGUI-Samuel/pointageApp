@@ -44,7 +44,7 @@
                 Mot de passe oublié ?</a>
 
             <div class="my-3 flex">
-                <a href="home.html"
+                <a href="{{ route('actualite') }}"
                     class="flex-1 py-3 bg-b300 text-white text-center rounded-xl font-semibold dark:bg-darkB300">Se
                     connecter</a>
             </div>

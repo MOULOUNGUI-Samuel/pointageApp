@@ -57,6 +57,10 @@ Route::get('/inscription', function () {
     return view('auth.mobile.register');
 })->name('inscription');
 
+Route::get('/actualite', function () {
+    return view('components.mobileApp.actualite');
+})->name('actualite');
+
 
 
 Route::get('/', function () {
