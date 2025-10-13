@@ -17,7 +17,7 @@
         <div class="px-6 flex justify-between items-center gap-4">
             <a href="{{ route('connexion') }}"
                 class="size-12 bg-b300 text-white flex justify-center items-center rounded-full text-2xl dark:bg-darkB300">
-                <i class="ph ph-caret-left"></i>
+                <i class="ph ph-list" style="font-size:24px;"></i>
             </a>
             <div
                 class="flex justify-between items-center flex-1 border border-n40 rounded-full p-3 gap-2 dark:border-darkN40 dark:bg-darkN20 bg-white dark:bg-darkN40">
@@ -31,7 +31,7 @@
         </div>
 
         <div class="pt-8 px-1">
-            <p class="text-xl font-semibold">
+            <p class="text-xl font-semibold px-6">
                 Actualités
             </p>
             <div class="container py-5">
