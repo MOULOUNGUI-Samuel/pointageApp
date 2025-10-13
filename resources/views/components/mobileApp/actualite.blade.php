@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="pt-8 px-6">
+        <div class="pt-8 px-1">
             <p class="text-xl font-semibold">
                 Actualités
             </p>
