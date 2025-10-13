@@ -12,7 +12,7 @@ class JwksController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(): JsonResponse
+    public function index(): JsonResponse
     {
         $jwks = json_decode(Storage::disk('local')->get('oidc/jwks.json'), true);
         return response()->json($jwks);

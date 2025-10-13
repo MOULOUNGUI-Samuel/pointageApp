@@ -111,8 +111,10 @@ Route::get('/beams/token', function () {
 })->middleware('auth');
 
 // --- Endpoints publics (pas d'auth, pas de session) ---
-Route::get('/.well-known/openid-configuration', DiscoveryController::class);
-Route::get('/oauth/jwks.json', JwksController::class);
+// Route::get('/.well-known/openid-configuration', DiscoveryController::class);
+Route::get('/.well-known/openid-configuration', [DiscoveryController::class, 'index'])->name('oidc.discovery');
+
+Route::get('/oauth/jwks.json', [JwksController::class, 'index'])->name('oidc.jwks');
 
 // --- Endpoints stateless OIDC (API, pas de CSRF) ---
 Route::middleware('api')->group(function () {

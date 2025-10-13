@@ -11,7 +11,7 @@ class DiscoveryController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(): JsonResponse
+    public function index(): JsonResponse
     {
         $issuer = rtrim(config('app.url'), '/');
         return response()->json([
