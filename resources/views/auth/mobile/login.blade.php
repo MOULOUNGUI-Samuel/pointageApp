@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Se connecter - ReadEase PWA HTML Template</title>
+    <title>Nedcore</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-    <link rel="shortcut icon" href="{{ asset('asset/images/logo.png') }}" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon" />
     <link href="{{ asset('asset/css/index.css') }}" rel="stylesheet">
 </head>
 

@@ -6,9 +6,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Page - ReadEase PWA HTML Template</title>
+    <title>Nedcore</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-    <link rel="shortcut icon" href="{{ asset('asset/images/logo.png') }}" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" type="image/x-icon" />
     <link href="{{ asset('asset/css/index.css') }}" rel="stylesheet">
 </head>
 
@@ -24,7 +24,7 @@
                 <div class="">
                     <i class="ph ph-magnifying-glass text-n70"></i>
                 </div>
-                <input type="text" placeholder="Search here..."
+                <input type="text" placeholder="Recherche..."
                     class="placeholder:text-n90 text-xs bg-transparent outline-none flex-1" />
                 <i class="ph ph-microphone text-n70"></i>
             </div>
