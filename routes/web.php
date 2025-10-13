@@ -51,7 +51,13 @@ Route::get('/login', function () {
 
 Route::get('/connexion', function () {
     return view('auth.mobile.login');
-})->name('login.view.mobile');
+})->name('connexion');
+
+Route::get('/inscription', function () {
+    return view('auth.mobile.register');
+})->name('inscription');
+
+
 
 Route::get('/', function () {
     return redirect('/loginGroupe');
