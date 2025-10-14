@@ -52,7 +52,6 @@ class PointageBackfillController extends Controller
             ->where('statut', 1)
             ->pluck('id');
 
-        dd($userIds->toArray());
 
         if ($userIds->isEmpty()) {
             return back()->with('status', "Aucun utilisateur actif trouvé.");
