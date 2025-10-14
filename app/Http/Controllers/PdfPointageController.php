@@ -82,7 +82,8 @@ class PdfPointageController extends Controller
 
         // ===================== 1) Constituer l'ensemble complet des user_ids =====================
         // A. tous les utilisateurs de l’entreprise (sans filtrer par statut)
-        $activeIds = User::where('entreprise_id', $entreprise_id)->pluck('id');
+        $activeIds = User::where('entreprise_id', $entreprise_id)
+        ->where('statu_user', 1)->where('statut', 1)->pluck('id');
 
         // B. ceux qui ont pointé dans la période
         $idsFromPointages = Pointage::whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
