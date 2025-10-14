@@ -174,7 +174,7 @@
                                                         Actions
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        @if ($user->statut !== 1 && $user->statu_user !== 1)
+                                                        @if ($user->statut == 1 && $user->statu_user == 1)
                                                         <li class="mb-1">
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="modal"
