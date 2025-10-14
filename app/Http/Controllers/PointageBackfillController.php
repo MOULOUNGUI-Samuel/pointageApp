@@ -12,110 +12,117 @@ use Illuminate\Support\Str;
 
 class PointageBackfillController extends Controller
 {
+    private function pointagesUsesUuid(): bool
+    {
+        $forced = config('pointages.id_is_uuid'); // mets true/false dans config si tu veux forcer
+        if ($forced !== null) {
+            return (bool) $forced;
+        }
+
+        // SHOW COLUMNS marche partout avec MySQL/MariaDB
+        $col = DB::selectOne("SHOW COLUMNS FROM `pointages` LIKE 'id'");
+        if (!$col) {
+            return false;
+        }
+        $type = strtolower($col->Type ?? $col->type ?? '');
+        return str_contains($type, 'char(36)') || str_contains($type, 'varchar(36)');
+    }
     public function backfill(Request $request)
     {
         $request->validate([
-            'date_debutperiode' => ['required','date'],
-            'date_finperiode'   => ['required','date'],
+            'date_debutperiode' => ['required', 'date'],
+            'date_finperiode'   => ['required', 'date'],
         ]);
 
-        // 1) Période
         $start = Carbon::parse($request->input('date_debutperiode'))->startOfDay();
         $end   = Carbon::parse($request->input('date_finperiode'))->endOfDay();
         if ($end->lt($start)) [$start, $end] = [$end, $start];
 
-        // 2) Entreprise & horaires
         $entreprise_id = session('entreprise_id');
         $entreprise    = Entreprise::findOrFail($entreprise_id);
 
         $heureDebutJour = $entreprise->heure_ouverture ?: '08:30:00';
         $heureFinJour   = $entreprise->heure_fin       ?: '17:30:00';
 
-        // (Optionnel) sauter WE & fériés ? mets à true si souhaité
-        $skipWeekends = true;
-        $skipHolidays = false; // nécessite Yasumi si tu veux activer
+        $skipWeekends   = true;
 
-        $isHoliday = function (Carbon $d) use ($skipHolidays): bool {
-            if (!$skipHolidays) return false;
-            try {
-                static $cache = [];
-                $y = $d->year;
-                if (!isset($cache[$y])) {
-                    $cache[$y] = \Yasumi\Yasumi::create('France', $y);
-                }
-                return $cache[$y]->isHoliday($d);
-            } catch (\Throwable $e) {
-                return false;
-            }
-        };
-
-        // 3) Utilisateurs actifs de l’entreprise
-        $users = User::where('entreprise_id', $entreprise_id)
+        // 1) Utilisateurs actifs (tous ceux à insérer potentiellement)
+        $userIds = User::where('entreprise_id', $entreprise_id)
             ->where('statu_user', 1)
             ->where('statut', 1)
-            ->get(['id']);
+            ->pluck('id');
 
-        if ($users->isEmpty()) {
+        dd($userIds->toArray());
+
+        if ($userIds->isEmpty()) {
             return back()->with('status', "Aucun utilisateur actif trouvé.");
         }
 
-        $userIds = $users->pluck('id');
-
-        // 4) Construire la liste des dates (selon règles)
+        // 2) Liste des dates (selon règles)
         $dates = [];
         for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
             if ($skipWeekends && $d->isWeekend()) continue;
-            if ($isHoliday($d)) continue;
             $dates[] = $d->toDateString();
         }
-        if (empty($dates)) {
+        if (!$dates) {
             return back()->with('status', "Aucun jour ouvré dans cette période.");
         }
 
-        // 5) Récupérer ce qui existe déjà dans pointages (pairs user_id + date_arriver)
-        //    On ramène en "clé" 'user_id|date'
-        $existingKeys = Pointage::whereIn('user_id', $userIds)
-            ->whereBetween('date_arriver', [reset($dates), end($dates)])
-            ->get(['user_id','date_arriver'])
-            ->map(fn($p) => $p->user_id.'|'.$p->date_arriver)
-            ->toBase() // collection base
-            ->flip();  // pour tester existence en O(1)
+        // 3) Récupérer LES EXISTANTS sans rater personne
+        //    → on scanne par batch d'utilisateurs pour éviter des “trous”
+        $existingKeys = [];
+        $usersChunk = $userIds->chunk(500);
 
-        // 6) Préparer les insertions manquantes
+        foreach ($usersChunk as $chunk) {
+            // si Pointage a un GlobalScope entreprise, commente withoutGlobalScopes()
+            $rows = Pointage::/*withoutGlobalScopes()->*/whereIn('user_id', $chunk)
+                // si date_arriver est DATE, c'est bon; si DATETIME, préfère whereBetween sur 00:00:00..23:59:59
+                ->whereBetween('date_arriver', [reset($dates), end($dates)])
+                ->get(['user_id', 'date_arriver']);
+
+            foreach ($rows as $r) {
+                $existingKeys[$r->user_id . '|' . $r->date_arriver] = true;
+            }
+        }
+
+        // 4) Préparer insertions
         $now = now();
+        $hasEntrepriseColumn = DB::getSchemaBuilder()->hasColumn('pointages', 'entreprise_id');
+        $useUuid = $this->pointagesUsesUuid();
+
         $toInsert = [];
 
         foreach ($userIds as $uid) {
             foreach ($dates as $d) {
-                $key = $uid.'|'.$d;
-                if (isset($existingKeys[$key])) continue; // déjà présent → on saute
+                $key = $uid . '|' . $d;
+                if (!empty($existingKeys[$key])) continue;
 
-                $toInsert[] = [
-                    'id'           => (string) Str::uuid(),   // <-- IMPORTANT si UUID
-                    'user_id'      => $uid,
-                    'date_arriver' => $d,
-                    'heure_arriver'=> $heureDebutJour,
-                    'heure_fin'    => $heureFinJour,
-                    // complète ici si ton schéma a d'autres champs obligatoires:
-                    // 'entreprise_id' => $entreprise_id,
-                    // 'statut'        => null,
-                    'created_at'   => $now,
-                    'updated_at'   => $now,
+                $row = [
+                    'user_id'       => $uid,
+                    'date_arriver'  => $d,
+                    'heure_arriver' => $heureDebutJour,
+                    'heure_fin'     => $heureFinJour,
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
                 ];
+                if ($hasEntrepriseColumn) $row['entreprise_id'] = (int) $entreprise_id;
+                if ($useUuid)            $row['id']            = (string) Str::uuid();
+
+                $toInsert[] = $row;
             }
         }
-dd($toInsert);
+
         if (empty($toInsert)) {
             return back()->with('status', "Aucun pointage à insérer : tout est déjà présent.");
         }
 
-        // 7) Insert en masse (transaction + chunk si gros volume)
+        // 5) Insert en masse
         DB::transaction(function () use ($toInsert) {
             foreach (array_chunk($toInsert, 1000) as $chunk) {
                 Pointage::insert($chunk);
             }
         });
 
-        return back()->with('status', count($toInsert)." pointage(s) inséré(s) avec les horaires entreprise.");
+        return back()->with('status', count($toInsert) . " pointage(s) inséré(s) avec les horaires entreprise.");
     }
 }
