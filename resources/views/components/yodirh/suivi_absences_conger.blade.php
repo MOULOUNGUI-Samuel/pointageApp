@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="d-flex align-items-center flex-wrap row-gap-2 justify-content-sm-end">
-                                        <form action="{{ route('pointages.backfill') }}" method="POST" class="d-flex align-items-center flex-wrap row-gap-2 me-5">
+                                        {{-- <form action="{{ route('pointages.backfill') }}" method="POST" class="d-flex align-items-center flex-wrap row-gap-2 me-5">
                                             @csrf
                                             <div class="dropdown me-2">
                                                 <label for="filtre-periode" class="me-2 mb-0">Date début :</label>
@@ -169,7 +169,7 @@
                                                 <i class="fa fa-check me-2"></i>
                                                 Valider
                                             </button>
-                                        </form>
+                                        </form> --}}
                                         <div class="">
                                             <a href="{{ route('yodirh.utilisateurs') }}"
                                                 class="btn-action btn btn-primary"
