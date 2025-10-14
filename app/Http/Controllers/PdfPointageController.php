@@ -306,6 +306,7 @@ $entreprise_code=session('entreprise_code');
             'subtitle'     => "Période : {$start->translatedFormat('F Y')} (du {$start->format('d/m/Y')} au {$end->format('d/m/Y')})",
             'reference'    => $ref,
             'company_name' => $entreprise->nom_entreprise ?? "Entreprise",
+            'heure_debutTravail' => $heureDebutJour ?? "08:30:00",
             'company_addr' => $entreprise->adresse ?? "",
             'company_ctc'  => trim("Tél. : " . ($entreprise->telephone ?? "") . " | Email : " . ($entreprise->email ?? "")),
             'logo_path'    => is_file($logoPath) ? $logoPath : null,

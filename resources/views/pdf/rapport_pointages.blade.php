@@ -93,9 +93,6 @@
     @foreach(array_chunk($employees ?? [], 2) as $pair)
       <tr>
         @foreach($pair as $e)
-          @php
-            $retardsColor = ($e['retard_cumule_min'] ?? 0) > 90 || ($e['en_retard'] ?? 0) > 5 ? 'stat-orange' : 'stat-green';
-          @endphp
           <td>
             <div class="employee-block">
               <div class="block-header">
@@ -112,8 +109,8 @@
                   <td class="c-val stat-green">{{ $fmtHM((int)($e['heures_net_min'] ?? 0)) }}</td>
                 </tr>
                 <tr>
-                  <td class="c-lbl">Retards cumulés (après 08:30:00)</td>
-                  <td class="c-val {{ $retardsColor }}">{{ $fmtHM((int)($e['retard_cumule_min'] ?? 0)) }}</td>
+                  <td class="c-lbl stat-red">Retards cumulés (après {{ $meta['heure_debutTravail'] ?? '' }})</td>
+                  <td class="c-val stat-red">{{ $fmtHM((int)($e['retard_cumule_min'] ?? 0)) }}</td>
                 </tr>
                 <tr>
                   <td class="c-lbl">Jours À l'heure</td>
