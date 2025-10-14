@@ -95,7 +95,6 @@
         @foreach($pair as $e)
           @php
             $retardsColor = ($e['retard_cumule_min'] ?? 0) > 90 || ($e['en_retard'] ?? 0) > 5 ? 'stat-orange' : 'stat-green';
-            $absInjColor  = ($e['absence_injustifiee'] ?? 0) > 0 ? 'stat-red' : 'stat-green';
           @endphp
           <td>
             <div class="employee-block">
@@ -121,8 +120,8 @@
                   <td class="c-val stat-green">{{ (int)($e['a_l_heure'] ?? 0) }} jours</td>
                 </tr>
                 <tr>
-                  <td class="c-lbl">Jours En retard</td>
-                  <td class="c-val {{ (($e['en_retard'] ?? 0) > 0) ? 'stat-orange' : 'stat-green' }}">
+                  <td class="c-lbl stat-red">Jours En retard</td>
+                  <td class="c-val stat-red">
                     {{ (int)($e['en_retard'] ?? 0) }} jours
                   </td>
                 </tr>
@@ -131,8 +130,8 @@
                   <td class="c-val stat-blue">{{ (int)($e['absence_approuvee'] ?? 0) }} jours</td>
                 </tr>
                 <tr>
-                  <td class="c-lbl">Absences injustifiées (non pointé)</td>
-                  <td class="c-val {{ $absInjColor }}">{{ (int)($e['absence_injustifiee'] ?? 0) }} jours</td>
+                  <td class="c-lbl stat-red">Absences injustifiées (non pointé)</td>
+                  <td class="c-val stat-red">{{ (int)($e['absence_injustifiee'] ?? 0) }} jours</td>
                 </tr>
               </table>
             </div>
