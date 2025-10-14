@@ -32,6 +32,8 @@ use App\Http\Controllers\OIDC\JwksController;
 use App\Http\Controllers\OIDC\LogoutController;
 use App\Http\Controllers\OIDC\TokenProxyController;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\PdfPointageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,14 @@ use App\Http\Middleware\VerifyCsrfToken;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/pointages/pdf/{date_start}/{date_end}', [PdfPointageController::class, 'stream'])
+    ->name('pointages.pdf.stream');
+Route::get('/pointages/pdf/{date_start}/{date_end}/download', [PdfPointageController::class, 'download'])
+    ->name('pointages.pdf.download');
+
+Route::get('/pointages/pdf/{date_start}/{date_end}/save', [PdfPointageController::class, 'save'])
+    ->name('pointages.pdf.save');
 
 
 Route::get('/login', function () {

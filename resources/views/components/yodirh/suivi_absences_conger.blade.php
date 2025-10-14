@@ -197,13 +197,22 @@
                                     </div> --}}
                                     <div class="dropdown me-2 mt-1">
                                         <a id="btn-pdf" target="_blank"
+                                            href="{{ route('pointages.pdf.stream', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            data-template="{{ route('pointages.pdf.stream', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            class="btn btn-outline-primary" style="margin-bottom: 5px;">
+                                            <i class="ti ti-file-type-pdf text-primary me-2" style="font-size: 20px"></i>
+                                            Imprimer en PDF
+                                        </a>
+                                    </div>
+                                    {{-- <div class="dropdown me-2 mt-1">
+                                        <a id="btn-pdf" target="_blank"
                                             href="{{ route('imprimeListe_presence', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
                                             data-template="{{ route('imprimeListe_presence', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
                                             class="btn btn-outline-primary" style="margin-bottom: 5px;">
                                             <i class="ti ti-file-type-pdf text-primary me-2" style="font-size: 20px"></i>
                                             Imprimer en PDF
                                         </a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <script>
                                     (function() {
