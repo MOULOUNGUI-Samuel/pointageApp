@@ -104,7 +104,7 @@ class PointageBackfillController extends Controller
                 ];
             }
         }
-
+dd($toInsert);
         if (empty($toInsert)) {
             return back()->with('status', "Aucun pointage à insérer : tout est déjà présent.");
         }
