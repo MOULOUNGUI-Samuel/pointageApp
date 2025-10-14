@@ -33,6 +33,7 @@ use App\Http\Controllers\OIDC\LogoutController;
 use App\Http\Controllers\OIDC\TokenProxyController;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\PdfPointageController;
+use App\Http\Controllers\PointageBackfillController;
 
 
 /*
@@ -129,7 +130,7 @@ Route::middleware('api')->group(function () {
     Route::post('/oidc/token', [TokenProxyController::class, 'exchange'])->name('oidc.token');
 
     // UserInfo : nécessite un access_token → guard API uniquement
-    Route::get('/oauth/userinfo', [UserInfoController::class,'index'])
+    Route::get('/oauth/userinfo', [UserInfoController::class, 'index'])
         ->middleware('auth:api')
         ->name('oidc.userinfo');
 
@@ -345,18 +346,21 @@ Route::middleware('auth')->group(
             return view('components.configuration.config-audit');
         })->name('config-audit');
 
-// Impression des pointages PDF
+        // Impression des pointages PDF
         Route::get('/pointages/pdf/{date_start}/{date_end}', [PdfPointageController::class, 'stream'])
-    ->name('pointages.pdf.stream');
-Route::get('/pointages/pdf/{date_start}/{date_end}/download', [PdfPointageController::class, 'download'])
-    ->name('pointages.pdf.download');
-Route::get('/pointages/pdf/{date_start}/{date_end}/save', [PdfPointageController::class, 'save'])
-    ->name('pointages.pdf.save');
+            ->name('pointages.pdf.stream');
+        Route::get('/pointages/pdf/{date_start}/{date_end}/download', [PdfPointageController::class, 'download'])
+            ->name('pointages.pdf.download');
+        Route::get('/pointages/pdf/{date_start}/{date_end}/save', [PdfPointageController::class, 'save'])
+            ->name('pointages.pdf.save');
 
-    Route::get('/pointage/user/{userId}/{date_start}/{date_end}/stream',   [PdfPointageController::class, 'streamUser'])->name('pointage.user.stream');
-Route::get('/pointage/user/{userId}/{date_start}/{date_end}/download', [PdfPointageController::class, 'downloadUser'])->name('pointage.user.download');
-Route::get('/pointage/user/{userId}/{date_start€}/{date_end}/save',     [PdfPointageController::class, 'saveUser'])->name('pointage.user.save');
-
+        Route::get('/pointage/user/{userId}/{date_start}/{date_end}/stream',   [PdfPointageController::class, 'streamUser'])->name('pointage.user.stream');
+        Route::get('/pointage/user/{userId}/{date_start}/{date_end}/download', [PdfPointageController::class, 'downloadUser'])->name('pointage.user.download');
+        Route::get('/pointage/user/{userId}/{date_start€}/{date_end}/save',     [PdfPointageController::class, 'saveUser'])->name('pointage.user.save');
+    
+        // Gestion des périodes de ratrappage des pointages
+        Route::post('/pointages/backfill', [PointageBackfillController::class, 'backfill'])
+    ->name('pointages.backfill');
     }
 
 );

@@ -131,6 +131,13 @@
                                 </div>
                             </div>
                         </div>
+                        @if (session('status'))
+                        <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                            <strong class="me-5"><i class="fas fa-check me-2"></i> {{ session('status') }}</strong>
+                            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert"
+                                aria-label="Close"><i class="fas fa-xmark"></i></button>
+                        </div>
+                    @endif
                     </div>
                     <div class="card ">
                         <div class="card-header">
@@ -145,9 +152,29 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="d-flex align-items-center flex-wrap row-gap-2 justify-content-sm-end">
+                                        <form action="{{ route('pointages.backfill') }}" method="POST" class="d-flex align-items-center flex-wrap row-gap-2 me-5">
+                                            @csrf
+                                            <div class="dropdown me-2">
+                                                <label for="filtre-periode" class="me-2 mb-0">Date début :</label>
+                                                <input type="date" id="filtre-periode" name="date_debutperiode"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="icon-form">
+                                                <label for="filtre-periode" class="me-2 mb-0">Date fin :</label>
+                                                <input type="date" id="filtre-periode" name="date_finperiode"
+                                                    class="form-control">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary"
+                                                style="margin-left: 5px;margin-top: 20px;">
+                                                <i class="fa fa-check me-2"></i>
+                                                Valider
+                                            </button>
+                                        </form>
                                         <div class="">
-                                            <a href="{{ route('yodirh.utilisateurs') }}" class="btn-action btn btn-primary"
-                                                data-loader-target="liste-utilisateur"><i class="fas fa-list me-2"></i>Liste
+                                            <a href="{{ route('yodirh.utilisateurs') }}"
+                                                class="btn-action btn btn-primary"
+                                                data-loader-target="liste-utilisateur"><i
+                                                    class="fas fa-list me-2"></i>Liste
                                                 des utilisateurs</a>
                                             <!-- Bouton de chargement (caché au départ) -->
                                             <button type="button" id="liste-utilisateur" class="btn btn-outline-primary"
