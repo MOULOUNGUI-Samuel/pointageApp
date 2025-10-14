@@ -300,7 +300,7 @@ class PdfPointageController extends Controller
         $logoPath = public_path(session('entreprise_logo')
             ? 'storage/' . ltrim(session('entreprise_logo'), '/')
             : 'src/image/logo.png');
-
+$entreprise_code=session('entreprise_code');
         $meta = [
             'title'        => 'RAPPORT DE SYNTHÈSE DES POINTAGES',
             'subtitle'     => "Période : {$start->translatedFormat('F Y')} (du {$start->format('d/m/Y')} au {$end->format('d/m/Y')})",
@@ -309,7 +309,7 @@ class PdfPointageController extends Controller
             'company_addr' => $entreprise->adresse ?? "",
             'company_ctc'  => trim("Tél. : " . ($entreprise->telephone ?? "") . " | Email : " . ($entreprise->email ?? "")),
             'logo_path'    => is_file($logoPath) ? $logoPath : null,
-            'filename'     => "rapport_pointages_{$start->format('Ymd')}-{$end->format('Ymd')}.pdf",
+            'filename'     => "rapport_pointages_{$entreprise_code}_{$start->format('Ymd')}-{$end->format('Ymd')}.pdf",
             'periode_txt'  => $periodeTxt,
             'printed_by'   => $printedBy,
         ];
