@@ -187,8 +187,7 @@
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#Historique-{{ $user->id }}">
-                                                                <i class="ti ti-file-type-pdf me-2"></i> Historique
-                                                                d'absence
+                                                                <i class="ti ti-file-type-pdf me-2"></i> Fiche de pointage
                                                             </a>
                                                         </li>
 
@@ -234,6 +233,15 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <a id="btn-pdf{{ $user->id }}" target="_blank"
+                                                                href="{{ route('pointage.user.stream', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
+                                                                data-template="{{ route('pointage.user.stream', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
+                                                                class="btn btn-outline-primary"
+                                                                style="margin-bottom: 5px;">
+                                                                <i class="ti ti-file-type-pdf text-primary me-2"
+                                                                    style="font-size: 20px"></i>
+                                                                Imprimer en PDF
+                                                            </a>
+                                                            {{-- <a id="btn-pdf{{ $user->id }}" target="_blank"
                                                                 href="{{ route('imprimeListePresenceUser', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
                                                                 data-template="{{ route('imprimeListePresenceUser', ['date_start' => '__START__', 'date_end' => '__END__','userId'=>$user->id]) }}"
                                                                 class="btn btn-outline-primary"
@@ -241,7 +249,7 @@
                                                                 <i class="ti ti-file-type-pdf text-primary me-2"
                                                                     style="font-size: 20px"></i>
                                                                 Imprimer en PDF
-                                                            </a>
+                                                            </a> --}}
 
                                                         </div>
                                                     </div>

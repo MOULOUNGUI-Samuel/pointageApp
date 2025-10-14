@@ -46,13 +46,6 @@ use App\Http\Controllers\PdfPointageController;
 |
 */
 
-Route::get('/pointages/pdf/{date_start}/{date_end}', [PdfPointageController::class, 'stream'])
-    ->name('pointages.pdf.stream');
-Route::get('/pointages/pdf/{date_start}/{date_end}/download', [PdfPointageController::class, 'download'])
-    ->name('pointages.pdf.download');
-
-Route::get('/pointages/pdf/{date_start}/{date_end}/save', [PdfPointageController::class, 'save'])
-    ->name('pointages.pdf.save');
 
 
 Route::get('/login', function () {
@@ -351,6 +344,19 @@ Route::middleware('auth')->group(
         Route::get('/config-audit', function () {
             return view('components.configuration.config-audit');
         })->name('config-audit');
+
+// Impression des pointages PDF
+        Route::get('/pointages/pdf/{date_start}/{date_end}', [PdfPointageController::class, 'stream'])
+    ->name('pointages.pdf.stream');
+Route::get('/pointages/pdf/{date_start}/{date_end}/download', [PdfPointageController::class, 'download'])
+    ->name('pointages.pdf.download');
+Route::get('/pointages/pdf/{date_start}/{date_end}/save', [PdfPointageController::class, 'save'])
+    ->name('pointages.pdf.save');
+
+    Route::get('/pointage/user/{userId}/{date_start}/{date_end}/stream',   [PdfPointageController::class, 'streamUser'])->name('pointage.user.stream');
+Route::get('/pointage/user/{userId}/{date_start}/{date_end}/download', [PdfPointageController::class, 'downloadUser'])->name('pointage.user.download');
+Route::get('/pointage/user/{userId}/{date_start€}/{date_end}/save',     [PdfPointageController::class, 'saveUser'])->name('pointage.user.save');
+
     }
 
 );
