@@ -147,7 +147,7 @@
                                             <td>{{ \Carbon\Carbon::parse($user->date_fin_contrat)->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ Str::limit($user->fonction, 25, '...') }}<br>
                                                 <span
-                                                    class="  {{ $user->statut == 1 && $user->statu_user == 1 ? '' : 'px-2 rounded  border border-dark text-dark' }}">{{ $user->statut == 1 && $user->statu_user == 1 ? '' : 'Ne pointe pas' }}</span>
+                                                    class="  {{ $user->statut == 1 && $user->statu_user == 1 ? '' : 'px-2 rounded  border border-dark text-dark' }}">{{ ($user->statut == 1 && $user->statu_user == 1) ? '' : 'Ne pointe pas' }}</span>
                                             </td>
                                             <td>
                                                 <!-- Bouton initial -->
@@ -174,6 +174,7 @@
                                                         Actions
                                                     </button>
                                                     <ul class="dropdown-menu">
+                                                        @if ($user->statut !== 1 && $user->statu_user !== 1)
                                                         <li class="mb-1">
                                                             <a class="dropdown-item" href="#"
                                                                 data-bs-toggle="modal"
@@ -190,6 +191,7 @@
                                                                 <i class="ti ti-file-type-pdf me-2"></i> Fiche de pointage
                                                             </a>
                                                         </li>
+                                                        @endif
 
 
                                                         <li>
