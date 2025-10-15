@@ -34,6 +34,7 @@ use App\Http\Controllers\OIDC\TokenProxyController;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\PdfPointageController;
 use App\Http\Controllers\PointageBackfillController;
+use App\Http\Controllers\ConsoliderController;
 
 
 /*
@@ -331,6 +332,10 @@ Route::middleware('auth')->group(
             ->name('push.subscribe');
         Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
             ->name('push.unsubscribe');
+            
+            //Routes de l'space consolider
+            Route::get('/consolider/{module_id?}', [ConsoliderController::class, 'index'])
+    ->name('index-consolider');
 
         // ================================== NOTIFICATION =================================
         Route::get('/dev/ping', function () {
