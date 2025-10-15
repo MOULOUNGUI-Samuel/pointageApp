@@ -78,7 +78,6 @@ class Item extends Model
             ->whereDate('debut_periode', '<=', now())
             ->whereDate('fin_periode', '>=', now());
     }
-
     public function lastSubmission()
     {
         return $this->hasOne(\App\Models\ConformitySubmission::class)
