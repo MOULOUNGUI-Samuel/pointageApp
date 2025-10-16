@@ -141,7 +141,6 @@ Route::middleware('api')->group(function () {
 
 Route::middleware('auth')->group(
     function () {
-
         Route::get('/liste_modules', [ParamettreController::class, 'listemodules'])->name('components.liste_module');
         Route::patch('/demande-interventions/{demande}/status', [DemandeInterventionController::class, 'updateStatus'])
             ->name('demande_interventions.update_status');
@@ -332,10 +331,10 @@ Route::middleware('auth')->group(
             ->name('push.subscribe');
         Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])
             ->name('push.unsubscribe');
-            
-            //Routes de l'space consolider
-            Route::get('/consolider/{module_id?}', [ConsoliderController::class, 'index'])
-    ->name('index-consolider');
+
+        //Routes de l'space consolider
+        Route::get('/consolider/{module_id?}', [ConsoliderController::class, 'index'])
+            ->name('index-consolider');
 
         // ================================== NOTIFICATION =================================
         Route::get('/dev/ping', function () {
@@ -362,10 +361,10 @@ Route::middleware('auth')->group(
         Route::get('/pointage/user/{userId}/{date_start}/{date_end}/stream',   [PdfPointageController::class, 'streamUser'])->name('pointage.user.stream');
         Route::get('/pointage/user/{userId}/{date_start}/{date_end}/download', [PdfPointageController::class, 'downloadUser'])->name('pointage.user.download');
         Route::get('/pointage/user/{userId}/{date_start€}/{date_end}/save',     [PdfPointageController::class, 'saveUser'])->name('pointage.user.save');
-    
+
         // Gestion des périodes de ratrappage des pointages
         Route::post('/pointages/backfill', [PointageBackfillController::class, 'backfill'])
-    ->name('pointages.backfill');
+            ->name('pointages.backfill');
     }
 
 );

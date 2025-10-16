@@ -8,11 +8,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable,HasUuids;
 
+    protected $guard_name = 'web'; // cohérent avec config
     /**
      * The attributes that are mass assignable.
      *
@@ -138,10 +141,6 @@ class User extends Authenticatable
         return $this->belongsTo(CategorieProfessionnelle::class);
     }
 
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'permissions_users');
-    }
     // App\Models\User.php
 
     public function pointage()

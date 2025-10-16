@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class ConsoliderController extends Controller
 {
@@ -95,6 +96,7 @@ class ConsoliderController extends Controller
     {
         $entreprise_id = session('entreprise_id');
 
+        $entreprises = Entreprise::All();
         // Employés avec relations (colonnes utiles seulement)
         $employes = User::with([
             'entreprise',
@@ -165,16 +167,177 @@ class ConsoliderController extends Controller
             else $ageBuckets['56+']++;
         }
 
-       // 3) Séries prêtes pour Blade (arrays “purs”)
-$ageLabels = array_keys($ageBuckets);
-$ageData   = array_values($ageBuckets);
+        // 3) Séries prêtes pour Blade (arrays “purs”)
+        $ageLabels = array_keys($ageBuckets);
+        $ageData   = array_values($ageBuckets);
+
+
+        // gestion du pointage
+        // Fenêtre: 7 derniers jours incluant aujourd’hui
+        $end   = Carbon::today()->endOfDay();
+        $start = Carbon::today()->subDays(6)->startOfDay();
+
+        // Employés actifs (filtrés SI $entreprise_id fourni)
+        $employes = User::with([
+            'service:id,nom_service',
+            'entreprise:id,nom_entreprise,heure_ouverture,minute_pointage_limite'
+        ])
+            ->select(['id', 'nom', 'prenom', 'service_id', 'entreprise_id', 'fonction', 'type_contrat', 'date_naissance'])
+            ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
+            ->where('statu_user', 1)
+            ->where('statut', 1)
+            ->orderBy('nom')->orderBy('prenom')
+            ->get();
+
+        // Si cas A (une entreprise), on la charge (utile pour l’intitulé)
+        $entrepriseCible = $entreprise_id ? Entreprise::findOrFail($entreprise_id) : null;
+
+        $userIds = $employes->pluck('id');
+
+        // Tous les pointages dans la fenêtre
+        $pointages = Pointage::whereIn('user_id', $userIds)
+            ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
+            ->get(['user_id', 'date_arriver', 'heure_arriver']);
+
+        // Index pointages (user|date)
+        $byUserDate = [];
+        foreach ($pointages as $p) {
+            $byUserDate[$p->user_id . '|' . $p->date_arriver] = $p;
+        }
+
+        // Prépare le seuil de retard par ENTREPRISE (important en mode "toutes")
+        // seuil = heure_ouverture + minute_pointage_limite (par défaut 0)
+        $seuilsEntreprise = [];
+        foreach ($employes as $u) {
+            $e = $u->entreprise;
+            if (!$e) continue;
+            if (!isset($seuilsEntreprise[$e->id])) {
+                $open = $e->heure_ouverture ?: '08:00:00';
+                $grace = (int)($e->minute_pointage_limite ?? 0);
+                $seuilsEntreprise[$e->id] = Carbon::createFromFormat('H:i:s', $open)->addMinutes($grace)->format('H:i:s');
+            }
+        }
+
+        // Jours pour l’en-tête (ex. "Lun 07")
+        $days = [];
+        $cursor = $start->copy();
+        while ($cursor <= $end) {
+            $days[] = [
+                'date' => $cursor->toDateString(),
+                'label' => Str::ucfirst($cursor->locale('fr_FR')->isoFormat('ddd DD')),
+                'is_weekend' => $cursor->isWeekend(),
+                'weekday_index' => (int)$cursor->dayOfWeekIso, // 1..7
+            ];
+            $cursor->addDay();
+        }
+        $dayLabels = array_column($days, 'label');
+
+        // Agrégations
+        $presenceRows = [];                // lignes du tableau (par employé)
+        $companyStats = [];                // assiduité par entreprise
+        $serviceHeat  = [];                // heatmap retards/absences par service (Lun..Ven)
+
+        foreach ($employes as $u) {
+            $rowStatuses = [];
+            $anomalies = 0;
+
+            $svcName = optional($u->service)->nom_service ?? '—';
+            $cmpObj  = $u->entreprise;
+            $cmpId   = $cmpObj->id ?? '—';
+            $cmpName = $cmpObj->nom_entreprise ?? '—';
+
+            // Init structures
+            $companyStats[$cmpName] = $companyStats[$cmpName] ?? ['present' => 0, 'ouvrés' => 0];
+            // Pour éviter collision de services homonymes entre entreprises, on peut préfixer:
+            $svcKey = $entreprise_id ? $svcName : ($cmpName . ' · ' . $svcName);
+            $serviceHeat[$svcKey] = $serviceHeat[$svcKey] ?? [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+
+            // seuil retard (par entreprise de l’employé)
+            $seuilRetard = $seuilsEntreprise[$cmpId] ?? '08:00:00';
+
+            foreach ($days as $d) {
+                if ($d['is_weekend']) {
+                    $rowStatuses[] = 'weekend';
+                    continue;
+                }
+
+                $companyStats[$cmpName]['ouvrés']++;
+
+                $key = $u->id . '|' . $d['date'];
+                $p = $byUserDate[$key] ?? null;
+
+                if (!$p) {
+                    $rowStatuses[] = 'absent';
+                    $anomalies++;
+                    if ($d['weekday_index'] <= 5) $serviceHeat[$svcKey][$d['weekday_index']] += 2; // absence pèse 2
+                    continue;
+                }
+
+                // présent; check retard
+                $isLate = $p->heure_arriver && $p->heure_arriver > $seuilRetard;
+                if ($isLate) {
+                    $rowStatuses[] = 'late';  // retard
+                    $anomalies++;
+                    if ($d['weekday_index'] <= 5) $serviceHeat[$svcKey][$d['weekday_index']] += 1; // retard pèse 1
+                    $companyStats[$cmpName]['present']++; // compte présent quand même
+                } else {
+                    $rowStatuses[] = 'present';
+                    $companyStats[$cmpName]['present']++;
+                }
+            }
+
+            $presenceRows[] = [
+                'name'      => trim(($u->nom ?? '') . ' ' . ($u->prenom ?? '')),
+                'statuses'  => $rowStatuses,
+                'anomalies' => $anomalies,
+            ];
+        }
+
+        // Assiduité (%)
+        $assiduiteLabels = [];
+        $assiduiteRates  = [];
+        foreach ($companyStats as $cName => $st) {
+            $rate = ($st['ouvrés'] > 0) ? round(100 * $st['present'] / $st['ouvrés'], 1) : 0.0;
+            $assiduiteLabels[] = $cName;
+            $assiduiteRates[]  = $rate;
+        }
+
+        // Heatmap
+        $heatMax = 0;
+        foreach ($serviceHeat as $svc => $arr) {
+            $heatMax = max($heatMax, max($arr));
+        }
+        $heatmap = [];
+        foreach ($serviceHeat as $svc => $arr) {
+            $heatmap[] = [
+                'service' => $svc,
+                'cells'   => [$arr[1] ?? 0, $arr[2] ?? 0, $arr[3] ?? 0, $arr[4] ?? 0, $arr[5] ?? 0],
+            ];
+        }
+
+        // Libellé de portée (utile en UI)
+        $scopeLabel = $entrepriseCible ? $entrepriseCible->nom_entreprise : 'Toutes les entreprises';
+
+
         return view('components.consolider.index', [
             'companiesData' => $parEntreprise,
             'employeesData' => $employeesData,
             'ageLabels'     => $ageLabels,
             'ageData'       => $ageData,
+            'entreprises'   => $entreprises,
+
+            'scopeLabel'       => $scopeLabel,     // "Ingenium" ou "Toutes les entreprises"
+            'dayLabels'        => $dayLabels,
+            'presenceRows'     => $presenceRows,
+            'assiduiteLabels'  => $assiduiteLabels,
+            'assiduiteRates'   => $assiduiteRates,
+            'heatmap'          => $heatmap,
+            'heatMax'          => $heatMax,
+
         ]);
     }
+
+
 
 
     public function change_entreprise($entreprise_id)

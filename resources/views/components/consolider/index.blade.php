@@ -90,11 +90,13 @@
         <!-- Sidebar -->
         <aside class="w-64 from-blue-900 to-purple-900 text-white flex-shrink-0 no-print" style="background: #05436b">
             <div class="p-6">
-                <h1 class="text-2xl font-bold mb-2">BFEV</h1>
-                <p class="text-sm text-blue-200">RH & Paie Consolidé</p>
+                <a href="#" class="logo-small">
+                    <img src="{{ asset('assets/img/authentication/logo_nedcore.JPG') }}" class="rounded" alt="Logo">
+                </a>
             </div>
             <nav class="mt-6">
-                <a href="#" class="sidebar-link active flex items-center px-6 py-3 text-white hover:bg-secondary-800"
+                <a href="#"
+                    class="sidebar-link active flex items-center px-6 py-3 text-white hover:bg-secondary-800"
                     data-module="dashboard">
                     <i class="fas fa-home mr-3"></i> Tableau de bord
                 </a>
@@ -120,7 +122,7 @@
                 </a>
             </nav>
             <div class="absolute bottom-0 w-64 p-6 text-xs text-blue-200">
-                <p>&copy; 2025 BFEV Group</p>
+                <p>&copy; 2025 Yodingenierie</p>
                 <p>Version 2.1.0</p>
             </div>
         </aside>
@@ -139,11 +141,9 @@
                             <select id="company-filter"
                                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="all">Toutes les sociétés</option>
-                                <option value="ingenium">Ingenium</option>
-                                <option value="ezer">EZER Immo</option>
-                                <option value="comketing">COMKETING</option>
-                                <option value="yod">YOD Bénin</option>
-                                <option value="egcc">EGCC</option>
+                                @foreach ($entreprises as $entreprise)
+                                    <option value="{{ $entreprise->id }}">{{ $entreprise->nom_entreprise }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -166,7 +166,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Effectif Total</p>
-                                <h3 class="text-3xl font-bold text-gray-800 mt-2">487</h3>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">{{ count($employeesData) }}</h3>
                                 <p class="text-green-500 text-xs mt-2"><i class="fas fa-arrow-up"></i> +12 ce mois</p>
                             </div>
                             <div class="bg-blue-100 p-3 rounded-full">
@@ -299,11 +299,12 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Liste des Employés</h3>
+                            <h3 class="text-lg font-semibold text-gray-800">Liste des Employés [
+                                {{ count($employeesData) }} ]</h3>
                             <input type="text" id="employee-search" placeholder="Rechercher..."
                                 class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow">
                         </div>
-                        <div class="overflow-x-auto" style="max-height: 450px; overflow-y: auto;">
+                        <div class="overflow-x-auto" style="max-height: 1000px; overflow-y: auto;">
                             <table class="w-full text-sm" id="employees-table">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -755,294 +756,183 @@
             <!-- Pointage Module -->
             <section id="pointage-module" class="module-section p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Présences - 7 derniers jours</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left">Employé</th>
-                                        <th class="px-4 py-3 text-center">Lun 07</th>
-                                        <th class="px-4 py-3 text-center">Mar 08</th>
-                                        <th class="px-4 py-3 text-center">Mer 09</th>
-                                        <th class="px-4 py-3 text-center">Jeu 10</th>
-                                        <th class="px-4 py-3 text-center">Ven 11</th>
-                                        <th class="px-4 py-3 text-center">Sam 12</th>
-                                        <th class="px-4 py-3 text-center">Dim 13</th>
-                                        <th class="px-4 py-3 text-center">Anomalies</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3">Jean Mbongo</td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span
-                                                class="badge-success px-2 py-1 rounded text-xs">0</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3">Marie Kengue</td>
-                                        <td class="px-4 py-3 text-center"><span class="text-orange-600"><i
-                                                    class="fas fa-exclamation-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-red-600"><i
-                                                    class="fas fa-times-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span
-                                                class="badge-warning px-2 py-1 rounded text-xs">2</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3">Paul Nzigou</td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-orange-600"><i
-                                                    class="fas fa-exclamation-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-orange-600"><i
-                                                    class="fas fa-exclamation-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span
-                                                class="badge-warning px-2 py-1 rounded text-xs">2</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3">Sophie Ondo</td>
-                                        <td class="px-4 py-3 text-center"><span class="text-red-600"><i
-                                                    class="fas fa-times-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-red-600"><i
-                                                    class="fas fa-times-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-red-600"><i
-                                                    class="fas fa-times-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-red-600"><i
-                                                    class="fas fa-times-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span
-                                                class="badge-danger px-2 py-1 rounded text-xs">4</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3">André Mounguengui</td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-green-600"><i
-                                                    class="fas fa-check-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span class="text-gray-300"><i
-                                                    class="fas fa-minus-circle"></i></span></td>
-                                        <td class="px-4 py-3 text-center"><span
-                                                class="badge-success px-2 py-1 rounded text-xs">0</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="mt-4 flex items-center text-xs text-gray-600 space-x-4">
-                            <div><i class="fas fa-check-circle text-green-600 mr-1"></i> Présent</div>
-                            <div><i class="fas fa-exclamation-circle text-orange-600 mr-1"></i> Retard</div>
-                            <div><i class="fas fa-times-circle text-red-600 mr-1"></i> Absent</div>
-                            <div><i class="fas fa-minus-circle text-gray-300 mr-1"></i> Week-end</div>
-                        </div>
+                  <!-- Présences 7j -->
+                  <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-baseline justify-between mb-4">
+                      <h3 class="text-lg font-semibold text-gray-800">Présences - 7 derniers jours</h3>
+                      @isset($scopeLabel)
+                        <span class="text-xs text-gray-500">Portée : {{ $scopeLabel }}</span>
+                      @endisset
                     </div>
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Taux d'Assiduité</h3>
-                        <canvas id="assiduitéChart"></canvas>
-                        <div class="mt-4 space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span>Ingenium</span>
-                                <span class="font-semibold text-green-600">96.2%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 96.2%"></div>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>EZER Immo</span>
-                                <span class="font-semibold text-green-600">93.8%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 93.8%"></div>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>COMKETING</span>
-                                <span class="font-semibold text-green-600">94.5%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 94.5%"></div>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>YOD Bénin</span>
-                                <span class="font-semibold text-orange-600">89.2%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-orange-500 h-2 rounded-full" style="width: 89.2%"></div>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>EGCC</span>
-                                <span class="font-semibold text-orange-600">91.7%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-orange-500 h-2 rounded-full" style="width: 91.7%"></div>
-                            </div>
-                        </div>
+              
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                          <tr>
+                            <th class="px-4 py-3 text-left">Employé</th>
+                            @foreach($dayLabels as $lbl)
+                              <th class="px-4 py-3 text-center">{{ $lbl }}</th>
+                            @endforeach
+                            <th class="px-4 py-3 text-center">Anomalies</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                          @forelse($presenceRows as $row)
+                            <tr class="hover:bg-gray-50">
+                              <td class="px-4 py-3">{{ $row['name'] }}</td>
+                              @foreach($row['statuses'] as $st)
+                                <td class="px-4 py-3 text-center">
+                                  @switch($st)
+                                    @case('present')
+                                      <span class="text-green-600"><i class="fas fa-check-circle"></i></span>
+                                      @break
+                                    @case('late')
+                                      <span class="text-orange-600"><i class="fas fa-exclamation-circle"></i></span>
+                                      @break
+                                    @case('absent')
+                                      <span class="text-red-600"><i class="fas fa-times-circle"></i></span>
+                                      @break
+                                    @case('weekend')
+                                      <span class="text-gray-300"><i class="fas fa-minus-circle"></i></span>
+                                      @break
+                                  @endswitch
+                                </td>
+                              @endforeach
+                              <td class="px-4 py-3 text-center">
+                                @php
+                                  $an = (int)($row['anomalies'] ?? 0);
+                                  $badge = $an >= 4 ? 'badge-danger' : ($an >= 2 ? 'badge-warning' : 'badge-success');
+                                @endphp
+                                <span class="{{ $badge }} px-2 py-1 rounded text-xs">{{ $an }}</span>
+                              </td>
+                            </tr>
+                          @empty
+                            <tr><td colspan="{{ 2 + count($dayLabels) }}" class="px-4 py-6 text-center text-gray-400">Aucune donnée</td></tr>
+                          @endforelse
+                        </tbody>
+                      </table>
                     </div>
+              
+                    <div class="mt-4 flex items-center text-xs text-gray-600 space-x-4">
+                      <div><i class="fas fa-check-circle text-green-600 mr-1"></i> Présent</div>
+                      <div><i class="fas fa-exclamation-circle text-orange-600 mr-1"></i> Retard</div>
+                      <div><i class="fas fa-times-circle text-red-600 mr-1"></i> Absent</div>
+                      <div><i class="fas fa-minus-circle text-gray-300 mr-1"></i> Week-end</div>
+                    </div>
+                  </div>
+              
+                  <!-- Taux d'Assiduité -->
+                  <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Taux d'Assiduité</h3>
+                    <canvas id="assiduiteChart"></canvas>
+              
+                    <div class="mt-4 space-y-2">
+                      @forelse($assiduiteLabels as $i => $label)
+                        @php
+                          $pct = (float)($assiduiteRates[$i] ?? 0);
+                          $txt = $pct >= 95 ? 'text-green-600' : ($pct >= 90 ? 'text-orange-600' : 'text-red-600');
+                          $bar = $pct >= 95 ? 'bg-green-500' : ($pct >= 90 ? 'bg-orange-500' : 'bg-red-500');
+                        @endphp
+                        <div class="flex justify-between text-sm">
+                          <span>{{ $label }}</span>
+                          <span class="font-semibold {{ $txt }}">{{ number_format($pct, 1) }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div class="{{ $bar }} h-2 rounded-full" style="width: {{ max(0, min(100, $pct)) }}%"></div>
+                        </div>
+                      @empty
+                        <div class="text-xs text-gray-400">Aucune donnée</div>
+                      @endforelse
+                    </div>
+                  </div>
                 </div>
-
+              
                 <!-- Heatmap -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Heatmap Retards & Absences par Service</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center">
-                            <thead>
-                                <tr>
-                                    <th class="px-3 py-2">Service</th>
-                                    <th class="px-3 py-2">Lun</th>
-                                    <th class="px-3 py-2">Mar</th>
-                                    <th class="px-3 py-2">Mer</th>
-                                    <th class="px-3 py-2">Jeu</th>
-                                    <th class="px-3 py-2">Ven</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="px-3 py-2 text-left font-semibold">Direction</td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 text-left font-semibold">Commercial</td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-400 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-200 h-8 rounded"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 text-left font-semibold">Technique</td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-yellow-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 text-left font-semibold">Administratif</td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-200 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-green-100 h-8 rounded"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 text-left font-semibold">Logistique</td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-red-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-red-400 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-red-500 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-red-300 h-8 rounded"></div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="heatmap-cell bg-orange-300 h-8 rounded"></div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                  <h3 class="text-lg font-semibold text-gray-800 mb-4">Heatmap Retards & Absences par Service</h3>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-center">
+                      <thead>
+                        <tr>
+                          <th class="px-3 py-2">Service</th>
+                          <th class="px-3 py-2">Lun</th>
+                          <th class="px-3 py-2">Mar</th>
+                          <th class="px-3 py-2">Mer</th>
+                          <th class="px-3 py-2">Jeu</th>
+                          <th class="px-3 py-2">Ven</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @php
+                          $max = max(1, (int)($heatMax ?? 0)); // évite division par zéro
+                          $cls = function ($v) use ($max) {
+                            if ($v <= 0) return 'bg-green-100';
+                            $r = $v / $max;
+                            return $r < 0.25 ? 'bg-green-200'
+                                 : ($r < 0.5  ? 'bg-yellow-200'
+                                 : ($r < 0.75 ? 'bg-orange-300'
+                                 : 'bg-red-400'));
+                          };
+                        @endphp
+              
+                        @forelse($heatmap as $row)
+                          <tr>
+                            <td class="px-3 py-2 text-left font-semibold">{{ $row['service'] }}</td>
+                            @foreach(($row['cells'] ?? []) as $val)
+                              <td class="px-3 py-2">
+                                <div class="heatmap-cell h-8 rounded {{ $cls($val) }}"></div>
+                              </td>
+                            @endforeach
+                          </tr>
+                        @empty
+                          <tr><td colspan="6" class="px-3 py-6 text-gray-400">Aucune donnée</td></tr>
+                        @endforelse
+                      </tbody>
+                    </table>
+                  </div>
+              
+                  <div class="mt-4 flex justify-center items-center space-x-4 text-xs">
+                    <span>Faible</span>
+                    <div class="flex space-x-1">
+                      <div class="w-6 h-6 bg-green-100 rounded"></div>
+                      <div class="w-6 h-6 bg-green-200 rounded"></div>
+                      <div class="w-6 h-6 bg-yellow-200 rounded"></div>
+                      <div class="w-6 h-6 bg-orange-300 rounded"></div>
+                      <div class="w-6 h-6 bg-red-400 rounded"></div>
                     </div>
-                    <div class="mt-4 flex justify-center items-center space-x-4 text-xs">
-                        <span>Faible</span>
-                        <div class="flex space-x-1">
-                            <div class="w-6 h-6 bg-green-100 rounded"></div>
-                            <div class="w-6 h-6 bg-green-200 rounded"></div>
-                            <div class="w-6 h-6 bg-yellow-200 rounded"></div>
-                            <div class="w-6 h-6 bg-orange-300 rounded"></div>
-                            <div class="w-6 h-6 bg-red-400 rounded"></div>
-                        </div>
-                        <span>Élevé</span>
-                    </div>
+                    <span>Élevé</span>
+                  </div>
                 </div>
-            </section>
+              </section>
+              
+              {{-- Chart.js (assiduité) --}}
+              <script>
+                (function() {
+                  const el = document.getElementById('assiduiteChart');
+                  if (!el || !window.Chart) return;
+              
+                  const labels = @json($assiduiteLabels);
+                  const data   = @json($assiduiteRates);
+              
+                  new Chart(el.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                      labels,
+                      datasets: [{
+                        data,
+                        // couleurs douces, pas trop vives
+                        backgroundColor: data.map(v => v >= 95 ? '#6FA19A' : (v >= 90 ? '#B69A73' : '#BF6B6B'))
+                      }]
+                    },
+                    options: {
+                      responsive: true,
+                      plugins: { legend: { display:false }},
+                      scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 10 } } }
+                    }
+                  });
+                })();
+              </script>
+              
 
             <!-- Paie Module -->
             <section id="paie-module" class="module-section p-6">
