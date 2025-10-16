@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Services\AttendanceService;
 
 class ConsoliderController extends Controller
 {
@@ -172,10 +173,12 @@ class ConsoliderController extends Controller
         $ageData   = array_values($ageBuckets);
 
 
-        // gestion du pointage
         // Fenêtre: 7 derniers jours incluant aujourd’hui
         $end   = Carbon::today()->endOfDay();
         $start = Carbon::today()->subDays(6)->startOfDay();
+
+        /** @var AttendanceService $attSvc */
+        $attSvc = app(AttendanceService::class);
 
         // Employés actifs (filtrés SI $entreprise_id fourni)
         $employes = User::with([
@@ -192,49 +195,35 @@ class ConsoliderController extends Controller
         // Si cas A (une entreprise), on la charge (utile pour l’intitulé)
         $entrepriseCible = $entreprise_id ? Entreprise::findOrFail($entreprise_id) : null;
 
-        $userIds = $employes->pluck('id');
-
-        // Tous les pointages dans la fenêtre
-        $pointages = Pointage::whereIn('user_id', $userIds)
-            ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
-            ->get(['user_id', 'date_arriver', 'heure_arriver']);
-
-        // Index pointages (user|date)
-        $byUserDate = [];
-        foreach ($pointages as $p) {
-            $byUserDate[$p->user_id . '|' . $p->date_arriver] = $p;
-        }
-
-        // Prépare le seuil de retard par ENTREPRISE (important en mode "toutes")
-        // seuil = heure_ouverture + minute_pointage_limite (par défaut 0)
-        $seuilsEntreprise = [];
-        foreach ($employes as $u) {
-            $e = $u->entreprise;
-            if (!$e) continue;
-            if (!isset($seuilsEntreprise[$e->id])) {
-                $open = $e->heure_ouverture ?: '08:00:00';
-                $grace = (int)($e->minute_pointage_limite ?? 0);
-                $seuilsEntreprise[$e->id] = Carbon::createFromFormat('H:i:s', $open)->addMinutes($grace)->format('H:i:s');
-            }
-        }
-
         // Jours pour l’en-tête (ex. "Lun 07")
         $days = [];
         $cursor = $start->copy();
         while ($cursor <= $end) {
             $days[] = [
-                'date' => $cursor->toDateString(),
-                'label' => Str::ucfirst($cursor->locale('fr_FR')->isoFormat('ddd DD')),
-                'is_weekend' => $cursor->isWeekend(),
+                'date'          => $cursor->toDateString(),
+                'label'         => Str::ucfirst($cursor->locale('fr_FR')->isoFormat('ddd DD')),
+                'is_weekend'    => $cursor->isWeekend(),
                 'weekday_index' => (int)$cursor->dayOfWeekIso, // 1..7
+                'carbon'        => $cursor->copy(),            // utile pour AttendanceService
             ];
             $cursor->addDay();
         }
         $dayLabels = array_column($days, 'label');
 
+        // Prépare le seuil de retard par ENTREPRISE (open + minutes de grâce)
+        $seuilsEntreprise = [];
+        foreach ($employes as $u) {
+            $e = $u->entreprise;
+            if (!$e || isset($seuilsEntreprise[$e->id])) continue;
+            $open  = $e->heure_ouverture ?: '08:00:00';
+            $grace = (int)($e->minute_pointage_limite ?? 0);
+            $seuilsEntreprise[$e->id] = Carbon::createFromFormat('H:i:s', $open)
+                ->addMinutes($grace)->format('H:i:s');
+        }
+
         // Agrégations
         $presenceRows = [];                // lignes du tableau (par employé)
-        $companyStats = [];                // assiduité par entreprise
+        $companyStats = [];                // assiduité par entreprise: présent / ouvrés (ouvrés = jours réellement comptés)
         $serviceHeat  = [];                // heatmap retards/absences par service (Lun..Ven)
 
         foreach ($employes as $u) {
@@ -246,40 +235,66 @@ class ConsoliderController extends Controller
             $cmpId   = $cmpObj->id ?? '—';
             $cmpName = $cmpObj->nom_entreprise ?? '—';
 
-            // Init structures
+            // structures
             $companyStats[$cmpName] = $companyStats[$cmpName] ?? ['present' => 0, 'ouvrés' => 0];
-            // Pour éviter collision de services homonymes entre entreprises, on peut préfixer:
+
+            // Pour éviter collision de services homonymes entre entreprises en mode “toutes”
             $svcKey = $entreprise_id ? $svcName : ($cmpName . ' · ' . $svcName);
             $serviceHeat[$svcKey] = $serviceHeat[$svcKey] ?? [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
 
-            // seuil retard (par entreprise de l’employé)
             $seuilRetard = $seuilsEntreprise[$cmpId] ?? '08:00:00';
 
             foreach ($days as $d) {
-                if ($d['is_weekend']) {
+                /** Statut “métier” via AttendanceService */
+                $status = $attSvc->getUserStatusForDate($u, $d['carbon']);
+
+                // Mapping vers nos icônes/affichages :
+                // - 'weekend'           -> weekend (ne compte nulle part)
+                // - 'jour_ferie'        -> weekend-like (ne compte pas)
+                // - 'absence_approuvee' -> “exclu du calcul” (pas d’anomalie, pas dans le dénominateur)
+                // - 'absent_injustifie' -> absent (anomalie + heatmap + donut)
+                // - 'présent'           -> présent (vérifier retard)
+
+                if ($status === 'weekend') {
                     $rowStatuses[] = 'weekend';
                     continue;
                 }
 
+                if ($status === 'jour_ferie') {
+                    $rowStatuses[] = 'jour_ferie';
+                    continue;
+                }
+
+                if ($status === 'absence_approuvee') {
+                    $rowStatuses[] = 'absence_approuvee';
+                    // ni anomalie, ni “ouvrés”
+                    continue;
+                }
+
+                // À partir d’ici, c’est un jour réellement “ouvré” comptabilisé
                 $companyStats[$cmpName]['ouvrés']++;
 
-                $key = $u->id . '|' . $d['date'];
-                $p = $byUserDate[$key] ?? null;
-
-                if (!$p) {
+                if ($status === 'absent_injustifie') {
                     $rowStatuses[] = 'absent';
                     $anomalies++;
                     if ($d['weekday_index'] <= 5) $serviceHeat[$svcKey][$d['weekday_index']] += 2; // absence pèse 2
                     continue;
                 }
 
-                // présent; check retard
-                $isLate = $p->heure_arriver && $p->heure_arriver > $seuilRetard;
+                // présent → vérifier “retard” selon seuil de l’entreprise
+                // On lit l’heure d’arrivée du pointage du jour pour ce user
+                $p = Pointage::where('user_id', $u->id)
+                    ->whereDate('date_arriver', $d['date'])
+                    ->orderBy('heure_arriver', 'asc')
+                    ->first(['heure_arriver']);
+
+                $isLate = $p && $p->heure_arriver && $p->heure_arriver > $seuilRetard;
+
                 if ($isLate) {
-                    $rowStatuses[] = 'late';  // retard
+                    $rowStatuses[] = 'late';
                     $anomalies++;
                     if ($d['weekday_index'] <= 5) $serviceHeat[$svcKey][$d['weekday_index']] += 1; // retard pèse 1
-                    $companyStats[$cmpName]['present']++; // compte présent quand même
+                    $companyStats[$cmpName]['present']++; // présent quand même
                 } else {
                     $rowStatuses[] = 'present';
                     $companyStats[$cmpName]['present']++;
@@ -302,7 +317,7 @@ class ConsoliderController extends Controller
             $assiduiteRates[]  = $rate;
         }
 
-        // Heatmap
+        // Heatmap (normalisée)
         $heatMax = 0;
         foreach ($serviceHeat as $svc => $arr) {
             $heatMax = max($heatMax, max($arr));
@@ -315,16 +330,16 @@ class ConsoliderController extends Controller
             ];
         }
 
+        // Donut Présent / Retard / Absent (on EXCLUT weekend, jours fériés, absences approuvées)
         $donutPresent = 0;   // présents à l'heure
         $donutLate    = 0;   // retards
-        $donutAbsent  = 0;   // absences
-        $donutWorkdays = 0;  // total jours-ouvres * nb employés (pour %)
+        $donutAbsent  = 0;   // absences injustifiées
+        $donutWorkdays = 0;  // jours “ouvrés” effectifs (hors weekend/ferié/absence_approuvée)
 
         foreach ($presenceRows as $row) {
-            foreach ($row['statuses'] as $idx => $st) {
-                // $days[$idx] existe dans le contrôleur précédent et dit si weekend
-                if (!empty($days[$idx]['is_weekend']) && $days[$idx]['is_weekend'] === true) {
-                    continue; // on ignore samedi/dimanche
+            foreach ($row['statuses'] as $st) {
+                if (in_array($st, ['weekend', 'jour_ferie', 'absence_approuvee'], true)) {
+                    continue; // exclu du dénominateur
                 }
                 $donutWorkdays++;
 
@@ -335,11 +350,9 @@ class ConsoliderController extends Controller
                 } elseif ($st === 'absent') {
                     $donutAbsent++;
                 }
-                // 'weekend' ne passe jamais ici (déjà filtré)
             }
         }
 
-        // Pourcentages (1 décimale). Sécurité si 0.
         if ($donutWorkdays > 0) {
             $pctPresent = round(100 * $donutPresent / $donutWorkdays, 1);
             $pctLate    = round(100 * $donutLate    / $donutWorkdays, 1);
@@ -348,16 +361,13 @@ class ConsoliderController extends Controller
             $pctPresent = $pctLate = $pctAbsent = 0.0;
         }
 
-        // Paquet prêt pour la vue
         $assiduiteDonut = [
             'labels' => ['Présent', 'Retard', 'Absent'],
             'data'   => [$pctPresent, $pctLate, $pctAbsent],
         ];
 
-        // Libellé de portée (utile en UI)
+        // Libellé de portée (UI)
         $scopeLabel = $entrepriseCible ? $entrepriseCible->nom_entreprise : 'Toutes les entreprises';
-
-
         return view('components.consolider.index', [
             'companiesData' => $parEntreprise,
             'employeesData' => $employeesData,
