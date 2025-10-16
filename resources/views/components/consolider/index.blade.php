@@ -138,11 +138,15 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="relative">
-                            <select id="company-filter"
+                            <select id="company-filter" data-base-url="{{ route('index-consolider') }}"
                                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="all">Toutes les sociétés</option>
+                                <option value="all" {{ empty($currentEntrepriseId) ? 'selected' : '' }}>Toutes les
+                                    sociétés</option>
                                 @foreach ($entreprises as $entreprise)
-                                    <option value="{{ $entreprise->id }}">{{ $entreprise->nom_entreprise }}</option>
+                                    <option value="{{ $entreprise->id }}"
+                                        {{ isset($currentEntrepriseId) && $currentEntrepriseId === $entreprise->id ? 'selected' : '' }}>
+                                        {{ $entreprise->nom_entreprise }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -157,7 +161,26 @@
                     </div>
                 </div>
             </header>
-
+            <script>
+                (function () {
+                  const sel = document.getElementById('company-filter');
+                  if (!sel) return;
+              
+                  const baseUrl = sel.dataset.baseUrl || '{{ route('index-consolider') }}';
+              
+                  sel.addEventListener('change', () => {
+                    const val = sel.value;
+                    if (!val || val === 'all') {
+                      // /consolider  (paramètre optionnel omis)
+                      window.location.href = baseUrl;
+                    } else {
+                      // /consolider/{entreprise_id}
+                      window.location.href = baseUrl.replace(/\/$/, '') + '/' + encodeURIComponent(val);
+                    }
+                  });
+                })();
+              </script>
+              
             <!-- Dashboard Module -->
             <section id="dashboard-module" class="module-section active p-6">
                 <!-- KPIs -->

@@ -333,7 +333,7 @@ Route::middleware('auth')->group(
             ->name('push.unsubscribe');
 
         //Routes de l'space consolider
-        Route::get('/consolider/{module_id?}', [ConsoliderController::class, 'index'])
+        Route::get('/consolider/{entreprise_id?}', [ConsoliderController::class, 'index'])
             ->name('index-consolider');
 
         // ================================== NOTIFICATION =================================

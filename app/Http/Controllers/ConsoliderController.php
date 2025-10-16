@@ -95,28 +95,49 @@ class ConsoliderController extends Controller
 
     public function index(?string $entreprise_id = null)
     {
-        $entreprise_id = session('entreprise_id');
 
         $entreprises = Entreprise::All();
         // Employés avec relations (colonnes utiles seulement)
-        $employes = User::with([
-            'entreprise',
-            'service',
-            'categorieProfessionnelle'
-        ])
-            // ->where('entreprise_id', $entreprise_id)
-            ->where('statu_user', 1)
-            ->where('statut', 1)
-            ->orderBy('nom')->orderBy('prenom')
-            ->get();
+        if(isset($entreprise_id)){
 
-        // Petite aide: ancienneté “X ans / Y mois”
-        $employes->transform(function ($u) {
-            $u->anciennete_label = $u->date_embauche
-                ? self::humanSeniority($u->date_embauche)
-                : null;
-            return $u;
-        });
+            $employes = User::with([
+                'entreprise',
+                'service',
+                'categorieProfessionnelle'
+            ])
+                ->where('entreprise_id', $entreprise_id)
+                ->where('statu_user', 1)
+                ->where('statut', 1)
+                ->orderBy('nom')->orderBy('prenom')
+                ->get();
+    
+            // Petite aide: ancienneté “X ans / Y mois”
+            $employes->transform(function ($u) {
+                $u->anciennete_label = $u->date_embauche
+                    ? self::humanSeniority($u->date_embauche)
+                    : null;
+                return $u;
+            });
+        }else{
+            $employes = User::with([
+                'entreprise',
+                'service',
+                'categorieProfessionnelle'
+            ])
+                // ->where('entreprise_id', $entreprise_id)
+                ->where('statu_user', 1)
+                ->where('statut', 1)
+                ->orderBy('nom')->orderBy('prenom')
+                ->get();
+    
+            // Petite aide: ancienneté “X ans / Y mois”
+            $employes->transform(function ($u) {
+                $u->anciennete_label = $u->date_embauche
+                    ? self::humanSeniority($u->date_embauche)
+                    : null;
+                return $u;
+            });
+        }
 
         // Stats par entreprise (si ta page doit afficher plusieurs entreprises, adapte le where ci-dessus)
         $parEntreprise = $employes->groupBy('entreprise_id')->map(function ($group) {
@@ -181,16 +202,30 @@ class ConsoliderController extends Controller
         $attSvc = app(AttendanceService::class);
 
         // Employés actifs (filtrés SI $entreprise_id fourni)
-        $employes = User::with([
-            'service:id,nom_service',
-            'entreprise:id,nom_entreprise,heure_ouverture,minute_pointage_limite'
-        ])
-            ->select(['id', 'nom', 'prenom', 'service_id', 'entreprise_id', 'fonction', 'type_contrat', 'date_naissance'])
-            // ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
-            ->where('statu_user', 1)
-            ->where('statut', 1)
-            ->orderBy('nom')->orderBy('prenom')
-            ->get();
+        if(isset($entreprise_id)){
+            $employes = User::with([
+                'service:id,nom_service',
+                'entreprise:id,nom_entreprise,heure_ouverture,minute_pointage_limite'
+            ])
+                ->select(['id', 'nom', 'prenom', 'service_id', 'entreprise_id', 'fonction', 'type_contrat', 'date_naissance'])
+                ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
+                ->where('statu_user', 1)
+                ->where('statut', 1)
+                ->orderBy('nom')->orderBy('prenom')
+                ->get();
+
+        }else{
+            $employes = User::with([
+                'service:id,nom_service',
+                'entreprise:id,nom_entreprise,heure_ouverture,minute_pointage_limite'
+            ])
+                ->select(['id', 'nom', 'prenom', 'service_id', 'entreprise_id', 'fonction', 'type_contrat', 'date_naissance'])
+                // ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
+                ->where('statu_user', 1)
+                ->where('statut', 1)
+                ->orderBy('nom')->orderBy('prenom')
+                ->get();
+        }
 
         // Si cas A (une entreprise), on la charge (utile pour l’intitulé)
         $entrepriseCible = $entreprise_id ? Entreprise::findOrFail($entreprise_id) : null;
@@ -374,6 +409,7 @@ class ConsoliderController extends Controller
             'ageLabels'     => $ageLabels,
             'ageData'       => $ageData,
             'entreprises'   => $entreprises,
+            'currentEntrepriseId' => $entreprise_id, // null si “toutes”
 
             'scopeLabel'       => $scopeLabel,     // "Ingenium" ou "Toutes les entreprises"
             'dayLabels'        => $dayLabels,
