@@ -756,659 +756,589 @@
             <!-- Pointage Module -->
             <section id="pointage-module" class="module-section p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                  <!-- Présences 7j -->
-                  <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-baseline justify-between mb-4">
-                      <h3 class="text-lg font-semibold text-gray-800">Présences - 7 derniers jours</h3>
-                      @isset($scopeLabel)
-                        <span class="text-xs text-gray-500">Portée : {{ $scopeLabel }}</span>
-                      @endisset
-                    </div>
-              
-                    <div class="overflow-x-auto">
-                      <table class="w-full text-sm">
-                        <thead class="bg-gray-50">
-                          <tr>
-                            <th class="px-4 py-3 text-left">Employé</th>
-                            @foreach($dayLabels as $lbl)
-                              <th class="px-4 py-3 text-center">{{ $lbl }}</th>
-                            @endforeach
-                            <th class="px-4 py-3 text-center">Anomalies</th>
-                          </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                          @forelse($presenceRows as $row)
-                            <tr class="hover:bg-gray-50">
-                              <td class="px-4 py-3">{{ $row['name'] }}</td>
-                              @foreach($row['statuses'] as $st)
-                                <td class="px-4 py-3 text-center">
-                                  @switch($st)
-                                    @case('present')
-                                      <span class="text-green-600"><i class="fas fa-check-circle"></i></span>
-                                      @break
-                                    @case('late')
-                                      <span class="text-orange-600"><i class="fas fa-exclamation-circle"></i></span>
-                                      @break
-                                    @case('absent')
-                                      <span class="text-red-600"><i class="fas fa-times-circle"></i></span>
-                                      @break
-                                    @case('weekend')
-                                      <span class="text-gray-300"><i class="fas fa-minus-circle"></i></span>
-                                      @break
-                                  @endswitch
-                                </td>
-                              @endforeach
-                              <td class="px-4 py-3 text-center">
-                                @php
-                                  $an = (int)($row['anomalies'] ?? 0);
-                                  $badge = $an >= 4 ? 'badge-danger' : ($an >= 2 ? 'badge-warning' : 'badge-success');
-                                @endphp
-                                <span class="{{ $badge }} px-2 py-1 rounded text-xs">{{ $an }}</span>
-                              </td>
-                            </tr>
-                          @empty
-                            <tr><td colspan="{{ 2 + count($dayLabels) }}" class="px-4 py-6 text-center text-gray-400">Aucune donnée</td></tr>
-                          @endforelse
-                        </tbody>
-                      </table>
-                    </div>
-              
-                    <div class="mt-4 flex items-center text-xs text-gray-600 space-x-4">
-                      <div><i class="fas fa-check-circle text-green-600 mr-1"></i> Présent</div>
-                      <div><i class="fas fa-exclamation-circle text-orange-600 mr-1"></i> Retard</div>
-                      <div><i class="fas fa-times-circle text-red-600 mr-1"></i> Absent</div>
-                      <div><i class="fas fa-minus-circle text-gray-300 mr-1"></i> Week-end</div>
-                    </div>
-                  </div>
-              
-                  <!-- Taux d'Assiduité -->
-                  <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Taux d'Assiduité</h3>
-                    <canvas id="assiduiteChart"></canvas>
-              
-                    <div class="mt-4 space-y-2">
-                      @forelse($assiduiteLabels as $i => $label)
-                        @php
-                          $pct = (float)($assiduiteRates[$i] ?? 0);
-                          $txt = $pct >= 95 ? 'text-green-600' : ($pct >= 90 ? 'text-orange-600' : 'text-red-600');
-                          $bar = $pct >= 95 ? 'bg-green-500' : ($pct >= 90 ? 'bg-orange-500' : 'bg-red-500');
-                        @endphp
-                        <div class="flex justify-between text-sm">
-                          <span>{{ $label }}</span>
-                          <span class="font-semibold {{ $txt }}">{{ number_format($pct, 1) }}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                          <div class="{{ $bar }} h-2 rounded-full" style="width: {{ max(0, min(100, $pct)) }}%"></div>
-                        </div>
-                      @empty
-                        <div class="text-xs text-gray-400">Aucune donnée</div>
-                      @endforelse
-                    </div>
-                  </div>
-                </div>
-              
-                <!-- Heatmap -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                  <h3 class="text-lg font-semibold text-gray-800 mb-4">Heatmap Retards & Absences par Service</h3>
-                  <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-center">
-                      <thead>
-                        <tr>
-                          <th class="px-3 py-2">Service</th>
-                          <th class="px-3 py-2">Lun</th>
-                          <th class="px-3 py-2">Mar</th>
-                          <th class="px-3 py-2">Mer</th>
-                          <th class="px-3 py-2">Jeu</th>
-                          <th class="px-3 py-2">Ven</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @php
-                          $max = max(1, (int)($heatMax ?? 0)); // évite division par zéro
-                          $cls = function ($v) use ($max) {
-                            if ($v <= 0) return 'bg-green-100';
-                            $r = $v / $max;
-                            return $r < 0.25 ? 'bg-green-200'
-                                 : ($r < 0.5  ? 'bg-yellow-200'
-                                 : ($r < 0.75 ? 'bg-orange-300'
-                                 : 'bg-red-400'));
-                          };
-                        @endphp
-              
-                        @forelse($heatmap as $row)
-                          <tr>
-                            <td class="px-3 py-2 text-left font-semibold">{{ $row['service'] }}</td>
-                            @foreach(($row['cells'] ?? []) as $val)
-                              <td class="px-3 py-2">
-                                <div class="heatmap-cell h-8 rounded {{ $cls($val) }}"></div>
-                              </td>
-                            @endforeach
-                          </tr>
-                        @empty
-                          <tr><td colspan="6" class="px-3 py-6 text-gray-400">Aucune donnée</td></tr>
-                        @endforelse
-                      </tbody>
-                    </table>
-                  </div>
-              
-                  <div class="mt-4 flex justify-center items-center space-x-4 text-xs">
-                    <span>Faible</span>
-                    <div class="flex space-x-1">
-                      <div class="w-6 h-6 bg-green-100 rounded"></div>
-                      <div class="w-6 h-6 bg-green-200 rounded"></div>
-                      <div class="w-6 h-6 bg-yellow-200 rounded"></div>
-                      <div class="w-6 h-6 bg-orange-300 rounded"></div>
-                      <div class="w-6 h-6 bg-red-400 rounded"></div>
-                    </div>
-                    <span>Élevé</span>
-                  </div>
-                </div>
-              </section>
-              
-              {{-- Chart.js (assiduité) --}}
-              <script>
-                (function() {
-                  const el = document.getElementById('assiduiteChart');
-                  if (!el || !window.Chart) return;
-              
-                  const labels = @json($assiduiteLabels);
-                  const data   = @json($assiduiteRates);
-              
-                  new Chart(el.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                      labels,
-                      datasets: [{
-                        data,
-                        // couleurs douces, pas trop vives
-                        backgroundColor: data.map(v => v >= 95 ? '#6FA19A' : (v >= 90 ? '#B69A73' : '#BF6B6B'))
-                      }]
-                    },
-                    options: {
-                      responsive: true,
-                      plugins: { legend: { display:false }},
-                      scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 10 } } }
-                    }
-                  });
-                })();
-              </script>
-              
-
-            <!-- Paie Module -->
-            <section id="paie-module" class="module-section p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution Masse Salariale (6 mois)</h3>
-                        <canvas id="evolutionPaieChart"></canvas>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Comparatif Sociétés (Octobre 2025)</h3>
-                        <canvas id="radarPaieChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition Masse Salariale</h3>
-                        <canvas id="repartitionPaieChart"></canvas>
-                    </div>
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Détail par Société</h3>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6"
+                        style="max-height: 1000px; overflow-y: auto;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Présences - 7 derniers jours</h3>
+                        @isset($scopeLabel)
+                            <span class="text-xs text-gray-500">Portée : {{ $scopeLabel }}</span>
+                        @endisset
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-4 py-3 text-left">Société</th>
-                                        <th class="px-4 py-3 text-right">Effectif</th>
-                                        <th class="px-4 py-3 text-right">Salaire Brut</th>
-                                        <th class="px-4 py-3 text-right">Charges Patronales</th>
-                                        <th class="px-4 py-3 text-right">Primes</th>
-                                        <th class="px-4 py-3 text-right">Total</th>
-                                        <th class="px-4 py-3 text-right">Coût/CA</th>
+                                        <th class="px-4 py-3 text-left">Employé</th>
+                                        @foreach ($dayLabels as $lbl)
+                                            <th class="px-4 py-3 text-center">{{ $lbl }}</th>
+                                        @endforeach
+                                        <th class="px-4 py-3 text-center">Anomalies</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3 font-semibold">Ingenium</td>
-                                        <td class="px-4 py-3 text-right">145</td>
-                                        <td class="px-4 py-3 text-right">32.5M</td>
-                                        <td class="px-4 py-3 text-right">8.1M</td>
-                                        <td class="px-4 py-3 text-right">4.2M</td>
-                                        <td class="px-4 py-3 text-right font-semibold">44.8M</td>
-                                        <td class="px-4 py-3 text-right"><span
-                                                class="badge-success px-2 py-1 rounded text-xs">28%</span></td>
+                                    @forelse($presenceRows as $row)
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3">{{ $row['name'] }}</td>
+                                            @foreach ($row['statuses'] as $st)
+                                                <td class="px-4 py-3 text-center">
+                                                    @switch($st)
+                                                        @case('present')
+                                                            <span class="text-green-600"><i
+                                                                    class="fas fa-check-circle"></i></span>
+                                                        @break
+
+                                                        @case('late')
+                                                            <span class="text-orange-600"><i
+                                                                    class="fas fa-exclamation-circle"></i></span>
+                                                        @break
+
+                                                        @case('absent')
+                                                            <span class="text-red-600"><i
+                                                                    class="fas fa-times-circle"></i></span>
+                                                        @break
+
+                                                        @case('weekend')
+                                                            <span class="text-gray-300"><i
+                                                                    class="fas fa-minus-circle"></i></span>
+                                                        @break
+                                                    @endswitch
+                                                </td>
+                                            @endforeach
+                                            <td class="px-4 py-3 text-center">
+                                                @php
+                                                    $an = (int) ($row['anomalies'] ?? 0);
+                                                    $badge =
+                                                        $an >= 4
+                                                            ? 'badge-danger'
+                                                            : ($an >= 2
+                                                                ? 'badge-warning'
+                                                                : 'badge-success');
+                                                @endphp
+                                                <span
+                                                    class="{{ $badge }} px-2 py-1 rounded text-xs">{{ $an }}</span>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="{{ 2 + count($dayLabels) }}"
+                                                    class="px-4 py-6 text-center text-gray-400">Aucune donnée</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4 flex items-center text-xs text-gray-600 space-x-4">
+                                <div><i class="fas fa-check-circle text-green-600 mr-1"></i> Présent</div>
+                                <div><i class="fas fa-exclamation-circle text-orange-600 mr-1"></i> Retard</div>
+                                <div><i class="fas fa-times-circle text-red-600 mr-1"></i> Absent</div>
+                                <div><i class="fas fa-minus-circle text-gray-300 mr-1"></i> Week-end</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Taux d'Assiduité</h3>
+                            <canvas id="assiduitéChart"></canvas>
+                            <div class="mt-4 space-y-2">
+                                @forelse($assiduiteLabels as $i => $label)
+                                    @php
+                                        $pct = (float) ($assiduiteRates[$i] ?? 0);
+                                        $txt =
+                                            $pct >= 95
+                                                ? 'text-green-600'
+                                                : ($pct >= 90
+                                                    ? 'text-orange-600'
+                                                    : 'text-red-600');
+                                        $bar =
+                                            $pct >= 95 ? 'bg-green-500' : ($pct >= 90 ? 'bg-orange-500' : 'bg-red-500');
+                                    @endphp
+                                    <div class="flex justify-between text-sm">
+                                        <span>{{ $label }}</span>
+                                        <span
+                                            class="font-semibold {{ $txt }}">{{ number_format($pct, 1) }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="{{ $bar }} h-2 rounded-full"
+                                            style="width: {{ max(0, min(100, $pct)) }}%"></div>
+                                    </div>
+                                @empty
+                                    <div class="text-xs text-gray-400">Aucune donnée</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Heatmap Retards & Absences par Service</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-center">
+                                <thead>
+                                    <tr>
+                                        <th class="px-3 py-2">Service</th>
+                                        <th class="px-3 py-2">Lun</th>
+                                        <th class="px-3 py-2">Mar</th>
+                                        <th class="px-3 py-2">Mer</th>
+                                        <th class="px-3 py-2">Jeu</th>
+                                        <th class="px-3 py-2">Ven</th>
                                     </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3 font-semibold">EZER Immo</td>
-                                        <td class="px-4 py-3 text-right">87</td>
-                                        <td class="px-4 py-3 text-right">18.9M</td>
-                                        <td class="px-4 py-3 text-right">4.7M</td>
-                                        <td class="px-4 py-3 text-right">2.1M</td>
-                                        <td class="px-4 py-3 text-right font-semibold">25.7M</td>
-                                        <td class="px-4 py-3 text-right"><span
-                                                class="badge-warning px-2 py-1 rounded text-xs">32%</span></td>
-                                    </tr>
-                                    <tr class="bg-gray-100 font-bold">
-                                        <td class="px-4 py-3">TOTAL GROUPE</td>
-                                        <td class="px-4 py-3 text-right">487</td>
-                                        <td class="px-4 py-3 text-right">101.7M</td>
-                                        <td class="px-4 py-3 text-right">25.5M</td>
-                                        <td class="px-4 py-3 text-right">12.8M</td>
-                                        <td class="px-4 py-3 text-right">140.0M</td>
-                                        <td class="px-4 py-3 text-right"><span
-                                                class="badge-success px-2 py-1 rounded text-xs">28%</span></td>
-                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $max = max(1, (int) ($heatMax ?? 0)); // évite division par zéro
+                                        $cls = function ($v) use ($max) {
+                                            if ($v <= 0) {
+                                                return 'bg-green-100';
+                                            }
+                                            $r = $v / $max;
+                                            return $r < 0.25
+                                                ? 'bg-green-200'
+                                                : ($r < 0.5
+                                                    ? 'bg-yellow-200'
+                                                    : ($r < 0.75
+                                                        ? 'bg-orange-300'
+                                                        : 'bg-red-400'));
+                                        };
+                                    @endphp
+
+                                    @forelse($heatmap as $row)
+                                        <tr>
+                                            <td class="px-3 py-2 text-left font-semibold">{{ $row['service'] }}</td>
+                                            @foreach ($row['cells'] ?? [] as $val)
+                                                <td class="px-3 py-2">
+                                                    <div class="heatmap-cell h-8 rounded {{ $cls($val) }}"></div>
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="px-3 py-6 text-gray-400">Aucune donnée</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Reporting Module -->
-            <section id="reporting-module" class="module-section p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Générateur de Rapports</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Type de Rapport</label>
-                                <select
-                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option>Rapport Effectifs</option>
-                                    <option>Rapport Conformité RH</option>
-                                    <option>Rapport Pointage</option>
-                                    <option>Rapport Paie & Masse Salariale</option>
-                                    <option>Rapport Consolidé Mensuel</option>
-                                    <option>Rapport Anomalies & Alertes</option>
-                                </select>
+                        <div class="mt-4 flex justify-center items-center space-x-4 text-xs">
+                            <span>Faible</span>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-green-100 rounded"></div>
+                                <div class="w-6 h-6 bg-green-200 rounded"></div>
+                                <div class="w-6 h-6 bg-yellow-200 rounded"></div>
+                                <div class="w-6 h-6 bg-orange-300 rounded"></div>
+                                <div class="w-6 h-6 bg-red-400 rounded"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
+                            <span>Élevé</span>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Chart.js (assiduité) --}}
+
+                </section>
+
+                <!-- Paie Module -->
+                <section id="paie-module" class="module-section p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution Masse Salariale (6 mois)</h3>
+                            <canvas id="evolutionPaieChart"></canvas>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Comparatif Sociétés (Octobre 2025)</h3>
+                            <canvas id="radarPaieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition Masse Salariale</h3>
+                            <canvas id="repartitionPaieChart"></canvas>
+                        </div>
+                        <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Détail par Société</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left">Société</th>
+                                            <th class="px-4 py-3 text-right">Effectif</th>
+                                            <th class="px-4 py-3 text-right">Salaire Brut</th>
+                                            <th class="px-4 py-3 text-right">Charges Patronales</th>
+                                            <th class="px-4 py-3 text-right">Primes</th>
+                                            <th class="px-4 py-3 text-right">Total</th>
+                                            <th class="px-4 py-3 text-right">Coût/CA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 font-semibold">Ingenium</td>
+                                            <td class="px-4 py-3 text-right">145</td>
+                                            <td class="px-4 py-3 text-right">32.5M</td>
+                                            <td class="px-4 py-3 text-right">8.1M</td>
+                                            <td class="px-4 py-3 text-right">4.2M</td>
+                                            <td class="px-4 py-3 text-right font-semibold">44.8M</td>
+                                            <td class="px-4 py-3 text-right"><span
+                                                    class="badge-success px-2 py-1 rounded text-xs">28%</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 font-semibold">EZER Immo</td>
+                                            <td class="px-4 py-3 text-right">87</td>
+                                            <td class="px-4 py-3 text-right">18.9M</td>
+                                            <td class="px-4 py-3 text-right">4.7M</td>
+                                            <td class="px-4 py-3 text-right">2.1M</td>
+                                            <td class="px-4 py-3 text-right font-semibold">25.7M</td>
+                                            <td class="px-4 py-3 text-right"><span
+                                                    class="badge-warning px-2 py-1 rounded text-xs">32%</span></td>
+                                        </tr>
+                                        <tr class="bg-gray-100 font-bold">
+                                            <td class="px-4 py-3">TOTAL GROUPE</td>
+                                            <td class="px-4 py-3 text-right">487</td>
+                                            <td class="px-4 py-3 text-right">101.7M</td>
+                                            <td class="px-4 py-3 text-right">25.5M</td>
+                                            <td class="px-4 py-3 text-right">12.8M</td>
+                                            <td class="px-4 py-3 text-right">140.0M</td>
+                                            <td class="px-4 py-3 text-right"><span
+                                                    class="badge-success px-2 py-1 rounded text-xs">28%</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reporting Module -->
+                <section id="reporting-module" class="module-section p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Générateur de Rapports</h3>
+                            <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Société</label>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type de Rapport</label>
                                     <select
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option>Toutes les sociétés</option>
-                                        <option>Ingenium</option>
-                                        <option>EZER Immo</option>
-                                        <option>COMKETING</option>
-                                        <option>YOD Bénin</option>
-                                        <option>EGCC</option>
+                                        <option>Rapport Effectifs</option>
+                                        <option>Rapport Conformité RH</option>
+                                        <option>Rapport Pointage</option>
+                                        <option>Rapport Paie & Masse Salariale</option>
+                                        <option>Rapport Consolidé Mensuel</option>
+                                        <option>Rapport Anomalies & Alertes</option>
                                     </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Société</label>
+                                        <select
+                                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option>Toutes les sociétés</option>
+                                            <option>Ingenium</option>
+                                            <option>EZER Immo</option>
+                                            <option>COMKETING</option>
+                                            <option>YOD Bénin</option>
+                                            <option>EGCC</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Période</label>
+                                        <select
+                                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option>Octobre 2025</option>
+                                            <option>Septembre 2025</option>
+                                            <option>Août 2025</option>
+                                            <option>3ème Trimestre 2025</option>
+                                            <option>Année 2025</option>
+                                            <option>Personnalisée...</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Période</label>
-                                    <select
-                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option>Octobre 2025</option>
-                                        <option>Septembre 2025</option>
-                                        <option>Août 2025</option>
-                                        <option>3ème Trimestre 2025</option>
-                                        <option>Année 2025</option>
-                                        <option>Personnalisée...</option>
-                                    </select>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Format d'Export</label>
+                                    <div class="flex space-x-4">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="format" value="pdf" checked class="mr-2">
+                                            <span class="text-sm">PDF</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="format" value="excel" class="mr-2">
+                                            <span class="text-sm">Excel</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="format" value="csv" class="mr-2">
+                                            <span class="text-sm">CSV</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="pt-4">
+                                    <button
+                                        class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                                        <i class="fas fa-file-export mr-2"></i> Générer le Rapport
+                                    </button>
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Format d'Export</label>
-                                <div class="flex space-x-4">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="format" value="pdf" checked class="mr-2">
-                                        <span class="text-sm">PDF</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="format" value="excel" class="mr-2">
-                                        <span class="text-sm">Excel</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="format" value="csv" class="mr-2">
-                                        <span class="text-sm">CSV</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="pt-4">
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Exports Rapides</h3>
+                            <div class="space-y-3">
                                 <button
-                                    class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-                                    <i class="fas fa-file-export mr-2"></i> Générer le Rapport
+                                    class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-pdf text-red-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold text-sm">Dashboard PDF</p>
+                                            <p class="text-xs text-gray-500">Vue consolidée actuelle</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-download text-gray-400"></i>
+                                </button>
+                                <button
+                                    class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-excel text-green-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold text-sm">Liste Effectifs Excel</p>
+                                            <p class="text-xs text-gray-500">Toutes sociétés</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-download text-gray-400"></i>
+                                </button>
+                                <button
+                                    class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-csv text-blue-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold text-sm">Pointage CSV</p>
+                                            <p class="text-xs text-gray-500">7 derniers jours</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-download text-gray-400"></i>
+                                </button>
+                                <button
+                                    class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-alt text-purple-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold text-sm">Rapport Conformité</p>
+                                            <p class="text-xs text-gray-500">Alertes & anomalies</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-download text-gray-400"></i>
                                 </button>
                             </div>
+                            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                                <h4 class="font-semibold text-sm text-blue-900 mb-2">Rapports Planifiés</h4>
+                                <p class="text-xs text-blue-700 mb-3">Envoi automatique par email</p>
+                                <ul class="text-xs space-y-1 text-blue-800">
+                                    <li><i class="fas fa-check-circle mr-2"></i>Hebdomadaire - Pointage</li>
+                                    <li><i class="fas fa-check-circle mr-2"></i>Mensuel - Paie consolidée</li>
+                                    <li><i class="fas fa-check-circle mr-2"></i>Mensuel - Conformité RH</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Recherche Rapide -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Exports Rapides</h3>
-                        <div class="space-y-3">
-                            <button
-                                class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
-                                <div class="flex items-center">
-                                    <i class="fas fa-file-pdf text-red-600 mr-3 text-xl"></i>
-                                    <div>
-                                        <p class="font-semibold text-sm">Dashboard PDF</p>
-                                        <p class="text-xs text-gray-500">Vue consolidée actuelle</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-download text-gray-400"></i>
-                            </button>
-                            <button
-                                class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
-                                <div class="flex items-center">
-                                    <i class="fas fa-file-excel text-green-600 mr-3 text-xl"></i>
-                                    <div>
-                                        <p class="font-semibold text-sm">Liste Effectifs Excel</p>
-                                        <p class="text-xs text-gray-500">Toutes sociétés</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-download text-gray-400"></i>
-                            </button>
-                            <button
-                                class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
-                                <div class="flex items-center">
-                                    <i class="fas fa-file-csv text-blue-600 mr-3 text-xl"></i>
-                                    <div>
-                                        <p class="font-semibold text-sm">Pointage CSV</p>
-                                        <p class="text-xs text-gray-500">7 derniers jours</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-download text-gray-400"></i>
-                            </button>
-                            <button
-                                class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-left flex items-center justify-between transition">
-                                <div class="flex items-center">
-                                    <i class="fas fa-file-alt text-purple-600 mr-3 text-xl"></i>
-                                    <div>
-                                        <p class="font-semibold text-sm">Rapport Conformité</p>
-                                        <p class="text-xs text-gray-500">Alertes & anomalies</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-download text-gray-400"></i>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recherche Rapide Multi-critères</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <input type="text" placeholder="Nom, prénom..."
+                                class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select
+                                class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Toutes sociétés</option>
+                                <option>Ingenium</option>
+                                <option>EZER Immo</option>
+                                <option>COMKETING</option>
+                                <option>YOD Bénin</option>
+                                <option>EGCC</option>
+                            </select>
+                            <select
+                                class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Tous services</option>
+                                <option>Direction</option>
+                                <option>Commercial</option>
+                                <option>Technique</option>
+                                <option>Administratif</option>
+                                <option>Logistique</option>
+                            </select>
+                            <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-search mr-2"></i> Rechercher
                             </button>
                         </div>
-                        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-                            <h4 class="font-semibold text-sm text-blue-900 mb-2">Rapports Planifiés</h4>
-                            <p class="text-xs text-blue-700 mb-3">Envoi automatique par email</p>
-                            <ul class="text-xs space-y-1 text-blue-800">
-                                <li><i class="fas fa-check-circle mr-2"></i>Hebdomadaire - Pointage</li>
-                                <li><i class="fas fa-check-circle mr-2"></i>Mensuel - Paie consolidée</li>
-                                <li><i class="fas fa-check-circle mr-2"></i>Mensuel - Conformité RH</li>
-                            </ul>
-                        </div>
                     </div>
-                </div>
+                </section>
+            </main>
+        </div>
 
-                <!-- Recherche Rapide -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recherche Rapide Multi-critères</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <input type="text" placeholder="Nom, prénom..."
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <select
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Toutes sociétés</option>
-                            <option>Ingenium</option>
-                            <option>EZER Immo</option>
-                            <option>COMKETING</option>
-                            <option>YOD Bénin</option>
-                            <option>EGCC</option>
-                        </select>
-                        <select
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Tous services</option>
-                            <option>Direction</option>
-                            <option>Commercial</option>
-                            <option>Technique</option>
-                            <option>Administratif</option>
-                            <option>Logistique</option>
-                        </select>
-                        <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-search mr-2"></i> Rechercher
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <script>
-        const companiesData = @json($companiesData);
-        const employeesData = @json($employeesData);
+        <script>
+            const companiesData = @json($companiesData);
+            const employeesData = @json($employeesData);
 
 
-        const anomaliesData = {
-            AN001: {
-                id: 'AN001',
-                type: 'Contractuel',
-                titre: '8 contrats non signés depuis 45 jours',
-                societe: 'EGCC',
-                gravite: 'CRITIQUE',
-                description: 'Huit employés travaillent sans contrat formellement signé depuis plus de 45 jours. Situation non conforme à l\'article 28 du Code du Travail gabonais.',
-                impact: 'Risque juridique majeur : nullité possible des contrats, requalification automatique en CDI, sanctions administratives possibles (amende de 500 000 à 2 000 000 XOF).',
-                recommandation: 'Action immédiate : Convoquer les employés concernés dans les 7 jours pour signature. Établir un process de suivi systématique des signatures de contrats (délai max 15 jours après embauche).',
-                echeance: '20 octobre 2025',
-                statut: 'En cours'
-            },
-            AN002: {
-                id: 'AN002',
-                type: 'Déclarations sociales',
-                titre: 'Retard déclarations CNSS (3 mois)',
-                societe: 'YOD Bénin',
-                gravite: 'CRITIQUE',
-                description: 'Les déclarations mensuelles CNSS n\'ont pas été effectuées pour juillet, août et septembre 2025. Retard cumulé de 3 mois.',
-                impact: 'Sanctions financières : majoration de retard 3% par mois + pénalités fixes. Risque de suspension des prestations pour les salariés. Possibilité de contrôle CNSS avec redressement.',
-                recommandation: 'Urgence : Régulariser immédiatement les 3 mois avec paiement des cotisations + majorations. Mettre en place rappel automatique avant échéance mensuelle.',
-                echeance: 'Immédiat',
-                statut: 'Non traité'
-            },
-            AN003: {
-                id: 'AN003',
-                type: 'Documents réglementaires',
-                titre: '5 documents CNAMGS manquants',
-                societe: 'COMKETING',
-                gravite: 'MAJEUR',
-                description: 'Cinq employés ne disposent pas de leur attestation CNAMGS (couverture maladie obligatoire). Non-conformité avec l\'obligation légale de protection sociale.',
-                impact: 'Infraction à l\'obligation de couverture santé. Responsabilité employeur en cas d\'accident ou maladie. Risque de contentieux prud\'homal.',
-                recommandation: 'Contacter CNAMGS sous 15 jours pour régularisation. Vérifier les cotisations. Établir checklist documents obligatoires à l\'embauche.',
-                echeance: '05 novembre 2025',
-                statut: 'En cours'
-            },
-            AN004: {
-                id: 'AN004',
-                type: 'Conformité Code du Travail',
-                titre: '3 postes sous SMIG légal',
-                societe: 'EZER Immo',
-                gravite: 'MAJEUR',
-                description: 'Trois employés perçoivent une rémunération inférieure au Salaire Minimum Interprofessionnel Garanti (SMIG) actuellement fixé à 150 000 XOF.',
-                impact: 'Violation directe de l\'article 145 du Code du Travail. Risque de redressement URSSAF + dommages et intérêts aux salariés. Sanctions pénales possibles.',
-                recommandation: 'Régularisation immédiate avec rappel de salaire rétroactif sur 12 mois. Audit complet de la grille salariale. Formation RH sur obligations légales.',
-                echeance: '05 novembre 2025',
-                statut: 'En cours'
-            },
-            AN005: {
-                id: 'AN005',
-                type: 'Gestion contractuelle',
-                titre: '12 CDD à renouveler (échéance <30j)',
-                societe: 'Multi-sociétés',
-                gravite: 'MAJEUR',
-                description: 'Douze contrats à durée déterminée arrivent à échéance dans les 30 prochains jours. Risque de rupture de continuité de service si non anticipé.',
-                impact: 'Perturbation opérationnelle. Perte de compétences. Risque de requalification en CDI si renouvellement tardif ou irrégulier (au-delà de 2 renouvellements).',
-                recommandation: 'Lancer processus décision (renouvellement/CDI/fin) sous 7 jours. Respecter délai de prévenance légal de 15 jours avant échéance. Anticiper recrutement si non-renouvellement.',
-                echeance: '28 octobre 2025',
-                statut: 'En cours'
-            },
-            AN006: {
-                id: 'AN006',
-                type: 'Santé au travail',
-                titre: 'Visites médicales périodiques (8 salariés)',
-                societe: 'Ingenium',
-                gravite: 'MINEUR',
-                description: 'Huit employés n\'ont pas effectué leur visite médicale annuelle obligatoire. Retard de 2 à 4 mois selon les cas.',
-                impact: 'Non-respect obligation santé-sécurité au travail. Responsabilité employeur en cas d\'accident. Amende administrative possible.',
-                recommandation: 'Planifier les 8 visites médicales dans les 30 jours. Établir calendrier automatique des visites médicales (suivi annuel). Sensibiliser les managers.',
-                echeance: '15 novembre 2025',
-                statut: 'Planifié'
-            }
-        };
-
-        // Navigation
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-
-                const module = this.dataset.module;
-                document.querySelectorAll('.module-section').forEach(m => m.classList.remove('active'));
-                document.getElementById(module + '-module').classList.add('active');
-
-                const titles = {
-                    dashboard: {
-                        title: 'Tableau de bord principal',
-                        subtitle: 'Vue consolidée BFEV - 5 sociétés'
-                    },
-                    effectifs: {
-                        title: 'Effectifs & Structure',
-                        subtitle: 'Gestion des employés et organisation'
-                    },
-                    contrats: {
-                        title: 'Contrats & Conformité',
-                        subtitle: 'Suivi légal et réglementaire'
-                    },
-                    pointage: {
-                        title: 'Pointage & Temps de travail',
-                        subtitle: 'Présences et assiduité'
-                    },
-                    paie: {
-                        title: 'Paie & Masse salariale',
-                        subtitle: 'Analyse financière RH'
-                    },
-                    reporting: {
-                        title: 'Reporting & Export',
-                        subtitle: 'Rapports et exports de données'
-                    }
-                };
-
-                document.getElementById('module-title').textContent = titles[module].title;
-                document.getElementById('module-subtitle').textContent = titles[module].subtitle;
-            });
-        });
-
-
-        const compList = Array.isArray(companiesData) ? companiesData : Object.values(companiesData);
-
-        // Extractions dynamiques
-        const labels = compList.map(c => c.name ?? '—');
-        const data = compList.map(c => Number(c.effectif ?? 0));
-        const colors = compList.map(c => c.color ?? '#6c757d');
-
-        const el = document.getElementById('effectifChart');
-        if (el) {
-            const ctx = el.getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels,
-                    datasets: [{
-                        data,
-                        backgroundColor: colors
-                    }]
+            const anomaliesData = {
+                AN001: {
+                    id: 'AN001',
+                    type: 'Contractuel',
+                    titre: '8 contrats non signés depuis 45 jours',
+                    societe: 'EGCC',
+                    gravite: 'CRITIQUE',
+                    description: 'Huit employés travaillent sans contrat formellement signé depuis plus de 45 jours. Situation non conforme à l\'article 28 du Code du Travail gabonais.',
+                    impact: 'Risque juridique majeur : nullité possible des contrats, requalification automatique en CDI, sanctions administratives possibles (amende de 500 000 à 2 000 000 XOF).',
+                    recommandation: 'Action immédiate : Convoquer les employés concernés dans les 7 jours pour signature. Établir un process de suivi systématique des signatures de contrats (délai max 15 jours après embauche).',
+                    echeance: '20 octobre 2025',
+                    statut: 'En cours'
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: (ti) => `${labels[ti.dataIndex]}: ${data[ti.dataIndex]}`
-                            }
-                        }
-                    },
-                    cutout: '55%' // donut un peu plus fin (optionnel)
-                }
-            });
-        }
-
-        // Masse Salariale Chart
-        const masseSalarialeCtx = document.getElementById('masseSalarialeChart').getContext('2d');
-        new Chart(masseSalarialeCtx, {
-            type: 'line',
-            data: {
-                labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre'],
-                datasets: [{
-                    label: 'Masse Salariale (M XOF)',
-                    data: [118, 121, 123, 125, 126, 127],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                AN002: {
+                    id: 'AN002',
+                    type: 'Déclarations sociales',
+                    titre: 'Retard déclarations CNSS (3 mois)',
+                    societe: 'YOD Bénin',
+                    gravite: 'CRITIQUE',
+                    description: 'Les déclarations mensuelles CNSS n\'ont pas été effectuées pour juillet, août et septembre 2025. Retard cumulé de 3 mois.',
+                    impact: 'Sanctions financières : majoration de retard 3% par mois + pénalités fixes. Risque de suspension des prestations pour les salariés. Possibilité de contrôle CNSS avec redressement.',
+                    recommandation: 'Urgence : Régulariser immédiatement les 3 mois avec paiement des cotisations + majorations. Mettre en place rappel automatique avant échéance mensuelle.',
+                    echeance: 'Immédiat',
+                    statut: 'Non traité'
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false
-                    }
+                AN003: {
+                    id: 'AN003',
+                    type: 'Documents réglementaires',
+                    titre: '5 documents CNAMGS manquants',
+                    societe: 'COMKETING',
+                    gravite: 'MAJEUR',
+                    description: 'Cinq employés ne disposent pas de leur attestation CNAMGS (couverture maladie obligatoire). Non-conformité avec l\'obligation légale de protection sociale.',
+                    impact: 'Infraction à l\'obligation de couverture santé. Responsabilité employeur en cas d\'accident ou maladie. Risque de contentieux prud\'homal.',
+                    recommandation: 'Contacter CNAMGS sous 15 jours pour régularisation. Vérifier les cotisations. Établir checklist documents obligatoires à l\'embauche.',
+                    echeance: '05 novembre 2025',
+                    statut: 'En cours'
+                },
+                AN004: {
+                    id: 'AN004',
+                    type: 'Conformité Code du Travail',
+                    titre: '3 postes sous SMIG légal',
+                    societe: 'EZER Immo',
+                    gravite: 'MAJEUR',
+                    description: 'Trois employés perçoivent une rémunération inférieure au Salaire Minimum Interprofessionnel Garanti (SMIG) actuellement fixé à 150 000 XOF.',
+                    impact: 'Violation directe de l\'article 145 du Code du Travail. Risque de redressement URSSAF + dommages et intérêts aux salariés. Sanctions pénales possibles.',
+                    recommandation: 'Régularisation immédiate avec rappel de salaire rétroactif sur 12 mois. Audit complet de la grille salariale. Formation RH sur obligations légales.',
+                    echeance: '05 novembre 2025',
+                    statut: 'En cours'
+                },
+                AN005: {
+                    id: 'AN005',
+                    type: 'Gestion contractuelle',
+                    titre: '12 CDD à renouveler (échéance <30j)',
+                    societe: 'Multi-sociétés',
+                    gravite: 'MAJEUR',
+                    description: 'Douze contrats à durée déterminée arrivent à échéance dans les 30 prochains jours. Risque de rupture de continuité de service si non anticipé.',
+                    impact: 'Perturbation opérationnelle. Perte de compétences. Risque de requalification en CDI si renouvellement tardif ou irrégulier (au-delà de 2 renouvellements).',
+                    recommandation: 'Lancer processus décision (renouvellement/CDI/fin) sous 7 jours. Respecter délai de prévenance légal de 15 jours avant échéance. Anticiper recrutement si non-renouvellement.',
+                    echeance: '28 octobre 2025',
+                    statut: 'En cours'
+                },
+                AN006: {
+                    id: 'AN006',
+                    type: 'Santé au travail',
+                    titre: 'Visites médicales périodiques (8 salariés)',
+                    societe: 'Ingenium',
+                    gravite: 'MINEUR',
+                    description: 'Huit employés n\'ont pas effectué leur visite médicale annuelle obligatoire. Retard de 2 à 4 mois selon les cas.',
+                    impact: 'Non-respect obligation santé-sécurité au travail. Responsabilité employeur en cas d\'accident. Amende administrative possible.',
+                    recommandation: 'Planifier les 8 visites médicales dans les 30 jours. Établir calendrier automatique des visites médicales (suivi annuel). Sensibiliser les managers.',
+                    echeance: '15 novembre 2025',
+                    statut: 'Planifié'
                 }
-            }
-        });
+            };
 
-        // Conformity Gauge
-        const conformityOptions = {
-            series: [78],
-            chart: {
-                type: 'radialBar',
-                height: 200
-            },
-            plotOptions: {
-                radialBar: {
-                    hollow: {
-                        size: '60%'
-                    },
-                    dataLabels: {
-                        name: {
-                            show: false
+            // Navigation
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const module = this.dataset.module;
+                    document.querySelectorAll('.module-section').forEach(m => m.classList.remove('active'));
+                    document.getElementById(module + '-module').classList.add('active');
+
+                    const titles = {
+                        dashboard: {
+                            title: 'Tableau de bord principal',
+                            subtitle: 'Vue consolidée BFEV - 5 sociétés'
                         },
-                        value: {
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            formatter: function(val) {
-                                return val + '%';
-                            }
+                        effectifs: {
+                            title: 'Effectifs & Structure',
+                            subtitle: 'Gestion des employés et organisation'
+                        },
+                        contrats: {
+                            title: 'Contrats & Conformité',
+                            subtitle: 'Suivi légal et réglementaire'
+                        },
+                        pointage: {
+                            title: 'Pointage & Temps de travail',
+                            subtitle: 'Présences et assiduité'
+                        },
+                        paie: {
+                            title: 'Paie & Masse salariale',
+                            subtitle: 'Analyse financière RH'
+                        },
+                        reporting: {
+                            title: 'Reporting & Export',
+                            subtitle: 'Rapports et exports de données'
                         }
+                    };
+
+                    document.getElementById('module-title').textContent = titles[module].title;
+                    document.getElementById('module-subtitle').textContent = titles[module].subtitle;
+                });
+            });
+
+
+            const compList = Array.isArray(companiesData) ? companiesData : Object.values(companiesData);
+
+            // Extractions dynamiques
+            const labels = compList.map(c => c.name ?? '—');
+            const data = compList.map(c => Number(c.effectif ?? 0));
+            const colors = compList.map(c => c.color ?? '#6c757d');
+
+            const el = document.getElementById('effectifChart');
+            if (el) {
+                const ctx = el.getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data,
+                            backgroundColor: colors
+                        }]
                     },
-                    track: {
-                        background: '#f3f4f6'
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ti) => `${labels[ti.dataIndex]}: ${data[ti.dataIndex]}`
+                                }
+                            }
+                        },
+                        cutout: '55%' // donut un peu plus fin (optionnel)
                     }
-                }
-            },
-            colors: ['#f59e0b'],
-            labels: ['Conformité']
-        };
-        const conformityChart = new ApexCharts(document.querySelector("#conformityGauge"), conformityOptions);
-        conformityChart.render();
+                });
+            }
 
-        // Données déjà “propres” (pas de fonctions PHP ici)
-        const ageLabels = @json($ageLabels);
-        const ageData = @json($ageData);
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const el = document.getElementById('pyramideAgesChart');
-            if (!el) return;
-            const ctx = el.getContext('2d');
-
-            new Chart(ctx, {
-                type: 'bar',
+            // Masse Salariale Chart
+            const masseSalarialeCtx = document.getElementById('masseSalarialeChart').getContext('2d');
+            new Chart(masseSalarialeCtx, {
+                type: 'line',
                 data: {
-                    labels: ageLabels,
+                    labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre'],
                     datasets: [{
-                        label: 'Effectif',
-                        data: ageData,
-                        backgroundColor: '#05436b' // doux, pas trop vif
+                        label: 'Masse Salariale (M XOF)',
+                        data: [118, 121, 123, 125, 126, 127],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
                     }]
                 },
                 options: {
@@ -1420,151 +1350,233 @@
                     },
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
+                            beginAtZero: false
                         }
                     }
                 }
             });
-        });
 
-        // Radar Conformité
-        const radarOptions = {
-            series: [{
-                name: 'Ingenium',
-                data: [88, 78, 85, 90, 82]
-            }, {
-                name: 'EZER Immo',
-                data: [79, 65, 72, 78, 74]
-            }, {
-                name: 'COMKETING',
-                data: [84, 68, 75, 82, 76]
-            }, {
-                name: 'YOD Bénin',
-                data: [71, 58, 52, 68, 62]
-            }, {
-                name: 'EGCC',
-                data: [65, 72, 63, 71, 68]
-            }],
-            chart: {
-                type: 'radar',
-                height: 300
-            },
-            xaxis: {
-                categories: ['Contrats', 'Docs Légaux', 'Décl. Sociales', 'Code Travail', 'Global']
-            },
-            colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
-        };
-        const radarChart = new ApexCharts(document.querySelector("#conformityRadarChart"), radarOptions);
-        radarChart.render();
-
-        // Assiduité Chart
-        const assiduitéCtx = document.getElementById('assiduitéChart').getContext('2d');
-        new Chart(assiduitéCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Présent', 'Retard', 'Absent'],
-                datasets: [{
-                    data: [94.2, 3.5, 2.3],
-                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+            // Conformity Gauge
+            const conformityOptions = {
+                series: [78],
+                chart: {
+                    type: 'radialBar',
+                    height: 200
+                },
+                plotOptions: {
+                    radialBar: {
+                        hollow: {
+                            size: '60%'
+                        },
+                        dataLabels: {
+                            name: {
+                                show: false
+                            },
+                            value: {
+                                fontSize: '24px',
+                                fontWeight: 'bold',
+                                formatter: function(val) {
+                                    return val + '%';
+                                }
+                            }
+                        },
+                        track: {
+                            background: '#f3f4f6'
+                        }
                     }
-                }
-            }
-        });
+                },
+                colors: ['#f59e0b'],
+                labels: ['Conformité']
+            };
+            const conformityChart = new ApexCharts(document.querySelector("#conformityGauge"), conformityOptions);
+            conformityChart.render();
 
-        // Évolution Paie Chart
-        const evolutionPaieCtx = document.getElementById('evolutionPaieChart').getContext('2d');
-        new Chart(evolutionPaieCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Sept', 'Oct'],
-                datasets: [{
-                    label: 'Salaire Brut',
-                    data: [95, 97, 98, 100, 101, 102],
-                    backgroundColor: '#667eea'
-                }, {
-                    label: 'Charges Patronales',
-                    data: [24, 24, 25, 25, 25, 26],
-                    backgroundColor: '#764ba2'
-                }, {
-                    label: 'Primes',
-                    data: [11, 11, 12, 12, 13, 13],
-                    backgroundColor: '#f093fb'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        stacked: true
+            // Données déjà “propres” (pas de fonctions PHP ici)
+            const ageLabels = @json($ageLabels);
+            const ageData = @json($ageData);
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const el = document.getElementById('pyramideAgesChart');
+                if (!el) return;
+                const ctx = el.getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ageLabels,
+                        datasets: [{
+                            label: 'Effectif',
+                            data: ageData,
+                            backgroundColor: '#05436b' // doux, pas trop vif
+                        }]
                     },
-                    y: {
-                        stacked: true,
-                        beginAtZero: true
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Radar Conformité
+            const radarOptions = {
+                series: [{
+                    name: 'Ingenium',
+                    data: [88, 78, 85, 90, 82]
+                }, {
+                    name: 'EZER Immo',
+                    data: [79, 65, 72, 78, 74]
+                }, {
+                    name: 'COMKETING',
+                    data: [84, 68, 75, 82, 76]
+                }, {
+                    name: 'YOD Bénin',
+                    data: [71, 58, 52, 68, 62]
+                }, {
+                    name: 'EGCC',
+                    data: [65, 72, 63, 71, 68]
+                }],
+                chart: {
+                    type: 'radar',
+                    height: 300
+                },
+                xaxis: {
+                    categories: ['Contrats', 'Docs Légaux', 'Décl. Sociales', 'Code Travail', 'Global']
+                },
+                colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
+            };
+            const radarChart = new ApexCharts(document.querySelector("#conformityRadarChart"), radarOptions);
+            radarChart.render();
+
+            // Assiduité Chart
+            (function() {
+                const el = document.getElementById('assiduitéChart');
+                if (!el || !window.Chart) return;
+
+                const donut = @json($assiduiteDonut); // { labels: [...], data: [...] }
+
+                new Chart(el.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: donut.labels,
+                        datasets: [{
+                            data: donut.data,
+                            // couleurs douces (pas trop vives)
+                            backgroundColor: ['#6FA19A', '#B69A73', '#BF6B6B']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ctx) => `${ctx.label}: ${ctx.parsed}%`
+                                }
+                            }
+                        },
+                        cutout: '55%'
+                    }
+                });
+            })();
+
+            // Évolution Paie Chart
+            const evolutionPaieCtx = document.getElementById('evolutionPaieChart').getContext('2d');
+            new Chart(evolutionPaieCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Sept', 'Oct'],
+                    datasets: [{
+                        label: 'Salaire Brut',
+                        data: [95, 97, 98, 100, 101, 102],
+                        backgroundColor: '#667eea'
+                    }, {
+                        label: 'Charges Patronales',
+                        data: [24, 24, 25, 25, 25, 26],
+                        backgroundColor: '#764ba2'
+                    }, {
+                        label: 'Primes',
+                        data: [11, 11, 12, 12, 13, 13],
+                        backgroundColor: '#f093fb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Radar Paie
-        const radarPaieCtx = document.getElementById('radarPaieChart').getContext('2d');
-        new Chart(radarPaieCtx, {
-            type: 'radar',
-            data: {
-                labels: ['Ingenium', 'EZER Immo', 'COMKETING', 'YOD Bénin', 'EGCC'],
-                datasets: [{
-                    label: 'Masse Salariale (M XOF)',
-                    data: [44.8, 25.7, 33.9, 16.7, 18.9],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.2)'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    r: {
-                        beginAtZero: true
+            // Radar Paie
+            const radarPaieCtx = document.getElementById('radarPaieChart').getContext('2d');
+            new Chart(radarPaieCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Ingenium', 'EZER Immo', 'COMKETING', 'YOD Bénin', 'EGCC'],
+                    datasets: [{
+                        label: 'Masse Salariale (M XOF)',
+                        data: [44.8, 25.7, 33.9, 16.7, 18.9],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Répartition Paie
-        const repartitionPaieCtx = document.getElementById('repartitionPaieChart').getContext('2d');
-        new Chart(repartitionPaieCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Salaire Brut', 'Charges Patronales', 'Primes'],
-                datasets: [{
-                    data: [101.7, 25.5, 12.8],
-                    backgroundColor: ['#667eea', '#764ba2', '#f093fb']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+            // Répartition Paie
+            const repartitionPaieCtx = document.getElementById('repartitionPaieChart').getContext('2d');
+            new Chart(repartitionPaieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Salaire Brut', 'Charges Patronales', 'Primes'],
+                    datasets: [{
+                        data: [101.7, 25.5, 12.8],
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Employees Table
-        function renderEmployeesTable(employees = employeesData) {
-            const tbody = document.getElementById('employees-tbody');
-            tbody.innerHTML = '';
-            employees.forEach((emp, index) => {
-                const row = `
+            // Employees Table
+            function renderEmployeesTable(employees = employeesData) {
+                const tbody = document.getElementById('employees-tbody');
+                tbody.innerHTML = '';
+                employees.forEach((emp, index) => {
+                    const row = `
                     <tr class="employee-card" onclick="showEmployeeDetail(${index})">
                         <td class="px-4 py-3 font-semibold">${emp.name}</td>
                         <td class="px-4 py-3">${emp.company}</td>
@@ -1574,16 +1586,16 @@
                         <td class="px-4 py-3"><span class="badge-${emp.statut === 'CDI' ? 'success' : 'warning'} px-3 py-1 rounded-full text-xs">${emp.statut}</span></td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
-            });
-        }
+                    tbody.innerHTML += row;
+                });
+            }
 
-        function showEmployeeDetail(index) {
-            const emp = employeesData[index];
-            const modal = document.getElementById('employee-modal');
-            const details = document.getElementById('employee-details');
+            function showEmployeeDetail(index) {
+                const emp = employeesData[index];
+                const modal = document.getElementById('employee-modal');
+                const details = document.getElementById('employee-details');
 
-            details.innerHTML = `
+                details.innerHTML = `
                 <div class="flex items-center space-x-4 mb-6 pb-6 border-b">
                     <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                         ${emp.name.split(' ').map(n => n[0]).join('')}
@@ -1619,39 +1631,39 @@
                 </div>
             `;
 
-            modal.classList.remove('hidden');
-        }
+                modal.classList.remove('hidden');
+            }
 
-        function closeEmployeeModal() {
-            document.getElementById('employee-modal').classList.add('hidden');
-        }
+            function closeEmployeeModal() {
+                document.getElementById('employee-modal').classList.add('hidden');
+            }
 
-        // Employee Search
-        document.getElementById('employee-search').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            const filtered = employeesData.filter(emp =>
-                emp.name.toLowerCase().includes(query) ||
-                emp.company.toLowerCase().includes(query) ||
-                emp.poste.toLowerCase().includes(query)
-            );
-            renderEmployeesTable(filtered);
-        });
+            // Employee Search
+            document.getElementById('employee-search').addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const filtered = employeesData.filter(emp =>
+                    emp.name.toLowerCase().includes(query) ||
+                    emp.company.toLowerCase().includes(query) ||
+                    emp.poste.toLowerCase().includes(query)
+                );
+                renderEmployeesTable(filtered);
+            });
 
-        // Anomaly Detail
-        function showAnomalyDetail(id) {
-            const anomaly = anomaliesData[id];
-            if (!anomaly) return;
+            // Anomaly Detail
+            function showAnomalyDetail(id) {
+                const anomaly = anomaliesData[id];
+                if (!anomaly) return;
 
-            const modal = document.getElementById('anomaly-modal');
-            const details = document.getElementById('anomaly-details');
+                const modal = document.getElementById('anomaly-modal');
+                const details = document.getElementById('anomaly-details');
 
-            const graviteClass = {
-                'CRITIQUE': 'badge-danger',
-                'MAJEUR': 'badge-warning',
-                'MINEUR': 'badge-info'
-            } [anomaly.gravite];
+                const graviteClass = {
+                    'CRITIQUE': 'badge-danger',
+                    'MAJEUR': 'badge-warning',
+                    'MINEUR': 'badge-info'
+                } [anomaly.gravite];
 
-            details.innerHTML = `
+                details.innerHTML = `
                 <div class="mb-6 pb-6 border-b">
                     <div class="flex items-start justify-between mb-4">
                         <div>
@@ -1709,18 +1721,18 @@
                 </div>
             `;
 
-            modal.classList.remove('hidden');
-        }
+                modal.classList.remove('hidden');
+            }
 
-        function closeAnomalyModal() {
-            document.getElementById('anomaly-modal').classList.add('hidden');
-        }
+            function closeAnomalyModal() {
+                document.getElementById('anomaly-modal').classList.add('hidden');
+            }
 
-        // Initialize
-        renderEmployeesTable();
+            // Initialize
+            renderEmployeesTable();
 
-        console.log('RH & Paie Consolidé BFEV - Maquette chargée avec succès');
-    </script>
-</body>
+            console.log('RH & Paie Consolidé BFEV - Maquette chargée avec succès');
+        </script>
+    </body>
 
-</html>
+    </html>

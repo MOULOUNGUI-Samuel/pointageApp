@@ -183,7 +183,7 @@ class ConsoliderController extends Controller
             'entreprise:id,nom_entreprise,heure_ouverture,minute_pointage_limite'
         ])
             ->select(['id', 'nom', 'prenom', 'service_id', 'entreprise_id', 'fonction', 'type_contrat', 'date_naissance'])
-            ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
+            // ->when($entreprise_id, fn($q) => $q->where('entreprise_id', $entreprise_id))
             ->where('statu_user', 1)
             ->where('statut', 1)
             ->orderBy('nom')->orderBy('prenom')
@@ -315,6 +315,45 @@ class ConsoliderController extends Controller
             ];
         }
 
+        $donutPresent = 0;   // présents à l'heure
+        $donutLate    = 0;   // retards
+        $donutAbsent  = 0;   // absences
+        $donutWorkdays = 0;  // total jours-ouvres * nb employés (pour %)
+
+        foreach ($presenceRows as $row) {
+            foreach ($row['statuses'] as $idx => $st) {
+                // $days[$idx] existe dans le contrôleur précédent et dit si weekend
+                if (!empty($days[$idx]['is_weekend']) && $days[$idx]['is_weekend'] === true) {
+                    continue; // on ignore samedi/dimanche
+                }
+                $donutWorkdays++;
+
+                if ($st === 'present') {
+                    $donutPresent++;
+                } elseif ($st === 'late') {
+                    $donutLate++;
+                } elseif ($st === 'absent') {
+                    $donutAbsent++;
+                }
+                // 'weekend' ne passe jamais ici (déjà filtré)
+            }
+        }
+
+        // Pourcentages (1 décimale). Sécurité si 0.
+        if ($donutWorkdays > 0) {
+            $pctPresent = round(100 * $donutPresent / $donutWorkdays, 1);
+            $pctLate    = round(100 * $donutLate    / $donutWorkdays, 1);
+            $pctAbsent  = round(100 * $donutAbsent  / $donutWorkdays, 1);
+        } else {
+            $pctPresent = $pctLate = $pctAbsent = 0.0;
+        }
+
+        // Paquet prêt pour la vue
+        $assiduiteDonut = [
+            'labels' => ['Présent', 'Retard', 'Absent'],
+            'data'   => [$pctPresent, $pctLate, $pctAbsent],
+        ];
+
         // Libellé de portée (utile en UI)
         $scopeLabel = $entrepriseCible ? $entrepriseCible->nom_entreprise : 'Toutes les entreprises';
 
@@ -331,9 +370,9 @@ class ConsoliderController extends Controller
             'presenceRows'     => $presenceRows,
             'assiduiteLabels'  => $assiduiteLabels,
             'assiduiteRates'   => $assiduiteRates,
+            'assiduiteDonut' => $assiduiteDonut,
             'heatmap'          => $heatmap,
             'heatMax'          => $heatMax,
-
         ]);
     }
 
