@@ -334,7 +334,7 @@
                                                 role="tab" aria-controls="pills-{{ $entreprise->id }}"
                                                 aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
                                                 <div class="text-center card-hover-zoom">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadowlogo shadow"
                                                         style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
                                                         <img src="{{ asset('storage/' . $entreprise->logo) }}"
                                                             alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
@@ -435,7 +435,7 @@
                             }
 
 
-                            .nav-pills .nav-link.active .shadow-sm {
+                            .nav-pills .nav-link.active .shadowlogo {
                                 box-shadow: 0 4px 15px rgba(40, 40, 41, 0.4);
                                 transform: scale(1.2);
 
