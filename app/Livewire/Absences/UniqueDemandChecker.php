@@ -53,30 +53,30 @@ class UniqueDemandChecker extends Component
     public bool $hasConflict = false;
     public array $conflicts = [];
 
-   public ?string $code_demande = null;
+    public ?string $code_demande = null;
 
-private function generateUniqueCode(): string
-{
-    $societe = session('entreprise_nom') ?? 'ENT';
-    $prefix = collect(explode(' ', $societe))
-        ->filter()
-        ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
-        ->implode('');
+    private function generateUniqueCode(): string
+    {
+        $societe = session('entreprise_nom') ?? 'ENT';
+        $prefix = collect(explode(' ', $societe))
+            ->filter()
+            ->map(fn($w) => strtoupper(mb_substr($w, 0, 1)))
+            ->implode('');
 
-    do {
-        $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
-    } while (Absence::where('code_demande', $code)->exists());
+        do {
+            $code = sprintf('%s-%s-%s', $prefix ?: 'ENT', Str::upper(Str::random(3)), now()->format('His'));
+        } while (Absence::where('code_demande', $code)->exists());
 
-    return $code;
-}
+        return $code;
+    }
 
-public function mount(string $forUserId, string $modalId): void
-{
-    $this->forUserId = $forUserId;
-    $this->modalId   = $modalId;
-    $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
-}
-
+    public function mount(string $forUserId, string $modalId): void
+    {
+        $this->forUserId = $forUserId;
+        $this->modalId   = $modalId;
+        $this->code_demande = $this->generateUniqueCode(); // code prêt par défaut
+    }
+    
     // Pagination indépendante par user
     public function getPageName(): string
     {
@@ -88,10 +88,12 @@ public function mount(string $forUserId, string $modalId): void
         return [
             'type'           => 'required',
             'start_datetime' => 'required|date',
-             'code_demande'   => [
-            'required', 'string', 'max:40',
-            Rule::unique('absences', 'code_demande')->ignore($this->selectedId),
-        ],
+            'code_demande'   => [
+                'required',
+                'string',
+                'max:40',
+                Rule::unique('absences', 'code_demande')->ignore($this->selectedId),
+            ],
             'end_datetime'   => 'required|date|after:start_datetime',
             'reason'         => 'nullable|string|max:5000',
             'attachment'     => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
@@ -232,7 +234,7 @@ public function mount(string $forUserId, string $modalId): void
         // Validation (retard => description requise; pièce jointe facultative)
         $this->validate([
             'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
-            'return_confirmed_at'=> 'required|date',
+            'return_confirmed_at' => 'required|date',
             'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
@@ -274,9 +276,9 @@ public function mount(string $forUserId, string $modalId): void
             $this->start_datetime = optional($a->start_datetime)->format('Y-m-d\TH:i');
             $this->end_datetime   = optional($a->end_datetime)->format('Y-m-d\TH:i');
             $this->reason = $a->reason;
-          } else {
-        $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
-    }
+        } else {
+            $this->code_demande = $this->generateUniqueCode(); // nouvelle demande
+        }
     }
 
     public function save(): void

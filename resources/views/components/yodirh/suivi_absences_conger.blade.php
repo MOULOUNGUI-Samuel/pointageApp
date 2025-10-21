@@ -223,6 +223,15 @@
                                         </button>
                                     </div> --}}
                                     <div class="dropdown me-2 mt-1">
+                                        <a id="btn-Classement" target="_blank"
+                                            href="{{ route('classement.ponctualite', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            data-template="{{ route('classement.ponctualite', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
+                                            class="btn btn-outline-primary" style="margin-bottom: 5px;">
+                                            <i class="ti ti-list text-primary me-2" style="font-size: 20px"></i>
+                                            Classement de Ponctualité
+                                        </a>
+                                    </div>
+                                    <div class="dropdown me-2 mt-1">
                                         <a id="btn-pdf" target="_blank"
                                             href="{{ route('pointages.pdf.stream', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
                                             data-template="{{ route('pointages.pdf.stream', ['date_start' => '__START__', 'date_end' => '__END__']) }}"
@@ -241,6 +250,43 @@
                                         </a>
                                     </div> --}}
                                 </div>
+                                <script>
+                                    (function() {
+                                        const inputStart = document.getElementById('filtre-date');
+                                        const inputEnd = document.getElementById('filtre-date1');
+                                        const btn = document.getElementById('btn-Classement');
+
+                                        // URL modèle générée par Laravel avec placeholders
+                                        const template = btn.dataset.template; // ex: /liste-presence-imprime/__START__/__END__
+
+                                        function buildUrl() {
+                                            return template
+                                                .replace('__START__', encodeURIComponent(inputStart.value))
+                                                .replace('__END__', encodeURIComponent(inputEnd.value));
+                                        }
+
+                                        function hasBothDates() {
+                                            return Boolean(inputStart.value && inputEnd.value);
+                                        }
+
+                                        // Met à jour le href quand les dates changent (pratique pour survol/ouvrir dans nouvel onglet)
+                                        [inputStart, inputEnd].forEach(el => {
+                                            el.addEventListener('change', () => {
+                                                if (hasBothDates()) btn.href = buildUrl();
+                                            });
+                                        });
+
+                                        // S’assure que le href est correct au clic + petite validation
+                                        btn.addEventListener('click', function(e) {
+                                            if (!hasBothDates()) {
+                                                e.preventDefault();
+                                                alert('Veuillez sélectionner une date de début et une date de fin.');
+                                                return;
+                                            }
+                                            this.href = buildUrl();
+                                        });
+                                    })();
+                                </script>
                                 <script>
                                     (function() {
                                         const inputStart = document.getElementById('filtre-date');

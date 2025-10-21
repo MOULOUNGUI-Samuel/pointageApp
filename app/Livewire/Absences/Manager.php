@@ -270,20 +270,26 @@ class Manager extends Component
             return;
         }
 
-        $onTime = now()->lte($a->end_datetime); // ✅ auto “à l’heure” vs “en retard”
+        $onTime = now()->lte($a->end_datetime); // ✅ auto "à l'heure" vs "en retard"
 
+        // ✅ Validation adaptée selon le statut
         $this->validate([
-            'returnNotes'      => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
-            'return_confirmed_at' => 'required|date',
-            'returnAttachment' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
+            'returnNotes'         => $onTime ? 'nullable|string|max:5000' : 'required|string|min:5|max:5000',
+            'return_confirmed_at' => $onTime ? 'required|date' : 'nullable|date', // ✅ Facultatif si en retard
+            'returnAttachment'    => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
         ], [], ['returnNotes' => 'description (retour)']);
 
         $returnPath = $this->returnAttachment
             ? $this->returnAttachment->store('absences/returns', 'public')
             : null;
 
+        // ✅ Utiliser la date actuelle si en retard (pas de champ saisi)
+        $returnConfirmedAt = $onTime
+            ? $this->return_confirmed_at
+            : ($this->return_confirmed_at ?: now());
+
         $a->update([
-            'return_confirmed_at'    => $this->return_confirmed_at,
+            'return_confirmed_at'    => $returnConfirmedAt,
             'returned_on_time'       => $onTime,
             'return_notes'           => $this->returnNotes,
             'return_attachment_path' => $returnPath,
@@ -291,7 +297,8 @@ class Manager extends Component
 
         $this->cancelReturn();
         session()->flash('success', "Retour confirmé.");
-        $this->dispatch('absencesUpdated'); // Livewire v3 
+        $this->dispatch('absencesUpdated'); // Livewire v3
+
         $this->resetPage();
     }
 
@@ -501,7 +508,7 @@ class Manager extends Component
         $a = $this->findInCompany($id);
         if (in_array($a->status, ['brouillon', 'rejeté'])) {
             $a->update(['status' => 'soumis']);
-            
+
             session()->flash('success', 'Demande soumise.');
             $this->dispatch('absencesUpdated'); // Livewire v3
             $this->resetPage();

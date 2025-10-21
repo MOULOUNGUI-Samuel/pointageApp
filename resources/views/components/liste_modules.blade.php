@@ -171,115 +171,11 @@
                     <!-- /Profile Dropdown -->
                 </ul>
             </div>
-
-            <!-- Mobile Menu -->
-            <div class="dropdown mobile-user-menu">
-                <a href="javascript:void(0);" class="btn btn-header-list" data-bs-toggle="dropdown">
-                    <i class="ti ti-layout-grid-add" style="font-size: 30px"></i>
-                </a>
-                <div class="dropdown-menu p-3"
-                    style="width: 280px; max-height: 80vh; overflow-y: auto; border-radius: 12px;border: 3px solid #05426b60;">
-                    @php
-                        $mesModules = \App\Helpers\DateHelper::dossier_info();
-                    @endphp
-
-                    <div class="row row-cols-3 g-1">
-                        @foreach ($mesModules['modules'] as $module)
-                            <div class="col text-center  card-hover-zoom">
-                                @if ($module->lien_externe)
-                                    <a href="{{ $module->lien_externe }}"
-                                        onclick="event.preventDefault(); document.getElementById('{{ $module->id }}').submit();"
-                                        class="text-decoration-none text-dark d-block">
-                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                            style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                            <img src="{{ asset('storage/' . $module->logo) }}"
-                                                alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                        </div>
-                                        <small class="fw-medium d-block text-truncate"
-                                            title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                    </a>
-
-                                    <form id="{{ $module->id }}" action="{{ $module->lien_externe }}"
-                                        method="POST" style="display: none;">
-                                        @csrf
-                                        <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                    </form>
-                                @else
-                                    @if ($module->nom_module === 'Caisses')
-                                        {{-- <a type="button" data-bs-toggle="offcanvas"
-                                            data-bs-target="#offcanvasWithBackdrop2"
-                                            aria-controls="offcanvasWithBackdrop2"
-                                            class="text-decoration-none text-dark d-block">
-                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                    alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                            </div>
-                                            <small class="fw-medium d-block text-truncate"
-                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                        </a> --}}
-                                    @else
-                                        <a href="{{ route('dashboard', $module->id) }}"
-                                            class="text-decoration-none text-dark d-block">
-                                            <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
-                                                style="width: 60px;height: 50px; transition: transform 0.3s;border-radius: 5px;">
-                                                <img src="{{ asset('storage/' . $module->logo) }}"
-                                                    alt="{{ $module->nom_module }}" class="img-fluid rounded"
-                                                    style="width: 50px;height: 40px; object-fit: contain;border-radius: 5px;">
-                                            </div>
-                                            <small class="fw-medium d-block text-truncate"
-                                                title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
-                                        </a>
-                                    @endif
-                                @endif
-
-                            </div>
-                        @endforeach
-
-                        <style>
-                            .card-hover-zoom {
-                                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                            }
-
-                            .card-hover-zoom:hover {
-                                transform: scale(1.15);
-                                z-index: 2;
-                            }
-                        </style>
-                    </div>
-                </div>
-            </div>
+            @php
+                $mesModules = \App\Helpers\DateHelper::dossier_info();
+            @endphp
 
 
-            <!-- /Mobile Menu -->
-            {{-- <!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
-                <div class="sidebar-inner slimscroll">
-                    <div id="sidebar-menu" class="sidebar-menu">
-                        <ul>
-                            <li class="clinicdropdown">
-                                <a href="profile.html">
-                                    <img src="assets/img/profiles/avatar-14.jpg" class="img-fluid" alt="Profile" />
-                                    <div class="user-names">
-                                        <h5>Adrian Davies</h5>
-                                        <h6>Tech Lead</h6>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul>
-                            <li>
-                                <h6 class="submenu-hdr"> ESPACE UTILITAIRES
-                                </h6>
-
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!-- /Sidebar --> --}}
         </div>
 
         <div class="notes-page-wrapper">
@@ -374,9 +270,133 @@
                         </div>
                     </div>
 
+                    @php
+                        $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
+                    @endphp
+                    <div class="col-xl-6 my-5">
+                        <div class="card-body">
+                            <ul class="nav nav-pills d-flex mb-3" id="pills-tab" role="tablist">
+                                @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
+                                    <li class="nav-item flex-fill" role="presentation">
+                                        <button
+                                            class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }}"
+                                            id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-{{ $entreprise->id }}" type="button"
+                                            role="tab" aria-controls="pills-{{ $entreprise->id }}"
+                                            aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                            <div class="text-center card-hover-zoom">
+                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
+                                                    style="width: 80px; height: 70px; transition: all 0.3s; border-radius: 12px; background: white;">
+                                                    <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                                        alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
+                                                        style="width: 60px; height: 60px; object-fit: contain;">
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
 
-                    <div class="col-xl-6 mt-5 ">
-                        <div class="card shadow-sm mx-5">
+                            <div class="tab-content" id="pills-tabContent">
+                                @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
+                                    <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
+                                        id="pills-{{ $entreprise->id }}" role="tabpanel"
+                                        aria-labelledby="pills-{{ $entreprise->id }}-tab">
+                                        @php
+                                            // Configuration des widgets par code société
+                                            $widgetConfig = match ($entreprise->code_entreprise) {
+                                                // 'BFEV' => ['id' => '304182', 'hasWidget' => true],
+                                                 // 'EZER' => ['id' => '304184', 'hasWidget' => true],
+                                                 // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
+                                                 'COMKETING' => ['id' => '304779', 'hasWidget' => true],
+                                                'YODI' => ['id' => '304182', 'hasWidget' => true],
+                                                'YOD' => ['id' => '304182', 'hasWidget' => true],
+                                                'NEH' => ['id' => '300959', 'hasWidget' => true],
+                                                // 'ING' => ['id' => '304185', 'hasWidget' => true],
+                                                default => ['id' => null, 'hasWidget' => false],
+                                            };
+                                        @endphp
+
+                                        @if ($widgetConfig['hasWidget'] && $widgetConfig['id'])
+                                            {{-- Loading state --}}
+                                            <div id="taggbox-loading-{{ $entreprise->id }}" class="text-center py-5">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Chargement...</span>
+                                                </div>
+                                                <p class="mt-2">Chargement des actualités en cours...</p>
+                                            </div>
+                            
+                                            {{-- Widget Taggbox --}}
+                                            <div class="taggbox" 
+                                                 style="width:100%; height:100%; overflow:auto;" 
+                                                 data-widget-id="{{ $widgetConfig['id'] }}" 
+                                                 data-website="1">
+                                            </div>
+                            
+                                            {{-- Script pour masquer le loading une fois le widget chargé --}}
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    setTimeout(function() {
+                                                        const loading = document.getElementById('taggbox-loading-{{ $entreprise->id }}');
+                                                        if (loading) loading.style.display = 'none';
+                                                    }, 2000);
+                                                });
+                                            </script>
+                                        @else
+                                            {{-- Message si pas d'actualités --}}
+                                            <div class="text-center py-5">
+                                                <div class="mb-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="64"
+                                                        height="64" fill="currentColor"
+                                                        class="bi bi-newspaper text-muted" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
+                                                        <path
+                                                            d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
+                                                    </svg>
+                                                </div>
+                                                <h5 class="text-muted mb-2">Aucune actualité disponible</h5>
+                                                <p class="text-muted small">
+                                                    Les actualités de
+                                                    <strong>{{ $entreprise->nom_entreprise }}</strong>
+                                                    seront bientôt disponibles ici.
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <style>
+                            /* Style par défaut */
+                            .nav-pills .nav-link {
+                                transition: all 0.3s ease;
+                                border-radius: 12px;
+                            }
+
+                            .nav-pills .nav-link:hover {
+                                background-color: rgba(0, 0, 0, 0.05);
+                                transform: translateY(-2px);
+                            }
+
+                            /* Style actif - beaucoup plus visible */
+                            .nav-pills .nav-link.active {
+                                background: transparent !important;
+                                transform: scale(1.05);
+                            }
+
+
+                            .nav-pills .nav-link.active .shadow-sm {
+                                box-shadow: 0 4px 15px rgba(40, 40, 41, 0.4);
+                                transform: scale(1.2);
+
+                            }
+
+                            .card-hover-zoom {
+                                transition: all 0.5s ease;
+                            }
+                        </style>
+                        {{-- <div class="card shadow-sm mx-5">
                             <div class="card-header border-0 pb-0">
                                 <div
                                     class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
@@ -653,7 +673,7 @@
                                     <input type="text" class="form-control" placeholder="Écrire un commentaire">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="col-xl-3 theiaStickySidebar">
                         <div class="mt-5">
@@ -664,11 +684,6 @@
                         @include('components.modules_nedcore.mdodules')
                     </div>
 
-                </div>
-
-                <div class="load-btn text-center">
-                    <a href="javascript:void(0);" class="btn btn-primary"><i
-                            class="ti ti-loader ms-0 me-1"></i>Charger plus</a>
                 </div>
 
             </div>
@@ -683,9 +698,7 @@
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                     aria-label="Close"></button>
             </div> <!-- end offcanvas-header-->
-            @php
-                $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
-            @endphp
+
             <div class="offcanvas-body">
                 <div class="p-3" style="overflow-y: auto;">
                     <div class="row row-cols-3 g-2">
@@ -761,6 +774,7 @@
     </div>
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://widget.taggbox.com/embed.min.js" type="text/javascript"></script>
     <!-- À la fin de votre fichier Blade, avant </body> -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -955,14 +969,13 @@
     <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
 
     <!-- Cloudflare Rocket Loader -->
-    <script src="{{ asset('assets/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
+    <script src="{{ asset('cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}" defer></script>
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
         integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
         data-cf-beacon='{"rayId":"94a720077e49e3c0","version":"2025.5.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}'
         crossorigin="anonymous"></script>
+    <!-- JQuery -->
+
 </body>
-
-
-<!-- Mirrored from crms.dreamstechnologies.com/html/template/# by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Jun 2025 11:36:40 GMT -->
 
 </html>
