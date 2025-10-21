@@ -58,8 +58,10 @@
 <body class="account-page" style="background-color: rgb(240, 243, 243)">
 
     <!-- Main Wrapper -->
-    <div class="main-wrapper">
-
+    <div class="main-wrapper" id="main-content">
+        @php
+            $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
+        @endphp
         <div class="header shadow-sm">
 
             <!-- Logo -->
@@ -74,15 +76,6 @@
                 </a>
 
             </div>
-            <!-- /Logo -->
-
-            <a id="mobile_btn" class="mobile_btn" href="#sidebar">
-                <span class="bar-icon">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </span>
-            </a>
 
 
             <div class="header-user">
@@ -92,8 +85,35 @@
                     <li class="nav-item nav-search-inputs me-auto">
                         <button class="btn btn-outline-primary" type="button"
                             @if (Auth::user()->statut_vue_entreprise === 1) data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasWithBackdrop1"
-                            aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
+                        data-bs-target="#offcanvasWithBackdrop1"
+                        aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
+                    </li>
+                    <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation" aria-hidden="true" style="margin-left: 390px">
+                        @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
+                            <button
+                                class="nav-link border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} mb-2"
+                                id="pills2-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills2-{{ $entreprise->id }}" type="button" role="tab"
+                                aria-controls="pills2-{{ $entreprise->id }}"
+                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                <div class="text-center card-hover-zoom">
+                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
+                                        style="width:50px;height:40px;transition:.3s;border-radius:12px;background:white;">
+                                        <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                            alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
+                                            style="width:60px;height:60px;object-fit:contain;">
+                                    </div>
+                                </div>
+                            </button>
+                            <script>
+                                document.getElementById('pill-{{ $entreprise->id }}').addEventListener('click', function() {
+                                    // Vérifie que le bouton est bien de type "button"
+                                    if (this.type === 'button') {
+                                        document.getElementById('pills-{{ $entreprise->id }}').click(); // Simule le clic
+                                    }
+                                });
+                            </script>
+                        @endforeach
                     </li>
                     <!-- /Search -->
                     <li class="d-flex justify-content-center align-items-center gap-3">
@@ -270,12 +290,34 @@
                         </div>
                     </div>
 
-                    @php
-                        $lesEntreprises = \App\Helpers\DateHelper::dossier_info();
-                    @endphp
+
+                    <style>
+                        /* Quand on dépasse le seuil, on fixe la barre en haut */
+
+                        /* Animation propre */
+                        #blocAvant,
+                        #blocApres {
+                            transition: opacity .25s ease, transform .25s ease;
+                        }
+
+                        /* Masqué (ne prend pas de place) */
+                        .is-hidden {
+                            opacity: 0;
+                            visibility: hidden;
+                            height: 0;
+                            overflow: hidden;
+                            pointer-events: none;
+                        }
+
+                        /* Option : si tu veux garder la place dans la mise en page, remplace par :
+.is-hidden { opacity:0; visibility:hidden; }
+*/
+                    </style>
                     <div class="col-xl-6 my-5">
                         <div class="card-body">
-                            <ul class="nav nav-pills d-flex mb-3" id="pills-tab" role="tablist">
+
+                            <ul class="nav nav-pills d-flex mb-3 sticky-top py-2" id="pills-tab" role="tablist"
+                                style="top:0; z-index:1030;">
                                 @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
                                     <li class="nav-item flex-fill" role="presentation">
                                         <button
@@ -286,10 +328,10 @@
                                             aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
                                             <div class="text-center card-hover-zoom">
                                                 <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
-                                                    style="width: 80px; height: 70px; transition: all 0.3s; border-radius: 12px; background: white;">
+                                                    style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
                                                     <img src="{{ asset('storage/' . $entreprise->logo) }}"
                                                         alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
-                                                        style="width: 60px; height: 60px; object-fit: contain;">
+                                                        style="width:60px;height:60px;object-fit:contain;">
                                                 </div>
                                             </div>
                                         </button>
@@ -306,9 +348,9 @@
                                             // Configuration des widgets par code société
                                             $widgetConfig = match ($entreprise->code_entreprise) {
                                                 // 'BFEV' => ['id' => '304182', 'hasWidget' => true],
-                                                 // 'EZER' => ['id' => '304184', 'hasWidget' => true],
-                                                 // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
-                                                 'COMKETING' => ['id' => '304779', 'hasWidget' => true],
+                                                // 'EZER' => ['id' => '304184', 'hasWidget' => true],
+                                                // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
+                                                'COMKETING' => ['id' => '304779', 'hasWidget' => true],
                                                 'YODI' => ['id' => '304182', 'hasWidget' => true],
                                                 'YOD' => ['id' => '304182', 'hasWidget' => true],
                                                 'NEH' => ['id' => '300959', 'hasWidget' => true],
@@ -325,14 +367,12 @@
                                                 </div>
                                                 <p class="mt-2">Chargement des actualités en cours...</p>
                                             </div>
-                            
+
                                             {{-- Widget Taggbox --}}
-                                            <div class="taggbox" 
-                                                 style="width:100%; height:100%; overflow:auto;" 
-                                                 data-widget-id="{{ $widgetConfig['id'] }}" 
-                                                 data-website="1">
+                                            <div class="taggbox" style="width:100%; height:100%; overflow:auto;"
+                                                data-widget-id="{{ $widgetConfig['id'] }}" data-website="1">
                                             </div>
-                            
+
                                             {{-- Script pour masquer le loading une fois le widget chargé --}}
                                             <script>
                                                 document.addEventListener('DOMContentLoaded', function() {
@@ -366,6 +406,7 @@
                                     </div>
                                 @endforeach
                             </div>
+
                         </div>
                         <style>
                             /* Style par défaut */
@@ -675,6 +716,34 @@
                             </div>
                         </div> --}}
                     </div>
+                    <script>
+                        (function() {
+                            const threshold = 80; // px
+                            const blocAvant = document.getElementById('pills-tab');
+                            const blocApres = document.getElementById('blocApres');
+
+                            function update() {
+                                const scrolled = window.scrollY > threshold;
+
+                                // toggle visibilité
+                                blocAvant.classList.toggle('is-hidden', scrolled);
+                                blocApres.classList.toggle('is-hidden', !scrolled);
+
+                                // accessibilité
+                                blocAvant.setAttribute('aria-hidden', scrolled ? 'true' : 'false');
+                                blocApres.setAttribute('aria-hidden', scrolled ? 'false' : 'true');
+                            }
+
+                            window.addEventListener('scroll', update, {
+                                passive: true
+                            });
+                            window.addEventListener('resize', update);
+                            document.addEventListener('DOMContentLoaded', update);
+                        })();
+                    </script>
+
+
+
                     <div class="col-xl-3 theiaStickySidebar">
                         <div class="mt-5">
                             <div style="border-left: 4px solid #05426bce; padding-left: 12px;">
@@ -772,6 +841,53 @@
         </div>
 
     </div>
+
+    <script>
+        (function () {
+          // 1) Quand on clique un bouton secondaire, on active l’onglet principal correspondant
+          const secondaryBtns = document.querySelectorAll('button[id^="pills2-"][id$="-tab"]');
+        
+          secondaryBtns.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+              // Récupère l'id “entreprise” depuis pills2-<ID>-tab
+              const id = this.id.replace(/^pills2-/, '').replace(/-tab$/, '');
+              // Trouve le bouton d’onglet principal associé
+              const mainBtn = document.getElementById(`pills-${id}-tab`);
+              if (!mainBtn) return;
+        
+              // Active l’onglet principal via l’API Bootstrap
+              const tab = bootstrap.Tab.getOrCreateInstance(mainBtn);
+              tab.show();
+        
+              // Visuel : active le bouton secondaire cliqué, désactive les autres
+              secondaryBtns.forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              this.setAttribute('aria-selected', 'true');
+              secondaryBtns.forEach(b => { if (b !== this) b.setAttribute('aria-selected', 'false'); });
+            });
+          });
+        
+          // 2) Quand un onglet principal change, on synchronise le bouton secondaire correspondant
+          const mainBtns = document.querySelectorAll('button[id^="pills-"][id$="-tab"][data-bs-toggle="pill"]');
+        
+          mainBtns.forEach(btn => {
+            btn.addEventListener('shown.bs.tab', function (e) {
+              // e.target est l’onglet ACTIVÉ (pills-<ID>-tab)
+              const id = e.target.id.replace(/^pills-/, '').replace(/-tab$/, '');
+              const sec = document.getElementById(`pills2-${id}-tab`);
+              if (!sec) return;
+        
+              // Active le bon bouton secondaire, désactive les autres
+              secondaryBtns.forEach(b => {
+                const isTarget = b.id === `pills2-${id}-tab`;
+                b.classList.toggle('active', isTarget);
+                b.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+              });
+            });
+          });
+        })();
+        </script>
+        
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://widget.taggbox.com/embed.min.js" type="text/javascript"></script>
