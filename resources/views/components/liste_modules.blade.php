@@ -89,7 +89,7 @@
                         aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
                     </li>
                     <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation"
-                        aria-hidden="true" style="margin-left: 180px">
+                        aria-hidden="true" style="margin-left: 50px">
                         @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
                             @if ($entreprise->code_entreprise !== 'YOD')
                                 <button
