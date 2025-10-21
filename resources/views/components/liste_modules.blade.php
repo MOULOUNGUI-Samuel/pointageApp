@@ -91,29 +91,31 @@
                     <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation"
                         aria-hidden="true" style="margin-left: 390px">
                         @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
-                            <button
-                                class="nav-link border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} mb-2"
-                                id="pills2-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
-                                data-bs-target="#pills2-{{ $entreprise->id }}" type="button" role="tab"
-                                aria-controls="pills2-{{ $entreprise->id }}"
-                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                <div class="text-center card-hover-zoom">
-                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
-                                        style="width:50px;height:40px;transition:.3s;border-radius:12px;background:white;">
-                                        <img src="{{ asset('storage/' . $entreprise->logo) }}"
-                                            alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
-                                            style="width:60px;height:60px;object-fit:contain;">
+                            @if ($entreprise->code_entreprise !== 'YOD')
+                                <button
+                                    class="nav-link border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} mb-2"
+                                    id="pills2-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
+                                    data-bs-target="#pills2-{{ $entreprise->id }}" type="button" role="tab"
+                                    aria-controls="pills2-{{ $entreprise->id }}"
+                                    aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                    <div class="text-center card-hover-zoom">
+                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
+                                            style="width:50px;height:40px;transition:.3s;border-radius:12px;background:white;">
+                                            <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                                alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
+                                                style="width:60px;height:60px;object-fit:contain;">
+                                        </div>
                                     </div>
-                                </div>
-                            </button>
-                            <script>
-                                document.getElementById('pill-{{ $entreprise->id }}').addEventListener('click', function() {
-                                    // Vérifie que le bouton est bien de type "button"
-                                    if (this.type === 'button') {
-                                        document.getElementById('pills-{{ $entreprise->id }}').click(); // Simule le clic
-                                    }
-                                });
-                            </script>
+                                </button>
+                                <script>
+                                    document.getElementById('pill-{{ $entreprise->id }}').addEventListener('click', function() {
+                                        // Vérifie que le bouton est bien de type "button"
+                                        if (this.type === 'button') {
+                                            document.getElementById('pills-{{ $entreprise->id }}').click(); // Simule le clic
+                                        }
+                                    });
+                                </script>
+                            @endif
                         @endforeach
                     </li>
                     <!-- /Search -->
@@ -315,137 +317,139 @@
 */
                     </style>
                     <div class="col-xl-6 my-5">
-                    <div class="card">
+                        <div class="card">
 
-                        <div class="card-body">
-                            <div class="my-2" style="border-left: 4px solid #05426bce; padding-left: 12px;">
-                                <h3 class="mb-0">Actualités entréprises</h3>
-                            </div>
+                            <div class="card-body">
+                                <div class="my-2" style="border-left: 4px solid #05426bce; padding-left: 12px;">
+                                    <h3 class="mb-0">Actualités entréprises</h3>
+                                </div>
 
-                            <ul class="nav nav-pills d-flex mb-3 sticky-top py-2" id="pills-tab" role="tablist"
-                                style="top:0; z-index:1030;">
-                                @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
-                                    @if ($entreprise->code_entreprise !== 'YOD')
-                                        <li class="nav-item flex-fill" role="presentation">
-                                            <button
-                                                class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} "
-                                                id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
-                                                data-bs-target="#pills-{{ $entreprise->id }}" type="button"
-                                                role="tab" aria-controls="pills-{{ $entreprise->id }}"
-                                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                                <div class="text-center card-hover-zoom">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadowlogo shadow"
-                                                        style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
-                                                        <img src="{{ asset('storage/' . $entreprise->logo) }}"
-                                                            alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
-                                                            style="width:60px;height:60px;object-fit:contain;">
+                                <ul class="nav nav-pills d-flex mb-3 sticky-top py-2" id="pills-tab" role="tablist"
+                                    style="top:0; z-index:1030;">
+                                    @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
+                                        @if ($entreprise->code_entreprise !== 'YOD')
+                                            <li class="nav-item flex-fill" role="presentation">
+                                                <button
+                                                    class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} "
+                                                    id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#pills-{{ $entreprise->id }}" type="button"
+                                                    role="tab" aria-controls="pills-{{ $entreprise->id }}"
+                                                    aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                                    <div class="text-center card-hover-zoom">
+                                                        <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadowlogo shadow"
+                                                            style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
+                                                            <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                                                alt="{{ $entreprise->nom_entreprise }}"
+                                                                class="img-fluid"
+                                                                style="width:60px;height:60px;object-fit:contain;">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </button>
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ul>
-
-                            <div class="tab-content" id="pills-tabContent">
-                                @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
-                                    <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
-                                        id="pills-{{ $entreprise->id }}" role="tabpanel"
-                                        aria-labelledby="pills-{{ $entreprise->id }}-tab">
-                                        @php
-                                            // Configuration des widgets par code société
-                                            $widgetConfig = match ($entreprise->code_entreprise) {
-                                                'BFEV' => ['id' => '300959', 'hasWidget' => true],
-                                                // 'EZER' => ['id' => '304184', 'hasWidget' => true],
-                                                // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
-                                                'COMKETING' => ['id' => '304779', 'hasWidget' => true],
-                                                'YODI' => ['id' => '304182', 'hasWidget' => true],
-                                                'YOD' => ['id' => '304182', 'hasWidget' => true],
-                                                'NEH' => ['id' => '300959', 'hasWidget' => true],
-                                                // 'ING' => ['id' => '304185', 'hasWidget' => true],
-                                                default => ['id' => null, 'hasWidget' => false],
-                                            };
-                                        @endphp
-
-                                        @if ($widgetConfig['hasWidget'] && $widgetConfig['id'])
-                                            {{-- Loading state --}}
-                                            <div id="taggbox-loading-{{ $entreprise->id }}" class="text-center py-5">
-                                                <div class="spinner-border text-primary" role="status">
-                                                    <span class="visually-hidden">Chargement...</span>
-                                                </div>
-                                                <p class="mt-2">Chargement des actualités en cours...</p>
-                                            </div>
-
-                                            {{-- Widget Taggbox --}}
-                                            <div class="taggbox" style="width:100%; height:100%; overflow:auto;"
-                                                data-widget-id="{{ $widgetConfig['id'] }}" data-website="1">
-                                            </div>
-
-                                            {{-- Script pour masquer le loading une fois le widget chargé --}}
-                                            <script>
-                                                document.addEventListener('DOMContentLoaded', function() {
-                                                    setTimeout(function() {
-                                                        const loading = document.getElementById('taggbox-loading-{{ $entreprise->id }}');
-                                                        if (loading) loading.style.display = 'none';
-                                                    }, 2000);
-                                                });
-                                            </script>
-                                        @else
-                                            {{-- Message si pas d'actualités --}}
-                                            <div class="text-center py-5">
-                                                <div class="mb-4">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="64"
-                                                        height="64" fill="currentColor"
-                                                        class="bi bi-newspaper text-muted" viewBox="0 0 16 16">
-                                                        <path
-                                                            d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
-                                                        <path
-                                                            d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
-                                                    </svg>
-                                                </div>
-                                                <h5 class="text-muted mb-2">Aucune actualité disponible</h5>
-                                                <p class="text-muted small">
-                                                    Les actualités de
-                                                    <strong>{{ $entreprise->nom_entreprise }}</strong>
-                                                    seront bientôt disponibles ici.
-                                                </p>
-                                            </div>
+                                                </button>
+                                            </li>
                                         @endif
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </ul>
+
+                                <div class="tab-content" id="pills-tabContent">
+                                    @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
+                                        <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
+                                            id="pills-{{ $entreprise->id }}" role="tabpanel"
+                                            aria-labelledby="pills-{{ $entreprise->id }}-tab">
+                                            @php
+                                                // Configuration des widgets par code société
+                                                $widgetConfig = match ($entreprise->code_entreprise) {
+                                                    'BFEV' => ['id' => '300959', 'hasWidget' => true],
+                                                    // 'EZER' => ['id' => '304184', 'hasWidget' => true],
+                                                    // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
+                                                    'COMKETING' => ['id' => '304779', 'hasWidget' => true],
+                                                    'YODI' => ['id' => '304182', 'hasWidget' => true],
+                                                    'YOD' => ['id' => '304182', 'hasWidget' => true],
+                                                    'NEH' => ['id' => '300959', 'hasWidget' => true],
+                                                    // 'ING' => ['id' => '304185', 'hasWidget' => true],
+                                                    default => ['id' => null, 'hasWidget' => false],
+                                                };
+                                            @endphp
+
+                                            @if ($widgetConfig['hasWidget'] && $widgetConfig['id'])
+                                                {{-- Loading state --}}
+                                                <div id="taggbox-loading-{{ $entreprise->id }}"
+                                                    class="text-center py-5">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Chargement...</span>
+                                                    </div>
+                                                    <p class="mt-2">Chargement des actualités en cours...</p>
+                                                </div>
+
+                                                {{-- Widget Taggbox --}}
+                                                <div class="taggbox" style="width:100%; height:100%; overflow:auto;"
+                                                    data-widget-id="{{ $widgetConfig['id'] }}" data-website="1">
+                                                </div>
+
+                                                {{-- Script pour masquer le loading une fois le widget chargé --}}
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        setTimeout(function() {
+                                                            const loading = document.getElementById('taggbox-loading-{{ $entreprise->id }}');
+                                                            if (loading) loading.style.display = 'none';
+                                                        }, 2000);
+                                                    });
+                                                </script>
+                                            @else
+                                                {{-- Message si pas d'actualités --}}
+                                                <div class="text-center py-5">
+                                                    <div class="mb-4">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="64"
+                                                            height="64" fill="currentColor"
+                                                            class="bi bi-newspaper text-muted" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
+                                                            <path
+                                                                d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <h5 class="text-muted mb-2">Aucune actualité disponible</h5>
+                                                    <p class="text-muted small">
+                                                        Les actualités de
+                                                        <strong>{{ $entreprise->nom_entreprise }}</strong>
+                                                        seront bientôt disponibles ici.
+                                                    </p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+
                             </div>
+                            <style>
+                                /* Style par défaut */
+                                .nav-pills .nav-link {
+                                    transition: all 0.3s ease;
+                                    border-radius: 12px;
+                                }
 
-                        </div>
-                        <style>
-                            /* Style par défaut */
-                            .nav-pills .nav-link {
-                                transition: all 0.3s ease;
-                                border-radius: 12px;
-                            }
+                                .nav-pills .nav-link:hover {
+                                    background-color: rgba(0, 0, 0, 0.05);
+                                    transform: translateY(-2px);
+                                }
 
-                            .nav-pills .nav-link:hover {
-                                background-color: rgba(0, 0, 0, 0.05);
-                                transform: translateY(-2px);
-                            }
-
-                            /* Style actif - beaucoup plus visible */
-                            .nav-pills .nav-link.active {
-                                background: transparent !important;
-                                transform: scale(1.05);
-                            }
+                                /* Style actif - beaucoup plus visible */
+                                .nav-pills .nav-link.active {
+                                    background: transparent !important;
+                                    transform: scale(1.05);
+                                }
 
 
-                            .nav-pills .nav-link.active .shadowlogo {
-                                box-shadow: 0 4px 15px rgba(40, 40, 41, 0.4);
-                                transform: scale(1.2);
+                                .nav-pills .nav-link.active .shadowlogo {
+                                    box-shadow: 0 4px 15px rgba(40, 40, 41, 0.4);
+                                    transform: scale(1.2);
 
-                            }
+                                }
 
-                            .card-hover-zoom {
-                                transition: all 0.5s ease;
-                            }
-                        </style>
-                        {{-- <div class="card shadow-sm mx-5">
+                                .card-hover-zoom {
+                                    transition: all 0.5s ease;
+                                }
+                            </style>
+                            {{-- <div class="card shadow-sm mx-5">
                             <div class="card-header border-0 pb-0">
                                 <div
                                     class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
@@ -723,7 +727,7 @@
                                 </div>
                             </div>
                         </div> --}}
-                    </div>
+                        </div>
                     </div>
                     <script>
                         (function() {
