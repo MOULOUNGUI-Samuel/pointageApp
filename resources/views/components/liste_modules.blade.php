@@ -347,7 +347,7 @@
                                         @php
                                             // Configuration des widgets par code société
                                             $widgetConfig = match ($entreprise->code_entreprise) {
-                                                // 'BFEV' => ['id' => '304182', 'hasWidget' => true],
+                                                'BFEV' => ['id' => '300959', 'hasWidget' => true],
                                                 // 'EZER' => ['id' => '304184', 'hasWidget' => true],
                                                 // 'EGCC' => ['id' => '304185', 'hasWidget' => 1],
                                                 'COMKETING' => ['id' => '304779', 'hasWidget' => true],
