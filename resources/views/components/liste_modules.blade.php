@@ -88,7 +88,8 @@
                         data-bs-target="#offcanvasWithBackdrop1"
                         aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
                     </li>
-                    <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation" aria-hidden="true" style="margin-left: 390px">
+                    <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation"
+                        aria-hidden="true" style="margin-left: 390px">
                         @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
                             <button
                                 class="nav-link border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} mb-2"
@@ -319,23 +320,25 @@
                             <ul class="nav nav-pills d-flex mb-3 sticky-top py-2" id="pills-tab" role="tablist"
                                 style="top:0; z-index:1030;">
                                 @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
-                                    <li class="nav-item flex-fill" role="presentation">
-                                        <button
-                                            class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }}"
-                                            id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-{{ $entreprise->id }}" type="button"
-                                            role="tab" aria-controls="pills-{{ $entreprise->id }}"
-                                            aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                            <div class="text-center card-hover-zoom">
-                                                <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
-                                                    style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
-                                                    <img src="{{ asset('storage/' . $entreprise->logo) }}"
-                                                        alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
-                                                        style="width:60px;height:60px;object-fit:contain;">
+                                    @if ($entreprise->code_entreprise !== 'YOD')
+                                        <li class="nav-item flex-fill" role="presentation">
+                                            <button
+                                                class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }}"
+                                                id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
+                                                data-bs-target="#pills-{{ $entreprise->id }}" type="button"
+                                                role="tab" aria-controls="pills-{{ $entreprise->id }}"
+                                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                                <div class="text-center card-hover-zoom">
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
+                                                        style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
+                                                        <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                                                            alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
+                                                            style="width:60px;height:60px;object-fit:contain;">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </button>
-                                    </li>
+                                            </button>
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
 
@@ -843,51 +846,53 @@
     </div>
 
     <script>
-        (function () {
-          // 1) Quand on clique un bouton secondaire, on active l’onglet principal correspondant
-          const secondaryBtns = document.querySelectorAll('button[id^="pills2-"][id$="-tab"]');
-        
-          secondaryBtns.forEach(btn => {
-            btn.addEventListener('click', function (e) {
-              // Récupère l'id “entreprise” depuis pills2-<ID>-tab
-              const id = this.id.replace(/^pills2-/, '').replace(/-tab$/, '');
-              // Trouve le bouton d’onglet principal associé
-              const mainBtn = document.getElementById(`pills-${id}-tab`);
-              if (!mainBtn) return;
-        
-              // Active l’onglet principal via l’API Bootstrap
-              const tab = bootstrap.Tab.getOrCreateInstance(mainBtn);
-              tab.show();
-        
-              // Visuel : active le bouton secondaire cliqué, désactive les autres
-              secondaryBtns.forEach(b => b.classList.remove('active'));
-              this.classList.add('active');
-              this.setAttribute('aria-selected', 'true');
-              secondaryBtns.forEach(b => { if (b !== this) b.setAttribute('aria-selected', 'false'); });
+        (function() {
+            // 1) Quand on clique un bouton secondaire, on active l’onglet principal correspondant
+            const secondaryBtns = document.querySelectorAll('button[id^="pills2-"][id$="-tab"]');
+
+            secondaryBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Récupère l'id “entreprise” depuis pills2-<ID>-tab
+                    const id = this.id.replace(/^pills2-/, '').replace(/-tab$/, '');
+                    // Trouve le bouton d’onglet principal associé
+                    const mainBtn = document.getElementById(`pills-${id}-tab`);
+                    if (!mainBtn) return;
+
+                    // Active l’onglet principal via l’API Bootstrap
+                    const tab = bootstrap.Tab.getOrCreateInstance(mainBtn);
+                    tab.show();
+
+                    // Visuel : active le bouton secondaire cliqué, désactive les autres
+                    secondaryBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    secondaryBtns.forEach(b => {
+                        if (b !== this) b.setAttribute('aria-selected', 'false');
+                    });
+                });
             });
-          });
-        
-          // 2) Quand un onglet principal change, on synchronise le bouton secondaire correspondant
-          const mainBtns = document.querySelectorAll('button[id^="pills-"][id$="-tab"][data-bs-toggle="pill"]');
-        
-          mainBtns.forEach(btn => {
-            btn.addEventListener('shown.bs.tab', function (e) {
-              // e.target est l’onglet ACTIVÉ (pills-<ID>-tab)
-              const id = e.target.id.replace(/^pills-/, '').replace(/-tab$/, '');
-              const sec = document.getElementById(`pills2-${id}-tab`);
-              if (!sec) return;
-        
-              // Active le bon bouton secondaire, désactive les autres
-              secondaryBtns.forEach(b => {
-                const isTarget = b.id === `pills2-${id}-tab`;
-                b.classList.toggle('active', isTarget);
-                b.setAttribute('aria-selected', isTarget ? 'true' : 'false');
-              });
+
+            // 2) Quand un onglet principal change, on synchronise le bouton secondaire correspondant
+            const mainBtns = document.querySelectorAll('button[id^="pills-"][id$="-tab"][data-bs-toggle="pill"]');
+
+            mainBtns.forEach(btn => {
+                btn.addEventListener('shown.bs.tab', function(e) {
+                    // e.target est l’onglet ACTIVÉ (pills-<ID>-tab)
+                    const id = e.target.id.replace(/^pills-/, '').replace(/-tab$/, '');
+                    const sec = document.getElementById(`pills2-${id}-tab`);
+                    if (!sec) return;
+
+                    // Active le bon bouton secondaire, désactive les autres
+                    secondaryBtns.forEach(b => {
+                        const isTarget = b.id === `pills2-${id}-tab`;
+                        b.classList.toggle('active', isTarget);
+                        b.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+                    });
+                });
             });
-          });
         })();
-        </script>
-        
+    </script>
+
     <!-- /Main Wrapper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://widget.taggbox.com/embed.min.js" type="text/javascript"></script>
