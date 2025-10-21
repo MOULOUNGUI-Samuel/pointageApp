@@ -31,10 +31,27 @@
 
     {{-- Items --}}
     @livewire('settings.items-manager')
- 
-      
-      
-      
+
+   <!-- Modal IA -->
+<div wire:ignore.self class="modal fade" id="IAModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-primary">
+                <h4 class="modal-title fw-bold text-white">
+                    <i class="fas fa-robot me-2"></i>
+                    Générateur de Conformité IA
+                </h4>
+                <button type="button" class="btn-close bg-light p-1" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                @livewire('generateur-conformite')
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
     <script>
         document.querySelectorAll(".searchInput").forEach(input => {
             input.addEventListener("keyup", function() {

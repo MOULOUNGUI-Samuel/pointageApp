@@ -1,4 +1,5 @@
 @livewireScripts
+@stack('scripts')
 <script>
     const beamsClient = new PusherPushNotifications.Client({
         // instanceId: 'b06db11a-f8ee-4eed-9313-ee95b6de6c85',

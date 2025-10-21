@@ -4,7 +4,6 @@ namespace App\Livewire\Settings;
 
 use App\Models\Domaine;
 use App\Models\CategorieDommaine;
-use App\Models\TypeItem;
 use App\Models\Item;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -32,6 +31,7 @@ class DashboardCounters extends Component
     #[On('domaines-deleted')]
     #[On('categories-updated')]
     #[On('types-updated')]
+    #[On('conformite-saved')]
     #[On('items-updated')]
     public function refreshCounters(): void
     {

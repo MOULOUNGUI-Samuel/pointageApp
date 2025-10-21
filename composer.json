@@ -17,7 +17,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.6",
-        "openai-php/client": "^0.14.0",
+        "openai-php/laravel": "^0.11.0",
         "pusher/pusher-php-server": "7.2",
         "pusher/pusher-push-notifications": "^2.0",
         "setasign/fpdf": "^1.8"

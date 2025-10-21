@@ -36,7 +36,7 @@ use App\Http\Controllers\PdfPointageController;
 use App\Http\Controllers\PointageBackfillController;
 use App\Http\Controllers\ConsoliderController;
 use App\Http\Controllers\ClassementPonctualiteController;
-
+use App\Livewire\GenerateurConformite;
 
 /*
 |--------------------------------------------------------------------------
@@ -364,11 +364,15 @@ Route::middleware('auth')->group(
         Route::get('/pointage/user/{userId}/{date_start}/{date_end}/save',     [PdfPointageController::class, 'saveUser'])->name('pointage.user.save');
 
         Route::get('/classement-ponctualite/{date_start}/{date_end}', [ClassementPonctualiteController::class, 'index'])
-    ->name('classement.ponctualite');
+            ->name('classement.ponctualite');
 
         // Gestion des périodes de ratrappage des pointages
         Route::post('/pointages/backfill', [PointageBackfillController::class, 'backfill'])
             ->name('pointages.backfill');
+
+        // Gestion des integration des domaines avec IA
+        Route::get('/generateur-conformite', GenerateurConformite::class)
+            ->name('generateur.conformite');
     }
 
 );
