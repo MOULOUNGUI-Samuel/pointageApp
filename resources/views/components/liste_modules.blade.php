@@ -315,7 +315,12 @@
 */
                     </style>
                     <div class="col-xl-6 my-5">
+                    <div class="card">
+
                         <div class="card-body">
+                            <div class="my-2" style="border-left: 4px solid #05426bce; padding-left: 12px;">
+                                <h3 class="mb-0">Actualités entréprises</h3>
+                            </div>
 
                             <ul class="nav nav-pills d-flex mb-3 sticky-top py-2" id="pills-tab" role="tablist"
                                 style="top:0; z-index:1030;">
@@ -323,13 +328,13 @@
                                     @if ($entreprise->code_entreprise !== 'YOD')
                                         <li class="nav-item flex-fill" role="presentation">
                                             <button
-                                                class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }}"
+                                                class="nav-link w-100 border-0 bg-transparent p-2 {{ $index === 0 ? 'active' : '' }} "
                                                 id="pills-{{ $entreprise->id }}-tab" data-bs-toggle="pill"
                                                 data-bs-target="#pills-{{ $entreprise->id }}" type="button"
                                                 role="tab" aria-controls="pills-{{ $entreprise->id }}"
                                                 aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
                                                 <div class="text-center card-hover-zoom">
-                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
+                                                    <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow"
                                                         style="width:80px;height:70px;transition:.3s;border-radius:12px;background:white;">
                                                         <img src="{{ asset('storage/' . $entreprise->logo) }}"
                                                             alt="{{ $entreprise->nom_entreprise }}" class="img-fluid"
@@ -718,6 +723,7 @@
                                 </div>
                             </div>
                         </div> --}}
+                    </div>
                     </div>
                     <script>
                         (function() {
