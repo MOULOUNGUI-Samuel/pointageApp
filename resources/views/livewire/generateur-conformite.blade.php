@@ -663,7 +663,10 @@
                 if (modal) {
                     modal.hide();
                 }
-
+ // Afficher une notification de succès (optionnel)
+ setTimeout(() => {
+                location.reload(); // Recharger la page pour voir les nouvelles données
+            }, 1500);
             });
         });
     </script>
