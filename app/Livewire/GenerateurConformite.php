@@ -20,6 +20,7 @@ class GenerateurConformite extends Component
     public $isGenerating = false;
     public $isValidated = false;
     public $errorMessage = '';
+    public $warningMessage = '';
     
     // Données éditables
     public $editableData = [];
@@ -29,9 +30,42 @@ class GenerateurConformite extends Component
         'description_domaine' => 'nullable|string',
     ];
 
+    public function updatedNomDomaine()
+    {
+        if (strlen($this->nom_domaine) >= 3) {
+            $domaineExistant = Domaine::where('nom_domaine', $this->nom_domaine)->first();
+            
+            if ($domaineExistant) {
+                $nbCategories = $domaineExistant->categories()->count();
+                $nbItems = Item::whereHas('categorie', function($query) use ($domaineExistant) {
+                    $query->where('domaine_id', $domaineExistant->id);
+                })->count();
+                
+                $this->warningMessage = "ℹ️ Ce domaine existe déjà ({$nbCategories} catégories, {$nbItems} items). Les nouvelles données seront fusionnées.";
+            } else {
+                $this->warningMessage = '';
+            }
+        }
+    }
+
     public function generate()
     {
         $this->validate();
+        
+        // Vérifier si le domaine existe déjà
+        $domaineExistant = Domaine::where('nom_domaine', $this->nom_domaine)->first();
+        
+        if ($domaineExistant) {
+            $nbCategories = $domaineExistant->categories()->count();
+            $nbItems = Item::whereHas('categorie', function($query) use ($domaineExistant) {
+                $query->where('domaine_id', $domaineExistant->id);
+            })->count();
+            
+            $this->warningMessage = "⚠️ Le domaine '{$this->nom_domaine}' existe déjà avec {$nbCategories} catégorie(s) et {$nbItems} item(s). ";
+            $this->warningMessage .= "Les nouvelles données générées seront fusionnées avec l'existant. Les catégories/items avec les mêmes noms seront mis à jour.";
+        } else {
+            $this->warningMessage = '';
+        }
         
         $this->isGenerating = true;
         $this->errorMessage = '';
@@ -98,18 +132,18 @@ EXIGENCES STRUCTURELLES DU LIVRABLE (Format JSON strict) :
      - description : description du domaine
      - categories : tableau d'objets représentant les catégories de conformité
 
-2. Catégories (minimum 3) :
+2. Catégories (minimum 6) :
    - Chaque objet dans le tableau categories doit contenir :
      - nom_categorie : libellé de la catégorie
      - code_categorie : identifiant de la catégorie (constitué de la première lettre de chaque mot du nom de la catégorie en majuscules)
      - description : description de la catégorie
      - items : tableau d'objets représentant les exigences de conformité
 
-3. Items (minimum 5 par catégorie) :
+3. Items (minimum 8 par catégorie) :
    - Chaque objet dans le tableau items doit inclure les champs suivants :
      - nom_item : libellé de l'exigence
      - description : description de l'exigence
-     - type : type de l'item ('liste', 'checkbox', ou 'texte')
+     - type : type de l'item ('liste', 'checkbox', 'texte', ou 'file')
      - options : si le type est 'liste' ou 'checkbox', proposer un tableau d'objets avec les clés 'label' et 'value'
      - statut : toujours "1"
 
@@ -136,6 +170,12 @@ EXEMPLE DE STRUCTURE ATTENDUE :
             {"label": "CDI", "value": "cdi"},
             {"label": "CDD", "value": "cdd"}
           ],
+          "statut": "1"
+        },
+        {
+          "nom_item": "Contrat signé",
+          "description": "Télécharger le contrat de travail signé",
+          "type": "file",
           "statut": "1"
         }
       ]
@@ -174,40 +214,101 @@ PROMPT;
         DB::beginTransaction();
         
         try {
-            // Créer le domaine
-            $domaine = Domaine::create([
-                'id' => Str::uuid(),
-                'nom_domaine' => $this->editableData['nom_domaine'],
-                'description' => $this->editableData['description'] ?? null,
-                'user_add_id' => auth()->id(),
-                'statut' => '1',
-            ]);
-
-            // Créer les catégories et items
-            foreach ($this->editableData['categories'] as $catData) {
-                $categorie = CategorieDommaine::create([
+            // Vérifier si le domaine existe déjà
+            $domaineExistant = Domaine::where('nom_domaine', $this->editableData['nom_domaine'])->first();
+            
+            if ($domaineExistant) {
+                $domaine = $domaineExistant;
+                // Mettre à jour la description si le domaine existe
+                $domaine->update([
+                    'description' => $this->editableData['description'] ?? $domaine->description,
+                    'user_update_id' => auth()->id(),
+                ]);
+            } else {
+                // Créer le domaine s'il n'existe pas
+                $domaine = Domaine::create([
                     'id' => Str::uuid(),
-                    'domaine_id' => $domaine->id,
-                    'nom_categorie' => $catData['nom_categorie'],
-                    'code_categorie' => $catData['code_categorie'],
-                    'description' => $catData['description'] ?? null,
+                    'nom_domaine' => $this->editableData['nom_domaine'],
+                    'description' => $this->editableData['description'] ?? null,
                     'user_add_id' => auth()->id(),
                     'statut' => '1',
                 ]);
+            }
 
-                foreach ($catData['items'] as $itemData) {
-                    $item = Item::create([
+            $statsCreation = [
+                'domaine_existe' => $domaineExistant ? true : false,
+                'categories_existantes' => 0,
+                'categories_creees' => 0,
+                'items_existants' => 0,
+                'items_crees' => 0,
+                'options_creees' => 0,
+            ];
+
+            // Créer les catégories et items
+            foreach ($this->editableData['categories'] as $catData) {
+                // Vérifier si la catégorie existe déjà dans ce domaine
+                $categorieExistante = CategorieDommaine::where('domaine_id', $domaine->id)
+                    ->where('code_categorie', $catData['code_categorie'])
+                    ->first();
+
+                if ($categorieExistante) {
+                    // Mettre à jour la catégorie existante
+                    $categorieExistante->update([
+                        'nom_categorie' => $catData['nom_categorie'],
+                        'description' => $catData['description'] ?? $categorieExistante->description,
+                        'user_update_id' => auth()->id(),
+                    ]);
+                    $categorie = $categorieExistante;
+                    $statsCreation['categories_existantes']++;
+                } else {
+                    // Créer la catégorie si elle n'existe pas
+                    $categorie = CategorieDommaine::create([
                         'id' => Str::uuid(),
-                        'categorie_domaine_id' => $categorie->id,
-                        'nom_item' => $itemData['nom_item'],
-                        'description' => $itemData['description'] ?? null,
-                        'type' => $itemData['type'] ?? 'texte',
+                        'domaine_id' => $domaine->id,
+                        'nom_categorie' => $catData['nom_categorie'],
+                        'code_categorie' => $catData['code_categorie'],
+                        'description' => $catData['description'] ?? null,
                         'user_add_id' => auth()->id(),
                         'statut' => '1',
                     ]);
+                    $statsCreation['categories_creees']++;
+                }
 
-                    // Créer les options si type liste ou checkbox
+                foreach ($catData['items'] as $itemData) {
+                    // Vérifier si l'item existe déjà dans cette catégorie
+                    $itemExistant = Item::where('categorie_domaine_id', $categorie->id)
+                        ->where('nom_item', $itemData['nom_item'])
+                        ->first();
+
+                    if ($itemExistant) {
+                        // Mettre à jour l'item existant
+                        $itemExistant->update([
+                            'description' => $itemData['description'] ?? $itemExistant->description,
+                            'type' => $itemData['type'] ?? $itemExistant->type,
+                            'user_update_id' => auth()->id(),
+                        ]);
+                        $item = $itemExistant;
+                        $statsCreation['items_existants']++;
+                    } else {
+                        // Créer l'item s'il n'existe pas
+                        $item = Item::create([
+                            'id' => Str::uuid(),
+                            'categorie_domaine_id' => $categorie->id,
+                            'nom_item' => $itemData['nom_item'],
+                            'description' => $itemData['description'] ?? null,
+                            'type' => $itemData['type'] ?? 'texte',
+                            'user_add_id' => auth()->id(),
+                            'statut' => '1',
+                        ]);
+                        $statsCreation['items_crees']++;
+                    }
+
+                    // Gérer les options (supprimer les anciennes et créer les nouvelles)
                     if (in_array($itemData['type'], ['liste', 'checkbox']) && isset($itemData['options'])) {
+                        // Supprimer les anciennes options
+                        ItemOption::where('item_id', $item->id)->delete();
+                        
+                        // Créer les nouvelles options
                         foreach ($itemData['options'] as $position => $option) {
                             ItemOption::create([
                                 'id' => Str::uuid(),
@@ -218,7 +319,11 @@ PROMPT;
                                 'position' => $position + 1,
                                 'statut' => '1',
                             ]);
+                            $statsCreation['options_creees']++;
                         }
+                    } elseif (!in_array($itemData['type'], ['liste', 'checkbox'])) {
+                        // Supprimer les options si le type n'est plus liste ou checkbox
+                        ItemOption::where('item_id', $item->id)->delete();
                     }
                 }
             }
@@ -226,7 +331,31 @@ PROMPT;
             DB::commit();
             
             $this->isValidated = true;
-            session()->flash('success', 'Données enregistrées avec succès !');
+            
+            // Message personnalisé selon les statistiques
+            $message = 'Données enregistrées avec succès ! ';
+            if ($statsCreation['categories_creees'] > 0 || $statsCreation['items_crees'] > 0) {
+                $details = [];
+                if ($statsCreation['categories_creees'] > 0) {
+                    $details[] = $statsCreation['categories_creees'] . ' nouvelle(s) catégorie(s)';
+                }
+                if ($statsCreation['items_crees'] > 0) {
+                    $details[] = $statsCreation['items_crees'] . ' nouveau(x) item(s)';
+                }
+                $message .= implode(' et ', $details) . ' créé(s).';
+            }
+            if ($statsCreation['categories_existantes'] > 0 || $statsCreation['items_existants'] > 0) {
+                $details = [];
+                if ($statsCreation['categories_existantes'] > 0) {
+                    $details[] = $statsCreation['categories_existantes'] . ' catégorie(s)';
+                }
+                if ($statsCreation['items_existants'] > 0) {
+                    $details[] = $statsCreation['items_existants'] . ' item(s)';
+                }
+                $message .= ' ' . implode(' et ', $details) . ' mis à jour.';
+            }
+            
+            session()->flash('success', $message);
             
             // Émettre un événement pour fermer le modal
             $this->dispatch('conformite-saved');
@@ -242,7 +371,7 @@ PROMPT;
 
     public function regenerate()
     {
-        $this->reset(['generatedData', 'editableData', 'errorMessage', 'isValidated']);
+        $this->reset(['generatedData', 'editableData', 'errorMessage', 'isValidated', 'warningMessage']);
     }
 
     public function render()

@@ -16,6 +16,14 @@
         </div>
     @endif
 
+    @if ($warningMessage)
+        <div class="alert alert-warning rounded-pill alert-dismissible fade show">
+            <strong class="me-5"><i class="fas fa-exclamation-triangle me-2"></i> {!! $warningMessage !!}</strong>
+            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                    class="fas fa-xmark"></i></button>
+        </div>
+    @endif
+
     <!-- Formulaire de génération -->
     @if (!$generatedData)
         <div class="row justify-content-center">
@@ -53,32 +61,37 @@
                             <div class="col-md-6">
                                 <div class="p-3 bg-white rounded border">
                                     <strong class="d-block mb-1" style="font-size: 16px">🏢 Ressources Humaines</strong>
-                                    <small class="text-muted"  style="font-size: 14px">
-                                        "Gestion RH incluant recrutement, formation, paie et évaluation des performances pour entreprise de 150 employés"
+                                    <small class="text-muted" style="font-size: 14px">
+                                        "Gestion RH incluant recrutement, formation, paie et évaluation des performances
+                                        pour entreprise de 150 employés"
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="p-3 bg-white rounded border">
-                                    <strong class="d-block mb-1" style="font-size: 16px">🔒 Sécurité des Données (RGPD)</strong>
-                                    <small class="text-muted"   style="font-size: 14px">
-                                        "Conformité RGPD pour entreprise e-commerce collectant et traitant des données personnelles clients"
+                                    <strong class="d-block mb-1" style="font-size: 16px">🔒 Sécurité des Données
+                                        (RGPD)</strong>
+                                    <small class="text-muted" style="font-size: 14px">
+                                        "Conformité RGPD pour entreprise e-commerce collectant et traitant des données
+                                        personnelles clients"
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="p-3 bg-white rounded border">
-                                    <strong class="d-block mb-1"  style="font-size: 16px">⚕️ Qualité ISO 9001</strong>
-                                    <small class="text-muted"  style="font-size: 14px">
-                                        "Système management qualité ISO 9001 pour PME manufacturière de pièces automobiles"
+                                    <strong class="d-block mb-1" style="font-size: 16px">⚕️ Qualité ISO 9001</strong>
+                                    <small class="text-muted" style="font-size: 14px">
+                                        "Système management qualité ISO 9001 pour PME manufacturière de pièces
+                                        automobiles"
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="p-3 bg-white rounded border">
                                     <strong class="d-block mb-1" style="font-size: 16px">🌱 Environnement HSE</strong>
-                                    <small class="text-muted"  style="font-size: 14px">
-                                        "Hygiène, Sécurité et Environnement pour site industriel chimique avec 200 employés"
+                                    <small class="text-muted" style="font-size: 14px">
+                                        "Hygiène, Sécurité et Environnement pour site industriel chimique avec 200
+                                        employés"
                                     </small>
                                 </div>
                             </div>
@@ -95,28 +108,28 @@
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="col-md-4 mt-4">
                         <div class="card border-0 bg-light h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-pen-square text-info fs-1"></i>
-                                <h6 class="mt-2 mb-0"  style="font-size: 16px">Personnalisable</h6>
+                                <h6 class="mt-2 mb-0" style="font-size: 16px">Personnalisable</h6>
                                 <small class="text-muted" style="font-size: 14px">Modifiez à volonté</small>
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="col-md-4 mt-4">
                         <div class="card border-0 bg-light h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-shield-alt text-success fs-1"></i>
-                                <h6 class="mt-2 mb-0"  style="font-size: 16px">Conforme</h6>
+                                <h6 class="mt-2 mb-0" style="font-size: 16px">Conforme</h6>
                                 <small class="text-muted" style="font-size: 14px">Structure validée</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
             </div>
             <div class="col-lg-6">
                 <div class="card border-0 shadow" style="border-radius: 15px;">
@@ -132,44 +145,99 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-bold d-flex align-items-center">
-                                <i class="fas fa-bookmark-fill text-primary me-2"></i>
+                                <i class="bi bi-bookmark-fill text-primary me-2"></i>
                                 Nom du Domaine
                                 <span class="text-danger ms-1">*</span>
+                                @if ($warningMessage && !$generatedData)
+                                    <span class="badge bg-warning ms-2" title="{{ $warningMessage }}">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        Existe déjà
+                                    </span>
+                                @endif
                             </label>
-                            <input type="text" wire:model="nom_domaine"
+                            <input type="text" wire:model.live.debounce.500ms="nom_domaine"
                                 class="form-control form-control-lg @error('nom_domaine') is-invalid @enderror shadow"
-                                placeholder="Ex: Ressources Humaines, Qualité, Finance..." style="border-radius: 5px;">
+                                placeholder="Ex: Ressources Humaines, Qualité, Finance..."
+                                style="border-radius: 5px;">
                             @error('nom_domaine')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            @if ($warningMessage && !$generatedData)
+                                <div class="form-text text-warning">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    {{ $warningMessage }}
+                                </div>
+                            @endif
                         </div>
-
-                        <div class="mb-4">
+                        <div>
                             <label class="form-label fw-bold d-flex align-items-center">
                                 <i class="fas fa-card-text text-primary me-2"></i>
                                 Description du Domaine
                                 <span class="badge bg-secondary ms-2">Optionnel</span>
                             </label>
                             <textarea wire:model="description_domaine" rows="4" class="form-control shadow"
-                                placeholder="Décrivez le contexte, les objectifs ou les spécificités de ce domaine..." style="border-radius: 5px;"></textarea>
+                                placeholder="Décrivez le contexte, les objectifs ou les spécificités de ce domaine..."
+                                style="border-radius: 5px;"></textarea>
                             <div class="form-text">
                                 <i class="fas fa-info-circle me-1"></i>
                                 Plus vous donnez de détails, plus les résultats seront précis
                             </div>
                         </div>
 
-                        <button wire:click="generate" wire:loading.attr="disabled"
-                            class="btn btn-primary btn-lg w-100 fw-bold shadow-sm"
-                            style="border-radius: 5px; padding: 15px;">
-                            <span wire:loading.remove wire:target="generate">
+                        <button wire:click="generate" wire:loading.attr="disabled" wire:loading.remove
+                            wire:target="generate"
+                            class="btn btn-primary btn-lg w-100 fw-bold shadow-sm position-relative"
+                            style="border-radius: 5px; padding: 15px; overflow: hidden;">
+                            <span class="d-flex align-items-center justify-content-center">
                                 <i class="fas fa-wand-magic-sparkles me-2"></i>
                                 Générer avec l'IA
                             </span>
-                            <span wire:loading wire:target="generate">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Génération en cours...
-                            </span>
                         </button>
+                        <div class="row text-center">
+                            <div class="col-12">
+                                <!-- Animation de génération -->
+                                <div wire:loading wire:target="generate" class="text-center">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body text-center py-5">
+                                            {{-- <div class="ai-thinking-animation mb-3">
+                                                <div class="ai-brain">
+                                                    <i class="fas fa-robot text-primary" style="font-size: 3rem;"></i>
+                                                </div>
+                                            </div> --}}
+                                            <h2 class="fw-bold text-primary mb-2">
+                                                <span wire:loading wire:target="generate"
+                                                    class="d-flex align-items-center justify-content-center">
+                                                    <span class="spinner-grow spinner-grow-sm me-2"></span>
+                                                    <span class="spinner-grow spinner-grow-sm me-2"
+                                                        style="animation-delay: 0.15s;"></span>
+                                                    <span class="spinner-grow spinner-grow-sm me-2"
+                                                        style="animation-delay: 0.3s;"></span>
+                                                    <span class="ms-2">L'IA analyse votre demande...</span>
+                                                </span>
+                                            </h2>
+                                            <div
+                                                class="progress-steps d-flex justify-content-between align-items-center">
+                                                <div class="progress-step step-1">
+                                                    <div class="step-icon">📊</div>
+                                                    <div class="step-text">Analyse</div>
+                                                </div>
+                                                <div class="progress-step step-2">
+                                                    <div class="step-icon">🏗️</div>
+                                                    <div class="step-text">Structure</div>
+                                                </div>
+                                                <div class="progress-step step-3">
+                                                    <div class="step-icon">✨</div>
+                                                    <div class="step-text">Finalisation</div>
+                                                </div>
+                                            </div>
+                                            <p class="text-muted mb-0 mt-3">
+                                                <small class="text-primary" style="font-size: 15px">Cela peut prendre quelques secondes...</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,23 +256,24 @@
                     </h2>
                     <p class="text-muted mb-0">Vérifiez et modifiez avant d'enregistrer</p>
                 </div>
-                    <div class="card-body p-4" style="width: 900px">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="">
-                                    <label class="form-label fw-semibold">Nom du domaine</label>
-                                    <input type="text" wire:model="editableData.nom_domaine"
-                                        class="form-control form-control-lg shadow" style="border-radius: 5px;">
-                                </div>
+                <div class="card-body p-4" style="width: 900px">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="">
+                                <label class="form-label fw-semibold">Nom du domaine</label>
+                                <input type="text" wire:model="editableData.nom_domaine"
+                                    class="form-control form-control-lg shadow" style="border-radius: 5px;">
                             </div>
-                            <div class="col-6">
-                                <div>
-                                    <label class="form-label fw-semibold">Description</label>
-                                    <textarea wire:model="editableData.description" rows="2" class="form-control shadow" style="border-radius: 5px;"></textarea>
-                                </div>
+                        </div>
+                        <div class="col-6">
+                            <div>
+                                <label class="form-label fw-semibold">Description</label>
+                                <textarea wire:model="editableData.description" rows="2" class="form-control shadow"
+                                    style="border-radius: 5px;"></textarea>
                             </div>
                         </div>
                     </div>
+                </div>
                 <button wire:click="regenerate" class="btn btn-outline-secondary" style="border-radius: 5px;">
                     <i class="fas fa-plus me-2"></i>
                     Nouvelle génération
@@ -226,7 +295,8 @@
                         <div class="accordion-item border-0 shadow-sm mb-3"
                             style="border-radius: 5px; overflow: hidden;">
                             <h2 class="accordion-header">
-                                <button class="accordion-button fw-bold {{ $catIndex === 0 ? '' : 'collapsed' }} bg-primary"
+                                <button
+                                    class="accordion-button fw-bold {{ $catIndex === 0 ? '' : 'collapsed' }} bg-primary"
                                     type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapse{{ $catIndex }}">
                                     <i class="fas fa-folder2-open me-2 text-primary"></i>
@@ -234,7 +304,8 @@
                                         class="me-2">{{ $categorie['nom_categorie'] ?? 'Catégorie ' . ($catIndex + 1) }}</span>
                                     <span
                                         class="badge bg-white rounded-pill text-primary">{{ $categorie['code_categorie'] ?? '' }}</span>
-                                    <span class="badge bg-secondary rounded-pill ms-2">{{ count($categorie['items']) }}
+                                    <span
+                                        class="badge bg-secondary rounded-pill ms-2">{{ count($categorie['items']) }}
                                         items</span>
                                 </button>
                             </h2>
@@ -270,8 +341,8 @@
                                         </div>
                                         <div class="col-5">
                                             <label class="form-label fw-semibold">Description</label>
-                                            <textarea wire:model="editableData.categories.{{ $catIndex }}.description" rows="2" class="form-control shadow"
-                                                placeholder="Description de la catégorie" style="border-radius: 5px;"></textarea>
+                                            <textarea wire:model="editableData.categories.{{ $catIndex }}.description" rows="2"
+                                                class="form-control shadow" placeholder="Description de la catégorie" style="border-radius: 5px;"></textarea>
                                         </div>
                                     </div>
 
@@ -312,8 +383,7 @@
                                                                 </div>
                                                                 <div class="col-12">
                                                                     <textarea wire:model="editableData.categories.{{ $catIndex }}.items.{{ $itemIndex }}.description"
-                                                                        rows="2" class="form-control shadow" placeholder="Description de l'item"
-                                                                        style="border-radius: 3px;"></textarea>
+                                                                        rows="2" class="form-control shadow" placeholder="Description de l'item" style="border-radius: 3px;"></textarea>
                                                                 </div>
                                                                 <div class="col-12">
                                                                     <select
@@ -321,10 +391,11 @@
                                                                         class="form-select shadow"
                                                                         style="border-radius: 3px;">
                                                                         <option value="texte">📝 Texte</option>
-                                                                        <option value="liste">� Liste déroulante
+                                                                        <option value="liste">📋 Liste déroulante
                                                                         </option>
                                                                         <option value="checkbox">☑️ Cases à cocher
                                                                         </option>
+                                                                        <option value="file">📎 Fichier</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -341,6 +412,15 @@
                                                                                 class="badge bg-primary">{{ $opt['label'] }}</span>
                                                                         @endforeach
                                                                     </div>
+                                                                </div>
+                                                            @elseif ($item['type'] === 'file')
+                                                                <div
+                                                                    class="mt-3 p-2 bg-info bg-opacity-10 rounded border border-info">
+                                                                    <small class="text-info">
+                                                                        <i class="fas fa-paperclip me-1"></i>
+                                                                        <strong>Type fichier :</strong> L'utilisateur
+                                                                        pourra télécharger un document
+                                                                    </small>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -390,44 +470,187 @@
 </div>
 
 @push('styles')
-<style>
-    .accordion-button:not(.collapsed) {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-    }
-    
-    .accordion-button:not(.collapsed) .badge {
-        background-color: rgba(255, 255, 255, 0.3) !important;
-    }
-    
-    .accordion-button:not(.collapsed) i {
-        color: white !important;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #5568d3 0%, #63408a 100%);
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
-    
-    .card {
-        transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-2px);
-    }
-</style>
+    <style>
+        .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        .accordion-button:not(.collapsed) .badge {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .accordion-button:not(.collapsed) i {
+            color: white !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #63408a 100%);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Animations de génération */
+        @keyframes brain-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.85;
+            }
+        }
+
+        @keyframes glow-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(102, 126, 234, 0.7), 0 0 35px rgba(102, 126, 234, 0.5);
+            }
+        }
+
+        .ai-thinking-animation {
+            display: inline-block;
+        }
+
+        .ai-brain {
+            animation: brain-pulse 2s ease-in-out infinite, glow-pulse 2s ease-in-out infinite;
+            display: inline-block;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+        }
+
+        .ai-brain i {
+            color: white !important;
+            display: block;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+        }
+
+        .progress-step {
+            text-align: center;
+            opacity: 0.25;
+            transition: all 0.6s ease;
+        }
+
+        @keyframes step-activate {
+            0% {
+                opacity: 0.25;
+                transform: scale(0.9) translateY(5px);
+            }
+
+            50% {
+                transform: scale(1.15) translateY(-5px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-step.active .step-icon {
+            animation: bounce-icon 1s ease infinite;
+        }
+
+        @keyframes bounce-icon {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .progress-step.active .step-text {
+            color: #667eea;
+        }
+
+        /* Animation progressive des étapes */
+        .step-1 {
+            animation: step-activate 0.6s ease 0.5s forwards;
+        }
+
+        .step-2 {
+            animation: step-activate 0.6s ease 2s forwards;
+        }
+
+        .step-3 {
+            animation: step-activate 0.6s ease 3.5s forwards;
+        }
+
+        /* Animation du spinner */
+        .spinner-grow {
+            animation: spinner-grow 0.75s linear infinite;
+        }
+
+        @keyframes spinner-grow {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
 @endpush
 
 @push('scripts')
@@ -441,10 +664,6 @@
                     modal.hide();
                 }
 
-                // Afficher une notification de succès (optionnel)
-                setTimeout(() => {
-                    location.reload(); // Recharger la page pour voir les nouvelles données
-                }, 1500);
             });
         });
     </script>

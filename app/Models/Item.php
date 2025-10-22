@@ -32,6 +32,11 @@ class Item extends Model
     {
         return $this->belongsTo(CategorieDommaine::class, 'categorie_domaine_id');
     }
+    // Alias pour simplifier l'utilisation
+    public function categorie()
+    {
+        return $this->CategorieDommaine();
+    }
     public function entreprises()
     {
         return $this->belongsToMany(Entreprise::class, 'item_entreprises')
