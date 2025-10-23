@@ -366,7 +366,6 @@
                                                     default => ['id' => null, 'hasWidget' => false],
                                                 };
                                             @endphp
-
                                             @if ($widgetConfig['hasWidget'] && $widgetConfig['id'])
                                                 {{-- Loading state --}}
                                                 <div id="taggbox-loading-{{ $entreprise->id }}"
