@@ -312,9 +312,6 @@
                             pointer-events: none;
                         }
 
-                        /* Option : si tu veux garder la place dans la mise en page, remplace par :
-.is-hidden { opacity:0; visibility:hidden; }
-*/
                     </style>
                     <div class="col-xl-6 my-5">
                         <div class="card">
@@ -365,7 +362,7 @@
                                                     'YODI' => ['id' => '304182', 'hasWidget' => true],
                                                     'YOD' => ['id' => '304182', 'hasWidget' => true],
                                                     'NEH' => ['id' => '300959', 'hasWidget' => true],
-                                                    // 'ING' => ['id' => '304185', 'hasWidget' => true],
+                                                    'ING' => ['id' => '304949', 'hasWidget' => true],
                                                     default => ['id' => null, 'hasWidget' => false],
                                                 };
                                             @endphp
