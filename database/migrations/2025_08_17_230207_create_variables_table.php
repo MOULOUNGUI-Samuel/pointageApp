@@ -12,6 +12,10 @@ return new class extends Migration {
                   ->constrained('categories')
                   ->cascadeOnDelete();
             $table->string('nom_variable');
+<<<<<<< HEAD
+=======
+            $table->unsignedInteger('numeroVariable')->unique()->change();
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
             $table->decimal('tauxVariable', 6, 2)->nullable()->default(null)->change();
             $table->decimal('tauxVariableEntreprise', 6, 2)->nullable()->default(null)->change();
             // libre, à typer plus tard (ex: enum) si besoin

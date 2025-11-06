@@ -24,7 +24,11 @@ class Variable extends Model
      'statut'];
 
      protected $casts = [
+<<<<<<< HEAD
         'statut'          => 'boolean',
+=======
+        'statut'            => 'boolean',
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
         'statutVariable'    => 'boolean',
         'variableImposable' => 'boolean',
         'tauxVariable'      => 'decimal:2', // Laravel cast en string formattée; OK pour l’API

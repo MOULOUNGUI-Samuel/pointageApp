@@ -104,22 +104,37 @@
                     data-module="effectifs">
                     <i class="fas fa-users mr-3"></i> Effectifs & Structure
                 </a>
+<<<<<<< HEAD
                 {{-- <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
                     data-module="contrats">
                     <i class="fas fa-file-contract mr-3"></i> Contrats & Conformité
                 </a> --}}
+=======
+                <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
+                    data-module="contrats">
+                    <i class="fas fa-file-contract mr-3"></i> Contrats & Conformité
+                </a>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                 <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
                     data-module="pointage">
                     <i class="fas fa-clock mr-3"></i> Pointage & Temps
                 </a>
+<<<<<<< HEAD
                 {{-- <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
+=======
+                <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                     data-module="paie">
                     <i class="fas fa-money-bill-wave mr-3"></i> Paie & Masse salariale
                 </a>
                 <a href="#" class="sidebar-link flex items-center px-6 py-3 text-white hover:bg-blue-800"
                     data-module="reporting">
                     <i class="fas fa-file-export mr-3"></i> Reporting & Export
+<<<<<<< HEAD
                 </a> --}}
+=======
+                </a>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
             </nav>
             <div class="absolute bottom-0 w-64 p-6 text-xs text-blue-200">
                 <p>&copy; 2025 Yodingenierie</p>
@@ -151,12 +166,21 @@
                             </select>
                         </div>
                         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+<<<<<<< HEAD
                             <i class="fas fa-bell mr-2"></i> 
                             {{-- <span class="badge-danger px-2 py-1 rounded-full text-xs"></span> --}}
                         </button>
                         <div class="text-right">
                             <p class="text-sm font-semibold text-gray-700">{{Auth::user()->nom}}</p>
                             <p class="text-xs text-gray-500">{{Auth::user()->fonction}}</p>
+=======
+                            <i class="fas fa-bell mr-2"></i> <span
+                                class="badge-danger px-2 py-1 rounded-full text-xs">12</span>
+                        </button>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-gray-700">Admin BFEV</p>
+                            <p class="text-xs text-gray-500">14 octobre 2025</p>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                         </div>
                     </div>
                 </div>
@@ -190,7 +214,11 @@
                             <div>
                                 <p class="text-gray-500 text-sm">Effectif Total</p>
                                 <h3 class="text-3xl font-bold text-gray-800 mt-2">{{ count($employeesData) }}</h3>
+<<<<<<< HEAD
                                 <p class="text-green-500 text-xs mt-2"><i class="fas fa-arrow-up"></i> ---</p>
+=======
+                                <p class="text-green-500 text-xs mt-2"><i class="fas fa-arrow-up"></i> +12 ce mois</p>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                             </div>
                             <div class="bg-blue-100 p-3 rounded-full">
                                 <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -201,7 +229,11 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Masse Salariale</p>
+<<<<<<< HEAD
                                 <h3 class="text-3xl font-bold text-gray-800 mt-2">---</h3>
+=======
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">127M</h3>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                                 <p class="text-gray-500 text-xs mt-2">XOF / mois</p>
                             </div>
                             <div class="bg-green-100 p-3 rounded-full">
@@ -213,8 +245,14 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Conformité RH</p>
+<<<<<<< HEAD
                                 <h3 class="text-3xl font-bold text-gray-800 mt-2">---</h3>
                                 <p class="text-orange-500 text-xs mt-2"><i class="fas fa-exclamation-triangle"></i>--</p>
+=======
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">78%</h3>
+                                <p class="text-orange-500 text-xs mt-2"><i class="fas fa-exclamation-triangle"></i> 23
+                                    alertes</p>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                             </div>
                             <div class="bg-orange-100 p-3 rounded-full">
                                 <i class="fas fa-shield-alt text-orange-600 text-xl"></i>
@@ -225,8 +263,13 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Taux Assiduité</p>
+<<<<<<< HEAD
                                 <h3 class="text-3xl font-bold text-gray-800 mt-2">---</h3>
                                 <p class="text-green-500 text-xs mt-2"><i class="fas fa-arrow-up"></i> --</p>
+=======
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">94.2%</h3>
+                                <p class="text-green-500 text-xs mt-2"><i class="fas fa-arrow-up"></i> +1.3%</p>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                             </div>
                             <div class="bg-blue-100 p-3 rounded-full">
                                 <i class="fas fa-clock text-blue-600 text-xl"></i>
@@ -242,13 +285,21 @@
                         <canvas id="effectifChart"></canvas>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6">
+<<<<<<< HEAD
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution Masse Salariale <span style="color: #05436b;font-size:15px">(<i>non disponible</i></span>)</h3>
+=======
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution Masse Salariale (6 mois)</h3>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                         <canvas id="masseSalarialeChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Alerts Row -->
+<<<<<<< HEAD
                 {{-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+=======
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
                     <div class="bg-white rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <span class="bg-red-100 p-2 rounded-full mr-3"><i
@@ -313,7 +364,11 @@
                             </div>
                         </div>
                     </div>
+<<<<<<< HEAD
                 </div> --}}
+=======
+                </div>
+>>>>>>> 2051fda2857123fbe9a12379eed1c410c7e5bfce
             </section>
 
             <!-- Effectifs Module -->
