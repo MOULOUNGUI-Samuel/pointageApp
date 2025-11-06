@@ -1,0 +1,305 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API NedCore",
+        "description": "Description de l'API pour l'intégration avec d'autres services.",
+        "contact": {
+            "email": "admin@monapplication.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/",
+            "description": "Serveur API de Développement"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": ["Utilisateurs"],
+                "summary": "Obtenir la liste des utilisateurs",
+                "description": "Retourne une liste paginée des utilisateurs.",
+                "operationId": "getUsersList",
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/User"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/users?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "last_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/users?page=5"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/users"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 75
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": ["Utilisateurs"],
+                "summary": "Obtenir les informations d'un utilisateur",
+                "description": "Retourne les données d'un utilisateur spécifique.",
+                "operationId": "getUserById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "title": "User",
+                "description": "Modèle de données d'un utilisateur",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true,
+                        "example": "9a7a6c11-a27b-4638-a281-3ce9d49e3e44"
+                    },
+                    "entreprise_id": {
+                        "type": "char",
+                        "example": 1
+                    },
+                    "nom": {
+                        "type": "string",
+                        "example": "Durand"
+                    },
+                    "prenom": {
+                        "type": "string",
+                        "example": "Marie"
+                    },
+                    "matricule": {
+                        "type": "string",
+                        "example": "M012345"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "marie.durand@example.com"
+                    },
+                    "service_id": {
+                        "type": "char",
+                        "example": 3
+                    },
+                    "role_id": {
+                        "type": "char",
+                        "example": 2
+                    },
+                    "lieu_naissance": {
+                        "type": "string",
+                        "example": "Paris"
+                    },
+                    "nationalite": {
+                        "type": "string",
+                        "example": "Française"
+                    },
+                    "numero_securite_sociale": {
+                        "type": "string",
+                        "example": "1 85 01 75 123 456"
+                    },
+                    "etat_civil": {
+                        "type": "string",
+                        "example": "Célibataire"
+                    },
+                    "nombre_enfant": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "photo": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://example.com/path/to/photo.jpg"
+                    },
+                    "adresse": {
+                        "type": "string",
+                        "example": "123 Rue de la République"
+                    },
+                    "code_postal": {
+                        "type": "string",
+                        "example": "75001"
+                    },
+                    "superieur_hierarchique": {
+                        "description": "ID de l'utilisateur supérieur hiérarchique",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "niveau_etude": {
+                        "type": "string",
+                        "example": "Bac +5"
+                    },
+                    "competence": {
+                        "type": "string",
+                        "example": "Gestion de projet, PHP, Laravel"
+                    },
+                    "ville_id": {
+                        "type": "char",
+                        "example": 1
+                    },
+                    "pays_id": {
+                        "type": "char",
+                        "example": 1
+                    },
+                    "categorie_professionel_id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "type_contrat": {
+                        "type": "string",
+                        "example": "CDI"
+                    },
+                    "salaire": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 45000
+                    },
+                    "mode_paiement": {
+                        "type": "string",
+                        "example": "Virement bancaire"
+                    },
+                    "iban": {
+                        "type": "string",
+                        "example": "FR7630006000011234567890189"
+                    },
+                    "bic": {
+                        "type": "string",
+                        "example": "SOGEFRPP"
+                    },
+                    "telephone": {
+                        "type": "string",
+                        "example": "+33 6 12 34 56 78"
+                    },
+                    "fonction": {
+                        "type": "string",
+                        "example": "Développeur Senior"
+                    },
+                    "cv": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://example.com/path/to/cv.pdf"
+                    },
+                    "statut": {
+                        "description": "Statut de l'utilisateur (ex: active, inactive)",
+                        "type": "string",
+                        "example": "active"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "description": "Clé d'API pour l'authentification des requêtes.",
+                "name": "X-API-KEY",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Utilisateurs",
+            "description": "Utilisateurs"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Nedcore",
+  "short_name": "Nedcore",
+  "start_url": "/loginPointe",
+  "display": "standalone",
+  "background_color": "#05436b",
+  "theme_color": "#05436b",
+  "orientation": "portrait",
+  "description": "Application Nedcore",
+  "icons": [
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "72x72",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "144x144",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/authentication/mobile.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
