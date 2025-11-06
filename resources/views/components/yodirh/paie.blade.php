@@ -2166,11 +2166,12 @@ title="Supprimer">
 
                 if (employeeData[employee.id]) {
                     payrollVariables.forEach(variable => {
-                        const value = employeeData[employee.id][variable.name] || 0;
-                        if (variable.type === 'gain') {
+                        const value = parseFloat(employeeData[employee.id][variable.name]) || 0;
+                        // Vérifier explicitement le type de variable
+                        if (variable.type === 'gain' || variable.type === 'gains') {
                             employeeGains += value;
                             totalVariableGains += value;
-                        } else {
+                        } else if (variable.type === 'deduction' || variable.type === 'retenue') {
                             employeeDeductions += value;
                             totalDeductions += value;
                         }
