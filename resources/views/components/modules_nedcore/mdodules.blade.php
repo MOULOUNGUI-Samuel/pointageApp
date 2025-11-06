@@ -3,37 +3,18 @@
          <div class="col text-center card-hover-zoom">
              <!-- Le lien pointe maintenant vers la nouvelle route 'openproject.redirect' -->
              {{-- Blade --}}
-             <a href="#" onclick="Consolider(event)" class="text-decoration-none text-dark d-block">
+             <a href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasConsolider"
+                 aria-controls="offcanvasConsolider" class="text-decoration-none text-dark d-block">
                  <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white"
                      style="width:170px;height:70px;transition:transform .3s;border-radius:5px;">
-                     <img src="{{ asset('src/images/consolider.png') }}" alt="OpenProject" class="img-fluid rounded py-1"
+                     <img src="{{ asset('src/images/consolider.png') }}" alt="OpenProject"
+                         class="img-fluid rounded py-1"
                          style="width:170px;height:70px;object-fit:contain;border-radius:5px;">
                  </div>
                  <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
-                     style="font-size:13px">Consolider</small>
+                     style="font-size:13px">Consolidation</small>
              </a>
-
-
-             <script>
-                 function Consolider(event) {
-                     event.preventDefault(); // Empêche le lien de naviguer
-
-                     const url = @json(route('index-consolider'));
-                     const width = 1450;
-                     const height = 700;
-
-                     // Calcul de la position centrée
-                     const left = (window.screen.width / 2) - (width / 2);
-                     const top = (window.screen.height / 2) - (height / 2);
-
-                     // Ouverture de la popup centrée
-                     window.open(
-                         url,
-                         'index-consolider',
-                         `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
-                     );
-                 }
-             </script>
+             
          </div>
          @foreach ($mesModules['modules'] as $module)
              @if ($module->nom_module === 'Caisses')
