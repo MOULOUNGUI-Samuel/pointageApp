@@ -2,30 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
-    //
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasUuids;
 
-    protected static function boot()
+    protected $fillable = [
+        'nom',
+        'description',
+    ];
+
+    public function users(): HasMany
     {
-        parent::boot();
-        static::creating(fn ($model) => $model->id = $model->id ?? (string) Str::uuid());
-    }
-
-    protected $fillable = ['nom', 'description'];
-
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
-
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'permissions_roles');
+        return $this->hasMany(User::class, 'role_id');
     }
 }

@@ -162,28 +162,7 @@
                                     <i class="fa fa-spinner fa-spin me-2"></i> Connexion en cours...
                                 </button>
                             </div>
-                            {{-- <div class="mb-3">
-                                <h6>Nouveau sur notre plateforme ?</h6>
-                            </div> --}}
-                            {{-- <div class="form-set-login or-text mb-3">
-                                <h4>OU</h4>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap mb-3">
-                                <div class="text-center me-2 flex-fill">
-                                    <a href="javascript:void(0);"
-                                        class="br-10 p-2 px-4 btn bg-pending  d-flex align-items-center justify-content-center">
-                                        <img class="img-fluid m-1"
-                                            src="{{ asset('assets/img/icons/facebook-logo.svg') }}" alt="Facebook">
-                                    </a>
-                                </div>
-                                <div class="text-center me-2 flex-fill">
-                                    <a href="javascript:void(0);"
-                                        class="br-10 p-2 px-4 btn bg-white d-flex align-items-center justify-content-center">
-                                        <img class="img-fluid  m-1"
-                                            src="{{ asset('assets/img/icons/google-logo.svg') }}" alt="Google">
-                                    </a>
-                                </div>
-                            </div> --}}
+                            
                             <div class="text-center">
                                 <p class="fw-medium text-gray">Copyright © 2025. Tous droits réservés. YodIngenierie
                                     Gabon</p>

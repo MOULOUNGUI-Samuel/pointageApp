@@ -102,7 +102,7 @@
 
             </li>
             <!-- /Search -->
-
+            
             <!-- Nav List -->
             <li class="nav-item nav-list">
                 <ul class="nav">
@@ -112,6 +112,9 @@
                                 <i class="ti ti-maximize"></i>
                             </a>
                         </div>
+                    </li>
+                    <li class="nav-item">
+                        @livewire('notification-centre')
                     </li>
                     <li class="dark-mode-list">
                         <a href="javascript:void(0);" id="dark-mode-toggle" class="dark-mode-toggle">
@@ -292,38 +295,5 @@
         </ul>
     </div>
 
-    <!-- Mobile Menu -->
-    <div class="dropdown mobile-user-menu">
-        <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
-        <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">
-                <i class="ti ti-user-pin"></i> Mon Profil
-            </a>
-            @if (session('module_id'))
-                <a href="{{ route('logout_module', ['id' => session('module_id')]) }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form-2').submit();">
-                    <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
-                    <span class=" text-primary" style="font-size: 15px">Déconnexion</span>
-                </a>
-
-                <form id="logout-form-2" action="{{ route('logout_module', ['id' => session('module_id')]) }}"
-                    method="POST" style="display: none;">
-                    @csrf
-                </form>
-            @else
-                <a href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
-                    <i class="fa fa-sign-out text-primary" style="font-size: 17px;margin-right:6px"></i>
-                    <span style="font-size: 15px" class=" text-primary">Déconnexion</span>
-                </a>
-
-                <form id="logout-form-1" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            @endif
-        </div>
-    </div>
-    <!-- /Mobile Menu -->
 </div>
 <!-- /Header -->

@@ -43,4 +43,11 @@ class Domaine extends Model
     {
         return $this->belongsTo(CategorieDommaine::class);
     }
+
+
+    public function entreprises()
+    {
+        return $this->belongsToMany(Entreprise::class, 'entreprise_domaines')
+            ->withTimestamps();
+    }
 }

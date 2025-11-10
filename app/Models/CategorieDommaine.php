@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class CategorieDommaine extends Model
@@ -33,10 +35,6 @@ class CategorieDommaine extends Model
     }
 
     // ✅ relations hiérarchiques
-    public function domaine()
-    {
-        return $this->belongsTo(Domaine::class, 'domaine_id');
-    }
 
     public function user_add()
     {
@@ -47,7 +45,13 @@ class CategorieDommaine extends Model
         return $this->belongsTo(User::class, 'user_update_id');
     }
 
-    public function items()
+
+    public function domaine(): BelongsTo
+    {
+        return $this->belongsTo(Domaine::class, 'domaine_id');
+    }
+
+    public function items(): HasMany
     {
         return $this->hasMany(Item::class, 'categorie_domaine_id');
     }

@@ -1,7 +1,7 @@
 // resources/js/app.js
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-
+import './notifications';
 // --- Pusher / Echo (temps réel in-app)
 Pusher.logToConsole = true;          // logs utiles en dev
 window.Pusher = Pusher;

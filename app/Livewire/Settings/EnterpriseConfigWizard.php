@@ -190,7 +190,7 @@ class EnterpriseConfigWizard extends Component
         // persiste items
         $this->syncEntrepriseItems();
         $this->notifyBoard();
-        session()->flash('success', 'Configuration enregistrée ✅');
+        $this->dispatch('notify', type: 'success', message: 'Configuration enregistrée ✅');
         // Tu peux rester sur l’étape 3 ou revenir à 1 selon ton UX
     }
 

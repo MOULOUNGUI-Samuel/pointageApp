@@ -20,9 +20,9 @@
         <div class="mb-2">
             <input type="text" class="form-control" placeholder="Rechercher un domaine…" wire:model.debounce.300ms="searchDomaines">
         </div>
-        <div class="row row-cols-1 row-cols-md-4">
+        <div class="row">
             @forelse ($domaines as $d)
-                <div class="col">
+                <div class="col-3">
                     <input type="checkbox" class="btn-check"  id="dom-{{ $d['id'] }}"
                     wire:click="toggleDomaine('{{ $d['id'] }}')"
                     @checked(in_array($d['id'], $selectedDomainIds, true))>
@@ -55,9 +55,9 @@
                    placeholder="Rechercher une catégorie…" wire:model.debounce.300ms="searchCategories">
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 g-2">
+        <div class="row">
             @forelse ($categories as $c)
-                <div class="col">
+                <div class="col-3 mb-2">
                     <input type="checkbox" class="btn-check"   id="cat-{{ $c['id'] }}"
                     wire:click="toggleCategorie('{{ $c['id'] }}')"
                     @checked(in_array($c['id'], $selectedCategoryIds, true))>
@@ -93,9 +93,9 @@
                    placeholder="Rechercher un item…" wire:model.debounce.300ms="searchItems">
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 g-2">
+        <div class="row">
             @forelse ($items as $it)
-                <div class="col">
+                <div class="col-3 mb-2">
                     <input type="checkbox" class="btn-check"   id="it-{{ $it['id'] }}"
                     wire:click="toggleItem('{{ $it['id'] }}')"
                     @checked(in_array($it['id'], $selectedItemIds, true))>

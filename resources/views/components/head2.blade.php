@@ -52,35 +52,33 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
+     <!-- Simplebar CSS -->
+     <link rel="stylesheet" href="{{asset('assets/plugins/simplebar/simplebar.min.css')}}">
+
+   <!-- Choices CSS -->
+     <link rel="stylesheet" href="{{asset('assets/plugins/choices.js/public/assets/styles/choices.min.css')}}">
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
     @if (request()->routeIs('paie'))
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @endif
-      {{-- <!-- Daterangepikcer CSS -->
-	<link rel="stylesheet" href="{{asset('assets/plugins/daterangepicker/daterangepicker.css')}}">
 
-  <!-- Choices CSS -->
-  <link rel="stylesheet" href="{{asset('assets/plugins/choices.js/public/assets/styles/choices.min.css')}}">
-
-  <!-- Tabler Icon CSS -->
-  <link rel="stylesheet" href="{{asset('assets/plugins/tabler-icons/tabler-icons.min.css')}}">
-
-  <!-- Simplebar CSS -->
-  <link rel="stylesheet" href="{{asset('assets/plugins/simplebar/simplebar.min.css')}}"> --}}
-
-    <!-- Metas nécessaires -->
-    <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="sw-beams" content="{{ asset('service-worker.js') }}">
-    <meta name="user-id" content="{{ auth()->id() }}">
+  <!-- Metas nécessaires -->
+  <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="sw-beams" content="{{ asset('service-worker.js') }}">
+  <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="entreprise-id" content="{{ session('entreprise_id') }}">
-    @vite(['resources/css/app.css','resources/js/app.js'])
+    @php
+    $userData = auth()->user()?->only(['id', 'entreprise_id', 'role', 'super_admin']);
+@endphp
 
-  
+<meta name="user-data" content='@json($userData)'>
+    @vite(['resources/css/app.css','resources/js/app.js'])
+    
+    
     @livewireStyles
   </head>
   

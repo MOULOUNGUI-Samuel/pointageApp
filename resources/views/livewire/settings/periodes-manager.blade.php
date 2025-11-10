@@ -36,7 +36,7 @@
                 <label class="form-label">Statut</label>
                 <select class="form-select @error('statut') is-invalid @enderror" wire:model="statut">
                     <option value="1">Actif</option>
-                    <option value="0">Annulé</option>
+                    <option value="0">Désactiver</option>
                 </select>
                 @error('statut')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
@@ -71,15 +71,15 @@
                         @if((int) $p->statut === 1)
                             <span class="badge bg-success">Actif</span>
                         @else
-                            <span class="badge bg-secondary">Annulé</span>
+                            <span class="badge bg-secondary">Désactiver</span>
                         @endif
                     </td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm">
+                            @if((int) $p->statut === 1)
                             <button class="btn btn-outline-primary" wire:click="openForm('{{ $p->id }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            @if((int) $p->statut === 1)
                                 <button class="btn btn-outline-warning" wire:click="cancel('{{ $p->id }}')"
                                         title="Annuler cette période">
                                     <i class="fas fa-ban"></i>
@@ -88,10 +88,10 @@
                                         title="Renouveler à partir de la fin">
                                     <i class="fas fa-redo"></i>
                                 </button>
+                                <button class="btn btn-outline-danger" wire:click="confirmDelete('{{ $p->id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             @endif
-                            <button class="btn btn-outline-danger" wire:click="confirmDelete('{{ $p->id }}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </td>
                 </tr>

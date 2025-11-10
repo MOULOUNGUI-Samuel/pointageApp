@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Events\NotificationConformiteCreated;
+use App\Listeners\EnvoyerEmailNotificationConformite;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,8 +21,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-    ];
 
+        // Events de notifications de conformité
+        NotificationConformiteCreated::class => [
+            EnvoyerEmailNotificationConformite::class,
+        ],
+    ];
     /**
      * Register any events for your application.
      */
@@ -35,4 +42,9 @@ class EventServiceProvider extends ServiceProvider
     {
         return false;
     }
+
+    
+
+   
+
 }

@@ -1,4 +1,31 @@
 @livewireScripts
+<script>
+    // Listener Livewire -> Lobibox
+    window.addEventListener('notify', (e) => {
+        const {
+            type = 'info', message = ''
+        } = e.detail || {};
+        Lobibox.notify(type, {
+            pauseDelayOnHover: true,
+            continueDelayOnInactiveTab: false,
+            position: 'top right',
+            icon: type === 'success' ? 'bx bx-check-circle' : type === 'error' ? 'bx bx-x-circle' :
+                type === 'warning' ? 'bx bx-error' : 'bx bx-info-circle',
+            msg: message
+        });
+    });
+
+    // Exemple de fonction personnalisée (bouton démo)
+    function success_noti(msg = 'Opération réussie !') {
+        Lobibox.notify('success', {
+            pauseDelayOnHover: true,
+            continueDelayOnInactiveTab: false,
+            position: 'top right',
+            icon: 'bx bx-check-circle',
+            msg: msg
+        });
+    }
+</script>
 @stack('scripts')
 <script>
     const beamsClient = new PusherPushNotifications.Client({
@@ -11,6 +38,10 @@
         .then(() => console.log('Successfully registered and subscribed!'))
         .catch(console.error);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Bootstrap Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 <script src="https://js.pusher.com/beams/2.1.0/push-notifications-cdn.js"></script>
 <script>
     let dotCount = 1;
@@ -117,8 +148,6 @@
 <!-- Slimscroll JS -->
 <script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
 
-<!-- Bootstrap Core JS -->
-<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 
 <!-- Datatable JS -->
 <script src="{{ asset('assets/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
@@ -165,14 +194,17 @@
 <script src="{{ asset('assets/js/script.js') }}" type="text/javascript"></script>
 <script src="{{ asset('cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js') }}"
     data-cf-settings="ca6489927051845bc7a9daaa-|49" defer></script>
+      <!-- Bootstrap Core JS -->
+      <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}" type="175cb486dea87b1ea72b3ca1-text/javascript"></script>    
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
     integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
     data-cf-beacon='{"rayId":"97e90219ca614193","version":"2025.8.0","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"3ca157e612a14eccbb30cf6db6691c29","b":1}'
     crossorigin="anonymous"></script>
 
-{{-- <!-- Choices Js -->	
+<!-- Choices Js -->	
 <script src="{{asset('assets/plugins/choices.js/public/assets/scripts/choices.min.js')}}" type="d2dd5d147621af618fbbb249-text/javascript"></script>
-
+{{-- 
 <!-- Simplebar JS -->
 <script src="{{asset('assets/plugins/simplebar/simplebar.min.js')}}" type="d2dd5d147621af618fbbb249-text/javascript"></script>
 

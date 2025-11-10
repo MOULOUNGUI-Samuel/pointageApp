@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 
@@ -69,5 +70,19 @@ class Entreprise extends Model
     {
         return $this->belongsToMany(Item::class, 'entreprise_items')
             ->withPivot('statut')->withTimestamps();
+    }
+    /**
+     * Relations
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'entreprise_id');
+    }
+
+
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(NotificationConformite::class, 'entreprise_id');
     }
 }

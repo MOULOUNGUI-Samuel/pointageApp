@@ -2132,12 +2132,17 @@ title="Supprimer">
 
         // ex: "/pdf/fichePaie/__USER__/__PERIODE__"
          const PAYSLIP_URL_TEMPLATE = @json(route('ficheDePaieDemo', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
-        // const PAYSLIP_URL_TEMPLATE = @json(route('attestationStage', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
+        const PAYSLIP_URL_TEMPLATE2 = @json(route('attestationStage', ['userId' => '__USER__', 'tiketPeriode' => '__PERIODE__']));
 
         const periodTicketInput = document.getElementById('periodTicket');
 
         function buildPayslipUrl(userId, tiketPeriode) {
             return PAYSLIP_URL_TEMPLATE
+                .replace('__USER__', encodeURIComponent(userId))
+                .replace('__PERIODE__', encodeURIComponent(tiketPeriode));
+        }
+        function buildPayslipUrl2(userId, tiketPeriode) {
+            return PAYSLIP_URL_TEMPLATE2
                 .replace('__USER__', encodeURIComponent(userId))
                 .replace('__PERIODE__', encodeURIComponent(tiketPeriode));
         }
@@ -2149,6 +2154,14 @@ title="Supprimer">
                 return;
             }
             window.open(buildPayslipUrl(userId, ticket), '_blank', 'noopener');
+        }
+        function openPayslip2(userId) {
+            const ticket = (periodTicketInput?.value || '').trim();
+            if (!ticket) {
+                alert("Veuillez d'abord renseigner un ticket/période.");
+                return;
+            }
+            window.open(buildPayslipUrl2(userId, ticket), '_blank', 'noopener');
         }
         // --- SYNTHÈSE ---
         function calculateSynthesis() {
@@ -2216,8 +2229,14 @@ title="Supprimer">
                     `<button type="button"
                class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-primary"
                onclick="openPayslip('${detail.employee.id}')">
+         Bulletin de paie
+       </button>
+       <button type="button"
+               class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-primary"
+               onclick="openPayslip2('${detail.employee.id}')">
          Fiche de paie
-       </button>` :
+       </button>
+       ` :
                     `<button type="button"
                class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-gray-300 text-gray-600 cursor-not-allowed"
                title="Renseignez d'abord le ticket/période"

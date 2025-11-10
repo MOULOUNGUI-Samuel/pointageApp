@@ -55,9 +55,6 @@ Route::get('/login', function () {
     return view('auth.loginAdmin');
 })->name('login.view');
 
-Route::get('/connexion', function () {
-    return view('auth.mobile.login');
-})->name('connexion');
 
 Route::get('/inscription', function () {
     return view('auth.mobile.register');
@@ -389,3 +386,4 @@ Route::post('/logout_module/{id}', [AuthenticatedSessionController::class, 'logo
 // Gestion des routes API
 // Cette seule ligne crée les routes pour index, show, store, update, destroy
 Route::apiResource('users', UserController::class)->middleware('auth:sanctum');
+require __DIR__.'/conformite.php';

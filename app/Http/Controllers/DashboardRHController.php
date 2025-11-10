@@ -11,7 +11,7 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\ConformitySubmission;
 class DashboardRHController extends Controller
 {
     //
@@ -41,6 +41,14 @@ class DashboardRHController extends Controller
         }
         $entreprise_id = session('entreprise_id');
 
+        if(session('module_nom')=='Audit de conformité'){
+            // Compter les soumissions "en attente" (scope enAttente) pour CETTE entreprise
+            $pendingCount = ConformitySubmission::where('entreprise_id', $entreprise_id)
+            ->enAttente()
+            ->count();
+        }else{
+            $pendingCount=null;
+        }
         $deuxSemainesPlusTard = now()->addWeeks(2)->endOfDay();
         $entreprises = Entreprise::All();
         $modules = Module::All();
@@ -107,6 +115,7 @@ class DashboardRHController extends Controller
             'utilisateursFinContrats',
             'entreprises',
             'modules',
+            'pendingCount',
             'services',
             'categories',
         ));

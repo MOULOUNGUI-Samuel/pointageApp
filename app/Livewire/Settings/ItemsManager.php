@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
-
+use Illuminate\Support\Facades\Log;
 class ItemsManager extends Component
 {
     use WithPagination;
@@ -282,17 +282,21 @@ class ItemsManager extends Component
     public function render()
     {
         $today = now()->toDateString();
-
+    
+        // Requête simplifiée pour déboguer
         $items = Item::query()
-            ->with(['categorieDommaine:id,nom_categorie', 'options']) // options utile si besoin
-            ->with(['periodeActive'])
-            ->withCount(['periodes as periodes_actives_count' => function ($q) {
-                $today = now()->toDateString();
-                $q->where('statut', '1')->whereDate('debut_periode', '<=', $today)->whereDate('fin_periode', '>=', $today);
+            ->with(['categorieDommaine:id,nom_categorie', 'options'])
+            ->withCount(['periodes as periodes_actives_count' => function ($q) use ($today) {
+                $q->where('statut', '1')
+                  ->whereDate('debut_periode', '<=', $today)
+                  ->whereDate('fin_periode', '>=', $today);
             }])
             ->orderBy('nom_item')
             ->paginate(8, pageName: 'items_p');
-
+    
+        // DEBUG : Afficher le nombre d'items
+        Log::info('Items Manager - Nombre items:', ['count' => $items->total()]);
+    
         return view('livewire.settings.items-manager', compact('items'));
     }
 }

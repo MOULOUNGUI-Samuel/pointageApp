@@ -92,11 +92,12 @@ class PeriodesManager extends Component
             ->when($this->selectedId, fn($q) => $q->where('id', '!=', $this->selectedId))
             ->where(function ($q) {
                 $q->where('debut_periode', '<=', $this->fin_periode)
-                  ->where('fin_periode',   '>=', $this->debut_periode);
+                    ->where('fin_periode',   '>=', $this->debut_periode);
             })
             ->exists();
 
         if ($conflict) {
+            $this->dispatch('notify', type: 'error', message: 'Chevauchement détecté avec une période active existante.');
             $this->addError('debut_periode', 'Chevauchement détecté avec une période active existante.');
             return false;
         }
@@ -108,6 +109,9 @@ class PeriodesManager extends Component
         $this->validate();
         if (!$this->passesUniqueness()) return;
 
+        if (PeriodeItem::hasActive($this->itemId, $this->entrepriseId)) {
+            $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item.');
+        }
         if ($this->isEditing && $this->selectedId) {
             $p = PeriodeItem::where('item_id', $this->itemId)
                 ->where('entreprise_id', $this->entrepriseId)
@@ -120,7 +124,7 @@ class PeriodesManager extends Component
                 'user_update_id' => Auth::id(),
             ]);
 
-            session()->flash('success', 'Période mise à jour.');
+            $this->dispatch('notify', type: 'success', message: 'Période mise à jour.');
         } else {
             PeriodeItem::create([
                 'item_id'        => $this->itemId,
@@ -131,7 +135,7 @@ class PeriodesManager extends Component
                 'user_add_id'    => Auth::id(),
             ]);
 
-            session()->flash('success', 'Période créée.');
+            $this->dispatch('notify', type: 'success', message: 'Période créée.');
         }
 
         $this->openForm();
@@ -229,7 +233,7 @@ class PeriodesManager extends Component
                 $s = trim($this->search);
                 $q->where(function ($qq) use ($s) {
                     $qq->where('debut_periode', 'like', "%{$s}%")
-                       ->orWhere('fin_periode',   'like', "%{$s}%");
+                        ->orWhere('fin_periode',   'like', "%{$s}%");
                 });
             })
             ->orderByDesc('debut_periode')

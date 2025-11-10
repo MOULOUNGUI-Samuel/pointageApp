@@ -1,0 +1,427 @@
+# Système de Conformité - Documentation
+
+## 📋 Vue d'ensemble
+
+Le système de conformité permet de gérer les déclarations et validations de conformité pour les entreprises. Il comprend :
+
+- **Gestion des items** : Configuration des éléments à déclarer
+- **Périodes de validité** : Définition des périodes actives pour chaque item
+- **Soumissions** : Interface pour soumettre les déclarations
+- **Validation** : Workflow d'approbation/rejet par les administrateurs
+- **Historique** : Traçabilité complète de toutes les actions
+
+## 🏗️ Architecture
+
+### Composants Livewire
+
+1. **ComplianceBoard** (`App\Livewire\Settings\ComplianceBoard`)
+   - Tableau de bord principal avec vue d'ensemble
+   - Filtres avancés (catégorie, période, statut)
+   - Statistiques en temps réel
+   - Accès rapide aux actions
+
+2. **ItemsManager** (`App\Livewire\Settings\ItemsManager`)
+   - Gestion CRUD des items
+   - Support de 4 types : texte, documents, liste, checkbox
+   - Configuration des options pour listes/checkbox
+
+3. **PeriodesManager** (`App\Livewire\Settings\PeriodesManager`)
+   - Gestion des périodes de validité
+   - Validation anti-chevauchement
+   - Renouvellement automatique
+
+4. **SubmitForm** (`App\Livewire\Settings\SubmitForm`)
+   - Formulaire de soumission adapté au type d'item
+   - Support de l'édition des soumissions en attente
+   - Gestion des fichiers
+
+5. **ReviewForm** (`App\Livewire\Settings\ReviewForm`)
+   - Interface de validation pour administrateurs
+   - Approbation/Rejet avec confirmation
+   - Historique de validation
+
+6. **HistoryModal** (`App\Livewire\Settings\HistoryModal`)
+   - Historique complet des soumissions
+   - Filtres et recherche
+   - Statistiques par item
+
+### Modèles
+
+```
+Item (items)
+├── categorieDommaine (BelongsTo)
+├── options (HasMany) - pour listes/checkbox
+├── periodes (HasMany)
+├── periodeActive (HasOne)
+├── submissions (HasMany)
+└── latestSubmission (HasOne)
+
+PeriodeItem (periode_items)
+├── item (BelongsTo)
+├── entreprise (BelongsTo)
+└── submissions (HasMany)
+
+ConformitySubmission (conformity_submissions)
+├── item (BelongsTo)
+├── periode (BelongsTo)
+├── entreprise (BelongsTo)
+├── submitter (BelongsTo User)
+├── reviewer (BelongsTo User)
+└── answers (HasMany)
+
+ConformityAnswer (conformity_answers)
+└── submission (BelongsTo)
+```
+
+## 🚀 Installation
+
+### 1. Migrations
+
+```bash
+php artisan migrate
+```
+
+Les tables créées :
+- `items` - Items de conformité
+- `item_options` - Options pour listes/checkbox
+- `periode_items` - Périodes de validité
+- `conformity_submissions` - Soumissions
+- `conformity_answers` - Réponses aux soumissions
+- `entreprise_items` - Pivot entreprise-items
+- `entreprise_categorie_domaines` - Pivot entreprise-catégories
+- `entreprise_domaines` - Pivot entreprise-domaines
+
+### 2. Dépendances Frontend
+
+Dans votre `resources/js/app.js` :
+
+```javascript
+import './notifications';
+```
+
+Dans votre layout principal (`app.blade.php` ou équivalent) :
+
+```blade
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- ... -->
+    @stack('styles')
+</head>
+<body>
+    <!-- ... -->
+    
+    @stack('scripts')
+</body>
+</html>
+```
+
+### 3. Configuration Vite
+
+Dans `vite.config.js` :
+
+```javascript
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/js/notifications.js', // Ajouter cette ligne
+            ],
+            refresh: true,
+        }),
+    ],
+});
+```
+
+### 4. Assets
+
+Inclure dans vos vues :
+
+```blade
+<x-conformite-assets />
+```
+
+Ou manuellement :
+
+```blade
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @vite(['resources/js/notifications.js'])
+@endpush
+```
+
+## 📱 Utilisation
+
+### Tableau de Bord
+
+```blade
+<livewire:settings.compliance-board />
+```
+
+Affiche :
+- Statistiques globales (total, en attente, approuvés, rejetés)
+- Filtres (recherche, catégorie, période, statut)
+- Grille des items avec statut visuel
+- Actions rapides (soumettre, historique)
+
+### Configuration des Items
+
+```blade
+<!-- Bouton pour ouvrir la modale -->
+<button data-bs-toggle="modal" data-bs-target="#addItemModal">
+    Gérer les Items
+</button>
+
+<!-- Modale -->
+<livewire:settings.items-manager />
+```
+
+### Wizard de Configuration
+
+```blade
+<livewire:settings.enterprise-config-wizard />
+```
+
+Permet à l'entreprise de sélectionner :
+1. Ses domaines
+2. Ses catégories (filtrées par domaines)
+3. Ses items (filtrés par catégories)
+
+## 🎨 Personnalisation
+
+### Notifications
+
+Le système utilise SweetAlert2 pour les notifications. Vous pouvez les déclencher :
+
+**Depuis PHP (Livewire) :**
+
+```php
+$this->dispatch('notify', [
+    'type' => 'success', // success|error|warning|info
+    'message' => 'Opération réussie !',
+    'title' => 'Bravo !' // optionnel
+]);
+```
+
+**Depuis JavaScript :**
+
+```javascript
+window.notify('success', 'Opération réussie !', 'Bravo !');
+```
+
+**Confirmation :**
+
+```javascript
+const result = await window.confirmAction(
+    'Voulez-vous vraiment supprimer ?',
+    'Confirmer la suppression'
+);
+
+if (result.isConfirmed) {
+    // Action confirmée
+}
+```
+
+### Styling
+
+Toutes les vues utilisent Bootstrap 5 et Tabler Icons. Vous pouvez personnaliser :
+
+1. **Couleurs** : Modifiez les classes Bootstrap (`.bg-primary`, `.text-success`, etc.)
+
+2. **Animations** : Ajustez dans `conformite-assets.blade.php`
+
+3. **Layout** : Les modales sont full-responsive et peuvent être redimensionnées
+
+### Types d'Items
+
+4 types supportés :
+
+1. **Texte** (`type: 'texte'`)
+   - Champ textarea simple
+   - Stocké dans `ConformityAnswer.value_text`
+
+2. **Documents** (`type: 'documents'`)
+   - Upload multiple de fichiers
+   - Formats : pdf, jpg, jpeg, png, doc, docx
+   - Taille max : 10MB par fichier
+   - Stocké dans `public/conformity/docs/`
+
+3. **Liste** (`type: 'liste'`)
+   - Choix unique parmi des options
+   - Options configurables avec label/value
+   - Stocké en JSON dans `ConformityAnswer.value_json`
+
+4. **Checkbox** (`type: 'checkbox'`)
+   - Choix multiple parmi des options
+   - Options configurables avec label/value
+   - Stocké en JSON dans `ConformityAnswer.value_json`
+
+## 🔒 Permissions
+
+### Rôles
+
+Le système utilise la table `roles` existante avec l'attribut `SuperAdmin` :
+
+- **SuperAdmin** (`SuperAdmin = 1`) : Accès complet
+- **ValideAudit** : Peut valider les soumissions
+- **Entreprise** : Peut soumettre et voir ses soumissions
+
+### Vérification
+
+```php
+// Dans un composant Livewire
+if (auth()->user()->role->SuperAdmin) {
+    // Actions super admin
+}
+
+if (auth()->user()->role->nom === 'ValideAudit') {
+    // Actions de validation
+}
+```
+
+## 🔄 Workflow
+
+### 1. Configuration (Super Admin)
+
+```
+1. Créer des domaines
+2. Créer des catégories par domaine
+3. Créer des items par catégorie
+4. Assigner domaines/catégories/items aux entreprises
+5. Définir des périodes de validité
+```
+
+### 2. Soumission (Entreprise)
+
+```
+1. Accéder au tableau de bord
+2. Sélectionner un item avec période active
+3. Remplir le formulaire selon le type
+4. Soumettre (statut: 'soumis')
+5. Possibilité d'éditer tant que non validé
+```
+
+### 3. Validation (Admin)
+
+```
+1. Voir les soumissions en attente
+2. Consulter les détails
+3. Approuver (statut: 'approuvé') ou Rejeter (statut: 'rejeté')
+4. Ajouter des commentaires (obligatoire pour rejet)
+```
+
+### 4. Correction (Entreprise)
+
+```
+Si rejeté:
+1. Consulter les commentaires
+2. Resoumettre avec corrections
+3. Retour à l'étape de validation
+```
+
+## 📊 États et Statuts
+
+### Statuts de Soumission
+
+- `soumis` : En attente de validation
+- `approuvé` : Validé par un administrateur
+- `rejeté` : Refusé, nécessite correction
+
+### Statuts de Période
+
+- `1` : Active
+- `0` : Inactive/Annulée
+
+### Méthodes Utiles
+
+```php
+// Sur ConformitySubmission
+$submission->isFinal(); // true si approuvé ou rejeté
+$submission->isPending(); // true si soumis
+
+// Sur PeriodeItem
+$periode->isActive(); // true si période en cours
+$periode->isExpired(); // true si période dépassée
+```
+
+## 🐛 Dépannage
+
+### Les modales ne s'ouvrent pas
+
+Vérifiez que Bootstrap JS est chargé :
+
+```blade
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+```
+
+### Les notifications ne s'affichent pas
+
+1. Vérifier que SweetAlert2 est chargé
+2. Vérifier la console pour les erreurs JS
+3. Tester manuellement : `window.notify('success', 'Test')`
+
+### Erreurs de validation
+
+Les erreurs sont affichées automatiquement sous les champs. Vérifiez les règles dans les composants Livewire.
+
+### Problèmes de chevauchement de périodes
+
+Le système vérifie automatiquement. Si le message persiste, vérifiez la base de données pour des périodes actives existantes.
+
+## 📝 Exemples
+
+### Exemple Complet d'Utilisation
+
+```blade
+{{-- Dans votre layout ou page --}}
+@extends('layouts.app')
+
+@section('content')
+    {{-- Inclure les assets --}}
+    <x-conformite-assets />
+
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Gestion de la Conformité</h2>
+            </div>
+        </div>
+
+        {{-- Tableau de bord principal --}}
+        <livewire:settings.compliance-board />
+
+        {{-- Boutons de gestion (pour Super Admin) --}}
+        @if(auth()->user()->role->SuperAdmin)
+            <div class="mt-4">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <i class="ti ti-settings me-2"></i>Gérer les Items
+                </button>
+            </div>
+
+            {{-- Modale de gestion des items --}}
+            @include('livewire.settings.items-manager')
+        @endif
+    </div>
+@endsection
+```
+
+## 🔗 Ressources
+
+- [Livewire Documentation](https://laravel-livewire.com/docs)
+- [Bootstrap 5](https://getbootstrap.com/)
+- [SweetAlert2](https://sweetalert2.github.io/)
+- [Tabler Icons](https://tabler-icons.io/)
+
+## 📞 Support
+
+Pour toute question ou problème :
+1. Consultez les logs Laravel : `storage/logs/laravel.log`
+2. Vérifiez la console JavaScript (F12)
+3. Testez avec les données d'exemple

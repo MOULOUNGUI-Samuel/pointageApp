@@ -9,11 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,HasUuids;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids;
 
     protected $guard_name = 'web'; // cohérent avec config
     /**
@@ -112,15 +114,6 @@ class User extends Authenticatable
 
     // Relations
 
-    public function entreprise()
-    {
-        return $this->belongsTo(Entreprise::class);
-    }
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
     public function service()
     {
         return $this->belongsTo(Service::class);
@@ -176,9 +169,47 @@ class User extends Authenticatable
         return $this->hasMany(CategorieDommaine::class);
     }
 
-    public function demandesInterventionRecues() {
+    public function demandesInterventionRecues()
+    {
         return $this->belongsToMany(\App\Models\Demande_intervention::class, 'demande_intervention_recipients')
-            ->withPivot(['type','selected_at']);
+            ->withPivot(['type', 'selected_at']);
     }
-    
+    /**
+     * Relations à ajouter
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function entreprise(): BelongsTo
+    {
+        return $this->belongsTo(Entreprise::class, 'entreprise_id');
+    }
+
+    public function notificationsConformite(): HasMany
+    {
+        return $this->hasMany(NotificationConformite::class, 'user_id');
+    }
+
+
+    /**
+     * Méthodes utiles
+     */
+    public function estAdmin(): bool
+    {
+        return $this->super_admin || ($this->role && $this->role->nom === 'ValideAudit');
+    }
+
+    public function estSuperAdmin(): bool
+    {
+        return $this->super_admin == 1;
+    }
+
+    public function notificationsNonLues()
+    {
+        return $this->notifications()
+            ->where('lue', false)
+            ->orderBy('created_at', 'desc');
+    }
 }

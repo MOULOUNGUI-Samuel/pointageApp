@@ -321,7 +321,10 @@ class AuthenticatedSessionController extends Controller
             if ($request->mobileforme) {
                 return redirect()->route('index_employer');
             }
-            if ($role_user->role->nom == 'RH' || $role_user->role->nom == 'Admin') {
+            if ($role_user->role->nom == 'Employer') {
+                // Redirection pour Employer
+                return redirect()->route('index_employer');
+            } else {
                 // dd($request->module_id);
                 if ($request->code_entreprise) {
                     // Récupérer le module_id et le stocker en session
@@ -343,10 +346,6 @@ class AuthenticatedSessionController extends Controller
                 }
                 // Redirection pour RH et Admin
                 return redirect()->route('components.liste_module');
-            } else {
-
-                // Redirection pour Employer
-                return redirect()->route('index_employer');
             }
         }
         // } catch (\Exception $e) {

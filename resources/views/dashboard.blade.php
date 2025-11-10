@@ -5,7 +5,7 @@
     @endphp
     @switch($moduleNom)
         @case('audit de conformité')
-            @include('components/audit/dashboard')
+            @include('conformite/index')
         @break
 
         @case('rh')
