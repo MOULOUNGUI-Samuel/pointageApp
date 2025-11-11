@@ -22,59 +22,51 @@
     .good { background:#28a745; }
     .warning { background:#ffc107; color:#333; }
     .bad { background:#dc3545; }
-
-  
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="logo-wrap" style="margin-bottom: 10px">
-        <img class="logo" src="{{ asset('storage/' . $module_logo) }}" alt="Logo" width="150">
-    </div>
-  
-    <div class="titles">
-      <h1>{{ $meta['title'] }}</h1>
-      <p>{{ $meta['periode'] }}</p>
-    </div>
+    <h1>{{ $meta['title'] }}</h1>
+    <p>{{ $meta['periode'] }}</p>
   </div>
+  
 
-<div class="table-container">
-  <table class="styled-table">
-    <thead>
-      <tr>
-        <th>Classement</th>
-        <th>Employé</th>
-        <th>Fonction</th>
-        <th>Retards Cumulés</th>
-        <th>Jours en Retard</th>
-        <th>Absences Injustifiées</th>
-        <th>Heures Travaillées</th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($ranking as $i => $r)
-        @php
-          // Codes couleurs
-          $clsRetardsCum = $r['retards_cumules'] <= 15 ? 'good' : ($r['retards_cumules'] <= 60 ? 'warning' : 'bad');
-          $clsJoursRet   = $r['jours_en_retard'] == 0 ? 'good' : ($r['jours_en_retard'] <= 3 ? 'warning' : 'bad');
-          $clsAbsInj     = $r['abs_injustifiees'] == 0 ? 'good' : 'bad';
-        @endphp
+  <div class="table-container">
+    <table class="styled-table">
+      <thead>
         <tr>
-          <td class="rank-cell">{{ $i+1 }}</td>
-          <td>{{ $r['nom'] }} {{ mb_strtoupper($r['prenom'],'UTF-8') }}</td>
-          <td>{{ $r['fonction'] }}</td>
-          <td><span class="metric-value {{ $clsRetardsCum }}">{{ $r['retards_hhmm'] }}</span></td>
-          <td><span class="metric-value {{ $clsJoursRet }}">{{ $r['jours_en_retard'] }}</span></td>
-          <td><span class="metric-value {{ $clsAbsInj }}">{{ $r['abs_injustifiees'] }}</span></td>
-          <td>{{ $r['heures_hhmm'] }}</td>
+          <th>Classement</th>
+          <th>Employé</th>
+          <th>Fonction</th>
+          <th>Retards Cumulés</th>
+          <th>Jours en Retard</th>
+          <th>Absences Injustifiées</th>
+          <th>Heures Travaillées</th>
         </tr>
-      @empty
-        <tr><td colspan="7" style="text-align:center;">Aucune donnée sur la période.</td></tr>
-      @endforelse
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        @forelse($ranking as $i => $r)
+          @php
+            $clsRetardsCum = $r['retards_cumules'] <= 15 ? 'good' : ($r['retards_cumules'] <= 60 ? 'warning' : 'bad');
+            $clsJoursRet   = $r['jours_en_retard'] == 0 ? 'good' : ($r['jours_en_retard'] <= 3 ? 'warning' : 'bad');
+            $clsAbsInj     = $r['abs_injustifiees'] == 0 ? 'good' : 'bad';
+          @endphp
+          <tr>
+            <td class="rank-cell">{{ $i+1 }}</td>
+            <td>{{ $r['nom'] }} {{ mb_strtoupper($r['prenom'],'UTF-8') }}</td>
+            <td>{{ $r['fonction'] }}</td>
+            <td><span class="metric-value {{ $clsRetardsCum }}">{{ $r['retards_hhmm'] }}</span></td>
+            <td><span class="metric-value {{ $clsJoursRet }}">{{ $r['jours_en_retard'] }}</span></td>
+            <td><span class="metric-value {{ $clsAbsInj }}">{{ $r['abs_injustifiees'] }}</span></td>
+            <td>{{ $r['heures_hhmm'] }}</td>
+          </tr>
+        @empty
+          <tr><td colspan="7" style="text-align:center;">Aucune donnée sur la période.</td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
 </body>
 </html>

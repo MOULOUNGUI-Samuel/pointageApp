@@ -6,12 +6,22 @@ use App\Models\Entreprise;
 use App\Models\User;
 use App\Models\Pointage;
 use App\Models\Absence;
+use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ClassementPonctualiteController extends Controller
 {
+    /** @var AttendanceService */
+    private AttendanceService $attendance;
+
+    public function __construct(AttendanceService $attendance)
+    {
+        // Injection du service (week-ends & jours fériés)
+        $this->attendance = $attendance;
+    }
+
     public function index(Request $request, string $date_start, string $date_end)
     {
         // 1) Période & entreprise
@@ -50,17 +60,14 @@ class ClassementPonctualiteController extends Controller
         $pE     = $entreprise->heure_fin_pose;     // 'HH:mm:ss' ou null
         $tolMin = (int)($entreprise->minute_pointage_limite ?? 0);
 
-        // 4) Outils jours ouvrés
-        $yasumiCache = [];
-        $isHoliday = function (Carbon $d) use (&$yasumiCache): bool {
-            $y = $d->year;
-            if (!isset($yasumiCache[$y])) {
-                try { $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y); }
-                catch (\Throwable $e) { $yasumiCache[$y] = null; }
-            }
-            return $yasumiCache[$y] ? $yasumiCache[$y]->isHoliday($d) : false;
+        // 4) Déterminer les jours ouvrés via AttendanceService (week-ends / fériés)
+        // On interroge le service avec un utilisateur quelconque (la détection
+        // weekend/jour_ferie est indépendante de l’utilisateur).
+        $anyUser = $users->first();
+        $isWeekendOrHoliday = function (Carbon $d) use ($anyUser): bool {
+            $status = app(AttendanceService::class)->getUserStatusForDate($anyUser, $d);
+            return in_array($status, ['weekend', 'jour_ferie'], true);
         };
-        $isWorkingDay = fn (Carbon $d) => !$d->isWeekend() && !$isHoliday($d);
 
         // 5) Absences approuvées (déroulées par jour)
         $absences = Absence::whereIn('user_id', $userIds)
@@ -76,14 +83,13 @@ class ClassementPonctualiteController extends Controller
             if ($from->lt($start)) $from = $start->copy();
             if ($to->gt($end))     $to   = $end->copy();
             for ($d = $from->copy(); $d->lte($to); $d->addDay()) {
-                if ($isWorkingDay($d)) {
+                if (!$isWeekendOrHoliday($d)) {
                     $absOK[$a->user_id][$d->toDateString()] = true;
                 }
             }
         }
 
-        // 6) Pointages agrégés par jour: earliest IN / latest OUT
-        //    -> plus robuste qu’un tri en mémoire quand il y a plusieurs passages
+        // 6) Pointages agrégés: earliest IN / latest OUT par jour
         $pointages = Pointage::select([
                 'user_id',
                 'date_arriver',
@@ -126,11 +132,11 @@ class ClassementPonctualiteController extends Controller
             return $e->gt($s) ? $e->diffInSeconds($s) : 0;
         };
 
-        // 8) Boucle jours ouvrés
+        // 8) Boucle JOURS OUVRÉS via AttendanceService
         for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-            if (!$isWorkingDay($d)) continue;
-            $dStr = $d->toDateString();
+            if ($isWeekendOrHoliday($d)) continue; // skip WE/feriés
 
+            $dStr = $d->toDateString();
             $jourStart = Carbon::parse("$dStr $hStart");
             $jourEnd   = Carbon::parse("$dStr $hEnd");
             $pauseS    = ($pS && $pE) ? Carbon::parse("$dStr $pS") : null;
@@ -163,30 +169,33 @@ class ClassementPonctualiteController extends Controller
             }
         }
 
-        // 9) Score + classement
-        $W_ABS = 10000; $W_DJR = 100; $W_MIN = 1;   // poids (ajuste si besoin)
-
-        $ranking = $users->map(function($u) use ($agg, $W_ABS, $W_DJR, $W_MIN) {
-            $a     = $agg[$u->id];
-            $score = $a['absence_injust'] * $W_ABS
-                   + $a['en_retard']     * $W_DJR
-                   + $a['retard_cumule_min'] * $W_MIN;
-
+        // 9) CLASSEMENT : Heures DESC -> Absences injustifiées ASC -> Jours en retard ASC -> Retards cumulés ASC -> Nom/Prénom
+        $ranking = $users->map(function($u) use ($agg) {
+            $a = $agg[$u->id];
             return [
-                'user_id'           => $u->id,
-                'nom'               => $u->nom,
-                'prenom'            => $u->prenom,
-                'fonction'          => $u->fonction,
-                'retards_cumules'   => $a['retard_cumule_min'],          // minutes
-                'jours_en_retard'   => $a['en_retard'],
-                'abs_injustifiees'  => $a['absence_injust'],
-                'heures_trav_min'   => (int) round($a['heures_net_sec']/60),
-                'score'             => $score,
+                'user_id'          => $u->id,
+                'nom'              => $u->nom,
+                'prenom'           => $u->prenom,
+                'fonction'         => $u->fonction,
+                'retards_cumules'  => (int) $a['retard_cumule_min'],         // minutes
+                'jours_en_retard'  => (int) $a['en_retard'],
+                'abs_injustifiees' => (int) ($a['absence_injust'] ?? 0),
+                'heures_trav_min'  => (int) round($a['heures_net_sec']/60),
             ];
-        })->sort(function($x,$y){
-            // score ASC (meilleur = plus petit) puis heures travaillées DESC, puis nom
-            return [$x['score'], -$x['heures_trav_min'], $x['nom'], $x['prenom']]
-                 <=> [$y['score'], -$y['heures_trav_min'], $y['nom'], $y['prenom']];
+        })->sort(function($x, $y) {
+            return [
+                -$x['heures_trav_min'],
+                 $x['abs_injustifiees'],
+                 $x['jours_en_retard'],
+                 $x['retards_cumules'],
+                 $x['nom'], $x['prenom'],
+            ] <=> [
+                -$y['heures_trav_min'],
+                 $y['abs_injustifiees'],
+                 $y['jours_en_retard'],
+                 $y['retards_cumules'],
+                 $y['nom'], $y['prenom'],
+            ];
         })->values()->all();
 
         // Formats HH:MM

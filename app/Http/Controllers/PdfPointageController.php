@@ -60,9 +60,9 @@ class PdfPointageController extends Controller
     /**
      * Construit $meta et $employees à partir de la même logique que imprimeListePresence().
      */
+
     private function payload(Request $request, string $date_start, string $date_end): array
     {
-        // ----- Entreprise + période
         $entreprise_id = session('entreprise_id');
         $entreprise    = Entreprise::findOrFail($entreprise_id);
 
@@ -75,20 +75,45 @@ class PdfPointageController extends Controller
         }
 
         Carbon::setLocale('fr');
-        $periodeTxt = $start->translatedFormat('l d F Y') . ' / ' . $end->translatedFormat('l d F Y');
         $printedBy  = Auth::user()->nom ?? 'Système';
+        $periodeTxt = $start->translatedFormat('l d F Y') . ' / ' . $end->translatedFormat('l d F Y');
 
-        // ===================== 1) Constituer l'ensemble complet des user_ids =====================
-        // A. tous les utilisateurs de l’entreprise (sans filtrer par statut)
+        // --- Paramètres entreprise (avec défauts sûrs)
+        $hStart = $entreprise->heure_ouverture ?: '08:30:00';
+        $hEnd   = $entreprise->heure_fin       ?: '17:30:00';
+        $pS     = $entreprise->heure_debut_pose;   // ex. "12:30:00" | null
+        $pE     = $entreprise->heure_fin_pose;     // ex. "13:30:00" | null
+        $tolMin = (int)($entreprise->minute_pointage_limite ?? 0);
+
+        // --- Jours ouvrés (WE exclus, fériés FR optionnels)
+        $yasumi = [];
+        $isHoliday = function (Carbon $d) use (&$yasumi): bool {
+            $y = $d->year;
+            if (!isset($yasumi[$y])) {
+                try {
+                    $yasumi[$y] = \Yasumi\Yasumi::create('France', $y);
+                } catch (\Throwable $e) {
+                    $yasumi[$y] = null;
+                }
+            }
+            return $yasumi[$y] ? $yasumi[$y]->isHoliday($d) : false;
+        };
+        $isWorkingDay = fn(Carbon $d) => !$d->isWeekend() && !$isHoliday($d);
+
+        $workingDays = [];
+        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+            if ($isWorkingDay($d)) $workingDays[] = $d->toDateString();
+        }
+        $workingDaysCount = count($workingDays);
+
+        // --- Ensemble des utilisateurs pris en compte
         $activeIds = User::where('entreprise_id', $entreprise_id)
-        ->where('statu_user', 1)->where('statut', 1)->pluck('id');
+            ->where('statu_user', 1)->where('statut', 1)->pluck('id');
 
-        // B. ceux qui ont pointé dans la période
         $idsFromPointages = Pointage::whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
             ->whereHas('user', fn($q) => $q->where('entreprise_id', $entreprise_id))
             ->pluck('user_id');
 
-        // C. ceux qui ont une absence approuvée dans la période
         $idsFromAbsences = Absence::where('status', 'approuvé')
             ->whereHas('user', fn($q) => $q->where('entreprise_id', $entreprise_id))
             ->whereDate('start_datetime', '<=', $end)
@@ -97,60 +122,55 @@ class PdfPointageController extends Controller
 
         $allUserIds = $activeIds->merge($idsFromPointages)->merge($idsFromAbsences)->unique()->values();
 
-        // ===== Charge les utilisateurs par ID (sans perdre ceux “inactifs”) =====
-        $usersQuery = User::query()->where('statu_user', 1)->where('statut', 1)
-            ->whereIn('id', $allUserIds);
-
-        // Si ton modèle User a des Global Scopes (ex. "active"), on peut les retirer :
-        // $usersQuery->withoutGlobalScopes(); // décommente si besoin
-
-        // N'utilise withTrashed que si le trait SoftDeletes est présent :
-        if (in_array(SoftDeletes::class, class_uses_recursive(User::class), true)) {
-            $usersQuery->withTrashed();
-        }
-
-        $users = $usersQuery->get(['id', 'nom', 'prenom', 'matricule', 'fonction', 'entreprise_id']);
+        $users = User::query()
+            ->whereIn('id', $allUserIds)
+            ->get(['id', 'nom', 'prenom', 'matricule', 'fonction']);
         $userMap = $users->keyBy('id');
 
-        // ===================== 2) Utilitaires jours ouvrés & paramètres entreprise =====================
-        $yasumiCache = [];
-        $isHoliday = function (Carbon $d) use (&$yasumiCache): bool {
-            $y = $d->year;
-            if (!isset($yasumiCache[$y])) {
-                try {
-                    $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y);
-                } catch (\Throwable $e) {
-                    $yasumiCache[$y] = null;
-                }
-            }
-            return $yasumiCache[$y] ? $yasumiCache[$y]->isHoliday($d) : false;
-        };
-        $isWorkingDay = function (Carbon $d) use ($isHoliday): bool {
-            return !$d->isWeekend() && !$isHoliday($d);
-        };
-
-        $heureDebutJour = $entreprise->heure_ouverture;   // "HH:mm:ss"
-        $heureFinJour   = $entreprise->heure_fin;         // "HH:mm:ss"
-        $pauseDebut     = $entreprise->heure_debut_pose;  // "HH:mm:ss" | null
-        $pauseFin       = $entreprise->heure_fin_pose;    // "HH:mm:ss" | null
-        $toleranceMin   = (int)($entreprise->minute_pointage_limite ?? 0);
-
-        // ===================== 3) Récupérer pointages/absences (restreints à l'ensemble complet) =====================
-        $pointagesRaw = Pointage::with('user:id,nom,prenom,matricule,fonction')
-            ->whereIn('user_id', $allUserIds)
+        // --- Charger données brutes de la période
+        $pointages = Pointage::whereIn('user_id', $allUserIds)
             ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
             ->orderBy('date_arriver')->orderBy('heure_arriver')
-            ->get();
+            ->get(['user_id', 'date_arriver', 'heure_arriver', 'heure_fin']);
 
-        $absences = Absence::with('user:id,nom,prenom,matricule,fonction')
-            ->whereIn('user_id', $allUserIds)
+        $absences  = Absence::whereIn('user_id', $allUserIds)
             ->where('status', 'approuvé')
             ->whereDate('start_datetime', '<=', $end)
             ->whereDate('end_datetime', '>=', $start)
-            ->get();
+            ->get(['user_id', 'start_datetime', 'end_datetime']);
 
-        // Overlap helper
-        $overlapSeconds = function (?Carbon $a1, ?Carbon $a2, ?Carbon $b1, ?Carbon $b2): int {
+        // --- Index absences projetées jour par jour
+        $absOK = []; // [user_id][Y-m-d] => true
+        foreach ($absences as $a) {
+            $from = Carbon::parse($a->start_datetime)->startOfDay();
+            $to   = Carbon::parse($a->end_datetime)->endOfDay();
+            if ($from->lt($start)) $from = $start->copy();
+            if ($to->gt($end))     $to   = $end->copy();
+            for ($d = $from->copy(); $d->lte($to); $d->addDay()) {
+                $dStr = $d->toDateString();
+                if (in_array($dStr, $workingDays, true)) {
+                    $absOK[$a->user_id][$dStr] = true;
+                }
+            }
+        }
+
+        // --- Regrouper pointages par user+date => earliest IN / latest OUT
+        $inOut = []; // [user_id][Y-m-d] => ['in' => 'HH:mm:ss', 'out' => 'HH:mm:ss']
+        foreach ($pointages as $p) {
+            $dStr = Carbon::parse($p->date_arriver)->toDateString();
+            if (!in_array($dStr, $workingDays, true)) continue;
+
+            $slot = &$inOut[$p->user_id][$dStr];
+            if (!isset($slot['in']) || ($p->heure_arriver && $p->heure_arriver < $slot['in'])) {
+                $slot['in'] = $p->heure_arriver;
+            }
+            if (!isset($slot['out']) || ($p->heure_fin && $p->heure_fin > $slot['out'])) {
+                $slot['out'] = $p->heure_fin;
+            }
+        }
+
+        // --- Helper chevauchement
+        $ov = function (?Carbon $a1, ?Carbon $a2, ?Carbon $b1, ?Carbon $b2): int {
             if (!$a1 || !$a2 || !$b1 || !$b2) return 0;
             if ($a2->lte($a1) || $b2->lte($b1)) return 0;
             $s = $a1->gt($b1) ? $a1->copy() : $b1->copy();
@@ -158,127 +178,93 @@ class PdfPointageController extends Controller
             return $e->gt($s) ? $e->diffInSeconds($s) : 0;
         };
 
-        $datesAvecPointage = []; // [user_id][Y-m-d] => true
-        $datesAbsencesOK   = []; // [user_id][Y-m-d] => true
-        $agg = [];              // user_id => agrégats
-
-        // ===================== 4) Agrégats à partir des pointages =====================
-        foreach ($pointagesRaw as $p) {
-            $date = Carbon::parse($p->date_arriver);
-            if (!$isWorkingDay($date)) continue;
-
-            $jourStart = $heureDebutJour ? Carbon::parse($date->toDateString() . ' ' . $heureDebutJour) : null;
-            $jourEnd   = $heureFinJour   ? Carbon::parse($date->toDateString() . ' ' . $heureFinJour)   : null;
-            $pauseS    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseDebut) : null;
-            $pauseE    = ($pauseDebut && $pauseFin) ? Carbon::parse($date->toDateString() . ' ' . $pauseFin)   : null;
-
-            $inDT  = $p->heure_arriver ? Carbon::parse($date->toDateString() . ' ' . $p->heure_arriver) : null;
-            $outDT = $p->heure_fin     ? Carbon::parse($date->toDateString() . ' ' . $p->heure_fin)     : null;
-            $outEff = $outDT ?: ($inDT && $jourEnd ? $jourEnd : null);
-
-            $uid = $p->user_id;
-            if (!isset($agg[$uid])) {
-                $agg[$uid] = [
-                    'heures_net_sec'     => 0,
-                    'retard_cumule_min'  => 0,
-                    'a_l_heure'          => 0,
-                    'en_retard'          => 0,
-                    'absence_approuvee'  => 0,
-                    'absence_injustifiee' => 0,
-                ];
-            }
-
-            $worked = $overlapSeconds($inDT, $outEff, $jourStart, $jourEnd);
-            $pause  = $overlapSeconds($inDT, $outEff, $pauseS, $pauseE);
-            $netSec = max(0, $worked - $pause);
-            $agg[$uid]['heures_net_sec'] += $netSec;
-
-            if ($inDT && $jourStart) {
-                $limite = $jourStart->copy()->addMinutes($toleranceMin);
-                if ($inDT->gt($limite)) {
-                    $agg[$uid]['en_retard'] += 1;
-                    $agg[$uid]['retard_cumule_min'] += (int) ceil($inDT->diffInSeconds($limite) / 60);
-                } else {
-                    $agg[$uid]['a_l_heure'] += 1;
-                }
-            }
-
-            $datesAvecPointage[$uid][$date->toDateString()] = true;
+        // --- Préparer agrégats
+        $agg = []; // user_id => metrics
+        foreach ($allUserIds as $uid) {
+            $agg[$uid] = [
+                'heures_net_sec'     => 0,
+                'retard_cumule_min'  => 0,
+                'a_l_heure'          => 0,
+                'en_retard'          => 0,
+                'absence_approuvee'  => 0,
+                'absence_injustifiee' => 0,
+            ];
         }
 
-        // ===================== 5) Absences approuvées déroulées =====================
-        foreach ($absences as $a) {
-            $from = Carbon::parse($a->start_datetime)->startOfDay();
-            $to   = Carbon::parse($a->end_datetime)->endOfDay();
-            if ($from->lt($start)) $from = $start->copy();
-            if ($to->gt($end))     $to   = $end->copy();
-
-            for ($d = $from->copy(); $d->lte($to); $d->addDay()) {
-                if (!$isWorkingDay($d)) continue;
-                $datesAbsencesOK[$a->user_id][$d->toDateString()] = true;
-
-                if (!isset($agg[$a->user_id])) {
-                    $agg[$a->user_id] = [
-                        'heures_net_sec' => 0,
-                        'retard_cumule_min' => 0,
-                        'a_l_heure' => 0,
-                        'en_retard' => 0,
-                        'absence_approuvee' => 0,
-                        'absence_injustifiee' => 0,
-                    ];
-                }
-                $agg[$a->user_id]['absence_approuvee'] += 1;
+        // minutes attendues par jour pour l’entreprise (bornage + pause)
+        $dailyExpectedMinutes = (function () use ($start, $hStart, $hEnd, $pS, $pE) {
+            $d = $start->copy();
+            $JS = Carbon::parse($d->toDateString() . ' ' . $hStart);
+            $JE = Carbon::parse($d->toDateString() . ' ' . $hEnd);
+            $work = max(0, $JE->diffInSeconds($JS));
+            $pause = 0;
+            if ($pS && $pE) {
+                $PS = Carbon::parse($d->toDateString() . ' ' . $pS);
+                $PE = Carbon::parse($d->toDateString() . ' ' . $pE);
+                $pause = $ov = max(0, $PE->diffInSeconds($PS));
             }
-        }
+            return (int) round(($work - $pause) / 60);
+        })();
 
-        // ===================== 6) Absences injustifiées (pour TOUT l'ensemble) =====================
-        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-            if (!$isWorkingDay($d)) continue;
-            $dStr = $d->toDateString();
+        // --- Boucle principale: pour chaque jour ouvré et chaque user
+        foreach ($workingDays as $dStr) {
+            $JS = Carbon::parse("$dStr $hStart");
+            $JE = Carbon::parse("$dStr $hEnd");
+            $PS = ($pS && $pE) ? Carbon::parse("$dStr $pS") : null;
+            $PE = ($pS && $pE) ? Carbon::parse("$dStr $pE") : null;
+            $lim = $JS->copy()->addMinutes($tolMin);
 
             foreach ($allUserIds as $uid) {
-                $hasPointage = !empty($datesAvecPointage[$uid][$dStr]);
-                $hasAbsOK    = !empty($datesAbsencesOK[$uid][$dStr]);
-                if (!$hasPointage && !$hasAbsOK) {
-                    if (!isset($agg[$uid])) {
-                        $agg[$uid] = [
-                            'heures_net_sec' => 0,
-                            'retard_cumule_min' => 0,
-                            'a_l_heure' => 0,
-                            'en_retard' => 0,
-                            'absence_approuvee' => 0,
-                            'absence_injustifiee' => 0,
-                        ];
+                // 1) Absence approuvée (prioritaire)
+                if (!empty($absOK[$uid][$dStr])) {
+                    $agg[$uid]['absence_approuvee']++;
+                    continue;
+                }
+
+                // 2) Présence (on borne la sortie à l’heure de fin si non renseignée)
+                $io = $inOut[$uid][$dStr] ?? null;
+                $in  = $io && !empty($io['in'])  ? Carbon::parse("$dStr {$io['in']}")  : null;
+                $out = $io && !empty($io['out']) ? Carbon::parse("$dStr {$io['out']}") : null;
+                $outEff = $out ?: ($in ? $JE : null);
+
+                if ($in) {
+                    // statut retard/à l’heure
+                    if ($in->gt($lim)) {
+                        $agg[$uid]['en_retard']++;
+                        $agg[$uid]['retard_cumule_min'] += (int) ceil($in->diffInSeconds($lim) / 60);
+                    } else {
+                        $agg[$uid]['a_l_heure']++;
                     }
-                    $agg[$uid]['absence_injustifiee'] += 1;
+
+                    // heures nettes: (in,outEff) ∩ (JS,JE) – pause
+                    $worked = $ov($in, $outEff, $JS, $JE);
+                    $pause  = $ov($in, $outEff, $PS, $PE);
+                    $agg[$uid]['heures_net_sec'] += max(0, $worked - $pause);
+                } else {
+                    // 3) Pas de pointage ni absence OK -> injustifiée
+                    $agg[$uid]['absence_injustifiee']++;
                 }
             }
         }
 
-        // ===================== 7) Projection en $employees (même sans activité) =====================
+        // --- Projection pour la vue (garanti : somme des statuts == nb_jours_ouvres)
         $employees = [];
         foreach ($allUserIds as $uid) {
             $u = $userMap->get($uid);
-            // fallback minimal si jamais le user est introuvable (ne devrait pas arriver)
-            $nom     = $u->nom     ?? '—';
-            $prenom  = $u->prenom  ?? '';
-            $mat     = $u->matricule ?? '';
-            $fonc    = $u->fonction ?? '';
+            $a = $agg[$uid];
 
-            $a = $agg[$uid] ?? [
-                'heures_net_sec' => 0,
-                'retard_cumule_min' => 0,
-                'a_l_heure' => 0,
-                'en_retard' => 0,
-                'absence_approuvee' => 0,
-                'absence_injustifiee' => 0,
-            ];
+            // Sécurité : réaligner si un décalage s’est produit
+            $sumDays = $a['a_l_heure'] + $a['en_retard'] + $a['absence_approuvee'] + $a['absence_injustifiee'];
+            if ($sumDays !== $workingDaysCount) {
+                // ajuste l’injustifiée (jamais négatif)
+                $a['absence_injustifiee'] = max(0, $a['absence_injustifiee'] + ($workingDaysCount - $sumDays));
+            }
 
             $employees[] = [
-                'nom'                  => $nom,
-                'prenom'               => $prenom,
-                'matricule'            => $mat,
-                'fonction'             => $fonc,
+                'nom'                  => $u->nom ?? '—',
+                'prenom'               => $u->prenom ?? '',
+                'matricule'            => $u->matricule ?? '',
+                'fonction'             => $u->fonction ?? '',
                 'heures_net_min'       => (int) round($a['heures_net_sec'] / 60),
                 'retard_cumule_min'    => (int) $a['retard_cumule_min'],
                 'a_l_heure'            => (int) $a['a_l_heure'],
@@ -287,30 +273,31 @@ class PdfPointageController extends Controller
                 'absence_injustifiee'  => (int) $a['absence_injustifiee'],
             ];
         }
-
-        // Tri alphabétique (Nom, Prénom)
         usort($employees, fn($x, $y) => [$x['nom'], $x['prenom']] <=> [$y['nom'], $y['prenom']]);
 
-        // ===================== 8) Meta (référence, logo, etc.) =====================
-        $now = now();
-        $ref = sprintf(session('entreprise_code').'-SYN-A%s-%s-%s', $now->format('y'), $now->format('dmy'), $now->format('His'));
+        // --- Meta + contrôles entreprise
+        $now      = now();
+        $ref      = sprintf('%s-SYN-A%s-%s-%s', session('entreprise_code'), $now->format('y'), $now->format('dmy'), $now->format('His'));
+        $logoPath = public_path(session('entreprise_logo') ? 'storage/' . ltrim(session('entreprise_logo'), '/') : 'src/image/logo.png');
 
-        $logoPath = public_path(session('entreprise_logo')
-            ? 'storage/' . ltrim(session('entreprise_logo'), '/')
-            : 'src/image/logo.png');
-$entreprise_code=session('entreprise_code');
         $meta = [
             'title'        => 'RAPPORT DE SYNTHÈSE DES POINTAGES',
             'subtitle'     => "Période : {$start->translatedFormat('F Y')} (du {$start->format('d/m/Y')} au {$end->format('d/m/Y')})",
             'reference'    => $ref,
             'company_name' => $entreprise->nom_entreprise ?? "Entreprise",
-            'heure_debutTravail' => $heureDebutJour ?? "08:30:00",
             'company_addr' => $entreprise->adresse ?? "",
             'company_ctc'  => trim("Tél. : " . ($entreprise->telephone ?? "") . " | Email : " . ($entreprise->email ?? "")),
             'logo_path'    => is_file($logoPath) ? $logoPath : null,
-            'filename'     => "rapport_pointages_{$entreprise_code}_{$start->format('Ymd')}-{$end->format('Ymd')}.pdf",
+            'filename'     => "rapport_pointages_" . (session('entreprise_code') ?? 'ENT') . "_{$start->format('Ymd')}-{$end->format('Ymd')}.pdf",
             'periode_txt'  => $periodeTxt,
             'printed_by'   => $printedBy,
+
+            // Contrôles / totaux entreprise
+            'working_days_count'            => $workingDaysCount,
+            'heure_debutTravail'            => $hStart,
+            'heure_finTravail'              => $hEnd,
+            'daily_expected_minutes'        => $dailyExpectedMinutes,
+            'company_expected_minutes_total' => $dailyExpectedMinutes * $workingDaysCount,
         ];
 
         return [$meta, $employees];
@@ -323,8 +310,8 @@ $entreprise_code=session('entreprise_code');
     {
         [$meta, $user, $summary, $rows] = $this->payloadUser($request, $userId, $date_start, $date_end);
 
-        return Pdf::loadView('pdf.fiche_pointage', compact('meta','user','summary','rows'))
-            ->setPaper('A4','portrait')
+        return Pdf::loadView('pdf.fiche_pointage', compact('meta', 'user', 'summary', 'rows'))
+            ->setPaper('A4', 'portrait')
             ->stream($meta['filename']);
     }
 
@@ -332,8 +319,8 @@ $entreprise_code=session('entreprise_code');
     {
         [$meta, $user, $summary, $rows] = $this->payloadUser($request, $userId, $date_start, $date_end);
 
-        return Pdf::loadView('pdf.fiche_pointage', compact('meta','user','summary','rows'))
-            ->setPaper('A4','portrait')
+        return Pdf::loadView('pdf.fiche_pointage', compact('meta', 'user', 'summary', 'rows'))
+            ->setPaper('A4', 'portrait')
             ->download($meta['filename']);
     }
 
@@ -341,8 +328,8 @@ $entreprise_code=session('entreprise_code');
     {
         [$meta, $user, $summary, $rows] = $this->payloadUser($request, $userId, $date_start, $date_end);
 
-        $pdf = Pdf::loadView('pdf.fiche_pointage', compact('meta','user','summary','rows'))
-            ->setPaper('A4','portrait');
+        $pdf = Pdf::loadView('pdf.fiche_pointage', compact('meta', 'user', 'summary', 'rows'))
+            ->setPaper('A4', 'portrait');
 
         Storage::makeDirectory('rapports');
         Storage::put("rapports/{$meta['filename']}", $pdf->output());
@@ -376,19 +363,22 @@ $entreprise_code=session('entreprise_code');
         if (in_array(SoftDeletes::class, class_uses_recursive(User::class), true)) {
             $userQuery->withTrashed();
         }
-        $user = $userQuery->firstOrFail(['id','nom','prenom','matricule','fonction','entreprise_id']);
+        $user = $userQuery->firstOrFail(['id', 'nom', 'prenom', 'matricule', 'fonction', 'entreprise_id']);
 
         // --- Jours ouvrés (+ Yasumi France par défaut ; adapte si Gabon dispo dans ton projet)
         $yasumiCache = [];
         $isHoliday = function (Carbon $d) use (&$yasumiCache): bool {
             $y = $d->year;
             if (!isset($yasumiCache[$y])) {
-                try { $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y); }
-                catch (\Throwable $e) { $yasumiCache[$y] = null; }
+                try {
+                    $yasumiCache[$y] = \Yasumi\Yasumi::create('France', $y);
+                } catch (\Throwable $e) {
+                    $yasumiCache[$y] = null;
+                }
             }
             return $yasumiCache[$y] ? $yasumiCache[$y]->isHoliday($d) : false;
         };
-        $isWorkingDay = fn (Carbon $d) => !$d->isWeekend() && !$isHoliday($d);
+        $isWorkingDay = fn(Carbon $d) => !$d->isWeekend() && !$isHoliday($d);
 
         // --- Paramètres entreprise
         $heureDebutJour = $entreprise->heure_ouverture ?: '08:30:00';
@@ -401,13 +391,13 @@ $entreprise_code=session('entreprise_code');
         $pointages = Pointage::where('user_id', $user->id)
             ->whereBetween('date_arriver', [$start->toDateString(), $end->toDateString()])
             ->orderBy('date_arriver')->orderBy('heure_arriver')
-            ->get(['date_arriver','heure_arriver','heure_fin']);
+            ->get(['date_arriver', 'heure_arriver', 'heure_fin']);
 
         $absences = Absence::where('user_id', $user->id)
-            ->where('status','approuvé')
+            ->where('status', 'approuvé')
             ->whereDate('start_datetime', '<=', $end)
             ->whereDate('end_datetime', '>=', $start)
-            ->get(['start_datetime','end_datetime']);
+            ->get(['start_datetime', 'end_datetime']);
 
         // --- Helper chevauchement
         $overlapSec = function (?Carbon $a1, ?Carbon $a2, ?Carbon $b1, ?Carbon $b2): int {
@@ -505,15 +495,15 @@ $entreprise_code=session('entreprise_code');
                 'in'       => $fmtHMS($in),
                 'out'      => $fmtHMS($outEff),
                 'statut'   => $statut,
-                'net_hm'   => sprintf('%d:%02d', intdiv($netMin,60), $netMin%60),
+                'net_hm'   => sprintf('%d:%02d', intdiv($netMin, 60), $netMin % 60),
                 'late_mss' => $lateMin > 0 ? sprintf('%02d:%02d', $lateMin, 0) : '--:--',
             ];
         }
 
         // --- Résumé pour la vue
         $summary = [
-            'total_net_hm'  => sprintf('%d:%02d', intdiv($totalNetMin,60), $totalNetMin%60),
-            'total_late_hm' => sprintf('%d:%02d', intdiv($totalLateMin,60), $totalLateMin%60),
+            'total_net_hm'  => sprintf('%d:%02d', intdiv($totalNetMin, 60), $totalNetMin % 60),
+            'total_late_hm' => sprintf('%d:%02d', intdiv($totalLateMin, 60), $totalLateMin % 60),
             'a_l_heure'     => $countOnTime,
             'en_retard'     => $countLate,
             'absence_ok'    => $countAbsOK,
@@ -532,7 +522,7 @@ $entreprise_code=session('entreprise_code');
 
         $filename = sprintf(
             'fiche_pointage_%s_%s_%s.pdf',
-            preg_replace('~\s+~','_', trim($user->nom.'_'.$user->prenom)),
+            preg_replace('~\s+~', '_', trim($user->nom . '_' . $user->prenom)),
             $start->format('Ymd'),
             $end->format('Ymd')
         );
@@ -543,13 +533,13 @@ $entreprise_code=session('entreprise_code');
             'reference'    => $ref,
             'company_name' => $entreprise->nom_entreprise ?? "Entreprise",
             'company_addr' => $entreprise->adresse ?? "",
-            'company_ctc'  => trim("Tél. : ".($entreprise->telephone ?? "")." | Email : ".($entreprise->email ?? "")),
+            'company_ctc'  => trim("Tél. : " . ($entreprise->telephone ?? "") . " | Email : " . ($entreprise->email ?? "")),
             'logo_path'    => is_file($logoPath) ? $logoPath : null,
             'filename'     => $filename,
             'periode_txt'  => $periodeTxt,
             'heure_debut'  => $heureDebutJour,
             'heure_fin'    => $heureFinJour,
-            
+
         ];
 
         return [$meta, $user, $summary, $rows];
