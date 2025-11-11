@@ -366,7 +366,6 @@ Route::middleware('auth')->group(
         // Gestion des périodes de ratrappage des pointages
         Route::post('/pointages/backfill', [PointageBackfillController::class, 'backfill'])
             ->name('pointages.backfill');
-
         // Gestion des integration des domaines avec IA
         Route::get('/generateur-conformite', GenerateurConformite::class)
             ->name('generateur.conformite');
