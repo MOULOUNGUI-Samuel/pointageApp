@@ -137,10 +137,6 @@
     @push('scripts')
         {{-- SweetAlert2 --}}
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
-        {{-- Notre système de notifications --}}
-        @vite(['resources/js/notifications.js'])
-        
         {{-- Script d'initialisation --}}
         <script>
             // Configuration globale Livewire
