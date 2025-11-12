@@ -154,7 +154,7 @@ class User extends Authenticatable
     }
     public function categorieDomaines()
     {
-        return $this->hasMany(CategorieDommaine::class);
+        return $this->hasMany(CategorieDomaine::class);
     }
     public function periodeItems()
     {
@@ -166,7 +166,7 @@ class User extends Authenticatable
     // }
     public function categorieDomaine()
     {
-        return $this->hasMany(CategorieDommaine::class);
+        return $this->hasMany(CategorieDomaine::class);
     }
 
     public function demandesInterventionRecues()

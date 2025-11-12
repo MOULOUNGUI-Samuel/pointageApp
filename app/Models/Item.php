@@ -30,14 +30,14 @@ class Item extends Model
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
-    public function CategorieDommaine(): BelongsTo
+    public function CategorieDomaine(): BelongsTo
     {
-        return $this->belongsTo(CategorieDommaine::class, 'categorie_domaine_id');
+        return $this->belongsTo(CategorieDomaine::class, 'categorie_domaine_id');
     }
     // Alias pour simplifier l'utilisation
     public function categorie()
     {
-        return $this->CategorieDommaine();
+        return $this->CategorieDomaine();
     }
     public function entreprises()
     {

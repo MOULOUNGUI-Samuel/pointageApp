@@ -3,13 +3,14 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Item;
-use App\Models\CategorieDommaine;
+use App\Models\CategorieDomaine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Log;
+
 class ItemsManager extends Component
 {
     use WithPagination;
@@ -137,7 +138,7 @@ class ItemsManager extends Component
     /** Recharge la liste des catégories */
     public function reloadCategories(): void
     {
-        $this->categories = CategorieDommaine::orderBy('nom_categorie')
+        $this->categories = CategorieDomaine::orderBy('nom_categorie')
             ->get(['id', 'nom_categorie'])
             ->map(fn($c) => ['id' => $c->id, 'label' => $c->nom_categorie])
             ->all();
@@ -282,21 +283,21 @@ class ItemsManager extends Component
     public function render()
     {
         $today = now()->toDateString();
-    
+
         // Requête simplifiée pour déboguer
         $items = Item::query()
-            ->with(['categorieDommaine:id,nom_categorie', 'options'])
+            ->with(['CategorieDomaine:id,nom_categorie', 'options'])
             ->withCount(['periodes as periodes_actives_count' => function ($q) use ($today) {
                 $q->where('statut', '1')
-                  ->whereDate('debut_periode', '<=', $today)
-                  ->whereDate('fin_periode', '>=', $today);
+                    ->whereDate('debut_periode', '<=', $today)
+                    ->whereDate('fin_periode', '>=', $today);
             }])
             ->orderBy('nom_item')
             ->paginate(8, pageName: 'items_p');
-    
+
         // DEBUG : Afficher le nombre d'items
         Log::info('Items Manager - Nombre items:', ['count' => $items->total()]);
-    
+
         return view('livewire.settings.items-manager', compact('items'));
     }
 }

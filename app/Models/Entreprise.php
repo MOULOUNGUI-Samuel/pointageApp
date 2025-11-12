@@ -61,11 +61,17 @@ class Entreprise extends Model
         return $this->belongsToMany(Domaine::class, 'entreprise_domaines')
             ->withPivot('statut')->withTimestamps();
     }
+
     public function categories()
     {
-        return $this->belongsToMany(CategorieDommaine::class, 'entreprise_categorie_domaines')
-            ->withPivot('statut')->withTimestamps();
+        return $this->belongsToMany(
+            \App\Models\CategorieDomaine::class,   // ton modèle tel quel
+            'entreprise_categorie_domaines',        // table pivot
+            'entreprise_id',                        // clé locale dans pivot
+            'categorie_domaine_id'                  // clé “autre” dans pivot (⚠️ 1 seul m)
+        )->withPivot('statut')->withTimestamps();
     }
+
     public function items()
     {
         return $this->belongsToMany(Item::class, 'entreprise_items')
@@ -84,5 +90,37 @@ class Entreprise extends Model
     public function notifications(): HasMany
     {
         return $this->hasMany(NotificationConformite::class, 'entreprise_id');
+    }
+
+
+
+    /**
+     * Vérifie si l'entreprise a des domaines configurés
+     */
+    public function hasDomainesConfigures(): bool
+    {
+        return $this->domaines()->count() > 0;
+    }
+
+    /**
+     * Récupère tous les items d'un domaine spécifique pour cette entreprise
+     */
+    public function itemsForDomaine($domaineId)
+    {
+        return $this->items()
+            ->whereHas('categorie.domaine', function ($query) use ($domaineId) {
+                $query->where('domaines.id', $domaineId);
+            })
+            ->get();
+    }
+
+    /**
+     * Récupère toutes les catégories d'un domaine pour cette entreprise
+     */
+    public function categoriesForDomaine($domaineId)
+    {
+        return $this->categories()
+            ->where('domaine_id', $domaineId)
+            ->get();
     }
 }

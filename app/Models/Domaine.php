@@ -36,18 +36,19 @@ class Domaine extends Model
     }
     public function categories()
     {
-        return $this->hasMany(CategorieDommaine::class, 'domaine_id');
+        return $this->hasMany(CategorieDomaine::class, 'domaine_id');
     }
 
     public function categorie_domaines()
     {
-        return $this->belongsTo(CategorieDommaine::class);
+        return $this->belongsTo(CategorieDomaine::class);
     }
 
 
     public function entreprises()
     {
         return $this->belongsToMany(Entreprise::class, 'entreprise_domaines')
+            ->withPivot('statut')
             ->withTimestamps();
     }
 }

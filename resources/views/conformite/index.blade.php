@@ -26,8 +26,8 @@
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                                 <i class="ti ti-settings fs-22  me-2"></i>Gérer les Items
                             </button>
-                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#wizardModal">
-                                <i class="ti ti-wand fs-22  me-2"></i>Configurer Entreprise
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#wizardModal" style="font-size: 20px">
+                                🤖 Configurer entreprise avec IA
                             </button>
                         </div>
                     @endif
@@ -163,9 +163,10 @@
                                                 @endif
                                             </div>
                                             <div class="col-md-2 text-end">
-                                                <a href="{{ route('conformite.review', $sub) }}" class="btn btn-sm btn-primary">
+                                                <a href="{{ route('conformite.review', $sub) }}"
+                                                    class="btn btn-sm btn-primary">
                                                     <i class="ti ti-eye me-1"></i>Examiner
-                                                  </a>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +202,7 @@
                         <button type="button" class="btn-close bg-light" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <livewire:settings.enterprise-config-wizard />
+                        @livewire('attribution-entreprise', ['entreprise_id' => $entreprise_id])
                     </div>
                 </div>
             </div>

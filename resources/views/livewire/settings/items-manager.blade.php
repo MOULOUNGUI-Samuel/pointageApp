@@ -76,18 +76,17 @@
                                                 {{ \Illuminate\Support\Str::limit($i->description, 25, '..') }}
                                             </div>
                                         </td>
-                                        <td>{{ \Illuminate\Support\Str::limit($i->CategorieDommaine?->nom_categorie, 17, '..') }}
+                                        <td>{{ \Illuminate\Support\Str::limit($i->CategorieDomaine?->nom_categorie, 17, '..') }}
                                         </td>
                                         <td>
-                                            @if (in_array($i->type, ['checkbox','liste']))
-                                                <button class="btn btn-sm btn-outline-primary" 
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseOptions{{ $i->id }}"
-                                                        aria-expanded="false"
-                                                        aria-controls="collapseOptions{{ $i->id }}">
+                                            @if (in_array($i->type, ['checkbox', 'liste']))
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseOptions{{ $i->id }}"
+                                                    aria-expanded="false"
+                                                    aria-controls="collapseOptions{{ $i->id }}">
                                                     {{ ucfirst($i->type) }} <i class="fas fa-eye"></i>
                                                 </button>
-                                        
+
                                                 <div class="collapse mt-2" id="collapseOptions{{ $i->id }}">
                                                     <div class="card card-body">
                                                         <p class="fw-semibold mb-2">Liste des options :</p>
@@ -96,7 +95,10 @@
                                                                 @foreach ($i->options->sortBy('position') as $opt)
                                                                     <li>
                                                                         {{ $opt->label }}
-                                                                        @if($opt->value) <span class="text-muted">({{ $opt->value }})</span> @endif
+                                                                        @if ($opt->value)
+                                                                            <span
+                                                                                class="text-muted">({{ $opt->value }})</span>
+                                                                        @endif
                                                                     </li>
                                                                 @endforeach
                                                             </ul>
@@ -109,7 +111,7 @@
                                                 <p>{{ ucfirst($i->type) }}</p>
                                             @endif
                                         </td>
-                                        
+
                                         <td class="text-end">
                                             {{-- Bouton Éditer --}}
                                             <button class="btn btn-sm btn-outline-primary"
@@ -257,7 +259,7 @@
                             @endif
 
 
-                            
+
 
                             <div class="mb-2">
                                 <label class="form-label">Description</label>

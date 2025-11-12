@@ -96,7 +96,7 @@ class NotificationConformite extends Model
 
     public function categorieDomaine(): BelongsTo
     {
-        return $this->belongsTo(CategorieDommaine::class, 'categorie_domaine_id');
+        return $this->belongsTo(CategorieDomaine::class, 'categorie_domaine_id');
     }
 
     /**
@@ -166,7 +166,7 @@ class NotificationConformite extends Model
      */
     public function getIconeAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             self::TYPE_NOUVELLE_PERIODE => '📋',
             self::TYPE_VALIDATION => '✅',
             self::TYPE_REFUS => '❌',
@@ -187,12 +187,12 @@ class NotificationConformite extends Model
         if ($this->priorite === self::PRIORITE_URGENTE) {
             return 'red';
         }
-        
+
         if ($this->priorite === self::PRIORITE_HAUTE) {
             return 'orange';
         }
 
-        return match($this->type) {
+        return match ($this->type) {
             self::TYPE_VALIDATION => 'green',
             self::TYPE_REFUS => 'red',
             self::TYPE_RAPPEL_ECHEANCE => 'yellow',
@@ -208,24 +208,24 @@ class NotificationConformite extends Model
      */
     public function getLienActionAttribute(): ?string
     {
-        return match($this->type) {
-            self::TYPE_NOUVELLE_PERIODE, 
-            self::TYPE_RAPPEL_ECHEANCE => $this->item_id 
+        return match ($this->type) {
+            self::TYPE_NOUVELLE_PERIODE,
+            self::TYPE_RAPPEL_ECHEANCE => $this->item_id
                 ? route('entreprise.items.formulaire', $this->item_id)
                 : null,
-            
-            self::TYPE_VALIDATION, 
-            self::TYPE_REFUS => $this->soumission_id 
+
+            self::TYPE_VALIDATION,
+            self::TYPE_REFUS => $this->soumission_id
                 ? route('entreprise.soumissions.detail', $this->soumission_id)
                 : null,
-            
-            self::TYPE_NOUVELLE_SOUMISSION, 
-            self::TYPE_RESOUMISSION => $this->soumission_id 
+
+            self::TYPE_NOUVELLE_SOUMISSION,
+            self::TYPE_RESOUMISSION => $this->soumission_id
                 ? route('admin.validations.kanban', ['soumission' => $this->soumission_id])
                 : route('admin.validations.kanban'),
-            
+
             self::TYPE_RAPPORT_QUOTIDIEN => route('admin.validations.kanban'),
-            
+
             default => null,
         };
     }

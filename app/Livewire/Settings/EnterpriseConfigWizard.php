@@ -3,7 +3,7 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Domaine;
-use App\Models\CategorieDommaine;
+use App\Models\CategorieDomaine;
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -60,8 +60,8 @@ class EnterpriseConfigWizard extends Component
         if ($this->searchDomaines !== '') {
             $q->where('nom_domaine', 'like', "%{$this->searchDomaines}%");
         }
-        $this->domaines = $q->get(['id','nom_domaine'])
-            ->map(fn($d)=>['id'=>$d->id,'label'=>$d->nom_domaine])
+        $this->domaines = $q->get(['id', 'nom_domaine'])
+            ->map(fn($d) => ['id' => $d->id, 'label' => $d->nom_domaine])
             ->all();
     }
 
@@ -72,15 +72,15 @@ class EnterpriseConfigWizard extends Component
             return;
         }
 
-        $q = CategorieDommaine::whereIn('domaine_id', $this->selectedDomainIds)
+        $q = CategorieDomaine::whereIn('domaine_id', $this->selectedDomainIds)
             ->orderBy('nom_categorie');
 
         if ($this->searchCategories !== '') {
             $q->where('nom_categorie', 'like', "%{$this->searchCategories}%");
         }
 
-        $this->categories = $q->get(['id','nom_categorie','domaine_id'])
-            ->map(fn($c)=>['id'=>$c->id,'label'=>$c->nom_categorie,'domaine_id'=>$c->domaine_id])
+        $this->categories = $q->get(['id', 'nom_categorie', 'domaine_id'])
+            ->map(fn($c) => ['id' => $c->id, 'label' => $c->nom_categorie, 'domaine_id' => $c->domaine_id])
             ->all();
     }
 
@@ -98,8 +98,8 @@ class EnterpriseConfigWizard extends Component
             $q->where('nom_item', 'like', "%{$this->searchItems}%");
         }
 
-        $this->items = $q->get(['id','nom_item','categorie_domaine_id'])
-            ->map(fn($i)=>['id'=>$i->id,'label'=>$i->nom_item,'categorie_id'=>$i->categorie_domaine_id])
+        $this->items = $q->get(['id', 'nom_item', 'categorie_domaine_id'])
+            ->map(fn($i) => ['id' => $i->id, 'label' => $i->nom_item, 'categorie_id' => $i->categorie_domaine_id])
             ->all();
     }
 
@@ -110,13 +110,13 @@ class EnterpriseConfigWizard extends Component
             $this->selectedDomainIds = array_values(array_diff($this->selectedDomainIds, [$id]));
             // Enlever les catégories et items qui ne rentrent plus dans le filtre
             $this->selectedCategoryIds = array_values(
-                array_filter($this->selectedCategoryIds, function($catId) {
-                    $cat = CategorieDommaine::find($catId);
+                array_filter($this->selectedCategoryIds, function ($catId) {
+                    $cat = CategorieDomaine::find($catId);
                     return $cat && in_array($cat->domaine_id, $this->selectedDomainIds, true);
                 })
             );
             $this->selectedItemIds = array_values(
-                array_filter($this->selectedItemIds, function($itemId) {
+                array_filter($this->selectedItemIds, function ($itemId) {
                     $item = Item::find($itemId);
                     return $item && in_array($item->categorie_domaine_id, $this->selectedCategoryIds, true);
                 })
@@ -134,7 +134,7 @@ class EnterpriseConfigWizard extends Component
             $this->selectedCategoryIds = array_values(array_diff($this->selectedCategoryIds, [$id]));
             // Déselectionner items orphelins
             $this->selectedItemIds = array_values(
-                array_filter($this->selectedItemIds, function($itemId) {
+                array_filter($this->selectedItemIds, function ($itemId) {
                     $item = Item::find($itemId);
                     return $item && in_array($item->categorie_domaine_id, $this->selectedCategoryIds, true);
                 })
@@ -200,7 +200,7 @@ class EnterpriseConfigWizard extends Component
         // stratégie simple : purge puis insert
         DB::table('entreprise_domaines')->where('entreprise_id', $this->entrepriseId)->delete();
 
-        $rows = array_map(fn($id)=>[
+        $rows = array_map(fn($id) => [
             'entreprise_id' => $this->entrepriseId,
             'domaine_id'    => $id,
             'statut'        => '1',
@@ -215,9 +215,9 @@ class EnterpriseConfigWizard extends Component
     {
         DB::table('entreprise_categorie_domaines')->where('entreprise_id', $this->entrepriseId)->delete();
 
-        $rows = array_map(fn($id)=>[
+        $rows = array_map(fn($id) => [
             'entreprise_id'       => $this->entrepriseId,
-            'categorie_domaine_id'=> $id,
+            'categorie_domaine_id' => $id,
             'statut'              => '1',
             'created_at'          => now(),
             'updated_at'          => now(),
@@ -230,7 +230,7 @@ class EnterpriseConfigWizard extends Component
     {
         DB::table('entreprise_items')->where('entreprise_id', $this->entrepriseId)->delete();
 
-        $rows = array_map(fn($id)=>[
+        $rows = array_map(fn($id) => [
             'entreprise_id' => $this->entrepriseId,
             'item_id'       => $id,
             'statut'        => '1',
@@ -242,9 +242,18 @@ class EnterpriseConfigWizard extends Component
     }
 
     /** Recherches (événements input) */
-    public function updatedSearchDomaines()   { $this->loadDomaines(); }
-    public function updatedSearchCategories() { $this->loadCategories(); }
-    public function updatedSearchItems()      { $this->loadItems(); }
+    public function updatedSearchDomaines()
+    {
+        $this->loadDomaines();
+    }
+    public function updatedSearchCategories()
+    {
+        $this->loadCategories();
+    }
+    public function updatedSearchItems()
+    {
+        $this->loadItems();
+    }
 
     public function render()
     {

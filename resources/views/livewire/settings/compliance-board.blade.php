@@ -169,7 +169,7 @@
                                     </h6>
                                     <div class="text-muted small">
                                         <i class="ti ti-folder me-1"></i>
-                                        {{ $item->categorieDommaine?->nom_categorie ?? '—' }}
+                                        {{ $item->CategorieDomaine?->nom_categorie ?? '—' }}
                                     </div>
                                 </div>
                                 <span class="badge bg-{{ $typeColor }} bg-opacity-10 text-{{ $typeColor }}">

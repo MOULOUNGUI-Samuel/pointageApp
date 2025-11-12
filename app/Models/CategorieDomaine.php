@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-class CategorieDommaine extends Model
+class CategorieDomaine extends Model
 {
     use HasFactory;
 
@@ -54,5 +54,16 @@ class CategorieDommaine extends Model
     public function items(): HasMany
     {
         return $this->hasMany(Item::class, 'categorie_domaine_id');
+    }
+
+
+    public function entreprises()
+    {
+        return $this->belongsToMany(
+            \App\Models\Entreprise::class,
+            'entreprise_categorie_domaines',
+            'categorie_domaine_id',   // clé locale (ce modèle) dans pivot
+            'entreprise_id'           // clé “autre” dans pivot
+        )->withPivot('statut')->withTimestamps();
     }
 }

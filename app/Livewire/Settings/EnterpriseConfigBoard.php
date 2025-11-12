@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use App\Models\Domaine;
-use App\Models\CategorieDommaine;
+use App\Models\CategorieDomaine;
 use App\Models\Item;
 use App\Models\PeriodeItem;
 use App\Models\ConformitySubmission;
@@ -96,7 +96,7 @@ class EnterpriseConfigBoard extends Component
     {
         if (!$domainId) return null;
 
-        $first = CategorieDommaine::query()
+        $first = CategorieDomaine::query()
             ->join('entreprise_categorie_domaines as ecd', 'ecd.categorie_domaine_id', '=', 'categorie_domaines.id')
             ->where('ecd.entreprise_id', $this->entrepriseId)
             ->where('categorie_domaines.domaine_id', $domainId)
@@ -114,9 +114,9 @@ class EnterpriseConfigBoard extends Component
             ->where('ed.entreprise_id', $this->entrepriseId)
             ->where('ed.statut', '1')
             ->orderBy('domaines.nom_domaine')
-            ->get(['domaines.id','domaines.nom_domaine']);
+            ->get(['domaines.id', 'domaines.nom_domaine']);
 
-        $this->domains = $rows->map(fn($d) => ['id'=>$d->id,'label'=>$d->nom_domaine])->all();
+        $this->domains = $rows->map(fn($d) => ['id' => $d->id, 'label' => $d->nom_domaine])->all();
     }
 
 
@@ -128,7 +128,7 @@ class EnterpriseConfigBoard extends Component
             return;
         }
 
-        $q = CategorieDommaine::query()
+        $q = CategorieDomaine::query()
             ->join('entreprise_categorie_domaines as ecd', 'ecd.categorie_domaine_id', '=', 'categorie_domaines.id')
             ->where('ecd.entreprise_id', $this->entrepriseId)
             ->where('ecd.statut', '1')
@@ -139,8 +139,8 @@ class EnterpriseConfigBoard extends Component
             $q->where('categorie_domaines.nom_categorie', 'like', "%{$this->searchCategory}%");
         }
 
-        $this->categories = $q->get(['categorie_domaines.id','categorie_domaines.nom_categorie'])
-            ->map(fn($c)=>['id'=>$c->id,'label'=>$c->nom_categorie])
+        $this->categories = $q->get(['categorie_domaines.id', 'categorie_domaines.nom_categorie'])
+            ->map(fn($c) => ['id' => $c->id, 'label' => $c->nom_categorie])
             ->all();
 
         // sécuriser la sélection si elle n’existe plus
@@ -189,9 +189,9 @@ class EnterpriseConfigBoard extends Component
             ->withExists([
                 'periodes as periode_active' => function ($qq) use ($today, $eid) {
                     $qq->where('entreprise_id', $eid)
-                       ->where('statut', '1')
-                       ->whereDate('debut_periode', '<=', $today)
-                       ->whereDate('fin_periode',   '>=', $today);
+                        ->where('statut', '1')
+                        ->whereDate('debut_periode', '<=', $today)
+                        ->whereDate('fin_periode',   '>=', $today);
                 }
             ])
 
@@ -230,7 +230,8 @@ class EnterpriseConfigBoard extends Component
 
                 // Flags UX supplémentaires
                 'active_expires_soon' => PeriodeItem::selectRaw(
-                    "CASE WHEN DATEDIFF(fin_periode, ?) BETWEEN 0 AND 15 THEN 1 ELSE 0 END", [$today]
+                    "CASE WHEN DATEDIFF(fin_periode, ?) BETWEEN 0 AND 15 THEN 1 ELSE 0 END",
+                    [$today]
                 )
                     ->whereColumn('item_id', 'items.id')
                     ->where('entreprise_id', $eid)
@@ -241,7 +242,8 @@ class EnterpriseConfigBoard extends Component
                     ->limit(1),
 
                 'is_expired' => PeriodeItem::selectRaw(
-                    "CASE WHEN fin_periode < ? THEN 1 ELSE 0 END", [$today]
+                    "CASE WHEN fin_periode < ? THEN 1 ELSE 0 END",
+                    [$today]
                 )
                     ->whereColumn('item_id', 'items.id')
                     ->where('entreprise_id', $eid)
@@ -362,8 +364,14 @@ class EnterpriseConfigBoard extends Component
         $this->loadItems();
     }
 
-    public function updatedSearchCategory() { $this->loadCategories(); }
-    public function updatedSearchItem()     { $this->loadItems(); }
+    public function updatedSearchCategory()
+    {
+        $this->loadCategories();
+    }
+    public function updatedSearchItem()
+    {
+        $this->loadItems();
+    }
 
     public function render()
     {

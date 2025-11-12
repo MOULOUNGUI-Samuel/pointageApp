@@ -3,7 +3,7 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Domaine;
-use App\Models\CategorieDommaine;
+use App\Models\CategorieDomaine;
 use App\Models\Item;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -22,7 +22,7 @@ class DashboardCounters extends Component
     private function loadCounts(): void
     {
         $this->domainesCount   = Domaine::count();
-        $this->categoriesCount = CategorieDommaine::count();
+        $this->categoriesCount = CategorieDomaine::count();
         $this->itemsCount      = Item::count();
     }
 

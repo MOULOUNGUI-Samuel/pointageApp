@@ -19,7 +19,6 @@ class ComplianceBoard extends Component
     protected $paginationTheme = 'bootstrap';
 
     public string $traceId;
-    public string $entrepriseId;
 
     // Filtres
     public string $search = '';
@@ -54,12 +53,12 @@ class ComplianceBoard extends Component
 
     public function mount(): void
     {
+
         $this->traceId = (string) Str::uuid();
-        $this->entrepriseId = (string) session('entreprise_id');
 
         Log::info('[ComplianceBoard] mount()', [
             'trace_id'      => $this->traceId,
-            'entreprise_id' => $this->entrepriseId ?: null,
+            'entreprise_id' => session('entreprise_id') ?: null,
         ]);
 
         $this->logReqMeta('mount');
@@ -72,17 +71,17 @@ class ComplianceBoard extends Component
         $today = now()->toDateString();
 
         $itemIds = DB::table('entreprise_items')
-            ->where('entreprise_id', $this->entrepriseId)
+            ->where('entreprise_id', session('entreprise_id'))
             ->where('statut', '1')
             ->pluck('item_id');
 
         $baseSub = ConformitySubmission::whereIn('item_id', $itemIds)
-            ->where('entreprise_id', $this->entrepriseId);
+            ->where('entreprise_id', session('entreprise_id'));
 
         $this->stats = [
             'total_items'         => $itemIds->count(),
             'avec_periode_active' => PeriodeItem::whereIn('item_id', $itemIds)
-                ->where('entreprise_id', $this->entrepriseId)
+                ->where('entreprise_id', session('entreprise_id'))
                 ->where('statut', '1')
                 ->whereDate('debut_periode', '<=', $today)
                 ->whereDate('fin_periode', '>=', $today)
@@ -93,10 +92,22 @@ class ComplianceBoard extends Component
         ];
     }
 
-    public function updatedSearch(): void   { $this->resetPage(); }
-    public function updatedFilterStatus(): void { $this->resetPage(); }
-    public function updatedFilterPeriode(): void { $this->resetPage(); }
-    public function updatedFilterCategorie(): void { $this->resetPage(); }
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+    public function updatedFilterStatus(): void
+    {
+        $this->resetPage();
+    }
+    public function updatedFilterPeriode(): void
+    {
+        $this->resetPage();
+    }
+    public function updatedFilterCategorie(): void
+    {
+        $this->resetPage();
+    }
 
     /** Ouvrir modal de soumission (création OU modification) */
     public function openSubmitModal(string $itemId, ?string $submissionId = null): void
@@ -114,19 +125,19 @@ class ComplianceBoard extends Component
         $this->dispatch('open-submit-modal', itemId: $itemId, submissionId: $submissionId);
     }
 
-     /** Ouvrir modal de révision */
-     public function openReviewModal(string $submissionId): void
-     {
-         $this->selectedSubmissionForReview = $submissionId;
- 
-         Log::info('[ComplianceBoard] openReviewModal()', [
-             'trace_id'      => $this->traceId,
-             'submission_id' => $submissionId,
-         ]);
- 
-         // on laisse Bootstrap ouvrir via data-bs-*, ET on force l’ouverture au cas où :
-         $this->dispatch('open-review-modal', submissionId: $submissionId);
-     }
+    /** Ouvrir modal de révision */
+    public function openReviewModal(string $submissionId): void
+    {
+        $this->selectedSubmissionForReview = $submissionId;
+
+        Log::info('[ComplianceBoard] openReviewModal()', [
+            'trace_id'      => $this->traceId,
+            'submission_id' => $submissionId,
+        ]);
+
+        // on laisse Bootstrap ouvrir via data-bs-*, ET on force l’ouverture au cas où :
+        $this->dispatch('open-review-modal', submissionId: $submissionId);
+    }
 
     /** Ouvrir modal d'historique */
     public function openHistoryModal(string $itemId): void
@@ -150,29 +161,30 @@ class ComplianceBoard extends Component
 
         $today   = now()->toDateString();
         $itemIds = DB::table('entreprise_items')
-            ->where('entreprise_id', $this->entrepriseId)
+            ->where('entreprise_id', session('entreprise_id'))
             ->where('statut', '1')
             ->pluck('item_id');
 
-            $query = Item::query()
+        $query = Item::query()
             ->whereIn('id', $itemIds)
             ->with([
-                'categorieDommaine:id,nom_categorie',
+                'CategorieDomaine:id,nom_categorie',
                 // lastPeriode (tous statuts) pour affichage d’état
-                'periodes' => fn($q) => $q->where('entreprise_id', $this->entrepriseId),
+                'periodes' => fn($q) => $q->where('entreprise_id', session('entreprise_id')),
             ])
             ->withCount([
-                'submissions as pending_count' => fn ($q) =>
-                    $q->where('entreprise_id', $this->entrepriseId)->where('status', 'soumis'),
+                'submissions as pending_count' => fn($q) =>
+                $q->where('entreprise_id', session('entreprise_id'))->where('status', 'soumis'),
             ])
-            ->with(['lastSubmission' => fn ($q) =>
-                $q->where('entreprise_id', $this->entrepriseId)->latest('submitted_at')
+            ->with([
+                'lastSubmission' => fn($q) =>
+                $q->where('entreprise_id', session('entreprise_id'))->latest('submitted_at')
             ]);
-        
+
 
         if ($this->search !== '') {
             $s = trim($this->search);
-            $query->where(fn ($q) => $q->where('nom_item', 'like', "%{$s}%")
+            $query->where(fn($q) => $q->where('nom_item', 'like', "%{$s}%")
                 ->orWhere('description', 'like', "%{$s}%"));
         }
 
@@ -182,53 +194,63 @@ class ComplianceBoard extends Component
 
         if ($this->filterPeriode !== 'all') {
             if ($this->filterPeriode === 'active') {
-                $query->whereHas('periodeActive', fn ($q) =>
-                    $q->where('entreprise_id', $this->entrepriseId)
-                      ->where('statut', '1')
-                      ->whereDate('debut_periode', '<=', $today)
-                      ->whereDate('fin_periode', '>=', $today)
+                $query->whereHas(
+                    'periodeActive',
+                    fn($q) =>
+                    $q->where('entreprise_id', session('entreprise_id'))
+                        ->where('statut', '1')
+                        ->whereDate('debut_periode', '<=', $today)
+                        ->whereDate('fin_periode', '>=', $today)
                 );
             } elseif ($this->filterPeriode === 'expired') {
-                $query->whereHas('periodes', fn ($q) => $q
-                        ->where('entreprise_id', $this->entrepriseId)
-                        ->where('statut', '1')
-                        ->whereDate('fin_periode', '<', $today))
-                    ->whereDoesntHave('periodeActive', fn ($q) => $q
-                        ->where('entreprise_id', $this->entrepriseId)
+                $query->whereHas('periodes', fn($q) => $q
+                    ->where('entreprise_id', session('entreprise_id'))
+                    ->where('statut', '1')
+                    ->whereDate('fin_periode', '<', $today))
+                    ->whereDoesntHave('periodeActive', fn($q) => $q
+                        ->where('entreprise_id', session('entreprise_id'))
                         ->where('statut', '1')
                         ->whereDate('debut_periode', '<=', $today)
                         ->whereDate('fin_periode', '>=', $today));
             } elseif ($this->filterPeriode === 'no_period') {
-                $query->whereDoesntHave('periodes', fn ($q) =>
-                    $q->where('entreprise_id', $this->entrepriseId)->where('statut', '1')
+                $query->whereDoesntHave(
+                    'periodes',
+                    fn($q) =>
+                    $q->where('entreprise_id', session('entreprise_id'))->where('statut', '1')
                 );
             }
         }
 
         if ($this->filterStatus !== 'all') {
             if ($this->filterStatus === 'no_submission') {
-                $query->whereDoesntHave('submissions', fn ($q) => $q->where('entreprise_id', $this->entrepriseId));
+                $query->whereDoesntHave('submissions', fn($q) => $q->where('entreprise_id', session('entreprise_id')));
             } else {
-                $query->whereHas('lastSubmission', fn ($q) =>
+                $query->whereHas(
+                    'lastSubmission',
+                    fn($q) =>
                     $q->where('conformity_submissions.status', $this->filterStatus)
                 );
             }
         }
 
         $items = $query->orderBy('nom_item')->paginate(12);
+        $entrepriseId = session('entreprise_id');
 
-        $categories = cache()->remember(
-            "ent:{$this->entrepriseId}:cats",
-            now()->addMinutes(10),
-            function () {
-                return DB::table('entreprise_categorie_domaines')
-                    ->where('entreprise_categorie_domaines.entreprise_id', $this->entrepriseId)
-                    ->where('entreprise_categorie_domaines.statut', '1')
-                    ->join('categorie_domaines', 'categorie_domaines.id', '=', 'entreprise_categorie_domaines.categorie_domaine_id')
-                    ->orderBy('categorie_domaines.nom_categorie')
-                    ->get(['categorie_domaines.id', 'categorie_domaines.nom_categorie']);
-            }
-        );
+        $categories = DB::table('entreprise_categorie_domaines')
+            ->where('entreprise_categorie_domaines.entreprise_id', $entrepriseId)
+            ->where('entreprise_categorie_domaines.statut', '1')
+            ->join(
+                'categorie_domaines',
+                'categorie_domaines.id',
+                '=',
+                'entreprise_categorie_domaines.categorie_domaine_id'
+            )
+            ->orderBy('categorie_domaines.nom_categorie')
+            ->get([
+                'categorie_domaines.id',
+                'categorie_domaines.nom_categorie',
+            ]);
+
 
         return view('livewire.settings.compliance-board', compact('items', 'categories'));
     }

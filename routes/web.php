@@ -36,6 +36,7 @@ use App\Http\Controllers\PdfPointageController;
 use App\Http\Controllers\PointageBackfillController;
 use App\Http\Controllers\ConsoliderController;
 use App\Http\Controllers\ClassementPonctualiteController;
+use App\Livewire\AttributionEntreprise;
 use App\Livewire\GenerateurConformite;
 
 /*
@@ -369,7 +370,11 @@ Route::middleware('auth')->group(
         // Gestion des integration des domaines avec IA
         Route::get('/generateur-conformite', GenerateurConformite::class)
             ->name('generateur.conformite');
-    }
+    
+
+            Route::get('/entreprises/{entreprise}/attribution-ia', AttributionEntreprise::class)
+        ->name('entreprises.attribution.ia');
+        }
 
 );
 // ================================== OIDC avec Passport =================================

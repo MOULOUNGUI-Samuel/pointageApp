@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Settings;
 
-use App\Models\CategorieDommaine;
+use App\Models\CategorieDomaine;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Domaine;
 use Illuminate\Validation\Rule;
@@ -50,7 +50,7 @@ class CategoriesManager extends Component
     // private function nextIndexForPrefix(string $prefix): string
     // {
     //     // on cherche le max des suffixes existants pour ce préfixe
-    //     $last = CategorieDommaine::where('code_categorie', 'like', $prefix . '-%')
+    //     $last = CategorieDomaine::where('code_categorie', 'like', $prefix . '-%')
     //         ->orderByRaw("LPAD(REGEXP_REPLACE(code_categorie, '.*-', ''), 4, '0') DESC")
     //         ->value('code_categorie');
 
@@ -72,7 +72,7 @@ class CategoriesManager extends Component
 
     private function nextIndexForPrefix(string $prefix, ?string $excludeId = null): string
     {
-        $q = CategorieDommaine::where('code_categorie', 'like', $prefix . '-%');
+        $q = CategorieDomaine::where('code_categorie', 'like', $prefix . '-%');
         if ($excludeId) {
             $q->where('id', '!=', $excludeId);
         }
@@ -194,7 +194,7 @@ class CategoriesManager extends Component
         $this->original_nom_categorie = null;
 
         if ($id) {
-            $c = CategorieDommaine::findOrFail($id);
+            $c = CategorieDomaine::findOrFail($id);
             $this->isEditing      = true;
             $this->selectedId     = $c->id;
             $this->nom_categorie  = $c->nom_categorie;
@@ -235,7 +235,7 @@ class CategoriesManager extends Component
                 ]);
             }
 
-            $c = CategorieDommaine::findOrFail($this->selectedId);
+            $c = CategorieDomaine::findOrFail($this->selectedId);
             $c->update([
                 'nom_categorie'  => $this->nom_categorie,
                 'code_categorie' => $this->code_categorie,
@@ -262,7 +262,7 @@ class CategoriesManager extends Component
                 ],
             ]);
 
-            CategorieDommaine::create([
+            CategorieDomaine::create([
                 'nom_categorie'  => $this->nom_categorie,
                 'code_categorie' => $this->code_categorie,
                 'description'    => $this->description,
@@ -293,7 +293,7 @@ class CategoriesManager extends Component
     {
         if (!$this->confirmingDeleteId) return;
 
-        CategorieDommaine::findOrFail($this->confirmingDeleteId)->delete();
+        CategorieDomaine::findOrFail($this->confirmingDeleteId)->delete();
         $deletedId = $this->confirmingDeleteId;
         $this->confirmingDeleteId = null;
 
@@ -307,7 +307,7 @@ class CategoriesManager extends Component
 
     public function render()
     {
-        $items = CategorieDommaine::query()
+        $items = CategorieDomaine::query()
             ->with('domaine:id,nom_domaine')
             ->when(
                 $this->search,
