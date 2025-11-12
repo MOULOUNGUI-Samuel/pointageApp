@@ -40,8 +40,8 @@ class SubmitForm extends Component
     /** @var array<int,string>  valeurs sélectionnées pour “liste” (multi-choix) */
     public array $list_values = [];
 
-    /** @var array<int, string>  valeurs pour checkbox */
-    public array $checkbox_values = [];
+    // Par
+    public ?string $checkbox_value = null;
 
     /** @var array<int, string>  chemins des pièces déjà stockées */
     public array $existingDocs = [];
@@ -90,7 +90,13 @@ class SubmitForm extends Component
                 $this->list_values = (array) data_get($answer?->value_json, 'selected', []);
             } elseif ($this->type === 'checkbox') {
                 $answer = $s->answers->firstWhere('kind', 'checkbox');
-                $this->checkbox_values = (array) data_get($answer?->value_json, 'selected', []);
+                // accepter ancien format (array) ou nouveau (string)
+                $selected = data_get($answer?->value_json, 'selected');
+                if (is_array($selected)) {
+                    $this->checkbox_value = $selected[0] ?? null;
+                } else {
+                    $this->checkbox_value = $selected; // string
+                }
             } elseif ($this->type === 'file') {
                 $this->existingDocs = $s->answers
                     ->where('kind', 'documents')
@@ -151,7 +157,7 @@ class SubmitForm extends Component
             'texte'    => ['text_value'      => 'required|string|min:2'],
             'file'     => ['docs.*'          => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx'],
             'liste'    => ['list_values'     => 'required|array|min:1', 'list_values.*' => 'string'],
-            'checkbox' => ['checkbox_values' => 'required|array|min:1'],
+            'checkbox' => ['checkbox_value'  => 'required|string'], // <- radio = string
             default    => [], // pas de __noop
         };
     }
@@ -219,16 +225,17 @@ class SubmitForm extends Component
                 'position'      => 1,
             ]);
         } elseif ($this->type === 'checkbox') {
-            $labels = $this->options
-                ->filter(fn($o) => in_array(($o->value ?: $o->label), $this->checkbox_values, true))
-                ->pluck('label')->values()->all();
-
+            $value  = $this->checkbox_value;
+            $label  = $this->options
+                ->first(fn($o) => ($o->value ?: $o->label) === $value)?->label;
+        
             ConformityAnswer::create([
                 'submission_id' => $submission->id,
-                'kind'          => 'checkbox',
+                'kind'          => 'checkbox', // on garde 'checkbox' comme type logique
                 'value_json'    => [
-                    'selected' => array_values($this->checkbox_values),
-                    'labels'   => $labels
+                    // on stocke désormais un SCALAIRE, mais on reste rétro-compatible à la lecture (cf. mount)
+                    'selected' => $value,
+                    'label'    => $label,
                 ],
                 'position'      => 1,
             ]);
@@ -239,7 +246,8 @@ class SubmitForm extends Component
         $this->dispatch('wizard-config-reload');
 
         // reset cohérent (plus de list_value)
-        $this->reset(['text_value', 'docs', 'list_values', 'checkbox_values']);
+        $this->reset(['text_value', 'docs', 'list_values', 'checkbox_value']);
+
     }
 
     private function persistUpdate(): void
@@ -271,18 +279,18 @@ class SubmitForm extends Component
                 ],
             ]);
         } elseif ($this->type === 'checkbox') {
-            $labels = $this->options
-                ->filter(fn($o) => in_array(($o->value ?: $o->label), $this->checkbox_values, true))
-                ->pluck('label')->values()->all();
-
+            $value  = $this->checkbox_value;
+            $label  = $this->options
+                ->first(fn($o) => ($o->value ?: $o->label) === $value)?->label;
+        
             $a = $s->answers()->firstOrCreate(['kind' => 'checkbox'], ['position' => 1]);
             $a->update([
                 'value_json' => [
-                    'selected' => array_values($this->checkbox_values),
-                    'labels'   => $labels
+                    'selected' => $value, // string
+                    'label'    => $label,
                 ],
             ]);
-        } elseif ($this->type === 'file') {
+        }elseif ($this->type === 'file') {
             if (!empty($this->docs)) {
                 // supprimer les anciens documents
                 foreach ($s->answers()->where('kind', 'documents')->get() as $old) {

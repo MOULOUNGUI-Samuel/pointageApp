@@ -6,52 +6,52 @@
                     <h5 class="modal-title text-white mb-0">
                         <i class="ti ti-history me-2"></i>Historique des Soumissions
                     </h5>
-                    @if(isset($itemLabel))
+                    @if (isset($itemLabel))
                         <span class="badge bg-white text-primary">{{ $itemLabel }}</span>
                     @endif
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-  
+
             <div class="modal-body">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show rounded-3 d-flex align-items-center">
                         <i class="ti ti-check me-2"></i>
                         <span>{{ session('success') }}</span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
-  
+
                 {{-- Stats rapides --}}
-                @if(isset($stats))
+                @if (isset($stats))
                     <div class="row g-2 mb-4">
                         <div class="col-3">
-                            <div class="p-3 rounded-3 bg-light border text-center">
-                                <div class="fs-4 fw-bold text-primary">{{ $stats['total'] }}</div>
-                                <div class="small text-muted">Total</div>
+                            <div class="p-3 rounded-3 bg-primary border text-center">
+                                <div class="fs-22 fw-bold text-white">{{ $stats['total'] }}</div>
+                                <div class="small text-light">Total</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning text-center">
-                                <div class="fs-4 fw-bold text-warning">{{ $stats['pending'] }}</div>
+                                <div class="fs-22 fw-bold text-warning">{{ $stats['pending'] }}</div>
                                 <div class="small text-muted">En attente</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 rounded-3 bg-success bg-opacity-10 border border-success text-center">
-                                <div class="fs-4 fw-bold text-success">{{ $stats['approved'] }}</div>
+                                <div class="fs-22 fw-bold text-success">{{ $stats['approved'] }}</div>
                                 <div class="small text-muted">Approuvés</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 rounded-3 bg-danger bg-opacity-10 border border-danger text-center">
-                                <div class="fs-4 fw-bold text-danger">{{ $stats['rejected'] }}</div>
+                                <div class="fs-22 fw-bold text-danger">{{ $stats['rejected'] }}</div>
                                 <div class="small text-muted">Rejetés</div>
                             </div>
                         </div>
                     </div>
                 @endif
-  
+
                 {{-- Filtres --}}
                 <div class="card border-0 bg-light mb-3">
                     <div class="card-body">
@@ -61,7 +61,7 @@
                                     <i class="ti ti-search me-1"></i>Recherche
                                 </label>
                                 <input type="text" class="form-control" placeholder="ID, notes..."
-                                       wire:model.debounce.400ms="search">
+                                    wire:model.debounce.400ms="search">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold mb-1">
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-  
+
                 {{-- Liste des soumissions --}}
                 <div class="list-group list-group-flush">
                     @forelse($submissions as $sub)
@@ -88,28 +88,28 @@
                                     <div class="d-flex align-items-start gap-3">
                                         {{-- Icône de statut --}}
                                         <div class="flex-shrink-0">
-                                            @if($sub->status === 'approuvé')
+                                            @if ($sub->status === 'approuvé')
                                                 <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                                                    <i class="ti ti-circle-check text-success fs-4"></i>
+                                                    <i class="ti ti-circle-check text-success fs-22"></i>
                                                 </div>
                                             @elseif($sub->status === 'rejeté')
                                                 <div class="bg-danger bg-opacity-10 rounded-circle p-2">
-                                                    <i class="ti ti-circle-x text-danger fs-4"></i>
+                                                    <i class="ti ti-circle-x text-danger fs-22"></i>
                                                 </div>
                                             @else
                                                 <div class="bg-warning bg-opacity-10 rounded-circle p-2">
-                                                    <i class="ti ti-hourglass-high text-warning fs-4"></i>
+                                                    <i class="ti ti-hourglass-high text-warning fs-22"></i>
                                                 </div>
                                             @endif
                                         </div>
-  
+
                                         {{-- Détails --}}
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center gap-2 mb-1">
                                                 <span class="badge bg-light text-dark border">
                                                     #{{ Str::limit($sub->id, 8, '') }}
                                                 </span>
-                                                @if($sub->status === 'approuvé')
+                                                @if ($sub->status === 'approuvé')
                                                     <span class="badge bg-success-subtle text-success border">
                                                         Approuvé
                                                     </span>
@@ -123,18 +123,19 @@
                                                     </span>
                                                 @endif
                                             </div>
-  
+
                                             <div class="small text-muted mb-1">
                                                 <i class="ti ti-user me-1"></i>
-                                                Soumis par {{ $sub->submittedBy->nom ?? '—' }} {{ $sub->submittedBy->prenom ?? '' }}
+                                                Soumis par {{ $sub->submittedBy->nom ?? '—' }}
+                                                {{ $sub->submittedBy->prenom ?? '' }}
                                             </div>
-  
+
                                             <div class="small text-muted">
                                                 <i class="ti ti-clock me-1"></i>
                                                 {{ $sub->submitted_at?->format('d/m/Y H:i') }}
                                             </div>
-  
-                                            @if($sub->periodeItem)
+
+                                            @if ($sub->periodeItem)
                                                 <div class="small text-muted mt-1">
                                                     <i class="ti ti-calendar me-1"></i>
                                                     Période :
@@ -146,20 +147,21 @@
                                         </div>
                                     </div>
                                 </div>
-  
+
                                 {{-- Info validation --}}
                                 <div class="col-md-4">
-                                    @if(in_array($sub->status, ['approuvé','rejeté'], true))
+                                    @if (in_array($sub->status, ['approuvé', 'rejeté'], true))
                                         <div class="small">
                                             <div class="text-muted mb-1">
                                                 <i class="ti ti-user-check me-1"></i>
-                                                Validé par {{ $sub->reviewedBy->nom ?? '—' }} {{ $sub->reviewedBy->prenom ?? '' }}
+                                                Validé par {{ $sub->reviewedBy->nom ?? '—' }}
+                                                {{ $sub->reviewedBy->prenom ?? '' }}
                                             </div>
                                             <div class="text-muted">
                                                 <i class="ti ti-clock me-1"></i>
                                                 {{ $sub->reviewed_at?->format('d/m/Y H:i') }}
                                             </div>
-                                            @if($sub->reviewer_notes)
+                                            @if ($sub->reviewer_notes)
                                                 <div class="mt-2 p-2 rounded-3 bg-light border">
                                                     <div class="fw-semibold small mb-1">Notes :</div>
                                                     <div class="small text-muted">
@@ -174,39 +176,31 @@
                                         </div>
                                     @endif
                                 </div>
-  
+
                                 {{-- Actions --}}
                                 <div class="col-md-2 text-end">
                                     <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#reviewModal"
-                                                wire:click="viewDetails('{{ $sub->id }}')"
-                                                title="Voir les détails">
-                                            <i class="ti ti-eye"></i>
-                                        </button>
-  
-                                        @if($sub->status === 'soumis')
-                                            <button class="btn btn-outline-danger" 
-                                                    wire:click="deleteSubmission('{{ $sub->id }}')"
-                                                    wire:confirm="Êtes-vous sûr de vouloir supprimer cette soumission ?"
-                                                    title="Supprimer">
+                                        @if ($sub->status === 'soumis')
+                                            <button class="btn btn-outline-danger"
+                                                wire:click="deleteSubmission('{{ $sub->id }}')"
+                                                wire:confirm="Êtes-vous sûr de vouloir supprimer cette soumission ?"
+                                                title="Supprimer">
                                                 <i class="ti ti-trash"></i>
                                             </button>
                                         @endif
                                     </div>
                                 </div>
                             </div>
-  
+
                             {{-- Aperçu des réponses --}}
-                            @if($sub->answers->isNotEmpty())
+                            @if ($sub->answers->isNotEmpty())
                                 <div class="mt-3 pt-3 border-top">
                                     <div class="small fw-semibold text-muted mb-2">
                                         <i class="ti ti-file-text me-1"></i>Aperçu des données :
                                     </div>
                                     <div class="d-flex flex-wrap gap-2">
-                                        @foreach($sub->answers->take(3) as $ans)
-                                            @if($ans->kind === 'texte')
+                                        @foreach ($sub->answers->take(3) as $ans)
+                                            @if ($ans->kind === 'texte')
                                                 <span class="badge bg-light text-dark border">
                                                     <i class="ti ti-text-size me-1"></i>
                                                     {{ Str::limit($ans->value_text, 30) }}
@@ -221,13 +215,33 @@
                                                     {{ $ans->selectedLabel() ?? $ans->selectedList() }}
                                                 </span>
                                             @elseif($ans->kind === 'checkbox')
+                                                @php
+                                                    // Depuis le passage au radio : "selected" est une STRING (ou null)
+                                                    $selected = data_get($ans->value_json, 'selected');
+                                                    $label = data_get($ans->value_json, 'label'); // stocké à l’enregistrement
+                                                    // Rétro-compat : si jamais ancien format en array
+                                                    if (is_array($selected)) {
+                                                        $count = count($selected);
+                                                        $display = implode(
+                                                            ', ',
+                                                            (array) (data_get($ans->value_json, 'labels') ?: $selected),
+                                                        );
+                                                    } else {
+                                                        $count = filled($selected) ? 1 : 0;
+                                                        $display = $label ?? (string) $selected;
+                                                    }
+                                                @endphp
+
                                                 <span class="badge bg-secondary-subtle text-secondary border">
                                                     <i class="ti ti-checkbox me-1"></i>
-                                                    {{ count($ans->selectedMany()) }} sélection(s)
+                                                    {{ $count }} sélection(s)
+                                                    @if ($count > 0)
+                                                        — {{ $display }}
+                                                    @endif
                                                 </span>
                                             @endif
                                         @endforeach
-                                        @if($sub->answers->count() > 3)
+                                        @if ($sub->answers->count() > 3)
                                             <span class="badge bg-light text-muted border">
                                                 +{{ $sub->answers->count() - 3 }} autre(s)
                                             </span>
@@ -238,10 +252,10 @@
                         </div>
                     @empty
                         <div class="text-center py-5">
-                            <i class="ti ti-inbox fs-1 text-muted mb-3 d-block"></i>
+                            <i class="ti ti-inbox fs-22 text-muted mb-3 d-block"></i>
                             <h6 class="text-muted">Aucune soumission trouvée</h6>
                             <p class="text-muted small">
-                                @if($filterStatus !== 'all' || $search !== '')
+                                @if ($filterStatus !== 'all' || $search !== '')
                                     Essayez de modifier vos filtres
                                 @else
                                     Aucune soumission n'a encore été effectuée pour cet item
@@ -250,13 +264,13 @@
                         </div>
                     @endforelse
                 </div>
-  
+
                 {{-- Pagination --}}
                 <div class="mt-3">
                     {{ $submissions->links() }}
                 </div>
             </div>
-  
+
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="ti ti-x me-1"></i>Fermer
@@ -265,13 +279,13 @@
         </div>
     </div>
     <style>
-    .hover-item {
-      transition: all 0.2s ease;
-    }
-    .hover-item:hover {
-      background-color: #f8f9fa;
-      transform: translateX(4px);
-    }
+        .hover-item {
+            transition: all 0.2s ease;
+        }
+
+        .hover-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(4px);
+        }
     </style>
-  </div>
-  
+</div>

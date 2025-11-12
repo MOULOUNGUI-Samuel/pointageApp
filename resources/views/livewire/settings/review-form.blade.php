@@ -56,7 +56,7 @@
                         @if ($st === 'approuvé')
                             <div
                                 class="d-flex align-items-center gap-2 p-3 rounded-3 bg-success bg-opacity-10 border border-success">
-                                <i class="ti ti-circle-check text-success fs-3"></i>
+                                <i class="ti ti-circle-check text-success fs-22"></i>
                                 <div>
                                     <div class="fw-bold text-success">Approuvé</div>
                                     <div class="small text-muted">{{ $submission->reviewed_at?->format('d/m/Y H:i') }}
@@ -66,7 +66,7 @@
                         @elseif($st === 'rejeté')
                             <div
                                 class="d-flex align-items-center gap-2 p-3 rounded-3 bg-danger bg-opacity-10 border border-danger">
-                                <i class="ti ti-circle-x text-danger fs-3"></i>
+                                <i class="ti ti-circle-x text-danger fs-22"></i>
                                 <div>
                                     <div class="fw-bold text-danger">Rejeté</div>
                                     <div class="small text-muted">{{ $submission->reviewed_at?->format('d/m/Y H:i') }}
@@ -76,7 +76,7 @@
                         @else
                             <div
                                 class="d-flex align-items-center gap-2 p-3 rounded-3 bg-warning bg-opacity-10 border border-warning">
-                                <i class="ti ti-hourglass-high text-warning fs-3"></i>
+                                <i class="ti ti-hourglass-high text-warning fs-22"></i>
                                 <div>
                                     <div class="fw-bold text-warning">En attente</div>
                                     <div class="small text-muted">Validation requise</div>
@@ -109,7 +109,7 @@
                             <div
                                 class="bg-{{ $submission->status === 'approuvé' ? 'success' : 'danger' }} bg-opacity-10 rounded-circle p-2">
                                 <i
-                                    class="ti ti-user-check text-{{ $submission->status === 'approuvé' ? 'success' : 'danger' }} fs-5"></i>
+                                    class="ti ti-user-check text-{{ $submission->status === 'approuvé' ? 'success' : 'danger' }} fs-22"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1">
@@ -202,7 +202,7 @@
                             <div class="p-3 rounded-3 border mb-3">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <i class="ti ti-checkbox text-secondary"></i>
-                                    <span class="small fw-semibold text-muted">Choix multiples</span>
+                                    <span class="small fw-semibold text-muted">Choix</span>
                                 </div>
                                 @php
                                     $labels = $a->selectedLabels();
@@ -222,7 +222,7 @@
                     @endswitch
                     @empty
                         <div class="text-center text-muted py-4">
-                            <i class="ti ti-file-off fs-1 mb-2 d-block"></i>
+                            <i class="ti ti-file-off fs-22 mb-2 d-block"></i>
                             Aucune donnée soumise
                         </div>
                     @endforelse
@@ -258,7 +258,7 @@
                         {{-- Banners de confirmation --}}
                         @if ($showConfirmApprove)
                             <div class="alert alert-success d-flex align-items-start gap-3 mb-3">
-                                <i class="ti ti-alert-circle fs-4"></i>
+                                <i class="ti ti-alert-circle fs-22"></i>
                                 <div class="flex-grow-1">
                                     <div class="fw-bold mb-2">Confirmer l'approbation</div>
                                     <p class="mb-3 small">Vous êtes sur le point d'approuver cette soumission. Cette action
@@ -281,7 +281,7 @@
 
                         @if ($showConfirmReject)
                             <div class="alert alert-danger d-flex align-items-start gap-3 mb-3">
-                                <i class="ti ti-alert-triangle fs-4"></i>
+                                <i class="ti ti-alert-triangle fs-22"></i>
                                 <div class="flex-grow-1">
                                     <div class="fw-bold mb-2">Confirmer le rejet</div>
                                     <p class="mb-3 small">Vous êtes sur le point de rejeter cette soumission. L'entreprise
