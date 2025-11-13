@@ -119,7 +119,28 @@
         {{-- @include('components/footer') --}}
     </div>
 @stack('modals')
+
     @include('components/script2')
+
+    <script>
+        function ouvrirDocument(event, url) {
+            event.preventDefault(); // Empêche l'ouverture normale du lien
+
+            const width = 800; // largeur de la popup
+            const height = 900; // hauteur de la popup
+
+            // Calcul pour centrer la popup
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            // Ouvrir la popup centrée avec le document
+            window.open(
+                url,
+                'documentPopup',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+            );
+        }
+    </script>
     <script>
         setTimeout(function() {
             document.querySelectorAll('.alertMasque').forEach(function(alert) {

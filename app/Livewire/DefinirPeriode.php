@@ -56,7 +56,7 @@ class DefinirPeriode extends Component
      * Event déclenché depuis la vue :
      * wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })"
      */
-   
+
     #[On('modal-periode-manager')]
     public function openForItem(string $id): void
     {
@@ -192,7 +192,8 @@ class DefinirPeriode extends Component
 
             // Event Livewire pour prévenir le parent / autres composants
             $this->dispatch('periode-creee', id: $periode->id);
-
+            // Event pour rafraîchir le board parent
+            $this->dispatch('wizard-config-reload');
             // Reset logique (on garde item / entreprise)
             $this->reset([
                 'suggestions',

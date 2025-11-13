@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;   // ⬅️ AJOUT
 use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Support\Str;
 
 class ValidationIAService
 {
@@ -113,32 +114,51 @@ class ValidationIAService
         try {
             $prompt = $this->construirePromptCommentaireApprobation($submission, $analysisResults);
 
-            $response = OpenAI::chat()->create([
-                'model' => 'gpt-4-turbo-preview',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => "Tu génères des commentaires d'approbation professionnels et encourageants pour les soumissions de conformité validées."
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.openai.key'),
+                'Content-Type'  => 'application/json',
+            ])
+                ->timeout(60)
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => "Tu génères des commentaires d'approbation professionnels 
+                            et encourageants pour les soumissions de conformité validées.
+                            Réponds avec un texte clair, sans balises Markdown."
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt,
+                        ],
                     ],
-                    [
-                        'role' => 'user',
-                        'content' => $prompt
-                    ]
-                ],
-                'temperature' => 0.5,
-                'max_tokens' => 300,
-            ]);
+                    'temperature' => 0.5,
+                    'max_tokens'  => 300,
+                ]);
 
-            return $response->choices[0]->message->content;
+            if ($response->failed()) {
+                throw new \Exception('Erreur API OpenAI : ' . $response->body());
+            }
+
+            $data    = $response->json();
+            $content = $data['choices'][0]['message']['content'] ?? null;
+
+            if (! $content) {
+                throw new \Exception("Réponse OpenAI invalide ou vide.");
+            }
+
+            return trim($content);
         } catch (\Exception $e) {
             Log::error('[ValidationIAService] Erreur génération commentaire', [
                 'submission_id' => $submission->id,
-                'error' => $e->getMessage()
+                'error'         => $e->getMessage(),
             ]);
 
             return "Soumission approuvée après vérification.";
         }
     }
+
 
     /**
      * Génère un commentaire de rejet avec suggestions d'amélioration
@@ -156,57 +176,87 @@ class ValidationIAService
         try {
             $prompt = $this->construirePromptCommentaireRejet($submission, $analysisResults, $reasonFromValidator);
 
-            $response = OpenAI::chat()->create([
-                'model' => 'gpt-4-turbo-preview',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => "Tu génères des commentaires de rejet constructifs et détaillés pour aider l'entreprise à corriger sa soumission de conformité."
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.openai.key'),
+                'Content-Type'  => 'application/json',
+            ])
+                ->timeout(60)
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => "Tu génères des commentaires de rejet constructifs et détaillés 
+                            pour aider l'entreprise à corriger sa soumission de conformité.
+                            Réponds avec un texte clair, sans balises Markdown."
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt,
+                        ],
                     ],
-                    [
-                        'role' => 'user',
-                        'content' => $prompt
-                    ]
-                ],
-                'temperature' => 0.4,
-                'max_tokens' => 500,
-            ]);
+                    'temperature' => 0.4,
+                    'max_tokens'  => 500,
+                ]);
 
-            return $response->choices[0]->message->content;
+            if ($response->failed()) {
+                throw new \Exception('Erreur API OpenAI : ' . $response->body());
+            }
+
+            $data    = $response->json();
+            $content = $data['choices'][0]['message']['content'] ?? null;
+
+            if (! $content) {
+                throw new \Exception("Réponse OpenAI invalide ou vide.");
+            }
+
+            return trim($content);
         } catch (\Exception $e) {
             Log::error('[ValidationIAService] Erreur génération commentaire rejet', [
                 'submission_id' => $submission->id,
-                'error' => $e->getMessage()
+                'error'         => $e->getMessage(),
             ]);
 
             return $reasonFromValidator ?? "Veuillez corriger les problèmes identifiés et soumettre à nouveau.";
         }
     }
 
+
     /**
      * Construit le prompt d'analyse de la soumission
      */
     private function construirePromptAnalyse(ConformitySubmission $submission): string
     {
-        $item = $submission->item;
+        $item       = $submission->item;
         $entreprise = $submission->entreprise;
-        $periode = $submission->periode;
+        $periode    = $submission->periode;
 
         // Récupérer les données soumises
         $answersData = [];
         foreach ($submission->answers as $answer) {
             $data = [
-                'type' => $answer->kind
+                'type' => $answer->kind,
             ];
 
             if ($answer->kind === 'texte') {
                 $data['contenu'] = $answer->value_text;
-            } elseif ($answer->kind === 'documents') {
-                $data['fichier'] = basename($answer->file_path);
-                // On ne peut pas analyser le contenu du fichier ici
-            } elseif (in_array($answer->kind, ['liste', 'checkbox'])) {
+            } elseif ($answer->kind === 'documents' || $answer->kind === 'file') {
+                $data['document_fourni'] = ! empty($answer->file_path);
+                $data['nom_fichier']     = $answer->file_path ? basename($answer->file_path) : null;
+
+                $data['nom_fichier']     = $answer->file_path ? basename($answer->file_path) : null;
+
+                if (! empty($answer->extracted_text)) {
+                    // on limite un peu pour éviter des prompts énormes
+                    $data['contenu_document'] = Str::limit($answer->extracted_text, 8000, "\n... (contenu tronqué)");
+                    $data['contenu_disponible'] = true;
+                } else {
+                    $data['contenu_document']   = null;
+                    $data['contenu_disponible'] = false;
+                }
+            } elseif (in_array($answer->kind, ['liste', 'checkbox'], true)) {
                 $data['selections'] = $answer->selectedMany();
-                $data['labels'] = $answer->selectedLabels();
+                $data['labels']     = $answer->selectedLabels();
             }
 
             $answersData[] = $data;
@@ -218,55 +268,112 @@ class ValidationIAService
 
         $dataJson = json_encode($answersData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
+        $type = $item->type;
+
+        /**
+         * 1) Bloc spécifique selon le TYPE d’item
+         */
+        $typeSpecificRules = '';
+
+        if ($type === 'texte') {
+            $typeSpecificRules = <<<TEXTE
+    RÈGLES SPÉCIFIQUES POUR UN ITEM DE TYPE TEXTE :
+    - Tu dois évaluer la clarté, la complétude et la pertinence du texte fourni pour cet item.
+    - Tu ne dois pas parler de documents ou de fichiers pour ce type d’item.
+    - Si le texte est vide ou très insuffisant, tu peux considérer cela comme un problème important.
+    TEXTE;
+        } elseif ($type === 'liste' || $type === 'checkbox') {
+            $typeSpecificRules = <<<LISTE
+    RÈGLES SPÉCIFIQUES POUR UN ITEM DE TYPE LISTE / CHECKBOX :
+    - Tu dois analyser uniquement les options sélectionnées dans les données fournies.
+    - Ne parle JAMAIS de documents ou de fichiers manquants pour ce type d’item.
+    - Tu peux signaler comme problème :
+      - Aucune option sélectionnée alors qu’un choix est manifestement attendu.
+      - Un choix incohérent par rapport au contexte de l’item (si les données le permettent).
+    LISTE;
+        } elseif ($type === 'documents' || $type === 'file') {
+            $typeSpecificRules = <<<DOCS
+    RÈGLES SPÉCIFIQUES POUR UN ITEM DE TYPE DOCUMENT / FICHIER :
+    - Tu n'as PAS accès directement au fichier, seulement aux données fournies dans le JSON.
+    - Si un champ comme "contenu_document", "resume_document" ou "contenu" est présent, tu DOIS l'utiliser
+      pour juger si le document est pertinent par rapport à l'item de conformité.
+    - Si aucun contenu texte du document n'est fourni dans les données, tu ne dois pas faire comme si tu avais lu le fichier.
+    - Le simple fait qu'un document soit indiqué comme fourni dans les données (ex: "document_fourni": true)
+      signifie que l'entreprise a bien transmis un document.
+    - Tu NE DOIS PAS pénaliser la soumission parce que le nom du fichier est peu descriptif
+      (par exemple "scan1.pdf" ne doit pas être considéré comme un point faible ou un problème majeur).
+    - Tu peux considérer comme problème majeur UNIQUEMENT si :
+      - Les données indiquent clairement qu'aucun document n'est fourni alors qu'un document est manifestement attendu pour cet item, OU
+      - Les données fournies indiquent explicitement que le document est vide, erroné ou totalement hors sujet.
+    DOCS;
+        } else {
+            // Sécurité pour tout autre type : on interdit de parler de "document manquant"
+            $typeSpecificRules = <<<AUTRE
+    NOTE IMPORTANTE :
+    - Cet item n'est PAS un item de type "documents" ou "file".
+    - Tu ne dois jamais indiquer qu'un document manque ou devrait être fourni pour cet item.
+    - Concentre-toi uniquement sur les données effectivement présentes dans le JSON (texte, options, etc.).
+    AUTRE;
+        }
+
+        /**
+         * 2) Bloc général (commum à tous les types)
+         */
         return <<<PROMPT
-CONTEXTE DE LA SOUMISSION :
-- Entreprise : {$entreprise->nom}
-- Secteur : {$entreprise->secteur}
-- Item : {$item->nom_item}
-- Description : {$item->description}
-- Type : {$item->type}
-- {$periodeInfo}
-- Date de soumission : {$submission->submitted_at->format('d/m/Y H:i')}
-
-DONNÉES SOUMISES :
-{$dataJson}
-
-MISSION :
-Analyse cette soumission de conformité et fournis une recommandation objective.
-
-CRITÈRES D'ÉVALUATION :
-1. Complétude : Les données sont-elles complètes ?
-2. Pertinence : Les données correspondent-elles à ce qui est attendu ?
-3. Qualité : Les données sont-elles de qualité suffisante ?
-4. Cohérence : Y a-t-il des incohérences ou contradictions ?
-5. Conformité : Les données respectent-elles les exigences réglementaires probables ?
-
-FORMAT DE RÉPONSE JSON :
-{
-  "recommandation": "approuver|rejeter|approuver_avec_reserve",
-  "score_global": 0-100,
-  "scores_details": {
-    "completude": 0-100,
-    "pertinence": 0-100,
-    "qualite": 0-100,
-    "coherence": 0-100,
-    "conformite": 0-100
-  },
-  "points_forts": ["Point fort 1", "Point fort 2"],
-  "points_faibles": ["Point faible 1", "Point faible 2"],
-  "problemes_majeurs": ["Problème 1", "Problème 2"],
-  "suggestions_amelioration": ["Suggestion 1", "Suggestion 2"],
-  "resume_analyse": "Résumé en 2-3 phrases de l'analyse globale",
-  "justification_recommandation": "Explication claire de la recommandation"
-}
-
-IMPORTANT : 
-- Sois objectif et factuel
-- Base-toi uniquement sur les données fournies
-- Si des informations manquent, signale-le
-- Réponds UNIQUEMENT avec le JSON, sans texte avant ou après
-PROMPT;
+    CONTEXTE DE LA SOUMISSION :
+    - Entreprise : {$entreprise->nom}
+    - Secteur : {$entreprise->secteur}
+    - Item : {$item->nom_item}
+    - Description : {$item->description}
+    - Type : {$item->type}
+    - {$periodeInfo}
+    - Date de soumission : {$submission->submitted_at->format('d/m/Y H:i')}
+    
+    DONNÉES SOUMISES (structure JSON déjà préparée) :
+    {$dataJson}
+    
+    {$typeSpecificRules}
+    
+    RÈGLES GÉNÉRALES D'ÉVALUATION (tous types confondus) :
+    1. Complétude : Les données sont-elles présentes (texte, options sélectionnées, document indiqué, etc.) ?
+    2. Pertinence : Au vu des informations disponibles dans le JSON, les données semblent-elles respecter le cadre de l'item de conformité ?
+    3. Qualité : Le contenu est-il exploitable et suffisamment précis quand il est visible ?
+    4. Cohérence : Y a-t-il des incohérences ou contradictions dans les données visibles ?
+    5. Conformité : Les informations semblent-elles respecter les exigences probables de conformité ?
+    
+    FORMAT DE RÉPONSE JSON ATTENDU :
+    {
+      "recommandation": "approuver" | "rejeter" | "approuver_avec_reserve",
+      "score_global": 0-100,
+      "scores_details": {
+        "completude": 0-100,
+        "pertinence": 0-100,
+        "qualite": 0-100,
+        "coherence": 0-100,
+        "conformite": 0-100
+      },
+      "points_forts": ["Point fort 1", "Point fort 2"],
+      "points_faibles": ["Point faible 1", "Point faible 2"],
+      "problemes_majeurs": ["Problème 1", "Problème 2"],
+      "suggestions_amelioration": ["Suggestion 1", "Suggestion 2"],
+      "resume_analyse": "Résumé en 2-3 phrases de l'analyse globale",
+      "justification_recommandation": "Explication claire de la recommandation"
     }
+    
+    IMPORTANT :
+    - Sois objectif et factuel.
+    - Base-toi uniquement sur les données disponibles dans le JSON (par exemple "contenu", "contenu_document", "resume_document", "selections", etc.).
+    - Pour les items de type documents/fichiers, tu dois juger la pertinence du CONTENU uniquement si un texte représentant ce contenu
+      est présent dans les données.
+    - Ne crée JAMAIS de points faibles ou problèmes majeurs basés uniquement sur le fait que le contenu réel d'un fichier
+      n'est pas accessible depuis les données, sauf si les données indiquent explicitement un problème.
+    - Si des informations importantes manquent réellement (texte vide, aucune option sélectionnée pour une liste, document explicitement manquant pour un item de type documents, etc.),
+      tu peux le considérer comme un point faible ou un problème majeur.
+    - Réponds UNIQUEMENT avec le JSON demandé, sans aucun texte avant ou après.
+    PROMPT;
+    }
+
+
 
     /**
      * Construit le prompt pour un commentaire d'approbation

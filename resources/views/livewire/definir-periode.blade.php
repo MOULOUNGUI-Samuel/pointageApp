@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary bg-gradient">
                 <div class="d-flex align-items-center gap-3 flex-grow-1">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title text-white">
                         <i class="bi bi-calendar-event me-2"></i>Définir Période de Validité
                     </h5>
                 </div>
@@ -68,20 +68,19 @@
 
                     <!-- Messages -->
                     @if ($successMessage)
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            {{ $successMessage }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
+                    <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                        <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $successMessage }}</strong>
+                        <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                                class="fas fa-xmark"></i></button>
+                    </div>
+                @endif
                     @if ($errorMessage)
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            {{ $errorMessage }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+                    <div class="alert alert-danger rounded-pill alert-dismissible fade show">
+                        <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
+                        <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                                class="fas fa-xmark"></i></button>
+                    </div>
+                @endif
 
                     <!-- Périodes Existantes -->
                     @if ($periodes_existantes->isNotEmpty())

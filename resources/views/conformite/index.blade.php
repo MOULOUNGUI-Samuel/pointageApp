@@ -168,11 +168,12 @@
                                                     class="btn btn-sm btn-primary">
                                                     <i class="ti ti-eye me-1"></i>Examiner
                                                 </a>
-                                                {{-- <button class="btn btn-info" data-bs-toggle="modal"
-                                                    data-bs-target="#reviewModal2"
-                                                    wire:click="$dispatch('open-review-modal2', { itemId: '{{ $sub}}' })')">
-                                                    <i class="ti ti-eye me-1"></i>Réviser
-                                                </button> --}}
+                                                
+                                                {{-- Vue IA --}}
+                                                <a href="{{ route('conformite.reviewIA', ['submission' => $sub]) }}"
+                                                    class="btn btn-sm btn-info">
+                                                    <i class="ti ti-brain me-1"></i>Réviser avec IA
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -272,6 +273,29 @@
                 button.addEventListener('shown.bs.tab', function(e) {
                     localStorage.setItem('complianceActiveTab', e.target.dataset.bsTarget);
                 });
+            });
+        });
+
+        // Écouter les événements Livewire pour la modale de révision
+        document.addEventListener('livewire:init', () => {
+            // Ouvrir la modale
+            Livewire.on('open-review-modal2', (data) => {
+                const modalElement = document.getElementById('reviewModal2');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            });
+
+            // Fermer la modale
+            Livewire.on('close-review-modal', () => {
+                const modalElement = document.getElementById('reviewModal2');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                }
             });
         });
     </script>

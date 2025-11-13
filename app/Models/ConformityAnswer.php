@@ -16,6 +16,7 @@ class ConformityAnswer extends Model
         'value_text',
         'value_json',
         'file_path',
+        'extracted_text',
         'item_option_id',
         'position',
     ];

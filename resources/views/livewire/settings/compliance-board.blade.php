@@ -286,11 +286,20 @@
                                             wire:click="openSubmitModal('{{ $item->id }}', '{{ $lastSub->id }}')">
                                             <i class="ti ti-edit me-1"></i>Modifier
                                         </button>
+                                        
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                            wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}', submissionId: '{{ $lastSub->id }}' })">
+                                            <i class="ti ti-sparkles me-1"></i>Modifier IA
+                                        </button>
                                     @elseif ($lastSub && $lastSub->status === 'rejeté')
                                         <button class="btn btn-sm btn-primary flex-fill" data-bs-toggle="modal"
                                             data-bs-target="#submitModal"
                                             wire:click="openSubmitModal('{{ $item->id }}')">
                                             <i class="ti ti-refresh me-1"></i>Resoumettre
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                            wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
+                                            <i class="ti ti-sparkles me-1"></i>Resoumettre IA
                                         </button>
                                     @else
                                         <button class="btn btn-sm btn-primary flex-fill" data-bs-toggle="modal"

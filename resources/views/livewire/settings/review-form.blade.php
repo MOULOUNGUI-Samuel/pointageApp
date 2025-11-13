@@ -3,11 +3,18 @@
     @php use Illuminate\Support\Facades\Storage; @endphp
 
     {{-- Flash succès --}}
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show rounded-3 d-flex align-items-center">
-            <i class="ti ti-check me-2"></i>
-            <span>{{ session('success') }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    @if ($successMessage)
+        <div class="alert alert-success rounded-pill alert-dismissible fade show">
+            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $successMessage }}</strong>
+            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                    class="fas fa-xmark"></i></button>
+        </div>
+    @endif
+        @if ($errorMessage)
+        <div class="alert alert-danger rounded-pill alert-dismissible fade show">
+            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
+            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                    class="fas fa-xmark"></i></button>
         </div>
     @endif
 
@@ -155,11 +162,13 @@
                                     <i class="ti ti-paperclip text-info"></i>
                                     <span class="small fw-semibold text-muted">Document</span>
                                 </div>
-                                <a class="btn btn-sm btn-outline-info" target="_blank"
-                                    href="{{ Storage::disk('public')->url($a->file_path) }}">
-                                    <i class="ti ti-download me-1"></i>
-                                    Télécharger {{ basename($a->file_path) }}
-                                </a>
+                                <a href="#"
+                                onclick="ouvrirDocument(event, '{{ asset('storage/' . $a->file_path) }}')"
+                              target="_blank"
+                              class="btn btn-outline-info"
+                              title="Voir le document">
+                               <i class="ti ti-file-description me-2"></i> Ouvrir le document
+                           </a>
                             </div>
                         @break
 

@@ -3,8 +3,8 @@
      aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header border-bottom bg-light">
-                <h5 class="modal-title" id="submitModalLabel2">
+            <div class="modal-header border-bottom bg-primary text-white">
+                <h5 class="modal-title text-white" id="submitModalLabel2">
                     <i class="ti ti-send me-2"></i>
                     Soumission de Conformité
                 </h5>

@@ -21,13 +21,13 @@ Route::middleware(['auth'])->prefix('conformite')->name('conformite.')->group(fu
     Route::middleware(['SuperAdmin'])->group(function () {
 
         // Page de configuration des items
-        Route::get('/items', fn () => view('conformite.items'))->name('items');
+        Route::get('/items', fn() => view('conformite.items'))->name('items');
 
         // Page de configuration des périodes
-        Route::get('/periodes', fn () => view('conformite.periodes'))->name('periodes');
+        Route::get('/periodes', fn() => view('conformite.periodes'))->name('periodes');
 
         // Configuration des entreprises (wizard)
-        Route::get('/configuration', fn () => view('conformite.configuration'))->name('configuration');
+        Route::get('/configuration', fn() => view('conformite.configuration'))->name('configuration');
     });
 
     // Routes pour les validateurs (ValideAudit)
@@ -36,11 +36,11 @@ Route::middleware(['auth'])->prefix('conformite')->name('conformite.')->group(fu
         // Liste des soumissions en attente
         Route::get('/validation', function () {
             $submissions = ConformitySubmission::with([
-                    'item:id,nom_item,type',
-                    'entreprise:id,nom_entreprise',
-                    'submittedBy:id,nom,prenom',      // <- aligné
-                    'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
-                ])
+                'item:id,nom_item,type',
+                'entreprise:id,nom_entreprise',
+                'submittedBy:id,nom,prenom',      // <- aligné
+                'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
+            ])
                 ->enAttente()                         // <- scope
                 ->latest('submitted_at')
                 ->paginate(15);
@@ -61,6 +61,21 @@ Route::middleware(['auth'])->prefix('conformite')->name('conformite.')->group(fu
 
             return view('conformite.review', compact('submission'));
         })->name('review');
+
+        Route::get('/validation/{submission}/ia', function (ConformitySubmission $submission) {
+
+            $submission->load([
+                'item.CategorieDomaine.Domaine',
+                'item.options',
+                'entreprise',
+                'periodeItem',
+                'submittedBy',
+                'reviewedBy',
+                'answers' => fn($q) => $q->orderBy('position'),
+            ]);
+
+            return view('conformite.review-ia', compact('submission'));
+        })->name('reviewIA');
     });
 
     // Routes pour les entreprises
@@ -71,10 +86,10 @@ Route::middleware(['auth'])->prefix('conformite')->name('conformite.')->group(fu
             $entrepriseId = session('entreprise_id');
 
             $submissions = ConformitySubmission::with([
-                    'item:id,nom_item,type',
-                    'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
-                    'reviewedBy:id,nom,prenom',                          // <- aligné
-                ])
+                'item:id,nom_item,type',
+                'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
+                'reviewedBy:id,nom,prenom',                          // <- aligné
+            ])
                 ->where('entreprise_id', $entrepriseId)
                 ->latest('submitted_at')
                 ->paginate(20);
@@ -118,10 +133,10 @@ Route::middleware(['auth'])->prefix('conformite')->name('conformite.')->group(fu
             $entrepriseId = session('entreprise_id');
 
             $submissions = ConformitySubmission::with([
-                    'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
-                    'submittedBy:id,nom,prenom',                        // <- aligné
-                    'reviewedBy:id,nom,prenom',                         // <- aligné
-                ])
+                'periodeItem:id,item_id,debut_periode,fin_periode', // <- aligné
+                'submittedBy:id,nom,prenom',                        // <- aligné
+                'reviewedBy:id,nom,prenom',                         // <- aligné
+            ])
                 ->where('entreprise_id', $entrepriseId)
                 ->where('item_id', $item->id)
                 ->latest('submitted_at')

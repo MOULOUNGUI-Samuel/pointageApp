@@ -2,23 +2,13 @@
     <div>
         @php use Illuminate\Support\Facades\Storage; @endphp
 
-        {{-- Messages d'erreur/succès --}}
         @if ($errorMessage)
-            <div class="alert alert-danger alert-dismissible fade show mb-3">
-                <i class="ti ti-alert-circle me-2"></i>
-                {{ $errorMessage }}
-                <button type="button" class="btn-close" wire:click="$set('errorMessage', '')"></button>
+            <div class="alert alert-danger rounded-pill alert-dismissible fade show">
+                <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                        class="fas fa-xmark"></i></button>
             </div>
         @endif
-
-        @if ($successMessage)
-            <div class="alert alert-success alert-dismissible fade show mb-3">
-                <i class="ti ti-check me-2"></i>
-                {{ $successMessage }}
-                <button type="button" class="btn-close" wire:click="$set('successMessage', '')"></button>
-            </div>
-        @endif
-
         @if ($submission)
             {{-- ========= EN-TÊTE SOUMISSION ========= --}}
             <div class="card border-0 bg-light mb-4">
@@ -103,10 +93,10 @@
                                         <i class="ti ti-paperclip text-info"></i>
                                         <span class="small fw-semibold text-muted">Document</span>
                                     </div>
-                                    <a class="btn btn-sm btn-outline-info" target="_blank"
-                                        href="{{ Storage::disk('public')->url($a->file_path) }}">
-                                        <i class="ti ti-download me-1"></i>
-                                        Télécharger {{ basename($a->file_path) }}
+                                    <a href="#"
+                                        onclick="ouvrirDocument(event, '{{ asset('storage/' . $a->file_path) }}')"
+                                        target="_blank" class="btn btn-outline-info" title="Voir le document">
+                                        <i class="ti ti-file-description me-2"></i> Ouvrir le document
                                     </a>
                                 </div>
                             @break
@@ -190,9 +180,8 @@
                 </div>
 
                 @if ($showAiAnalysis && !empty($aiAnalysis))
-                    <div class="card border-0 shadow-sm mb-4 bg-gradient"
-                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <div class="card-body text-white">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
                             <h6 class="mb-3">
                                 <i class="ti ti-chart-dots me-2"></i>
                                 Analyse IA de la Soumission
@@ -200,11 +189,11 @@
 
                             {{-- Recommandation --}}
                             @if (isset($aiAnalysis['recommandation']))
-                                <div class="mb-3 p-3 bg-white bg-opacity-20 rounded-3">
+                                <div class="mb-3 p-3 bg-primary rounded-3">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                             <div class="small fw-semibold mb-1">Recommandation :</div>
-                                            <div class="h5 mb-0">
+                                            <div class="h5 mb-0 text-white">
                                                 @if ($aiAnalysis['recommandation'] === 'approuver')
                                                     <i class="ti ti-circle-check me-2"></i>Approuver
                                                 @elseif ($aiAnalysis['recommandation'] === 'rejeter')
@@ -215,7 +204,7 @@
                                             </div>
                                         </div>
                                         @if (isset($aiAnalysis['score_global']))
-                                            <div class="text-center">
+                                            <div class="text-center text-white">
                                                 <div class="display-6 fw-bold">{{ $aiAnalysis['score_global'] }}</div>
                                                 <div class="small">/100</div>
                                             </div>
@@ -247,13 +236,13 @@
                             <div class="row g-3 mb-3">
                                 @if (!empty($aiAnalysis['points_forts']))
                                     <div class="col-md-6">
-                                        <div class="bg-white bg-opacity-20 rounded-3 p-3">
+                                        <div class="bg-primary text-white rounded-3 p-3">
                                             <div class="small fw-semibold mb-2">
                                                 <i class="ti ti-thumb-up me-1"></i>Points forts :
                                             </div>
                                             <ul class="small mb-0 ps-3">
                                                 @foreach ($aiAnalysis['points_forts'] as $point)
-                                                    <li>{{ $point }}</li>
+                                                    <li class="text-white">{{ $point }}</li>
                                                 @endforeach
                                             </ul>
                                         </div>
@@ -262,7 +251,7 @@
 
                                 @if (!empty($aiAnalysis['points_faibles']))
                                     <div class="col-md-6">
-                                        <div class="bg-white bg-opacity-20 rounded-3 p-3">
+                                        <div class="bg-primary text-white rounded-3 p-3">
                                             <div class="small fw-semibold mb-2">
                                                 <i class="ti ti-thumb-down me-1"></i>Points faibles :
                                             </div>
@@ -292,7 +281,7 @@
 
                             {{-- Résumé --}}
                             @if (isset($aiAnalysis['resume_analyse']))
-                                <div class="p-3 bg-white bg-opacity-20 rounded-3">
+                                <div class="p-3 bg-primary text-white rounded-3">
                                     <div class="small">
                                         <i class="ti ti-notes me-1"></i>
                                         {{ $aiAnalysis['resume_analyse'] }}
@@ -302,7 +291,22 @@
                         </div>
                     </div>
                 @endif
-
+                @if ($successMessage)
+                    <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                        <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i>
+                            {{ $successMessage }}</strong>
+                        <button type="button" class="btn-close custom-close" data-bs-dismiss="alert"
+                            aria-label="Close"><i class="fas fa-xmark"></i></button>
+                    </div>
+                @endif
+                @if ($errorMessage)
+                    <div class="alert alert-danger rounded-pill alert-dismissible fade show">
+                        <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i>
+                            {{ $errorMessage }}</strong>
+                        <button type="button" class="btn-close custom-close" data-bs-dismiss="alert"
+                            aria-label="Close"><i class="fas fa-xmark"></i></button>
+                    </div>
+                @endif
                 {{-- ========= ACTIONS DE VALIDATION ========= --}}
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-bottom">
@@ -332,16 +336,38 @@
                         {{-- Boutons d'assistance IA pour commentaires --}}
                         @if ($showAiAnalysis && !empty($aiAnalysis))
                             <div class="d-flex gap-2 mb-3">
-                                <button type="button" class="btn btn-sm btn-outline-success"
-                                    wire:click="generateApprovalComment">
-                                    <i class="ti ti-sparkles me-1"></i>
-                                    Générer commentaire d'approbation
+                                <!-- Bouton de génération d’approbation -->
+                                <button type="button" class="btn btn-sm btn-outline-success position-relative"
+                                    wire:click="generateApprovalComment" wire:loading.attr="disabled">
+
+                                    <span wire:loading.remove wire:target="generateApprovalComment">
+                                        <i class="ti ti-sparkles me-1"></i>
+                                        Générer commentaire d'approbation
+                                    </span>
+
+                                    <span wire:loading wire:target="generateApprovalComment">
+                                        <span class="spinner-border spinner-border-sm me-1" role="status"
+                                            aria-hidden="true"></span>
+                                        Génération en cours...
+                                    </span>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger"
-                                    wire:click="generateRejectionComment">
-                                    <i class="ti ti-sparkles me-1"></i>
-                                    Générer commentaire de rejet
+
+                                <!-- Bouton de génération de rejet -->
+                                <button type="button" class="btn btn-sm btn-outline-danger position-relative"
+                                    wire:click="generateRejectionComment" wire:loading.attr="disabled">
+
+                                    <span wire:loading.remove wire:target="generateRejectionComment">
+                                        <i class="ti ti-sparkles me-1"></i>
+                                        Générer commentaire de rejet
+                                    </span>
+
+                                    <span wire:loading wire:target="generateRejectionComment">
+                                        <span class="spinner-border spinner-border-sm me-1" role="status"
+                                            aria-hidden="true"></span>
+                                        Génération en cours...
+                                    </span>
                                 </button>
+
                             </div>
                         @endif
 
@@ -399,22 +425,36 @@
                         {{-- Boutons d'action --}}
                         @if (!$showConfirmApprove && !$showConfirmReject)
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn btn-success" wire:click="prepareApprove" wire:loading.attr="disabled">
+                                <!-- Bouton Approuver -->
+                                <button class="btn btn-success position-relative" wire:click="prepareApprove"
+                                    wire:loading.attr="disabled">
+
                                     <span wire:loading.remove wire:target="prepareApprove">
-                                        <i class="ti ti-circle-check me-1"></i>Approuver
+                                        <i class="ti ti-circle-check me-1"></i> Approuver
                                     </span>
+
                                     <span wire:loading wire:target="prepareApprove">
-                                        <span class="spinner-border spinner-border-sm me-1"></span>Chargement…
+                                        <span class="spinner-border spinner-border-sm me-1" role="status"
+                                            aria-hidden="true"></span>
+                                        Traitement...
                                     </span>
                                 </button>
-                                <button class="btn btn-danger" wire:click="prepareReject" wire:loading.attr="disabled">
+
+                                <!-- Bouton Rejeter -->
+                                <button class="btn btn-danger position-relative" wire:click="prepareReject"
+                                    wire:loading.attr="disabled">
+
                                     <span wire:loading.remove wire:target="prepareReject">
-                                        <i class="ti ti-circle-x me-1"></i>Rejeter
+                                        <i class="ti ti-circle-x me-1"></i> Rejeter
                                     </span>
+
                                     <span wire:loading wire:target="prepareReject">
-                                        <span class="spinner-border spinner-border-sm me-1"></span>Chargement…
+                                        <span class="spinner-border spinner-border-sm me-1" role="status"
+                                            aria-hidden="true"></span>
+                                        Traitement...
                                     </span>
                                 </button>
+
                             </div>
                         @endif
                     </div>
@@ -426,16 +466,4 @@
                 </div>
             @endif
         </div>
-
-        <script>
-            // Écouter l'événement pour fermer la modale
-            document.addEventListener('livewire:initialized', () => {
-                Livewire.on('close-review-modal', () => {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                });
-            });
-        </script>
     </div>

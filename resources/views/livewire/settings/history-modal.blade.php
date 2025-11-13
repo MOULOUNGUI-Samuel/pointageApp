@@ -206,13 +206,53 @@
                                                     {{ Str::limit($ans->value_text, 30) }}
                                                 </span>
                                             @elseif($ans->kind === 'documents')
-                                                <span class="badge bg-info-subtle text-info border">
-                                                    <i class="ti ti-paperclip me-1"></i>Document
-                                                </span>
+                                                <div class="btn-group btn-group-sm">
+                                                    @php
+                                                        $docAnswer = $sub->answers->firstWhere('kind', 'documents');
+                                                    @endphp
+
+                                                    {{-- 🔍 Bouton pour voir le document si présent --}}
+                                                    @if ($docAnswer && $docAnswer->file_path)
+                                                        <a href="#"
+                                                            onclick="ouvrirDocument(event, '{{ asset('storage/' . $docAnswer->file_path) }}')"
+                                                            target="_blank" class="btn btn-outline-info"
+                                                            title="Voir le document">
+                                                            <i class="ti ti-file-description me-2"></i> Ouvrir le
+                                                            document
+                                                        </a>
+                                                    @endif
+
+                                                    @if ($sub->status === 'soumis')
+                                                        <button class="btn btn-outline-danger"
+                                                            wire:click="deleteSubmission('{{ $sub->id }}')"
+                                                            wire:confirm="Êtes-vous sûr de vouloir supprimer cette soumission ?"
+                                                            title="Supprimer">
+                                                            <i class="ti ti-trash"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
                                             @elseif($ans->kind === 'liste')
+                                                @php
+                                                    // Essaie d'abord de récupérer les labels
+                                                        $labels = method_exists($ans, 'selectedLabels')
+                                                            ? $ans->selectedLabels()
+                                                            : data_get($ans->value_json, 'labels', []);
+                                                        $values = method_exists($ans, 'selectedMany')
+                                                            ? $ans->selectedMany()
+                                                            : data_get($ans->value_json, 'selected', []);
+
+                                                        if (is_array($labels) && count($labels)) {
+                                                            $display = implode(', ', $labels);
+                                                        } elseif (is_array($values) && count($values)) {
+                                                            $display = implode(', ', $values);
+                                                        } else {
+                                                            $display = 'Aucune option sélectionnée';
+                                                    }
+                                                @endphp
+
                                                 <span class="badge bg-primary-subtle text-primary border">
                                                     <i class="ti ti-list-check me-1"></i>
-                                                    {{ $ans->selectedLabel() ?? $ans->selectedList() }}
+                                                    {{ $display }}
                                                 </span>
                                             @elseif($ans->kind === 'checkbox')
                                                 @php

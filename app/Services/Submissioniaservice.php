@@ -330,7 +330,7 @@ FORMAT DE RÉPONSE JSON :
   "conseils": "Conseils pour faire le bon choix"
 }
 LISTE;
-        } elseif ($type === 'documents') {
+        } elseif ($type === 'file') {
             $prompt .= <<<DOCS
 
 Pour un champ DOCUMENTS (upload de fichier) :
@@ -367,14 +367,49 @@ DOCS;
         Entreprise $entreprise
     ): string {
         $type = $item->type;
-        $dataJson = json_encode($submissionData, JSON_PRETTY_PRINT);
+        $dataJson = json_encode($submissionData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        // Instructions spécifiques selon le type
+        $specificInstructions = '';
+
+        if ($type === 'texte') {
+            $specificInstructions = <<<TEXTE
+
+CRITÈRES D'ÉVALUATION POUR TEXTE :
+- Clarté et précision du contenu
+- Longueur et complétude
+- Pertinence par rapport à l'item de conformité
+- Qualité rédactionnelle
+TEXTE;
+        } elseif ($type === 'documents' || $type === 'file') {
+            $specificInstructions = <<<FILE
+
+CRITÈRES D'ÉVALUATION POUR DOCUMENT :
+- Vérifier si le fichier est présent et nommé correctement
+- Si le contenu est disponible, analyser sa pertinence
+- Vérifier le format et la taille du fichier
+- S'assurer que le document répond aux exigences de conformité
+- Si le contenu n'est pas extractible (PDF, images), se baser sur les métadonnées disponibles
+FILE;
+        } elseif ($type === 'liste' || $type === 'checkbox') {
+            $specificInstructions = <<<LISTE
+
+CRITÈRES D'ÉVALUATION POUR OPTIONS :
+- Au moins une option doit être sélectionnée
+- Les options doivent être pertinentes pour le contexte
+- Vérifier la cohérence des choix
+LISTE;
+        }
 
         return <<<PROMPT
 CONTEXTE :
 - Entreprise : {$entreprise->nom}
+- Secteur : {$entreprise->secteur}
+- Pays : {$entreprise->pays}
 - Item : {$item->nom_item}
 - Type : {$type}
 - Description : {$item->description}
+{$specificInstructions}
 
 DONNÉES SOUMISES :
 {$dataJson}
@@ -382,9 +417,15 @@ DONNÉES SOUMISES :
 MISSION :
 Analyse ces données et détermine :
 1. Si elles sont complètes et cohérentes
-2. S'il y a des problèmes évidents
-3. Des suggestions d'amélioration
+2. S'il y a des problèmes évidents (manque d'information, format incorrect, etc.)
+3. Des suggestions concrètes d'amélioration
 4. Si la soumission peut être envoyée en l'état
+
+IMPORTANT :
+- Si les données sont vides ou très insuffisantes, indique "can_submit": false
+- Si le document est présent mais non extractible (PDF, image), considère les métadonnées
+- Sois constructif dans tes suggestions
+- Un score de 70+ est généralement acceptable
 
 FORMAT DE RÉPONSE JSON :
 {
@@ -401,7 +442,7 @@ FORMAT DE RÉPONSE JSON :
   "resume": "Résumé de l'analyse en 1-2 phrases"
 }
 
-IMPORTANT : Réponds UNIQUEMENT avec le JSON.
+IMPORTANT : Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
 PROMPT;
     }
 
@@ -425,7 +466,7 @@ PROMPT;
             ];
         } elseif ($type === 'liste' || $type === 'checkbox') {
             $base['conseils'] = "Sélectionnez les options qui correspondent à votre situation.";
-        } elseif ($type === 'documents') {
+        } elseif ($type === 'file') {
             $base['formats_acceptes'] = ['PDF', 'DOCX', 'XLSX'];
             $base['taille_max_recommandee'] = '10 MB';
         }
