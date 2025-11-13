@@ -84,8 +84,21 @@
         </div>
 
         {{-- ==================== Filtres ==================== --}}
+        {{-- ==================== Filtres ==================== --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0 small text-muted">
+                        <i class="ti ti-filter me-1"></i>Filtres
+                    </h6>
+
+                    <button type="button" class="btn btn-sm btn-outline-secondary" wire:click="refresh">
+                        <i class="ti ti-refresh me-1"></i>
+                        Actualiser
+                    </button>
+                </div>
+
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label small fw-semibold mb-1" for="filter-search">
@@ -138,6 +151,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- ==================== Grille des items ==================== --}}
         <div class="row g-3">
@@ -284,12 +298,20 @@
                                             wire:click="openSubmitModal('{{ $item->id }}')">
                                             <i class="ti ti-send me-1"></i>Soumettre
                                         </button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                            wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
+                                            <i class="ti ti-sparkles me-1"></i>Soumettre IA
+                                        </button>
                                     @endif
                                     @if (auth()->user()->role?->SuperAdmin)
                                         <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                             data-bs-target="#periodesModal"
                                             wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
                                             <i class="ti ti-calendar-event me-1"></i>Période
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info"
+                                            wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })">
+                                            <i class="ti ti-sparkles me-1"></i>Période IA
                                         </button>
                                     @endif
                                 @else
@@ -305,11 +327,17 @@
                                             Pas de période
                                         @endif
                                     </button>
-                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                                        data-bs-target="#periodesModal"
-                                        wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
-                                        <i class="ti ti-calendar-event me-1"></i>Période
-                                    </button>
+                                    @if (auth()->user()->role?->SuperAdmin)
+                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                            data-bs-target="#periodesModal"
+                                            wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
+                                            <i class="ti ti-calendar-event me-1"></i>Période
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info"
+                                            wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })">
+                                            <i class="ti ti-sparkles me-1"></i>Période IA
+                                        </button>
+                                    @endif
                                 @endif
 
                                 <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
@@ -349,10 +377,15 @@
             {{ $items->links() }}
         </div>
 
+
         {{-- ==================== Modales ==================== --}}
         @include('livewire.settings.modals.submit-modal')
         @include('livewire.settings.modals.history-modal')
-        {{-- (La modale de période "periodesModal" est incluse dans la page parent si nécessaire) --}}
+        @include('livewire.settings.modals.item-periode-ia')
+
+        @include('livewire.settings.modals.submit2-modal')
+        @include('livewire.settings.modals.review-modal')
+
     </div>
 
     <style>

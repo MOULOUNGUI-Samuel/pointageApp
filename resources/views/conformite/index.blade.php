@@ -26,7 +26,8 @@
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                                 <i class="ti ti-settings fs-22  me-2"></i>Gérer les Items
                             </button>
-                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#wizardModal" style="font-size: 20px">
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#wizardModal"
+                                style="font-size: 20px">
                                 🤖 Configurer entreprise avec IA
                             </button>
                         </div>
@@ -167,6 +168,11 @@
                                                     class="btn btn-sm btn-primary">
                                                     <i class="ti ti-eye me-1"></i>Examiner
                                                 </a>
+                                                {{-- <button class="btn btn-info" data-bs-toggle="modal"
+                                                    data-bs-target="#reviewModal2"
+                                                    wire:click="$dispatch('open-review-modal2', { itemId: '{{ $sub}}' })')">
+                                                    <i class="ti ti-eye me-1"></i>Réviser
+                                                </button> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -234,7 +240,7 @@
             </div>
         </div>
     @endif
-
+    @include('livewire.settings.modals.review-modal')
     <style>
         .hover-item {
             transition: all 0.2s ease;

@@ -273,7 +273,7 @@ class AttributionEntreprise extends Component
             $this->isInitial = !$this->entreprise->fresh()->hasDomainesConfigures();
 
             // 🔁 rechargement complet (petit délai pour laisser voir le toast)
-            $this->js('setTimeout(() => window.location.reload(), 1800)');
+            $this->js('setTimeout(() => window.location.reload(), 2500)');
         } catch (\Exception $e) {
             DB::rollBack();
             $this->errorMessage = 'Erreur lors de l\'enregistrement : ' . $e->getMessage();

@@ -38,7 +38,7 @@ use App\Http\Controllers\ConsoliderController;
 use App\Http\Controllers\ClassementPonctualiteController;
 use App\Livewire\AttributionEntreprise;
 use App\Livewire\GenerateurConformite;
-
+use App\Livewire\DefinirPeriode;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -374,6 +374,9 @@ Route::middleware('auth')->group(
 
             Route::get('/entreprises/{entreprise}/attribution-ia', AttributionEntreprise::class)
         ->name('entreprises.attribution.ia');
+
+        Route::get('/items/{item}/entreprises/{entreprise}/definir-periode', DefinirPeriode::class)
+        ->name('items.definir-periode');
         }
 
 );

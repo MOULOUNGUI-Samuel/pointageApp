@@ -1,20 +1,28 @@
 <?php
 
 namespace App\Providers;
+
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\URL;
+use App\Services\PeriodeIAService;
+use App\Services\SubmissionIAService;
+use App\Services\ValidationIAService;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-     
+
     public function register(): void
     {
         //
+        $this->app->singleton(PeriodeIAService::class);
+        $this->app->singleton(SubmissionIAService::class);
+        $this->app->singleton(ValidationIAService::class);
     }
 
     /**
@@ -35,23 +43,18 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // $this->registerPolicies();
-    
+
         // Passport::routes(); // expose /oauth/authorize, /oauth/token, etc.
         // $this->registerPolicies();
-    
+
         // Passport::routes(); // expose /oauth/authorize, /oauth/token, etc.
         Passport::tokensCan([
             'openid'        => 'OIDC basic',
             'profile'       => 'Nom, username, avatar',
             'email'         => 'Email',
             'entreprise'    => 'Claims métier entreprise',
-            'offline_access'=> 'Refresh tokens',
+            'offline_access' => 'Refresh tokens',
         ]);
         Passport::setDefaultScope(['openid', 'profile', 'email']);
-
     }
-
-
-
-
 }

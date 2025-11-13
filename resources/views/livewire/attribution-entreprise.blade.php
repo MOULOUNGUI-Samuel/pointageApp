@@ -392,132 +392,105 @@
         @endif
     </div>
 
-    @push('styles')
-        <style>
-            /* Overlay de chargement */
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-                animation: fadeIn 0.3s ease-in;
+    <style>
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+        }
+
+        .progress-step {
+            text-align: center;
+            opacity: 0.25;
+            transition: all 0.6s ease;
+        }
+
+        @keyframes step-activate {
+            0% {
+                opacity: 0.25;
+                transform: scale(0.9) translateY(5px);
             }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                }
-
-                to {
-                    opacity: 1;
-                }
+            50% {
+                transform: scale(1.15) translateY(-5px);
             }
 
-            .loading-content {
-                text-align: center;
-                animation: slideUp 0.5s ease-out;
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-step.active .step-icon {
+            animation: bounce-icon 1s ease infinite;
+        }
+
+        @keyframes bounce-icon {
+
+            0%,
+            100% {
+                transform: translateY(0);
             }
 
-            @keyframes slideUp {
-                from {
-                    transform: translateY(30px);
-                    opacity: 0;
-                }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
 
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .progress-step.active .step-text {
+            color: #667eea;
+        }
+
+        /* Animation progressive des étapes */
+        .step-1 {
+            animation: step-activate 0.6s ease 0.5s forwards;
+        }
+
+        .step-2 {
+            animation: step-activate 0.6s ease 2s forwards;
+        }
+
+        .step-3 {
+            animation: step-activate 0.6s ease 3.5s forwards;
+        }
+
+        /* Animation du spinner */
+        .spinner-grow {
+            animation: spinner-grow 0.75s linear infinite;
+        }
+
+        @keyframes spinner-grow {
+            0% {
+                transform: scale(0);
+                opacity: 0;
             }
 
-            .loading-spinner-wrapper {
-                position: relative;
-                width: 120px;
-                height: 120px;
-                margin: 0 auto;
+            50% {
+                opacity: 1;
             }
 
-            .loading-spinner {
-                width: 120px;
-                height: 120px;
-                border: 8px solid rgba(255, 255, 255, 0.2);
-                border-top: 8px solid white;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
+            100% {
+                transform: scale(1);
+                opacity: 0;
             }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .loading-pulse {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 80px;
-                height: 80px;
-                margin: -40px 0 0 -40px;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                animation: pulse 1.5s ease-in-out infinite;
-            }
-
-            @keyframes pulse {
-
-                0%,
-                100% {
-                    transform: scale(0.8);
-                    opacity: 0.5;
-                }
-
-                50% {
-                    transform: scale(1);
-                    opacity: 0.8;
-                }
-            }
-
-            .loading-steps {
-                margin-top: 2rem;
-                text-align: left;
-                display: inline-block;
-                background: rgba(255, 255, 255, 0.1);
-                padding: 1.5rem 2rem;
-                border-radius: 15px;
-                backdrop-filter: blur(10px);
-            }
-
-            .loading-step {
-                color: white;
-                padding: 0.5rem 0;
-                font-size: 1rem;
-            }
-
-            .accordion-button:not(.collapsed) {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                color: white !important;
-            }
-
-            .accordion-button:not(.collapsed) .badge {
-                background-color: rgba(255, 255, 255, 0.3) !important;
-            }
-
-            .accordion-button:not(.collapsed) i {
-                color: white !important;
-            }
-        </style>
-    @endpush
+        }
+    </style>
 
     @push('scripts')
         <script>

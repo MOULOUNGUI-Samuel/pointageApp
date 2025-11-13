@@ -34,6 +34,7 @@ class ComplianceBoard extends Component
     public ?string $selectedSubmissionForSubmit = null; // <-- AJOUTÉ
     public ?string $selectedSubmissionForReview = null;
     public ?string $selectedItemForHistory = null;
+    public ?string $selectedItemForPeriode = null;
 
     private function logReqMeta(string $phase): void
     {
@@ -92,22 +93,34 @@ class ComplianceBoard extends Component
         ];
     }
 
-    public function updatedSearch(): void
+    // Quand la recherche change
+    public function updatingSearch(): void
     {
         $this->resetPage();
+        $this->loadStats(); // si tu veux que les stats reflètent les filtres
     }
-    public function updatedFilterStatus(): void
+
+    // Quand le statut de soumission change
+    public function updatingFilterStatus(): void
     {
         $this->resetPage();
+        $this->loadStats();
     }
-    public function updatedFilterPeriode(): void
+
+    // Quand la période change
+    public function updatingFilterPeriode(): void
     {
         $this->resetPage();
+        $this->loadStats();
     }
-    public function updatedFilterCategorie(): void
+
+    // Quand la catégorie change
+    public function updatingFilterCategorie(): void
     {
         $this->resetPage();
+        $this->loadStats();
     }
+
 
     /** Ouvrir modal de soumission (création OU modification) */
     public function openSubmitModal(string $itemId, ?string $submissionId = null): void
@@ -145,10 +158,18 @@ class ComplianceBoard extends Component
         $this->selectedItemForHistory = $itemId;
         $this->dispatch('open-history-modal', itemId: $itemId);
     }
+    /** Ouvrir modal d'periode */
+    public function openPeriodeModal(string $itemId): void
+    {
+        $this->selectedItemForPeriode = $itemId;
+        $this->dispatch('modal-periode-manager', itemId: $itemId);
+    }
 
     #[On('settings-submitted')]
     #[On('settings-reviewed')]
     #[On('wizard-config-reload')]
+    #[On('settings-submitted2')]
+    #[On('settings-reviewed2')]
     public function refresh(): void
     {
         $this->loadStats();
