@@ -57,13 +57,14 @@ class EnterpriseConfigWizard extends Component
     public function loadDomaines(): void
     {
         $q = Domaine::query()->orderBy('nom_domaine');
-        if ($this->searchDomaines !== '') {
+        if (trim($this->searchDomaines) !== '') {
             $q->where('nom_domaine', 'like', "%{$this->searchDomaines}%");
         }
         $this->domaines = $q->get(['id', 'nom_domaine'])
             ->map(fn($d) => ['id' => $d->id, 'label' => $d->nom_domaine])
             ->all();
     }
+
 
     public function loadCategories(): void
     {
@@ -75,7 +76,7 @@ class EnterpriseConfigWizard extends Component
         $q = CategorieDomaine::whereIn('domaine_id', $this->selectedDomainIds)
             ->orderBy('nom_categorie');
 
-        if ($this->searchCategories !== '') {
+        if (trim($this->searchCategories) !== '') {
             $q->where('nom_categorie', 'like', "%{$this->searchCategories}%");
         }
 
@@ -94,7 +95,7 @@ class EnterpriseConfigWizard extends Component
         $q = Item::whereIn('categorie_domaine_id', $this->selectedCategoryIds)
             ->orderBy('nom_item');
 
-        if ($this->searchItems !== '') {
+        if (trim($this->searchItems) !== '') {
             $q->where('nom_item', 'like', "%{$this->searchItems}%");
         }
 

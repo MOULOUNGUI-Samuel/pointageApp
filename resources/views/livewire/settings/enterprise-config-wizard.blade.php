@@ -18,7 +18,21 @@
     {{-- ÉTAPE 1 : Domaines --}}
     @if($step===1)
         <div class="mb-2">
-            <input type="text" class="form-control" placeholder="Rechercher un domaine…" wire:model.debounce.300ms="searchDomaines">
+            <div class="input-group" style="min-width:280px; width: auto;">
+                <input type="text" class="form-control"
+                    placeholder="Rechercher un domaine…"
+                    wire:model.defer="searchDomaines"
+                    wire:keydown.enter="loadDomaines">
+                <button class="btn btn-outline-secondary" type="button" wire:click="loadDomaines">
+                    <i class="ti ti-search"></i> Rechercher
+                </button>
+                @if($searchDomaines)
+                    <button class="btn btn-outline-secondary" type="button" wire:click="$set('searchDomaines', '')" title="Réinitialiser la recherche">
+                        <i class="fas fa-times"></i>
+                    </button>
+                @endif
+            </div>
+
         </div>
         <div class="row">
             @forelse ($domaines as $d)
@@ -38,7 +52,7 @@
                     wire:click="nextFromDomains"
                     @disabled(empty($selectedDomainIds))
                     wire:loading.attr="disabled"
-                    wire:target="nextFromDomains,toggleDomaine,searchDomaines">
+                    wire:target="nextFromDomains,toggleDomaine">
                 Continuer
                 <span class="spinner-border spinner-border-sm ms-2" wire:loading wire:target="nextFromDomains"></span>
             </button>
@@ -51,8 +65,20 @@
             <button class="btn btn-light" wire:click="backToDomains">
                 <i class="fas fa-arrow-left me-1"></i> Domaines
             </button>
-            <input type="text" class="form-control w-auto" style="min-width:280px"
-                   placeholder="Rechercher une catégorie…" wire:model.debounce.300ms="searchCategories">
+            <div class="input-group" style="min-width:280px; width: auto;">
+                <input type="text" class="form-control"
+                    placeholder="Rechercher une catégorie…"
+                    wire:model.defer="searchCategories"
+                    wire:keydown.enter="loadCategories">
+                <button class="btn btn-outline-secondary" type="button" wire:click="loadCategories">
+                    <i class="ti ti-search"></i> Rechercher
+                </button>
+                @if($searchCategories)
+                    <button class="btn btn-outline-secondary" type="button" wire:click="$set('searchCategories', '')" title="Réinitialiser la recherche">
+                        <i class="fas fa-times"></i>
+                    </button>
+                @endif
+            </div>
         </div>
 
         <div class="row">
@@ -76,7 +102,7 @@
                     wire:click="nextFromCategories"
                     @disabled(empty($selectedCategoryIds))
                     wire:loading.attr="disabled"
-                    wire:target="nextFromCategories,toggleCategorie,searchCategories">
+                    wire:target="nextFromCategories,toggleCategorie">
                 Continuer
                 <span class="spinner-border spinner-border-sm ms-2" wire:loading wire:target="nextFromCategories"></span>
             </button>
@@ -89,8 +115,20 @@
             <button class="btn btn-light" wire:click="backToCategories">
                 <i class="fas fa-arrow-left me-1"></i> Catégories
             </button>
-            <input type="text" class="form-control w-auto" style="min-width:280px"
-                   placeholder="Rechercher un item…" wire:model.debounce.300ms="searchItems">
+            <div class="input-group" style="min-width:280px; width: auto;">
+                <input type="text" class="form-control"
+                    placeholder="Rechercher un item…"
+                    wire:model.defer="searchItems"
+                    wire:keydown.enter="loadItems">
+                <button class="btn btn-outline-secondary" type="button" wire:click="loadItems">
+                    <i class="ti ti-search"></i> Rechercher
+                </button>
+                @if($searchItems)
+                    <button class="btn btn-outline-secondary" type="button" wire:click="$set('searchItems', '')" title="Réinitialiser la recherche">
+                        <i class="fas fa-times"></i>
+                    </button>
+                @endif
+            </div>
         </div>
 
         <div class="row">
@@ -115,7 +153,7 @@
                     wire:click="finish"
                     @disabled(empty($selectedItemIds))
                     wire:loading.attr="disabled"
-                    wire:target="finish,toggleItem,searchItems">
+                    wire:target="finish,toggleItem">
                 Terminer
                 <span class="spinner-border spinner-border-sm ms-2" wire:loading wire:target="finish"></span>
             </button>

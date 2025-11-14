@@ -56,14 +56,21 @@
                 <div class="card border-0 bg-light mb-3">
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <label class="form-label small fw-semibold mb-1">
                                     <i class="ti ti-search me-1"></i>Recherche
                                 </label>
-                                <input type="text" class="form-control" placeholder="ID, notes..."
-                                    wire:model.debounce.400ms="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="ID, notes..."
+                                        wire:model.debounce.400ms="search">
+                                    @if($search)
+                                        <button class="btn btn-outline-secondary" type="button" wire:click="$set('search', '')" title="Réinitialiser la recherche">
+                                            <i class="ti ti-x"></i>
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <label class="form-label small fw-semibold mb-1">
                                     <i class="ti ti-filter me-1"></i>Statut
                                 </label>
@@ -73,6 +80,14 @@
                                     <option value="approuvé">Approuvé</option>
                                     <option value="rejeté">Rejeté</option>
                                 </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-semibold mb-1 invisible">Action</label>
+                                <button class="btn btn-outline-primary w-100" type="button"
+                                    wire:click="resetFilters"
+                                    title="Réinitialiser tous les filtres">
+                                    <i class="ti ti-refresh me-1"></i>Filtrer
+                                </button>
                             </div>
                         </div>
                     </div>

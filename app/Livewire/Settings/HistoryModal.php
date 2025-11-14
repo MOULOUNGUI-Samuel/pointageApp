@@ -47,6 +47,14 @@ class HistoryModal extends Component
         $this->resetPage();
     }
 
+    /** Réinitialiser tous les filtres */
+    public function resetFilters(): void
+    {
+        $this->search = '';
+        $this->filterStatus = $this->filterStatus;
+        $this->resetPage();
+    }
+
     /** Ouvrir la modal de détails d'une soumission */
     public function viewDetails(string $submissionId): void
     {
