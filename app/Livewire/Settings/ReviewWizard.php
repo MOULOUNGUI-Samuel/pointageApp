@@ -66,7 +66,7 @@ class ReviewWizard extends Component
             'periodeItem:id,item_id,debut_periode,fin_periode',
             'submittedBy:id,nom,prenom,email',
             'reviewedBy:id,nom,prenom',
-            'answers' => fn ($q) => $q->orderBy('position')->orderBy('id'),
+            'answers' => fn($q) => $q->orderBy('position')->orderBy('id'),
         ])->findOrFail($this->submissionId);
     }
     /**
@@ -187,124 +187,138 @@ class ReviewWizard extends Component
         $this->showConfirmReject  = false;
     }
 
-   /** Confirmer l'approbation */
-   public function confirmApprove(): void
-   {
-       $this->validate();
+    /** Confirmer l'approbation */
+    public function confirmApprove(): void
+    {
+        $this->validate();
 
-       DB::beginTransaction();
+        try {
+            $s = ConformitySubmission::findOrFail($this->submissionId);
+            if ($s->isFinal()) {
+                $this->dispatch('notify', type: 'warning', message: 'Cette soumission a déjà été traitée.');
+                $this->errorMessage = "Cette soumission a déjà été traitée.";
+                return;
+            }
 
-       try {
-           // 1) Mise à jour de la soumission
-           $this->submission->update([
-               'status'         => 'approuvé',
-               'reviewed_at'    => now(),
-               'reviewed_by'    => auth()->id(),
-               'reviewer_notes' => $this->notes ?: 'Approuvé',
-           ]);
+            DB::transaction(function () use ($s) {
+                // 1) Approuver la soumission
+                $s->update([
+                    'status'         => 'approuvé',
+                    'reviewed_by'    => Auth::id(),
+                    'reviewed_at'    => now(),
+                    'reviewer_notes' => $this->notes,
+                ]);
 
-           // 2) Désactiver la période liée (pour pouvoir en recréer une nouvelle)
-           //    -> attention : la colonne est bien "periode_id" dans ConformitySubmission
-           $periodeId = $this->submission->periode_id ?? $this->submission->periodeItem?->id;
+                // 2) Désactiver la période liée à cette soumission
+                if ($s->periode_item_id) {
+                    PeriodeItem::where('id', $s->periode_item_id)
+                        ->update([
+                            'statut'         => '0',
+                            'user_update_id' => Auth::id(),
+                            'updated_at'     => now(),
+                        ]);
+                }
+            });
 
-           if ($periodeId) {
-               PeriodeItem::where('id', $periodeId)->update([
-                   'statut'         => '0',
-                   'user_update_id' => Auth::id(),
-                   'updated_at'     => now(),
-               ]);
-           }
+            $this->dispatch('notify', type: 'success', message: 'Déclaration approuvée et période désactivée.');
+            Log::info('[ReviewWizard] Soumission approuvée', [
+                'trace_id'      => $this->traceId,
+                'submission_id' => $this->submissionId,
+            ]);
 
-           DB::commit();
+            // 3) Rafraîchir les données locales + état UI
+            $this->loadSubmission();        // 🔁 recharge $this->submission avec le nouveau status
+            $this->resetErrorBag();
+            $this->resetValidation();
 
-           Log::info('[ReviewWizard] Soumission approuvée', [
-               'trace_id'      => $this->traceId,
-               'submission_id' => $this->submissionId,
-           ]);
+            $this->showConfirmApprove = false;
+            $this->showConfirmReject  = false;
+            $this->notes              = '';
+            $this->aiAnalysis         = [];
 
-           // 3) Rafraîchir les données locales + état UI
-           $this->loadSubmission();        // 🔁 recharge $this->submission avec le nouveau status
-           $this->resetErrorBag();
-           $this->resetValidation();
+            $this->successMessage = "Soumission approuvée avec succès !";
 
-           $this->showConfirmApprove = false;
-           $this->showConfirmReject  = false;
-           $this->notes              = '';
-           $this->aiAnalysis         = [];
+            // Event pour un éventuel board parent
+            $this->dispatch('settings-reviewed');
+            $this->dispatch('notify', type: 'success', message: $this->successMessage);
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-           $this->successMessage = "Soumission approuvée avec succès !";
+            Log::error('[ReviewWizard] Erreur approbation', [
+                'trace_id' => $this->traceId,
+                'error'    => $e->getMessage(),
+            ]);
 
-           // Event pour un éventuel board parent
-           $this->dispatch('settings-reviewed');
-           $this->dispatch('notify', type: 'success', message: $this->successMessage);
-       } catch (\Exception $e) {
-           DB::rollBack();
+            $this->errorMessage       = "Erreur lors de l'approbation : " . $e->getMessage();
+            $this->showConfirmApprove = false;
+        }
+    }
 
-           Log::error('[ReviewWizard] Erreur approbation', [
-               'trace_id' => $this->traceId,
-               'error'    => $e->getMessage(),
-           ]);
+    /** Confirmer le rejet */
+    public function confirmReject(): void
+    {
+        $this->validate([
+            'notes' => 'required|string|min:10|max:2000',
+        ]);
 
-           $this->errorMessage       = "Erreur lors de l'approbation : " . $e->getMessage();
-           $this->showConfirmApprove = false;
-       }
-   }
+        DB::beginTransaction();
 
-     /** Confirmer le rejet */
-     public function confirmReject(): void
-     {
-         $this->validate([
-             'notes' => 'required|string|min:10|max:2000',
-         ]);
- 
-         DB::beginTransaction();
- 
-         try {
-             $this->submission->update([
-                 'status'         => 'rejeté',
-                 'reviewed_at'    => now(),
-                 'reviewed_by'    => auth()->id(),
-                 'reviewer_notes' => $this->notes,
-             ]);
- 
-             DB::commit();
- 
-             Log::info('[ReviewWizard] Soumission rejetée', [
-                 'trace_id'      => $this->traceId,
-                 'submission_id' => $this->submissionId,
-             ]);
- 
-             // 🔁 Rafraîchir les données locales + UI
-             $this->loadSubmission();
-             $this->resetErrorBag();
-             $this->resetValidation();
- 
-             $this->showConfirmApprove = false;
-             $this->showConfirmReject  = false;
-             $this->notes              = '';
-             $this->aiAnalysis         = [];
-             $this->successMessage     = "Soumission rejetée. L'entreprise sera notifiée.";
- 
-             $this->dispatch('settings-reviewed');
-             $this->dispatch('notify', type: 'success', message: $this->successMessage);
-         } catch (\Exception $e) {
-             DB::rollBack();
- 
-             Log::error('[ReviewWizard] Erreur rejet', [
-                 'trace_id' => $this->traceId,
-                 'error'    => $e->getMessage(),
-             ]);
- 
-             $this->errorMessage      = "Erreur lors du rejet : " . $e->getMessage();
-             $this->showConfirmReject = false;
-         }
-     }
+        try {
+            $this->submission->update([
+                'status'         => 'rejeté',
+                'reviewed_at'    => now(),
+                'reviewed_by'    => auth()->id(),
+                'reviewer_notes' => $this->notes,
+            ]);
+
+            DB::commit();
+
+            Log::info('[ReviewWizard] Soumission rejetée', [
+                'trace_id'      => $this->traceId,
+                'submission_id' => $this->submissionId,
+            ]);
+
+            // 🔁 Rafraîchir les données locales + UI
+            $this->loadSubmission();
+            $this->resetErrorBag();
+            $this->resetValidation();
+
+            $this->showConfirmApprove = false;
+            $this->showConfirmReject  = false;
+            $this->notes              = '';
+            $this->aiAnalysis         = [];
+            $this->successMessage     = "Soumission rejetée. L'entreprise sera notifiée.";
+
+            $this->dispatch('settings-reviewed');
+            $this->dispatch('notify', type: 'success', message: $this->successMessage);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('[ReviewWizard] Erreur rejet', [
+                'trace_id' => $this->traceId,
+                'error'    => $e->getMessage(),
+            ]);
+
+            $this->errorMessage      = "Erreur lors du rejet : " . $e->getMessage();
+            $this->showConfirmReject = false;
+        }
+    }
     public function render()
     {
-        
-       // On passe toujours la propriété $this->submission à la vue
-       return view('livewire.settings.review-wizard', [
-        'submission' => $this->submission,
-    ]);
+        if (!$this->submissionId) {
+            return view('livewire.settings.review-wizard', ['submission' => null]);
+        }
+
+        $submission = ConformitySubmission::with([
+            'item:id,nom_item,type,description',
+            'periodeItem:id,item_id,debut_periode,fin_periode',
+            'submittedBy:id,nom,prenom,email',
+            'reviewedBy:id,nom,prenom',
+            'answers' => fn($q) => $q->orderBy('position')->orderBy('id'),
+        ])->findOrFail($this->submissionId);
+        // On passe toujours la propriété $this->submission à la vue
+        return view('livewire.settings.review-wizard', [
+            'submission' => $submission,
+        ]);
     }
 }

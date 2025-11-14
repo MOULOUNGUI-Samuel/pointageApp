@@ -6,7 +6,8 @@
                 <h5 class="modal-title" id="absenceLabel">
                     Gestion des demandes
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                <button type="button" class="btn-close bg-white p-2 rounded" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
             </div>
 
             <div class="row g-4 mt-3 mx-3">
@@ -129,7 +130,8 @@
                                             <div class="d-flex justify-content-between w-100 align-items-center">
                                                 <div class="d-flex flex-column">
                                                     <span class="fw-semibold text-capitalize">
-                                                        {{ str_replace('_', ' ', $a->type) }} [ {{ $a->code_demande }} ]
+                                                        {{ str_replace('_', ' ', $a->type) }} [ {{ $a->code_demande }}
+                                                        ]
                                                     </span>
                                                     <small class="text-muted">
                                                         {{ $a->start_datetime?->format('d/m/Y H:i') }} →
@@ -523,7 +525,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label class="form-label">Début</label>
                                 <input type="datetime-local"

@@ -10,7 +10,7 @@
                     class="fas fa-xmark"></i></button>
         </div>
     @endif
-        @if ($errorMessage)
+    @if ($errorMessage)
         <div class="alert alert-danger rounded-pill alert-dismissible fade show">
             <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
             <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
@@ -162,29 +162,25 @@
                                     <i class="ti ti-paperclip text-info"></i>
                                     <span class="small fw-semibold text-muted">Document</span>
                                 </div>
-                                <a href="#"
-                                onclick="ouvrirDocument(event, '{{ asset('storage/' . $a->file_path) }}')"
-                              target="_blank"
-                              class="btn btn-outline-info"
-                              title="Voir le document">
-                               <i class="ti ti-file-description me-2"></i> Ouvrir le document
-                           </a>
+                                <a href="#" onclick="ouvrirDocument(event, '{{ asset('storage/' . $a->file_path) }}')"
+                                    target="_blank" class="btn btn-outline-info" title="Voir le document">
+                                    <i class="ti ti-file-description me-2"></i> Ouvrir le document
+                                </a>
                             </div>
                         @break
 
                         @case('liste')
-
                             <div class="p-3 rounded-3 border mb-3">
                                 <div class="d-flex align-items-center gap-2 mb-2">
                                     <i class="ti ti-list-check text-success"></i>
                                     <span class="small fw-semibold text-muted">Choix (liste)</span>
                                 </div>
-                        
+
                                 @php
-                                     $labels = (array) data_get($a->value_json, 'labels', []);
-                                     $values = (array) data_get($a->value_json, 'selected', []);
+                                    $labels = (array) data_get($a->value_json, 'labels', []);
+                                    $values = (array) data_get($a->value_json, 'selected', []);
                                 @endphp
-                        
+
                                 @if (!empty($labels))
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach ($labels as $lbl)

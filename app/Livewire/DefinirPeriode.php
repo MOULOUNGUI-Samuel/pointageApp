@@ -86,6 +86,7 @@ class DefinirPeriode extends Component
     {
         if (! $this->item || ! $this->entreprise) {
             $this->errorMessage = "Item ou entreprise non initialisés.";
+            $this->dispatch('notify', type: 'error', message: 'Item ou entreprise non initialisés.');
             return;
         }
 
@@ -114,8 +115,10 @@ class DefinirPeriode extends Component
                     break;
                 }
             }
+            $this->dispatch('notify', type: 'success', message: 'Suggestions de périodes générées avec succès');
         } catch (\Exception $e) {
             $this->errorMessage = 'Erreur lors de la génération : ' . $e->getMessage();
+            $this->dispatch('notify', type: 'error', message: 'Erreur lors de la génération : ' . $e->getMessage());
         } finally {
             $this->isGenerating = false;
         }
@@ -130,6 +133,7 @@ class DefinirPeriode extends Component
 
         if (! isset($this->suggestions[$index])) {
             $this->errorMessage = "Suggestion invalide.";
+            $this->dispatch('notify', type: 'error', message: 'Suggestion invalide.');
             return;
         }
 
@@ -143,6 +147,7 @@ class DefinirPeriode extends Component
     {
         if (! $this->item || ! $this->entreprise) {
             $this->errorMessage = "Item ou entreprise non initialisés.";
+            $this->dispatch('notify', type: 'error', message: 'Item ou entreprise non initialisés.');
             return;
         }
 
@@ -151,6 +156,7 @@ class DefinirPeriode extends Component
             ! isset($this->suggestions[$this->suggestion_selectionnee])
         ) {
             $this->errorMessage = 'Veuillez sélectionner une période.';
+            $this->dispatch('notify', type: 'error', message: 'Veuillez sélectionner une période.');
             return;
         }
 
@@ -164,6 +170,7 @@ class DefinirPeriode extends Component
 
         if ($periodeActive) {
             $this->errorMessage = 'Une période active existe déjà pour cet item et cette entreprise.';
+            $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item et cette entreprise.');
             return;
         }
 
@@ -189,7 +196,7 @@ class DefinirPeriode extends Component
                 $periode->fin_periode->format('d/m/Y'),
                 $suggestion['duree_libelle'] ?? ''
             );
-
+            $this->dispatch('notify', type: 'success', message: 'Période créée avec succès');
             // Event Livewire pour prévenir le parent / autres composants
             $this->dispatch('periode-creee', id: $periode->id);
             // Event pour rafraîchir le board parent
@@ -220,6 +227,7 @@ class DefinirPeriode extends Component
             'errorMessage',
             'successMessage',
         ]);
+        $this->dispatch('notify', type: 'success', message: 'Réinitialisation du formulaire avec succès');
     }
 
     public function render()

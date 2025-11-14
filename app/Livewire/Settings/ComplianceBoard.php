@@ -170,10 +170,19 @@ class ComplianceBoard extends Component
     #[On('wizard-config-reload')]
     #[On('settings-submitted2')]
     #[On('settings-reviewed2')]
+    #[On('periodes-updated')]
     public function refresh(): void
     {
+        Log::info('[ComplianceBoard] refresh() called', [
+            'trace_id' => $this->traceId,
+            'event'    => 'Reloading stats and resetting page',
+        ]);
+
         $this->loadStats();
         $this->resetPage();
+
+        // Forcer le rafraîchissement de la vue
+        $this->dispatch('$refresh');
     }
 
     public function render()

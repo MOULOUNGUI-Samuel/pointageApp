@@ -22,16 +22,16 @@
                             <div class="small text-muted">
                                 <div class="mb-1">
                                     <i class="ti ti-building me-1"></i>
-                                    {{ $submission->entreprise->nom }}
+                                    {{ $submission->entreprise->nom_entreprise }}
                                 </div>
                                 <div class="mb-1">
                                     <i class="ti ti-upload me-1"></i>
                                     Soumis le {{ $submission->submitted_at?->format('d/m/Y à H:i') }}
                                 </div>
-                                @if ($submission->submitter)
+                                @if ($submission->submittedBy)
                                     <div class="mb-1">
                                         <i class="ti ti-user me-1"></i>
-                                        Par {{ $submission->submitter->nom }} {{ $submission->submitter->prenom }}
+                                        Par {{ $submission->submittedBy->nom }} {{ $submission->submittedBy->prenom }}
                                     </div>
                                 @endif
                                 @if ($submission->periode)
@@ -46,14 +46,38 @@
 
                         <div>
                             @php $st = $submission->status; @endphp
-                            <div
-                                class="d-flex align-items-center gap-2 p-3 rounded-3 bg-warning bg-opacity-10 border border-warning">
-                                <i class="ti ti-hourglass-high text-warning fs-22"></i>
-                                <div>
-                                    <div class="fw-bold text-warning">En attente</div>
-                                    <div class="small text-muted">Validation requise</div>
+                            @if ($st === 'approuvé')
+                                <div
+                                    class="d-flex align-items-center gap-2 p-3 rounded-3 bg-success bg-opacity-10 border border-success">
+                                    <i class="ti ti-circle-check text-success fs-22"></i>
+                                    <div>
+                                        <div class="fw-bold text-success">Approuvé</div>
+                                        <div class="small text-muted">
+                                            {{ $submission->reviewed_at?->format('d/m/Y H:i') }}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @elseif($st === 'rejeté')
+                                <div
+                                    class="d-flex align-items-center gap-2 p-3 rounded-3 bg-danger bg-opacity-10 border border-danger">
+                                    <i class="ti ti-circle-x text-danger fs-22"></i>
+                                    <div>
+                                        <div class="fw-bold text-danger">Rejeté</div>
+                                        <div class="small text-muted">
+                                            {{ $submission->reviewed_at?->format('d/m/Y H:i') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div
+                                    class="d-flex align-items-center gap-2 p-3 rounded-3 bg-warning bg-opacity-10 border border-warning">
+                                    <i class="ti ti-hourglass-high text-warning fs-22"></i>
+                                    <div>
+                                        <div class="fw-bold text-warning">En attente</div>
+                                        <div class="small text-muted">Validation requise</div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -165,6 +189,7 @@
                 </div>
 
                 {{-- ========= ANALYSE IA ========= --}}
+                @if (!$submission->isFinal())
                 <div class="mb-4">
                     <button type="button" class="btn btn-outline-primary w-100" wire:click="requestAiAnalysis"
                         wire:loading.attr="disabled" wire:target="requestAiAnalysis">
@@ -178,6 +203,7 @@
                         </span>
                     </button>
                 </div>
+                @endif
 
                 @if ($showAiAnalysis && !empty($aiAnalysis))
                     <div class="card border-0 shadow-sm mb-4">
@@ -308,157 +334,161 @@
                     </div>
                 @endif
                 {{-- ========= ACTIONS DE VALIDATION ========= --}}
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0"><i class="ti ti-edit me-2"></i>Décision de validation</h6>
-                    </div>
-                    <div class="card-body">
-                        {{-- Notes --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                <i class="ti ti-message me-1"></i>
-                                Notes / Commentaires
-                                @if ($showConfirmReject)
-                                    <span class="text-danger">*</span>
-                                @endif
-                            </label>
-                            <textarea rows="4" class="form-control @error('notes') is-invalid @enderror"
-                                placeholder="Ajoutez vos commentaires, remarques ou raisons de refus..." wire:model.defer="notes"></textarea>
-                            @error('notes')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text">
-                                <i class="ti ti-info-circle me-1"></i>
-                                Les commentaires sont obligatoires en cas de rejet
-                            </div>
+                @if (!$submission->isFinal())
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom">
+                            <h6 class="mb-0"><i class="ti ti-edit me-2"></i>Décision de validation</h6>
                         </div>
-
-                        {{-- Boutons d'assistance IA pour commentaires --}}
-                        @if ($showAiAnalysis && !empty($aiAnalysis))
-                            <div class="d-flex gap-2 mb-3">
-                                <!-- Bouton de génération d’approbation -->
-                                <button type="button" class="btn btn-sm btn-outline-success position-relative"
-                                    wire:click="generateApprovalComment" wire:loading.attr="disabled">
-
-                                    <span wire:loading.remove wire:target="generateApprovalComment">
-                                        <i class="ti ti-sparkles me-1"></i>
-                                        Générer commentaire d'approbation
-                                    </span>
-
-                                    <span wire:loading wire:target="generateApprovalComment">
-                                        <span class="spinner-border spinner-border-sm me-1" role="status"
-                                            aria-hidden="true"></span>
-                                        Génération en cours...
-                                    </span>
-                                </button>
-
-                                <!-- Bouton de génération de rejet -->
-                                <button type="button" class="btn btn-sm btn-outline-danger position-relative"
-                                    wire:click="generateRejectionComment" wire:loading.attr="disabled">
-
-                                    <span wire:loading.remove wire:target="generateRejectionComment">
-                                        <i class="ti ti-sparkles me-1"></i>
-                                        Générer commentaire de rejet
-                                    </span>
-
-                                    <span wire:loading wire:target="generateRejectionComment">
-                                        <span class="spinner-border spinner-border-sm me-1" role="status"
-                                            aria-hidden="true"></span>
-                                        Génération en cours...
-                                    </span>
-                                </button>
-
-                            </div>
-                        @endif
-
-                        {{-- Banners de confirmation --}}
-                        @if ($showConfirmApprove)
-                            <div class="alert alert-success d-flex align-items-start gap-3 mb-3">
-                                <i class="ti ti-alert-circle fs-22"></i>
-                                <div class="flex-grow-1">
-                                    <div class="fw-bold mb-2">Confirmer l'approbation</div>
-                                    <p class="mb-3 small">Vous êtes sur le point d'approuver cette soumission. Cette action
-                                        est définitive.</p>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-success" wire:click="confirmApprove"
-                                            wire:loading.attr="disabled" wire:target="confirmApprove">
-                                            <span wire:loading.remove wire:target="confirmApprove">
-                                                <i class="ti ti-check me-1"></i>Oui, approuver
-                                            </span>
-                                            <span wire:loading wire:target="confirmApprove">
-                                                <span class="spinner-border spinner-border-sm me-1"></span>Traitement…
-                                            </span>
-                                        </button>
-                                        <button class="btn btn-outline-secondary" wire:click="cancelConfirm">
-                                            <i class="ti ti-x me-1"></i>Annuler
-                                        </button>
-                                    </div>
+                        <div class="card-body">
+                            {{-- Notes --}}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="ti ti-message me-1"></i>
+                                    Notes / Commentaires
+                                    @if ($showConfirmReject)
+                                        <span class="text-danger">*</span>
+                                    @endif
+                                </label>
+                                <textarea rows="4" class="form-control @error('notes') is-invalid @enderror"
+                                    placeholder="Ajoutez vos commentaires, remarques ou raisons de refus..." wire:model.defer="notes"></textarea>
+                                @error('notes')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div class="form-text">
+                                    <i class="ti ti-info-circle me-1"></i>
+                                    Les commentaires sont obligatoires en cas de rejet
                                 </div>
                             </div>
-                        @endif
 
-                        @if ($showConfirmReject)
-                            <div class="alert alert-danger d-flex align-items-start gap-3 mb-3">
-                                <i class="ti ti-alert-triangle fs-22"></i>
-                                <div class="flex-grow-1">
-                                    <div class="fw-bold mb-2">Confirmer le rejet</div>
-                                    <p class="mb-3 small">Vous êtes sur le point de rejeter cette soumission. L'entreprise
-                                        devra soumettre une correction.</p>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-danger" wire:click="confirmReject"
-                                            wire:loading.attr="disabled" wire:target="confirmReject">
-                                            <span wire:loading.remove wire:target="confirmReject">
-                                                <i class="ti ti-x me-1"></i>Oui, rejeter
-                                            </span>
-                                            <span wire:loading wire:target="confirmReject">
-                                                <span class="spinner-border spinner-border-sm me-1"></span>Traitement…
-                                            </span>
-                                        </button>
-                                        <button class="btn btn-outline-secondary" wire:click="cancelConfirm">
-                                            <i class="ti ti-x me-1"></i>Annuler
-                                        </button>
+                            {{-- Boutons d'assistance IA pour commentaires --}}
+                            @if ($showAiAnalysis && !empty($aiAnalysis))
+                                <div class="d-flex gap-2 mb-3">
+                                    <!-- Bouton de génération d’approbation -->
+                                    <button type="button" class="btn btn-sm btn-outline-success position-relative"
+                                        wire:click="generateApprovalComment" wire:loading.attr="disabled">
+
+                                        <span wire:loading.remove wire:target="generateApprovalComment">
+                                            <i class="ti ti-sparkles me-1"></i>
+                                            Générer commentaire d'approbation
+                                        </span>
+
+                                        <span wire:loading wire:target="generateApprovalComment">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"
+                                                aria-hidden="true"></span>
+                                            Génération en cours...
+                                        </span>
+                                    </button>
+
+                                    <!-- Bouton de génération de rejet -->
+                                    <button type="button" class="btn btn-sm btn-outline-danger position-relative"
+                                        wire:click="generateRejectionComment" wire:loading.attr="disabled">
+
+                                        <span wire:loading.remove wire:target="generateRejectionComment">
+                                            <i class="ti ti-sparkles me-1"></i>
+                                            Générer commentaire de rejet
+                                        </span>
+
+                                        <span wire:loading wire:target="generateRejectionComment">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"
+                                                aria-hidden="true"></span>
+                                            Génération en cours...
+                                        </span>
+                                    </button>
+
+                                </div>
+                            @endif
+
+                            {{-- Banners de confirmation --}}
+                            @if ($showConfirmApprove)
+                                <div class="alert alert-success d-flex align-items-start gap-3 mb-3">
+                                    <i class="ti ti-alert-circle fs-22"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold mb-2">Confirmer l'approbation</div>
+                                        <p class="mb-3 small">Vous êtes sur le point d'approuver cette soumission. Cette
+                                            action
+                                            est définitive.</p>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-success" wire:click="confirmApprove"
+                                                wire:loading.attr="disabled" wire:target="confirmApprove">
+                                                <span wire:loading.remove wire:target="confirmApprove">
+                                                    <i class="ti ti-check me-1"></i>Oui, approuver
+                                                </span>
+                                                <span wire:loading wire:target="confirmApprove">
+                                                    <span class="spinner-border spinner-border-sm me-1"></span>Traitement…
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" wire:click="cancelConfirm">
+                                                <i class="ti ti-x me-1"></i>Annuler
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
 
-                        {{-- Boutons d'action --}}
-                        @if (!$showConfirmApprove && !$showConfirmReject)
-                            <div class="d-flex justify-content-end gap-2">
-                                <!-- Bouton Approuver -->
-                                <button class="btn btn-success position-relative" wire:click="prepareApprove"
-                                    wire:loading.attr="disabled">
+                            @if ($showConfirmReject)
+                                <div class="alert alert-danger d-flex align-items-start gap-3 mb-3">
+                                    <i class="ti ti-alert-triangle fs-22"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold mb-2">Confirmer le rejet</div>
+                                        <p class="mb-3 small">Vous êtes sur le point de rejeter cette soumission.
+                                            L'entreprise
+                                            devra soumettre une correction.</p>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-danger" wire:click="confirmReject"
+                                                wire:loading.attr="disabled" wire:target="confirmReject">
+                                                <span wire:loading.remove wire:target="confirmReject">
+                                                    <i class="ti ti-x me-1"></i>Oui, rejeter
+                                                </span>
+                                                <span wire:loading wire:target="confirmReject">
+                                                    <span class="spinner-border spinner-border-sm me-1"></span>Traitement…
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" wire:click="cancelConfirm">
+                                                <i class="ti ti-x me-1"></i>Annuler
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
-                                    <span wire:loading.remove wire:target="prepareApprove">
-                                        <i class="ti ti-circle-check me-1"></i> Approuver
-                                    </span>
+                            {{-- Boutons d'action --}}
+                            @if (!$showConfirmApprove && !$showConfirmReject)
+                                <div class="d-flex justify-content-end gap-2">
+                                    <!-- Bouton Approuver -->
+                                    <button class="btn btn-success position-relative" wire:click="prepareApprove"
+                                        wire:loading.attr="disabled">
 
-                                    <span wire:loading wire:target="prepareApprove">
-                                        <span class="spinner-border spinner-border-sm me-1" role="status"
-                                            aria-hidden="true"></span>
-                                        Traitement...
-                                    </span>
-                                </button>
+                                        <span wire:loading.remove wire:target="prepareApprove">
+                                            <i class="ti ti-circle-check me-1"></i> Approuver
+                                        </span>
 
-                                <!-- Bouton Rejeter -->
-                                <button class="btn btn-danger position-relative" wire:click="prepareReject"
-                                    wire:loading.attr="disabled">
+                                        <span wire:loading wire:target="prepareApprove">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"
+                                                aria-hidden="true"></span>
+                                            Traitement...
+                                        </span>
+                                    </button>
 
-                                    <span wire:loading.remove wire:target="prepareReject">
-                                        <i class="ti ti-circle-x me-1"></i> Rejeter
-                                    </span>
+                                    <!-- Bouton Rejeter -->
+                                    <button class="btn btn-danger position-relative" wire:click="prepareReject"
+                                        wire:loading.attr="disabled">
 
-                                    <span wire:loading wire:target="prepareReject">
-                                        <span class="spinner-border spinner-border-sm me-1" role="status"
-                                            aria-hidden="true"></span>
-                                        Traitement...
-                                    </span>
-                                </button>
+                                        <span wire:loading.remove wire:target="prepareReject">
+                                            <i class="ti ti-circle-x me-1"></i> Rejeter
+                                        </span>
 
-                            </div>
-                        @endif
+                                        <span wire:loading wire:target="prepareReject">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"
+                                                aria-hidden="true"></span>
+                                            Traitement...
+                                        </span>
+                                    </button>
+
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
             @else
                 <div class="text-center py-5">
                     <div class="spinner-border mb-3" role="status"></div>

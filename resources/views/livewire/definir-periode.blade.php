@@ -22,7 +22,7 @@
 
                     <!-- Header -->
                     <!-- Header -->
-                    <div class="mb-4">
+                    <div class="mb-1">
                         @if ($item)
                             <div class="d-flex align-items-start">
                                 <div class="flex-grow-1">
@@ -82,51 +82,7 @@
                     </div>
                 @endif
 
-                    <!-- Périodes Existantes -->
-                    @if ($periodes_existantes->isNotEmpty())
-                        <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
-                            <div class="card-header bg-light py-3">
-                                <h6 class="mb-0 fw-bold">
-                                    <i class="bi bi-clock-history me-2"></i>
-                                    Périodes Existantes
-                                </h6>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-sm mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Début</th>
-                                                <th>Fin</th>
-                                                <th>Statut</th>
-                                                <th>Créée par</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($periodes_existantes as $periode)
-                                                <tr>
-                                                    <td>{{ $periode->debut_periode->format('d/m/Y') }}</td>
-                                                    <td>{{ $periode->fin_periode->format('d/m/Y') }}</td>
-                                                    <td>
-                                                        @if ($periode->is_active)
-                                                            <span class="badge bg-success">Active</span>
-                                                        @elseif ($periode->statut === '0')
-                                                            <span class="badge bg-secondary">Fermée</span>
-                                                        @else
-                                                            <span class="badge bg-warning">Expirée</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <small>{{ $periode->user_add->name ?? 'Système' }}</small>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                   
 
                     <!-- Formulaire de Génération -->
                     @if (!$suggestions)
@@ -134,7 +90,7 @@
                             <div class="card-body p-4">
                                 <div class="text-center mb-4">
                                     <div
-                                        class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-4 mb-3">
+                                        class="d-inline-flex align-items-center justify-content-center mb-3">
                                         <i class="bi bi-calendar-check text-primary" style="font-size: 3rem;"></i>
                                     </div>
                                     <h5 class="fw-bold mb-2">Définir une Période de Validité</h5>
@@ -315,8 +271,57 @@
                             </div>
                         </div>
                     @endif
+
+
+                     <!-- Périodes Existantes -->
+                     @if ($periodes_existantes->isNotEmpty())
+                     <div class="card border-0 shadow-sm mt-3" style="border-radius: 15px;">
+                         <div class="card-header bg-light py-3">
+                             <h6 class="mb-0 fw-bold">
+                                 <i class="bi bi-clock-history me-2"></i>
+                                 Périodes Existantes
+                             </h6>
+                         </div>
+                         <div class="card-body p-0">
+                             <div class="table-responsive">
+                                 <table class="table table-sm mb-0">
+                                     <thead>
+                                         <tr>
+                                             <th>Début</th>
+                                             <th>Fin</th>
+                                             <th>Statut</th>
+                                             <th>Créée par</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody>
+                                         @foreach ($periodes_existantes as $periode)
+                                             <tr>
+                                                 <td>{{ $periode->debut_periode->format('d/m/Y') }}</td>
+                                                 <td>{{ $periode->fin_periode->format('d/m/Y') }}</td>
+                                                 <td>
+                                                     @if ($periode->is_active)
+                                                         <span class="badge bg-success">Active</span>
+                                                     @elseif ($periode->statut === '0')
+                                                         <span class="badge bg-secondary">Fermée</span>
+                                                     @else
+                                                         <span class="badge bg-warning">Expirée</span>
+                                                     @endif
+                                                 </td>
+                                                 <td>
+                                                     <small>{{ $periode->user_add->name ?? 'Système' }}</small>
+                                                 </td>
+                                             </tr>
+                                         @endforeach
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 @endif
                 </div>
 
+
+                
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="ti ti-x me-1"></i>Fermer

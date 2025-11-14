@@ -125,6 +125,12 @@ class PeriodesManager extends Component
             ]);
 
             $this->dispatch('notify', type: 'success', message: 'Période mise à jour.');
+            // Rafraîchir le compliance-board
+            $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
+            // Event Livewire pour prévenir le parent / autres composants
+            $this->dispatch('periode-creee', id: $p->id);
+            // Event pour rafraîchir le board parent
+            $this->dispatch('wizard-config-reload');
         } else {
             PeriodeItem::create([
                 'item_id'        => $this->itemId,
@@ -136,6 +142,8 @@ class PeriodesManager extends Component
             ]);
 
             $this->dispatch('notify', type: 'success', message: 'Période créée.');
+            // Rafraîchir le compliance-board
+            $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
         }
 
         $this->openForm();
@@ -161,6 +169,8 @@ class PeriodesManager extends Component
         session()->flash('success', 'Période annulée.');
         $this->dispatch('periodes-updated', id: $this->itemId);
         $this->dispatch('wizard-config-reload');
+        // Rafraîchir le compliance-board
+        $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
     }
 
     public function renewFrom(string $id): void
@@ -211,6 +221,8 @@ class PeriodesManager extends Component
 
         $this->dispatch('periodes-updated', id: $this->itemId);
         $this->dispatch('wizard-config-reload');
+        // Rafraîchir le compliance-board
+        $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
     }
 
     /** Reset pagination quand on modifie la recherche */

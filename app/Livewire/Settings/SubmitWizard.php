@@ -209,7 +209,9 @@ class SubmitWizard extends Component
             if ($result['success']) {
                 $this->aiSuggestions    = $result['suggestions'];
                 $this->showAiSuggestions = true;
+                $this->dispatch('notify', type: 'success', message: 'Demande des suggestions généré avec succès par IA');
             } else {
+                $this->dispatch('notify', type: 'error', message:"Erreur lors de la génération des suggestions : " . $result['error']);
                 $this->errorMessage = "Erreur lors de la génération des suggestions : " . ($result['error'] ?? 'Erreur inconnue');
             }
         } catch (\Exception $e) {
@@ -230,6 +232,7 @@ class SubmitWizard extends Component
     {
         if ($this->item->type === 'texte' && isset($this->aiSuggestions['exemple_texte'])) {
             $this->textValue      = $this->aiSuggestions['exemple_texte'];
+            $this->dispatch('notify', type: 'success', message: 'Suggestion appliquée ! Vous pouvez la modifier selon vos besoins.');
             $this->successMessage = "Suggestion appliquée ! Vous pouvez la modifier selon vos besoins.";
         }
     }
@@ -263,15 +266,19 @@ class SubmitWizard extends Component
 
                 if (!$result['can_submit']) {
                     $this->errorMessage = "Des problèmes ont été détectés. Veuillez les corriger avant de soumettre.";
+                    $this->dispatch('notify', type: 'error', message: 'Des problèmes ont été détectés. Veuillez les corriger avant de soumettre.');
                 }
+                $this->dispatch('notify', type: 'success', message: 'Analyse effectuée !');
             } else {
                 $this->errorMessage = "Erreur lors de l'analyse : " . ($result['error'] ?? 'Erreur inconnue');
+                $this->dispatch('notify', type: 'error', message: "Erreur lors de l'analyse : " . $result['error']);
             }
         } catch (\Exception $e) {
             Log::error('[SubmitWizard] Erreur analyse', [
                 'trace_id' => $this->traceId,
                 'error'    => $e->getMessage(),
             ]);
+            $this->dispatch('notify', type: 'error', message: "Impossible d'analyser les données.");
             $this->errorMessage = "Impossible d'analyser les données.";
         } finally {
             $this->loadingAnalysis = false;
@@ -284,7 +291,7 @@ class SubmitWizard extends Component
     private function prepareSubmissionData(): array
     {
         $type = $this->item->type;
-
+        
         if ($type === 'texte') {
             return ['texte' => $this->textValue];
         } elseif ($type === 'liste' || $type === 'checkbox') {
@@ -296,9 +303,9 @@ class SubmitWizard extends Component
                 $mimeType  = $file->getMimeType();
                 $fileSize  = $file->getSize();
                 $extension = strtolower($file->getClientOriginalExtension());
-        
+                
                 $content = $this->extractFileText($file);
-        
+                
                 return [
                     'fichier' => [
                         'nom'                => $fileName,
@@ -310,7 +317,7 @@ class SubmitWizard extends Component
                     ],
                 ];
             }
-        
+            
             return [
                 'fichier' => [
                     'nom'                => null,
@@ -319,9 +326,10 @@ class SubmitWizard extends Component
                     'message'            => 'Aucun fichier uploadé',
                 ],
             ];
-
+            
         }
-
+        $this->dispatch('notify', type: 'success', message: "Données de soumission analysées");
+        
         return [];
     }
 
@@ -375,7 +383,7 @@ class SubmitWizard extends Component
                 $submission = ConformitySubmission::create([
                     'item_id'       => $this->itemId,
                     'entreprise_id' => $entrepriseId,
-                    'periode_id'    => $this->periode?->id,
+                    'periode_item_id'    => $this->periode?->id,
                     'status'        => 'soumis',
                     'submitted_at'  => now(),
                     'submitted_by'  => $userId,
@@ -385,26 +393,26 @@ class SubmitWizard extends Component
                 $this->isEditing    = true;
                 $action             = 'créée';
             }
-
+            
             // Réponses
             $this->createAnswers($submission);
-
+            
             DB::commit();
-
+            
             Log::info('[SubmitWizard] Soumission enregistrée', [
                 'trace_id'      => $this->traceId,
                 'submission_id' => $submission->id,
                 'action'        => $action,
             ]);
-
+            
             // Event pour rafraîchir le board parent
             $this->dispatch('settings-submitted', id: $submission->id);
             $this->dispatch('wizard-config-reload');
-
+            
+            $this->dispatch('notify', type: 'success', message: "Soumission {$action} avec succès !");
             // Fermer la modale côté JS (Bootstrap)
             $this->dispatch('close-submit-modal2');
-
-            session()->flash('success', "Soumission {$action} avec succès !");
+            
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -413,7 +421,7 @@ class SubmitWizard extends Component
                 'error'    => $e->getMessage(),
                 'trace'    => $e->getTraceAsString(),
             ]);
-
+            $this->dispatch('notify', type: 'error', message: "Erreur lors de la soumission : " . $e->getMessage());
             $this->errorMessage    = "Erreur lors de la soumission : " . $e->getMessage();
             $this->showConfirmation = false;
         }
@@ -464,6 +472,7 @@ class SubmitWizard extends Component
                 'position' => 1,
             ]);
         }
+        $this->dispatch('notify', type: 'success', message: "Reponse créée avec succès.");
     }
 
     /**
@@ -495,6 +504,6 @@ class SubmitWizard extends Component
     public function render()
     {
        
-        return view('livewire.settings.submit-wizard');
+        return view('livewire.settings.submit-wizard',);
     }
 }

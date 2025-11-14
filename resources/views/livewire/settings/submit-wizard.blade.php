@@ -2,19 +2,21 @@
     <div>
         {{-- Messages d'erreur/succès --}}
         @if ($successMessage)
-        <div class="alert alert-success rounded-pill alert-dismissible fade show">
-            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $successMessage }}</strong>
-            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
-                    class="fas fa-xmark"></i></button>
-        </div>
-    @endif
+            <div class="alert alert-success rounded-pill alert-dismissible fade show">
+                <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i>
+                    {{ $successMessage }}</strong>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                        class="fas fa-xmark"></i></button>
+            </div>
+        @endif
         @if ($errorMessage)
-        <div class="alert alert-danger rounded-pill alert-dismissible fade show">
-            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
-            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
-                    class="fas fa-xmark"></i></button>
-        </div>
-    @endif
+            <div class="alert alert-danger rounded-pill alert-dismissible fade show">
+                <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i>
+                    {{ $errorMessage }}</strong>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
+                        class="fas fa-xmark"></i></button>
+            </div>
+        @endif
         @if ($item)
             {{-- En-tête de l'item --}}
             <div class="card border-0 bg-light mb-4">
@@ -30,10 +32,22 @@
                                 {{ $item->CategorieDomaine?->Domaine?->nom_domaine ?? '—' }}
                             </div>
                         </div>
-                        <span
-                            class="badge bg-{{ $item->type === 'texte' ? 'primary' : ($item->type === 'file' ? 'info' : 'secondary') }} text-uppercase">
-                            {{ $item->type }}
-                        </span>
+                        <div class="">
+                            <span
+                                class="badge bg-{{ $item->type === 'texte' ? 'primary' : ($item->type === 'file' ? 'info' : 'secondary') }} text-uppercase">
+                                {{ $item->type }}
+                            </span>
+                            @if ($periode)
+                                <div class="mt-3 p-2 rounded-3 bg-success bg-opacity-10 border border-success-subtle">
+                                    <div class="small text-success">
+                                        <i class="ti ti-calendar-check me-1"></i>
+                                        Période valide du {{ $periode->debut_periode->format('d/m/Y') }}
+                                        au {{ $periode->fin_periode->format('d/m/Y') }}
+                                    </div>
+                                </div>
+                            @endif
+
+                        </div>
                     </div>
 
                     @if ($item->description)
@@ -45,15 +59,7 @@
                         </div>
                     @endif
 
-                    @if ($periode)
-                        <div class="mt-3 p-2 rounded-3 bg-success bg-opacity-10 border border-success-subtle">
-                            <div class="small text-success">
-                                <i class="ti ti-calendar-check me-1"></i>
-                                Période valide du {{ $periode->debut_periode->format('d/m/Y') }}
-                                au {{ $periode->fin_periode->format('d/m/Y') }}
-                            </div>
-                        </div>
-                    @endif
+
                 </div>
             </div>
 

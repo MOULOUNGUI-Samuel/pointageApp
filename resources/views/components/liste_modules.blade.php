@@ -253,8 +253,8 @@
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="generateTasksModalLabel">Générateur de tâches
                                         IA - OpenProject</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                    <button type="button" class="btn-close bg-white p-2 rounded"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
 
@@ -311,7 +311,6 @@
                             overflow: hidden;
                             pointer-events: none;
                         }
-
                     </style>
                     <div class="col-xl-6 my-5">
                         <div class="card">
@@ -445,7 +444,7 @@
                                     transition: all 0.5s ease;
                                 }
                             </style>
-                            
+
                         </div>
                     </div>
                     @include('components.consolider.fenetreConsolider')
