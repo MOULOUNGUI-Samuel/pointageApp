@@ -196,7 +196,7 @@ class SubmitWizard extends Component
         $this->showAiSuggestions    = false;
         $this->errorMessage         = '';
 
-        try {
+        // try {
             $service    = app(SubmissionIAService::class);
             $entreprise = auth()->user()->Entreprise;
 
@@ -212,15 +212,15 @@ class SubmitWizard extends Component
             } else {
                 $this->errorMessage = "Erreur lors de la génération des suggestions : " . ($result['error'] ?? 'Erreur inconnue');
             }
-        } catch (\Exception $e) {
-            Log::error('[SubmitWizard] Erreur suggestions IA', [
-                'trace_id' => $this->traceId,
-                'error'    => $e->getMessage(),
-            ]);
-            $this->errorMessage = "Impossible de générer les suggestions. Veuillez réessayer.";
-        } finally {
-            $this->loadingAiSuggestions = false;
-        }
+        // } catch (\Exception $e) {
+        //     Log::error('[SubmitWizard] Erreur suggestions IA', [
+        //         'trace_id' => $this->traceId,
+        //         'error'    => $e->getMessage(),
+        //     ]);
+        //     $this->errorMessage = "Impossible de générer les suggestions. Veuillez réessayer.";
+        // } finally {
+        //     $this->loadingAiSuggestions = false;
+        // }
     }
 
     /**
