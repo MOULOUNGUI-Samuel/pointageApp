@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Models\Item;
 use App\Models\PeriodeItem;
 use App\Models\ConformitySubmission;
+use App\Models\Domaine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -25,13 +26,15 @@ class ComplianceBoard extends Component
     public string $filterStatus = 'all'; // all|no_submission|soumis|approuvé|rejeté
     public string $filterPeriode = 'all'; // all|active|expired|no_period
     public ?string $filterCategorie = null;
+    public ?string $filterDomaine = null; // NOUVEAU : Filtre par domaine
 
     // Stats
     public array $stats = [];
+    public array $domaineStats = []; // NOUVEAU : Stats par domaine
 
     // Modals state
     public ?string $selectedItemForSubmit = null;
-    public ?string $selectedSubmissionForSubmit = null; // <-- AJOUTÉ
+    public ?string $selectedSubmissionForSubmit = null;
     public ?string $selectedSubmissionForReview = null;
     public ?string $selectedItemForHistory = null;
     public ?string $selectedItemForPeriode = null;
@@ -54,7 +57,6 @@ class ComplianceBoard extends Component
 
     public function mount(): void
     {
-
         $this->traceId = (string) Str::uuid();
 
         Log::info('[ComplianceBoard] mount()', [
@@ -65,6 +67,7 @@ class ComplianceBoard extends Component
         $this->logReqMeta('mount');
 
         $this->loadStats();
+        $this->loadDomaineStats(); // NOUVEAU : Charger les stats par domaine
     }
 
     public function loadStats(): void
@@ -93,11 +96,89 @@ class ComplianceBoard extends Component
         ];
     }
 
+    /**
+     * NOUVEAU : Charger les statistiques par domaine
+     */
+    public function loadDomaineStats(): void
+    {
+        $entrepriseId = session('entreprise_id');
+
+    // Récupérer les domaines de l'entreprise
+        /** @var \Illuminate\Support\Collection<string, object> $domaines */
+        $domaines = DB::table('entreprise_domaines')
+            ->where('entreprise_id', $entrepriseId)
+            ->where('entreprise_domaines.statut', '1')
+            ->join('domaines', 'domaines.id', '=', 'entreprise_domaines.domaine_id')
+            ->select('domaines.id', 'domaines.nom_domaine')
+            ->orderBy('domaines.nom_domaine')
+            ->get();
+
+        $this->domaineStats = [];
+
+        /** @var object{ id:string, nom_domaine:string, icone:?string } $domaine */
+        foreach ($domaines as $domaine) {
+
+            // Récupérer les items de ce domaine pour cette entreprise
+            $itemIds = DB::table('entreprise_items')
+                ->join('items', 'items.id', '=', 'entreprise_items.item_id')
+                ->join('categorie_domaines', 'categorie_domaines.id', '=', 'items.categorie_domaine_id')
+                ->where('entreprise_items.entreprise_id', $entrepriseId)
+                ->where('entreprise_items.statut', '1')
+                ->where('categorie_domaines.domaine_id', $domaine->id)
+                ->pluck('items.id');
+
+            if ($itemIds->isEmpty()) {
+                continue; // Ne pas afficher les domaines sans items
+            }
+
+            $totalItems = $itemIds->count();
+
+            // Compter les items valides (approuvés)
+            $valides = ConformitySubmission::whereIn('item_id', $itemIds)
+                ->where('entreprise_id', $entrepriseId)
+                ->where('status', 'approuvé')
+                ->whereIn('id', function ($query) use ($itemIds, $entrepriseId) {
+                    $query->select(DB::raw('MAX(id)'))
+                        ->from('conformity_submissions')
+                        ->whereIn('item_id', $itemIds)
+                        ->where('entreprise_id', $entrepriseId)
+                        ->groupBy('item_id');
+                })
+                ->count();
+
+            // Items non valides (rejetés / en attente / jamais soumis)
+            $nonValides = $totalItems - $valides;
+
+            $this->domaineStats[] = [
+                'id'          => $domaine->id,
+                'nom'         => $domaine->nom_domaine,
+                // 'icone'       => $domaine->icone ?? 'ti-folder',
+                'total'       => $totalItems,
+                'valides'     => $valides,
+                'non_valides' => $nonValides,
+            ];
+        }
+    }
+
+    /**
+     * NOUVEAU : Sélectionner un domaine (filtre)
+     */
+    public function selectDomaine(?string $domaineId): void
+    {
+        $this->filterDomaine = $domaineId;
+        $this->resetPage();
+
+        Log::info('[ComplianceBoard] Domaine sélectionné', [
+            'trace_id' => $this->traceId,
+            'domaine_id' => $domaineId,
+        ]);
+    }
+
     // Quand la recherche change
     public function updatingSearch(): void
     {
         $this->resetPage();
-        $this->loadStats(); // si tu veux que les stats reflètent les filtres
+        $this->loadStats();
     }
 
     // Quand le statut de soumission change
@@ -121,12 +202,18 @@ class ComplianceBoard extends Component
         $this->loadStats();
     }
 
+    // NOUVEAU : Quand le domaine change
+    public function updatingFilterDomaine(): void
+    {
+        $this->resetPage();
+        $this->loadStats();
+    }
 
     /** Ouvrir modal de soumission (création OU modification) */
     public function openSubmitModal(string $itemId, ?string $submissionId = null): void
     {
         $this->selectedItemForSubmit      = $itemId;
-        $this->selectedSubmissionForSubmit = $submissionId; // <-- mémorise l’ID de la soumission à modifier
+        $this->selectedSubmissionForSubmit = $submissionId;
 
         Log::info('[ComplianceBoard] openSubmitModal()', [
             'trace_id'      => $this->traceId,
@@ -134,7 +221,6 @@ class ComplianceBoard extends Component
             'submission_id' => $submissionId,
         ]);
 
-        // Demande au front d’ouvrir la modale
         $this->dispatch('open-submit-modal', itemId: $itemId, submissionId: $submissionId);
     }
 
@@ -148,7 +234,6 @@ class ComplianceBoard extends Component
             'submission_id' => $submissionId,
         ]);
 
-        // on laisse Bootstrap ouvrir via data-bs-*, ET on force l’ouverture au cas où :
         $this->dispatch('open-review-modal', submissionId: $submissionId);
     }
 
@@ -158,6 +243,7 @@ class ComplianceBoard extends Component
         $this->selectedItemForHistory = $itemId;
         $this->dispatch('open-history-modal', itemId: $itemId);
     }
+
     /** Ouvrir modal d'periode */
     public function openPeriodeModal(string $itemId): void
     {
@@ -179,9 +265,9 @@ class ComplianceBoard extends Component
         ]);
 
         $this->loadStats();
+        $this->loadDomaineStats(); // NOUVEAU : Recharger les stats des domaines
         $this->resetPage();
 
-        // Forcer le rafraîchissement de la vue
         $this->dispatch('$refresh');
     }
 
@@ -198,8 +284,8 @@ class ComplianceBoard extends Component
         $query = Item::query()
             ->whereIn('id', $itemIds)
             ->with([
-                'CategorieDomaine:id,nom_categorie',
-                // lastPeriode (tous statuts) pour affichage d’état
+                'CategorieDomaine:id,nom_categorie,domaine_id',
+                'CategorieDomaine.Domaine:id,nom_domaine', // AJOUT : Charger le domaine
                 'periodes' => fn($q) => $q->where('entreprise_id', session('entreprise_id')),
             ])
             ->withCount([
@@ -211,11 +297,19 @@ class ComplianceBoard extends Component
                 $q->where('entreprise_id', session('entreprise_id'))->latest('submitted_at')
             ]);
 
-
         if ($this->search !== '') {
             $s = trim($this->search);
             $query->where(fn($q) => $q->where('nom_item', 'like', "%{$s}%")
                 ->orWhere('description', 'like', "%{$s}%"));
+        }
+
+        // NOUVEAU : Filtre par domaine
+        if ($this->filterDomaine) {
+            $query->whereHas(
+                'CategorieDomaine',
+                fn($q) =>
+                $q->where('domaine_id', $this->filterDomaine)
+            );
         }
 
         if ($this->filterCategorie) {
@@ -280,7 +374,6 @@ class ComplianceBoard extends Component
                 'categorie_domaines.id',
                 'categorie_domaines.nom_categorie',
             ]);
-
 
         return view('livewire.settings.compliance-board', compact('items', 'categories'));
     }

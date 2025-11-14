@@ -70,6 +70,12 @@
                     <i class="ti ti-dashboard fs-22  me-2"></i>Tableau de Bord
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-content" type="button"
+                    role="tab">
+                    <i class="ti ti-chart-pie me-2"></i>Statistiques & Analyses
+                </button>
+            </li>
 
             @if (auth()->user()->role?->SuperAdmin)
                 <li class="nav-item" role="presentation">
@@ -114,7 +120,10 @@
                     </div>
                 </div>
             @endif
-
+            {{-- ==================== Onglet Statistiques ==================== --}}
+            <div class="tab-pane fade" id="stats-content" role="tabpanel">
+                @livewire('settings.compliance-statistics')
+            </div>
             {{-- Onglet Soumissions en Attente (Validateurs) --}}
             @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
                 <div class="tab-pane fade" id="pending" role="tabpanel">
@@ -168,7 +177,7 @@
                                                     class="btn btn-sm btn-primary">
                                                     <i class="ti ti-eye me-1"></i>Examiner
                                                 </a>
-                                                
+
                                                 {{-- Vue IA --}}
                                                 <a href="{{ route('conformite.reviewIA', ['submission' => $sub]) }}"
                                                     class="btn btn-sm btn-info">
