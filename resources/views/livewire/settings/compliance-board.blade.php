@@ -475,7 +475,7 @@
                                                 </button>
                                             @endif
 
-                                            @if (auth()->user()->role?->SuperAdmin)
+                                            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
                                                 <button class="btn btn-sm btn-outline-secondary"
                                                     data-bs-toggle="modal" data-bs-target="#periodesModal"
                                                     wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
@@ -500,7 +500,7 @@
                                                 @endif
                                             </button>
 
-                                            @if (auth()->user()->role?->SuperAdmin)
+                                            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
                                                 <button class="btn btn-sm btn-outline-secondary"
                                                     data-bs-toggle="modal" data-bs-target="#periodesModal"
                                                     wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">

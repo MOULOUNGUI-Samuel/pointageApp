@@ -13,7 +13,16 @@
                     <div>
                         <h2 class="mb-1">
                             <i class="bi bi-clipboard-check fs-22  me-2"></i>
-                            Gestion de la Conformité : {{ auth()->user()->role->nom }}
+                            Gestion de la Conformité : 
+                            <i>
+                                @if (auth()->user()->role?->nom=='SuperAdmin')
+                                    Super Admin
+                                @elseif (auth()->user()->role?->nom=='ValideAudit')
+                                    Auditeur 
+                                @else
+                                    Utilisateur opérationnel 
+                                @endif
+                            </i>
                         </h2>
                         <p class="text-muted mb-0">
                             Gérez vos déclarations de conformité et leur validation
@@ -21,7 +30,7 @@
                     </div>
 
                     {{-- Actions rapides (Super Admin uniquement) --}}
-                    @if (auth()->user()->role?->SuperAdmin)
+                    @if (auth()->user()->role?->SuperAdmin || auth()->user()->role?->nom=='ValideAudit')
                         <div class="btn-group">
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                                 <i class="ti ti-settings fs-22  me-2"></i>Gérer les Items
@@ -70,21 +79,6 @@
                     <i class="ti ti-dashboard fs-22  me-2"></i>Tableau de Bord
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-content" type="button"
-                    role="tab">
-                    <i class="ti ti-chart-pie me-2"></i>Statistiques & Analyses
-                </button>
-            </li>
-
-            @if (auth()->user()->role?->SuperAdmin)
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button">
-                        <i class="ti ti-adjustments fs-22  me-2"></i>Configuration
-                    </button>
-                </li>
-            @endif
-
             @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button">
@@ -94,6 +88,22 @@
                     </button>
                 </li>
             @endif
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-content" type="button"
+                    role="tab">
+                    <i class="ti ti-chart-pie me-2"></i>Statistiques & Analyses
+                </button>
+            </li>
+
+            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button">
+                        <i class="ti ti-adjustments fs-22  me-2"></i>Configuration
+                    </button>
+                </li>
+            @endif
+
+            
         </ul>
 
         {{-- Contenu des onglets --}}
@@ -104,7 +114,7 @@
             </div>
 
             {{-- Onglet Configuration (Super Admin) --}}
-            @if (auth()->user()->role?->SuperAdmin)
+            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
                 <div class="tab-pane fade" id="config" role="tabpanel">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
@@ -206,7 +216,7 @@
     </div>
 
     {{-- Modales --}}
-    @if (auth()->user()->role?->SuperAdmin)
+    @if (auth()->user()->role?->SuperAdmin || auth()->user()->role?->nom === 'ValideAudit')
         {{-- Modale de gestion des items --}}
         <livewire:settings.items-manager />
         {{-- Modale wizard de configuration --}}
