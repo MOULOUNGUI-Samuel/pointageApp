@@ -3,20 +3,7 @@
     @php use Illuminate\Support\Facades\Storage; @endphp
 
     {{-- Flash succès --}}
-    @if ($successMessage)
-        <div class="alert alert-success rounded-pill alert-dismissible fade show">
-            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $successMessage }}</strong>
-            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
-                    class="fas fa-xmark"></i></button>
-        </div>
-    @endif
-    @if ($errorMessage)
-        <div class="alert alert-danger rounded-pill alert-dismissible fade show">
-            <strong class="me-5"><i class="fas fa-exclamation-triangle-fill me-2"></i> {{ $errorMessage }}</strong>
-            <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"><i
-                    class="fas fa-xmark"></i></button>
-        </div>
-    @endif
+    
 
     {{-- ÉTAT : en attente d’un submissionId (au premier affichage avant l’event) --}}
     @if (empty($submission))

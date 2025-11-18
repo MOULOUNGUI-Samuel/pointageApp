@@ -156,7 +156,8 @@
                                                 {{-- Items non valides --}}
                                                 <div class="flex-fill text-center ">
                                                     <div class="fw-bold text-danger p-2 rounded-circle bg-danger bg-opacity-10 border border-danger"
-                                                        width="50" height="50"><span  style="color: red">{{ $domaine['non_valides'] }}</span>
+                                                        width="50" height="50"><span
+                                                            style="color: red">{{ $domaine['non_valides'] }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -238,27 +239,23 @@
                         </select>
                     </div>
                     <div class="col-md-1">
-                        <button type="button"
-                        class="btn btn-outline-primary me-3"
-                        wire:click="refresh"
-                        wire:loading.attr="disabled"
-                        wire:target="refresh"
-                        style="margin-top: -30px">
-                
-                    <!-- Affichage normal -->
-                    <span wire:loading.remove wire:target="refresh">
-                        <i class="ti ti-search me-1"></i>
-                        Rech...
-                    </span>
-                
-                    <!-- Affichage pendant le chargement -->
-                    <span wire:loading wire:target="refresh">
-                        <span class="spinner-border spinner-border-sm me-1"></span>
-                        Char…
-                    </span>
-                
-                </button>
-                
+                        <button type="button" class="btn btn-outline-primary me-3" wire:click="refresh"
+                            wire:loading.attr="disabled" wire:target="refresh" style="margin-top: -30px">
+
+                            <!-- Affichage normal -->
+                            <span wire:loading.remove wire:target="refresh">
+                                <i class="ti ti-search me-1"></i>
+                                Rech...
+                            </span>
+
+                            <!-- Affichage pendant le chargement -->
+                            <span wire:loading wire:target="refresh">
+                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                Char…
+                            </span>
+
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -291,7 +288,7 @@
                             break;
                     }
 
-                $fmt = fn($d) => \Illuminate\Support\Carbon::parse($d)->format('d/m/Y');
+                    $fmt = fn($d) => \Illuminate\Support\Carbon::parse($d)->format('d/m/Y');
                 @endphp
                 @php
                     if ($lastSub) {
@@ -329,7 +326,8 @@
                                                 {{ $item->CategorieDomaine?->nom_categorie ?? '—' }}
                                             </div>
                                         </div>
-                                        <span class="btn btn-sm btn-outline-{{ $typeColor }} text-{{ $typeColor }}"
+                                        <span
+                                            class="btn btn-sm btn-outline-{{ $typeColor }} text-{{ $typeColor }}"
                                             style="font-size: 15px">
                                             {{ ucfirst($item->type) }}
                                         </span>
@@ -442,37 +440,39 @@
                                     {{-- Actions (même logique, juste regroupées verticalement) --}}
                                     <div class="d-flex flex-wrap justify-content-end gap-2 w-100">
                                         @if ($state === 'active')
-                                            @if ($lastSub && $lastSub->status === 'soumis')
-                                                <button class="btn btn-sm btn-warning flex-fill"
-                                                    data-bs-toggle="modal" data-bs-target="#submitModal"
-                                                    wire:click="openSubmitModal('{{ $item->id }}', '{{ $lastSub->id }}')">
-                                                    <i class="ti ti-edit me-1"></i>Modifier
-                                                </button>
+                                            @if (auth()->user()->role?->nom !== 'ValideAudit' && auth()->user()->role?->nom !== 'SuperAdmin')
+                                                @if ($lastSub && $lastSub->status === 'soumis')
+                                                    <button class="btn btn-sm btn-warning flex-fill"
+                                                        data-bs-toggle="modal" data-bs-target="#submitModal"
+                                                        wire:click="openSubmitModal('{{ $item->id }}', '{{ $lastSub->id }}')">
+                                                        <i class="ti ti-edit me-1"></i>Modifier
+                                                    </button>
 
-                                                <button class="btn btn-sm btn-outline-secondary"
-                                                    wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}', submissionId: '{{ $lastSub->id }}' })">
-                                                    <i class="ti ti-sparkles me-1"></i>Modifier IA
-                                                </button>
-                                            @elseif ($lastSub && $lastSub->status === 'rejeté')
-                                                <button class="btn btn-sm btn-primary flex-fill"
-                                                    data-bs-toggle="modal" data-bs-target="#submitModal"
-                                                    wire:click="openSubmitModal('{{ $item->id }}')">
-                                                    <i class="ti ti-refresh me-1"></i>Resoumettre
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-secondary"
-                                                    wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
-                                                    <i class="ti ti-sparkles me-1"></i>Resoumettre IA
-                                                </button>
-                                            @else
-                                                <button class="btn btn-sm btn-primary flex-fill"
-                                                    data-bs-toggle="modal" data-bs-target="#submitModal"
-                                                    wire:click="openSubmitModal('{{ $item->id }}')">
-                                                    <i class="ti ti-send me-1"></i>Soumettre
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-secondary"
-                                                    wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
-                                                    <i class="ti ti-sparkles me-1"></i>Soumettre IA
-                                                </button>
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                        wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}', submissionId: '{{ $lastSub->id }}' })">
+                                                        <i class="ti ti-sparkles me-1"></i>Modifier IA
+                                                    </button>
+                                                @elseif ($lastSub && $lastSub->status === 'rejeté')
+                                                    <button class="btn btn-sm btn-primary flex-fill"
+                                                        data-bs-toggle="modal" data-bs-target="#submitModal"
+                                                        wire:click="openSubmitModal('{{ $item->id }}')">
+                                                        <i class="ti ti-refresh me-1"></i>Resoumettre
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                        wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
+                                                        <i class="ti ti-sparkles me-1"></i>Resoumettre IA
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-sm btn-primary flex-fill"
+                                                        data-bs-toggle="modal" data-bs-target="#submitModal"
+                                                        wire:click="openSubmitModal('{{ $item->id }}')">
+                                                        <i class="ti ti-send me-1"></i>Soumettre
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                        wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}' })">
+                                                        <i class="ti ti-sparkles me-1"></i>Soumettre IA
+                                                    </button>
+                                                @endif
                                             @endif
 
                                             @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
