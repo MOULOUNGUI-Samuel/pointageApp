@@ -15,6 +15,8 @@ use Livewire\WithFileUploads;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\On;
 use Smalot\PdfParser\Parser; // ⬅️ ajouter
+use Illuminate\Validation\ValidationException;
+use App\Services\EmailConformiteService;
 
 class SubmitWizard extends Component
 {
@@ -50,7 +52,12 @@ class SubmitWizard extends Component
     public ?Item                $item       = null;
     public ?PeriodeItem         $periode    = null;
     public ?ConformitySubmission $submission = null;
-
+    // Services
+    protected EmailConformiteService $emailService;
+    public function boot(EmailConformiteService $emailService): void
+    {
+        $this->emailService = $emailService;
+    }
     protected $listeners = [
         'open-submit-modal2' => 'initializeForSubmit',
     ];
@@ -211,7 +218,7 @@ class SubmitWizard extends Component
                 $this->showAiSuggestions = true;
                 $this->dispatch('notify', type: 'success', message: 'Demande des suggestions généré avec succès par IA');
             } else {
-                $this->dispatch('notify', type: 'error', message:"Erreur lors de la génération des suggestions : " . $result['error']);
+                $this->dispatch('notify', type: 'error', message: "Erreur lors de la génération des suggestions : " . $result['error']);
                 $this->errorMessage = "Erreur lors de la génération des suggestions : " . ($result['error'] ?? 'Erreur inconnue');
             }
         } catch (\Exception $e) {
@@ -291,7 +298,7 @@ class SubmitWizard extends Component
     private function prepareSubmissionData(): array
     {
         $type = $this->item->type;
-        
+
         if ($type === 'texte') {
             return ['texte' => $this->textValue];
         } elseif ($type === 'liste' || $type === 'checkbox') {
@@ -303,9 +310,9 @@ class SubmitWizard extends Component
                 $mimeType  = $file->getMimeType();
                 $fileSize  = $file->getSize();
                 $extension = strtolower($file->getClientOriginalExtension());
-                
+
                 $content = $this->extractFileText($file);
-                
+
                 return [
                     'fichier' => [
                         'nom'                => $fileName,
@@ -317,7 +324,7 @@ class SubmitWizard extends Component
                     ],
                 ];
             }
-            
+
             return [
                 'fichier' => [
                     'nom'                => null,
@@ -326,10 +333,9 @@ class SubmitWizard extends Component
                     'message'            => 'Aucun fichier uploadé',
                 ],
             ];
-            
         }
         $this->dispatch('notify', type: 'success', message: "Données de soumission analysées");
-        
+
         return [];
     }
 
@@ -393,26 +399,31 @@ class SubmitWizard extends Component
                 $this->isEditing    = true;
                 $action             = 'créée';
             }
-            
+
             // Réponses
             $this->createAnswers($submission);
-            
+
             DB::commit();
-            
+
             Log::info('[SubmitWizard] Soumission enregistrée', [
                 'trace_id'      => $this->traceId,
                 'submission_id' => $submission->id,
                 'action'        => $action,
             ]);
-            
+            // 📧 Envoyer l'email aux validateurs
+            try {
+                $this->emailService->envoyerEmailNewSubmission($submission);
+            } catch (\Exception $e) {
+                Log::error('Erreur envoi email nouvelle soumission', ['error' => $e->getMessage()]);
+            }
+
             // Event pour rafraîchir le board parent
             $this->dispatch('settings-submitted', id: $submission->id);
             $this->dispatch('wizard-config-reload');
-            
+
             $this->dispatch('notify', type: 'success', message: "Soumission {$action} avec succès !");
             // Fermer la modale côté JS (Bootstrap)
             $this->dispatch('close-submit-modal2');
-            
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -445,7 +456,7 @@ class SubmitWizard extends Component
             if ($this->uploadedFile) {
                 $path    = $this->uploadedFile->store('conformity-documents', 'public');
                 $content = $this->extractFileText($this->uploadedFile);
-        
+
                 ConformityAnswer::create([
                     'submission_id'  => $submission->id,
                     'kind'           => 'documents',
@@ -503,7 +514,7 @@ class SubmitWizard extends Component
 
     public function render()
     {
-       
+
         return view('livewire.settings.submit-wizard',);
     }
 }

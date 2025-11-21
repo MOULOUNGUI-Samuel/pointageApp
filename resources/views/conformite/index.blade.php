@@ -20,7 +20,7 @@
                                 @elseif (auth()->user()->role?->nom=='ValideAudit')
                                     Auditeur 
                                 @else
-                                    Utilisateur opérationnel 
+                                    Utilisateur opérationnel [ {{auth()->user()->role->nom}} ]
                                 @endif
                             </i>
                         </h2>

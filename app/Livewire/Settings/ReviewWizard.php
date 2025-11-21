@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Services\EmailConformiteService;
+use Carbon\Carbon;
 
 class ReviewWizard extends Component
 {
@@ -34,6 +36,14 @@ class ReviewWizard extends Component
     // États UI
     public string $errorMessage   = '';
     public string $successMessage = '';
+
+    // Services
+    protected EmailConformiteService $emailService;
+
+    public function boot(EmailConformiteService $emailService): void
+    {
+        $this->emailService = $emailService;
+    }
 
     // Validation
     protected $rules = [
@@ -220,6 +230,13 @@ class ReviewWizard extends Component
                 }
             });
 
+            // 3) 📧 Envoyer l'email de validation
+            try {
+                $this->emailService->envoyerEmailSubmissionApproved($s);
+            } catch (\Exception $e) {
+                Log::error('Erreur envoi email approbation', ['error' => $e->getMessage()]);
+            }
+
             $this->dispatch('notify', type: 'success', message: 'Déclaration approuvée et période désactivée.');
             Log::info('[ReviewWizard] Soumission approuvée', [
                 'trace_id'      => $this->traceId,
@@ -277,6 +294,43 @@ class ReviewWizard extends Component
                 'trace_id'      => $this->traceId,
                 'submission_id' => $this->submissionId,
             ]);
+            $s = ConformitySubmission::findOrFail($this->submissionId);
+            // 2) Réouvrir automatiquement une nouvelle période (7 jours)
+            $nouvellePeriode = null;
+
+            if ($s->periode_item_id) {
+                $anciennePeriode = PeriodeItem::find($s->periode_item_id);
+
+                if ($anciennePeriode) {
+                    // Désactiver l'ancienne période
+                    $anciennePeriode->update([
+                        'statut'         => '0',
+                        'user_update_id' => Auth::id(),
+                    ]);
+
+                    // Créer une nouvelle période de correction (7 jours)
+                    $nouvellePeriode = PeriodeItem::create([
+                        'item_id'        => $anciennePeriode->item_id,
+                        'entreprise_id'  => $anciennePeriode->entreprise_id,
+                        'debut_periode'  => Carbon::now(),
+                        'fin_periode'    => $anciennePeriode->fin_periode->addDays(7), // 7 jours pour corriger
+                        'statut'         => '1',
+                        'user_add_id'    => Auth::id(),
+                    ]);
+                }
+            }
+
+            // 3) 📧 Envoyer l'email de refus
+            try {
+                $this->emailService->envoyerEmailSubmissionRejected($s);
+
+                // Envoyer aussi un email pour la nouvelle période si créée
+                if ($nouvellePeriode) {
+                    $this->emailService->envoyerEmailPeriodeCreated($nouvellePeriode);
+                }
+            } catch (\Exception $e) {
+                Log::error('Erreur envoi email rejet', ['error' => $e->getMessage()]);
+            }
 
             // 🔁 Rafraîchir les données locales + UI
             $this->loadSubmission();

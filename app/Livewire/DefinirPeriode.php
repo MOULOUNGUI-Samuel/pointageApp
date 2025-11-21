@@ -10,6 +10,8 @@ use App\Models\PeriodeItem;
 use App\Services\PeriodeIAService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Services\EmailConformiteService;
+use Illuminate\Support\Str;
 
 class DefinirPeriode extends Component
 {
@@ -32,10 +34,17 @@ class DefinirPeriode extends Component
     /** Index de la suggestion sélectionnée */
     public ?int $suggestion_selectionnee = null;
 
+      // Service
+    private EmailConformiteService $emailService;
+
     /** Messages d’état */
     public string $errorMessage = '';
     public string $successMessage = '';
 
+     public function boot(EmailConformiteService $emailService): void
+    {
+        $this->emailService = $emailService;
+    }
     public function mount(): void
     {
         $this->entreprise_id = (string) session('entreprise_id');
@@ -189,6 +198,14 @@ class DefinirPeriode extends Component
             );
 
             DB::commit();
+
+            // 📧 Email de nouvelle période
+          
+                try {
+                    $this->emailService->envoyerEmailPeriodeCreated($periode);
+                } catch (\Exception $e) {
+                    Log::error('Erreur envoi email période créée', ['error' => $e->getMessage()]);
+                }
 
             $this->successMessage = sprintf(
                 'Période créée avec succès ! Du %s au %s (%s)',

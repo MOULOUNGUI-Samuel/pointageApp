@@ -185,7 +185,7 @@
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="small"><span class="badge bg-secondary"></span> Non Évalués</span>
-                                    <strong>{{ $globalStats['non_evalues'] }}</strong>
+                                    <strong>{{ $globalStats['non_evalues'] ?? 0 }}</strong>
                                 </div>
                             </div>
                         </div>

@@ -89,7 +89,7 @@
                         aria-controls="offcanvasWithBackdrop1" @endif>{{ $entreprise_nom }}</button>
                     </li>
                     <li class="nav-item flex-fill is-hidden d-flex text-center gap-5" id="blocApres" role="presentation"
-                        aria-hidden="true" style="margin-left: 70px">
+                        aria-hidden="true">
                         @foreach ($lesEntreprises['entreprise'] as $index => $entreprise)
                             @if ($entreprise->code_entreprise !== 'YOD')
                                 <button
@@ -126,7 +126,7 @@
                         @php $unread = auth()->user()?->unreadNotifications()->count() ?? 0; @endphp
 
                         <a href="{{ route('notifications.index') }}" class="btn btn-sm position-relative">
-                            Notifications
+                            <i class="ti ti-bell"></i>
                             <span id="notifBadge"
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $unread ? '' : 'd-none' }}">
                                 {{ $unread }}
@@ -138,21 +138,13 @@
 
                         {{-- bouton d’abonnement push (si tu veux le garder) --}}
                         @auth
-                            <button class="btn btn-primary btn-sm ms-2" onclick="enablePush()">Activer les
-                                notifications</button>
+                            <button class="btn btn-primary btn-sm ms-2" onclick="enablePush()">Activer <i class="ti ti-bell"></i></button>
                         @endauth
 
                     </li>
                     <!-- Nav List -->
                     <li class="nav-item nav-list">
                         <ul class="nav">
-                            <li>
-                                <div>
-                                    <a href="#" class="btn btn-icon border btn-menubar btnFullscreen">
-                                        <i class="ti ti-maximize"></i>
-                                    </a>
-                                </div>
-                            </li>
                             <li class="dark-mode-list">
                                 <a href="javascript:void(0);" id="dark-mode-toggle" class="dark-mode-toggle">
                                     <i class="ti ti-sun light-mode active"></i>

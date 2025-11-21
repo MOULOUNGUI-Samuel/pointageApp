@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\ValidationException;
+use App\Services\EmailConformiteService;
+use Illuminate\Support\Facades\Log;
 
 class SubmitForm extends Component
 {
@@ -45,7 +47,12 @@ class SubmitForm extends Component
 
     /** @var array<int, string>  chemins des pièces déjà stockées */
     public array $existingDocs = [];
-
+    // Services
+    protected EmailConformiteService $emailService;
+    public function boot(EmailConformiteService $emailService): void
+    {
+        $this->emailService = $emailService;
+    }
     public function mount(string $itemId, ?string $submissionId = null): void
     {
         $this->entrepriseId = (string) session('entreprise_id');
@@ -228,7 +235,7 @@ class SubmitForm extends Component
             $value  = $this->checkbox_value;
             $label  = $this->options
                 ->first(fn($o) => ($o->value ?: $o->label) === $value)?->label;
-        
+
             ConformityAnswer::create([
                 'submission_id' => $submission->id,
                 'kind'          => 'checkbox', // on garde 'checkbox' comme type logique
@@ -240,6 +247,12 @@ class SubmitForm extends Component
                 'position'      => 1,
             ]);
         }
+        // 📧 Envoyer l'email aux validateurs
+        try {
+            $this->emailService->envoyerEmailNewSubmission($submission);
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi email nouvelle soumission', ['error' => $e->getMessage()]);
+        }
 
         $this->dispatch('notify', type: 'success', message: 'Déclaration envoyée pour validation.');
         $this->dispatch('settings-submitted', id: $submission->id);
@@ -247,7 +260,6 @@ class SubmitForm extends Component
 
         // reset cohérent (plus de list_value)
         $this->reset(['text_value', 'docs', 'list_values', 'checkbox_value']);
-
     }
 
     private function persistUpdate(): void
@@ -282,7 +294,7 @@ class SubmitForm extends Component
             $value  = $this->checkbox_value;
             $label  = $this->options
                 ->first(fn($o) => ($o->value ?: $o->label) === $value)?->label;
-        
+
             $a = $s->answers()->firstOrCreate(['kind' => 'checkbox'], ['position' => 1]);
             $a->update([
                 'value_json' => [
@@ -290,7 +302,7 @@ class SubmitForm extends Component
                     'label'    => $label,
                 ],
             ]);
-        }elseif ($this->type === 'file') {
+        } elseif ($this->type === 'file') {
             if (!empty($this->docs)) {
                 // supprimer les anciens documents
                 foreach ($s->answers()->where('kind', 'documents')->get() as $old) {

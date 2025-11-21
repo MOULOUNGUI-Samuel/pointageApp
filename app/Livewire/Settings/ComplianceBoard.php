@@ -43,26 +43,26 @@ class ComplianceBoard extends Component
     {
         if (! app()->environment('local')) return;
 
-        Log::debug("[ComplianceBoard] req meta ({$phase})", [
-            'trace_id'   => $this->traceId,
-            'full_url'   => request()->fullUrl(),
-            'uri'        => request()->path(),
-            'referer'    => request()->headers->get('referer'),
-            'user_agent' => request()->userAgent(),
-            'x-livewire' => request()->headers->get('x-livewire'),
-            'hx-request' => request()->headers->get('hx-request'),
-            'turbo'      => request()->headers->get('turbo-visit'),
-        ]);
+        // Log::debug("[ComplianceBoard] req meta ({$phase})", [
+        //     'trace_id'   => $this->traceId,
+        //     'full_url'   => request()->fullUrl(),
+        //     'uri'        => request()->path(),
+        //     'referer'    => request()->headers->get('referer'),
+        //     'user_agent' => request()->userAgent(),
+        //     'x-livewire' => request()->headers->get('x-livewire'),
+        //     'hx-request' => request()->headers->get('hx-request'),
+        //     'turbo'      => request()->headers->get('turbo-visit'),
+        // ]);
     }
 
     public function mount(): void
     {
         $this->traceId = (string) Str::uuid();
 
-        Log::info('[ComplianceBoard] mount()', [
-            'trace_id'      => $this->traceId,
-            'entreprise_id' => session('entreprise_id') ?: null,
-        ]);
+        // Log::info('[ComplianceBoard] mount()', [
+        //     'trace_id'      => $this->traceId,
+        //     'entreprise_id' => session('entreprise_id') ?: null,
+        // ]);
 
         $this->logReqMeta('mount');
 
