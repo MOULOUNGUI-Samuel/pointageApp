@@ -474,7 +474,7 @@
                                 <h4 class="mb-0">MODULES NEDCORE</h4>
                             </div>
                         </div>
-                        @include('components.modules_nedcore.mdodules')
+                        @include('components.modules_nedcore.mdodules', compact('soumissionsSoumises'))
                     </div>
 
                 </div>

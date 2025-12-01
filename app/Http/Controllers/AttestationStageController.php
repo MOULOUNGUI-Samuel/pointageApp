@@ -596,21 +596,23 @@ class PdfAttestationStage extends \FPDF
         $this->Line(16, $this->GetY(), 194, $this->GetY());
         $this->SetLineWidth(0.2);
 
-        // Cartouche Réf/Date (en haut à droite)
-        $this->SetXY(120, 18);
-        $this->SetFillColor(245, 247, 251);
-        $this->SetDrawColor(220, 225, 230);
-        $this->RoundedRect(120, 18, 74, 16, 2, 'DF');
+        // Cartouche Réf/Date (en haut à droite) - UNIQUEMENT SUR LA PREMIÈRE PAGE
+        if ($this->PageNo() == 1) {
+            $this->SetXY(120, 3);
+            $this->SetFillColor(245, 247, 251);
+            $this->SetDrawColor(220, 225, 230);
+            $this->RoundedRect(130, 2, 74, 16, 2, 'DF');
 
-        $this->SetXY(124, 20);
-        $this->h(9, true);
-        $this->SetTextColor(68, 68, 68);
-        $ref  = $this->meta['reference'] ?? 'ATT-STAGE-[NUMÉRO]';
-        $date = $this->meta['dateEmission'] ?? '[JJ/MM/AAAA]';
-        $this->Cell(70, 5, $this->t('Référence : ' . $ref), 0, 2, 'L');
+            $this->SetXY(134, 5);
+            $this->h(9, true);
+            $this->SetTextColor(68, 68, 68);
+            $ref  = $this->meta['reference'] ?? 'ATT-STAGE-[NUMÉRO]';
+            $date = $this->meta['dateEmission'] ?? '[JJ/MM/AAAA]';
+            $this->Cell(70, 5, $this->t('Réf : ' . $ref), 0, 2, 'L');
 
-        $this->h(9);
-        $this->Cell(70, 5, $this->t('Date d’émission : ' . $date), 0, 1, 'L');
+            $this->h(9);
+            $this->Cell(70, 5, $this->t('Date d\'émission : ' . $date), 0, 1, 'L');
+        }
 
         $this->Ln(2);
     }
@@ -651,7 +653,7 @@ class PdfAttestationStage extends \FPDF
         $this->SetXY($x + 8, $y + 7);
         $this->h(11, true);
         $this->SetTextColor(40, 53, 147);
-        $this->Cell(0, 6, $this->t("ENTREPRISE D’ACCUEIL"), 0, 1, 'L');
+        $this->Cell(0, 6, $this->t("ENTREPRISE D\'ACCUEIL"), 0, 1, 'L');
 
         $this->SetTextColor(70, 70, 70);
         $this->h(9);
@@ -659,7 +661,7 @@ class PdfAttestationStage extends \FPDF
         $valW = $w - 8 - $labelW - 8; // padding 8
 
         $pairs = [
-            ['Raison sociale :', $this->entreprise['nom'] ?? '[NOM DE L’ENTREPRISE]'],
+            ['Raison sociale :', $this->entreprise['nom'] ?? '[NOM DE L\'ENTREPRISE]'],
             ['Adresse :',        $this->entreprise['adresse'] ?? '[ADRESSE COMPLÈTE]'],
             ['Ville :',          ($this->entreprise['ville'] ?? '[VILLE]') . ', Gabon'],
             ['Téléphone :',      $this->entreprise['tel'] ?? '[TÉLÉPHONE]'],
@@ -683,7 +685,7 @@ class PdfAttestationStage extends \FPDF
         $this->h(9);
         $rep  = $this->entreprise['representant'] ?? '[Nom et Prénom du représentant]';
         $fonc = $this->entreprise['fonction'] ?? '[Fonction]';
-        $nomE = $this->entreprise['nom'] ?? '[NOM DE L’ENTREPRISE]';
+        $nomE = $this->entreprise['nom'] ?? '[NOM DE L\'ENTREPRISE]';
         $this->MultiCell($w, 5, $this->t("Je soussigné(e), {$rep}, {$fonc}, représentant(e) légal(e) de {$nomE},"), 0, 'L');
 
         $this->Ln(2);
@@ -729,8 +731,8 @@ class PdfAttestationStage extends \FPDF
         ];
         $right = [
             ["Établissement :", $this->stagiaire['etab'] ?? '[NOM ÉCOLE/UNIVERSITÉ]'],
-            ["Niveau :",        $this->stagiaire['niveau'] ?? '[NIVEAU D’ÉTUDES]'],
-            ["Service d’affectation :", $this->stagiaire['service'] ?? '[SERVICE/DÉPARTEMENT]'],
+            ["Niveau :",        $this->stagiaire['niveau'] ?? '[NIVEAU D\'ÉTUDES]'],
+            ["Service d\'affectation :", $this->stagiaire['service'] ?? '[SERVICE/DÉPARTEMENT]'],
         ];
 
         $yy = $y + 20;
@@ -798,7 +800,7 @@ class PdfAttestationStage extends \FPDF
             ["Mois concerné", $this->versement['mois'] ?? '[MOIS ANNÉE]'],
             ["Nombre de jours de présence", trim(($this->versement['jours'] ?? '[XX]') . ' jours')],
             ["Allocation mensuelle de stage", trim(($this->versement['allocation'] ?? '[MONTANT]') . ' F CFA   NET')],
-            ["Indemnité de transport (le cas échéant)", trim(($this->versement['transport'] ?? '[MONTANT ou "-"]') . ($this->versement['transport'] !== '-' ? ' F CFA' : ''))],
+            ["Indemnité de transport (le cas échéant)", trim(($this->versement['transport'] ?? '[MONTANT ou \"-\"]') . ($this->versement['transport'] !== '-' ? ' F CFA' : ''))],
             ["Autres avantages (le cas échéant)", $autres],
         ];
 

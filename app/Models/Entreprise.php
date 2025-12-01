@@ -86,7 +86,27 @@ class Entreprise extends Model
     }
 
 
+    public function periodeItems()
+    {
+        return $this->hasMany(PeriodeItem::class, 'entreprise_id');
+    }
 
+    // seulement celles avec statut = 1
+    static function periodeItemsActives($structureId)
+    {
+        return PeriodeItem::where('statut', '1')->where('entreprise_id', $structureId)->whereDate('fin_periode', '>=', now());
+    }
+    // Soumissions au statut "soumis"
+    static function soumissionsSoumises($structureId)
+    {
+        return ConformitySubmission::where('status', 'soumis')->where('entreprise_id', $structureId);
+    }
+
+    // Soumissions au statut "rejeté"
+    static function soumissionsRejetees($structureId)
+    {
+        return ConformitySubmission::where('status', 'rejeté')->where('entreprise_id', $structureId);
+    }
     public function notifications(): HasMany
     {
         return $this->hasMany(NotificationConformite::class, 'entreprise_id');

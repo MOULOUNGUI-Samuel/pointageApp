@@ -57,4 +57,25 @@ class ConformitySubmission extends Model
     {
         return $this->status === self::STATUS_SUBMITTED;
     }
+     // Soumissions au statut "soumis" avec période active (statut = 1 et fin_periode >= today)
+    public static function soumissionsSoumises($structureId)
+    {
+        return static::where('status', 'soumis')
+            ->where('entreprise_id', $structureId)
+            ->whereHas('periodeItem', function ($q) {
+                $q->where('statut', '1')
+                    ->whereDate('fin_periode', '>=', now());
+            });
+    }
+
+    // Soumissions au statut "rejeté" avec période active
+    public static function soumissionsRejetees($structureId)
+    {
+        return static::where('status', 'rejeté')
+            ->where('entreprise_id', $structureId)
+            ->whereHas('periodeItem', function ($q) {
+                $q->where('statut', '1')
+                    ->whereDate('fin_periode', '>=', now());
+            });
+    }
 }

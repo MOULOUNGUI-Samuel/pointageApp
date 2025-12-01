@@ -16,12 +16,21 @@ use App\Services\Beams; // Import the Beams class from the correct namespace
 use Illuminate\Support\Facades\Notification;
 use App\Events\ServiceCreated; // Import the ServiceCreated event
 use Pusher\PushNotifications\PushNotifications; // Import the PushNotifications class
+use App\Models\ConformitySubmission;
+
+use App\Models\Item;
+use App\Models\PeriodeItem;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Livewire\Attributes\On;
+use App\Services\PeriodeItemChecker;
 
 class ParamettreController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
 
     public function listemodules(Request $request)
     {
@@ -72,8 +81,111 @@ class ParamettreController extends Controller
             ->with('entreprise')
             ->get();
 
+        $soumissionsSoumises = ConformitySubmission::soumissionsSoumises($structureId)->count();
 
-        return view('components.liste_modules', compact('modules', 'utilisateurs', 'entreprises', 'demandes', 'search', 'filtreStatut', 'onlyMine'));
+        $entrepriseId = session('entreprise_id');
+
+    // Récupérer les domaines de l'entreprise
+        /** @var \Illuminate\Support\Collection<string, object> $domaines */
+        $domaines = DB::table('entreprise_domaines')
+            ->where('entreprise_id', $entrepriseId)
+            ->where('entreprise_domaines.statut', '1')
+            ->join('domaines', 'domaines.id', '=', 'entreprise_domaines.domaine_id')
+            ->select('domaines.id', 'domaines.nom_domaine')
+            ->orderBy('domaines.nom_domaine')
+            ->get();
+
+        $domaineStats = [];
+
+        /** @var object{ id:string, nom_domaine:string, icone:?string } $domaine */
+        foreach ($domaines as $domaine) {
+
+            // Récupérer les items de ce domaine pour cette entreprise
+            $itemIds = DB::table('entreprise_items')
+                ->join('items', 'items.id', '=', 'entreprise_items.item_id')
+                ->join('categorie_domaines', 'categorie_domaines.id', '=', 'items.categorie_domaine_id')
+                ->where('entreprise_items.entreprise_id', $entrepriseId)
+                ->where('entreprise_items.statut', '1')
+                ->where('categorie_domaines.domaine_id', $domaine->id)
+                ->pluck('items.id');
+
+            if ($itemIds->isEmpty()) {
+                continue; // Ne pas afficher les domaines sans items
+            }
+
+            $totalItems = $itemIds->count();
+
+            // Calculer les stats par periode_state, items valides ET items non conformes
+            $items = Item::whereIn('id', $itemIds)->get();
+            $periodeStats = [
+                'active' => 0,
+                'upcoming' => 0,
+                'expired' => 0,
+                'disabled' => 0,
+                'none' => 0,
+            ];
+            $valides = 0;
+            $nonConformes = 0;
+
+            foreach ($items as $item) {
+                // 1. Calculer periode_state
+                $state = $item->periode_state; // Utilise l'accessor
+                if (isset($periodeStats[$state])) {
+                    $periodeStats[$state]++;
+                }
+
+                // 2. Récupérer la dernière période avec statut = 1 pour cet item
+                $activePeriode = PeriodeItem::where('item_id', $item->id)
+                    ->where('entreprise_id', $entrepriseId)
+                    ->orderByDesc('debut_periode')
+                    ->first();
+
+                // 3. Récupérer la dernière soumission
+                $lastSub = $item->lastSubmission()->where('entreprise_id', $entrepriseId)->first();
+
+                // 4. Calculer si l'item est VALIDE
+                // Valide = soumission approuvée pendant la période active (statut=1)
+                if ($lastSub && $lastSub->status === 'approuvé') {
+                    $submittedAt = \Carbon\Carbon::parse($lastSub->submitted_at);
+                    $debutPeriode = \Carbon\Carbon::parse($activePeriode->debut_periode);
+
+                    // Vérifier que la soumission a été faite pendant ou après le début de la période active
+                    if ($submittedAt->greaterThanOrEqualTo($debutPeriode)) {
+                        $valides++; // Item valide : soumission correspond à la période active
+                    } else {
+                        // Soumission approuvée mais pour une ancienne période
+                        if (PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId)) {
+                            $nonConformes++; // Nouvelle période active = non conforme
+                        }
+                    }
+                } else {
+                    // 5. Calculer si l'item est NON CONFORME
+                    $hasActivePeriode = PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId);
+
+                    if ($hasActivePeriode) {
+                        if (!$lastSub) {
+                            // Non conforme : période active sans soumission
+                            $nonConformes++;
+                        } elseif ($lastSub->status === 'rejeté') {
+                            // Non conforme : soumission rejetée
+                            $nonConformes++;
+                        }
+                    }
+                }
+            }
+
+            $domaineStats[] = [
+                'id'          => $domaine->id,
+                'nom'         => $domaine->nom_domaine,
+                // 'icone'       => $domaine->icone ?? 'ti-folder',
+                'total'       => $totalItems,
+                'valides'     => $valides,
+                'non_conformes' => $nonConformes, // Ajout du nombre de non conformes
+                'periode_stats' => $periodeStats,
+            ];
+        }
+                
+        return view('components.liste_modules', compact('modules', 'utilisateurs', 'entreprises', 'demandes', 'search', 'filtreStatut', 'onlyMine', 'soumissionsSoumises', 'domaineStats'));
     }
     public function modules()
     {

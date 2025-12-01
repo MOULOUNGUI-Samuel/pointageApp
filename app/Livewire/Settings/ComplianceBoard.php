@@ -5,13 +5,13 @@ namespace App\Livewire\Settings;
 use App\Models\Item;
 use App\Models\PeriodeItem;
 use App\Models\ConformitySubmission;
-use App\Models\Domaine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
+use App\Services\PeriodeItemChecker;
 
 class ComplianceBoard extends Component
 {
@@ -38,6 +38,61 @@ class ComplianceBoard extends Component
     public ?string $selectedSubmissionForReview = null;
     public ?string $selectedItemForHistory = null;
     public ?string $selectedItemForPeriode = null;
+
+    /**
+     * Calcule l'état de conformité d'un item pour debugging
+     */
+    private function calculateConformiteStatus(Item $item): array
+    {
+        $lastSub = $item->lastSubmission;
+        $hasActivePeriode = $item->hasActivePeriode;
+
+        if ($lastSub) {
+            // Règle métier : Si période active ET statut approuvé → NON CONFORME
+            if ($hasActivePeriode && $lastSub->status === 'approuvé') {
+                return [
+                    'status' => 'non_conforme',
+                    'label' => 'Non conforme',
+                    'color' => 'rouge',
+                    'reason' => 'Nouvelle période active, soumission approuvée obsolète',
+                ];
+            }
+
+            return [
+                'status' => $lastSub->status,
+                'label' => match($lastSub->status) {
+                    'approuvé' => 'Approuvé',
+                    'rejeté' => 'Rejeté',
+                    'soumis' => 'En attente',
+                    default => 'Inconnu',
+                },
+                'color' => match($lastSub->status) {
+                    'approuvé' => 'vert',
+                    'rejeté' => 'rouge',
+                    'soumis' => 'jaune',
+                    default => 'gris',
+                },
+                'reason' => 'Statut de la dernière soumission',
+            ];
+        }
+
+        // Pas de soumission
+        if ($hasActivePeriode) {
+            return [
+                'status' => 'non_conforme',
+                'label' => 'Non conforme',
+                'color' => 'rouge',
+                'reason' => 'Période active sans soumission',
+            ];
+        }
+
+        return [
+            'status' => 'aucune',
+            'label' => 'Aucune soumission',
+            'color' => 'gris',
+            'reason' => 'Pas de période active, pas de soumission',
+        ];
+    }
 
     private function logReqMeta(string $phase): void
     {
@@ -133,21 +188,64 @@ class ComplianceBoard extends Component
 
             $totalItems = $itemIds->count();
 
-            // Compter les items valides (approuvés)
-            $valides = ConformitySubmission::whereIn('item_id', $itemIds)
-                ->where('entreprise_id', $entrepriseId)
-                ->where('status', 'approuvé')
-                ->whereIn('id', function ($query) use ($itemIds, $entrepriseId) {
-                    $query->select(DB::raw('MAX(id)'))
-                        ->from('conformity_submissions')
-                        ->whereIn('item_id', $itemIds)
-                        ->where('entreprise_id', $entrepriseId)
-                        ->groupBy('item_id');
-                })
-                ->count();
+            // Calculer les stats par periode_state, items valides ET items non conformes
+            $items = Item::whereIn('id', $itemIds)->get();
+            $periodeStats = [
+                'active' => 0,
+                'upcoming' => 0,
+                'expired' => 0,
+                'disabled' => 0,
+                'none' => 0,
+            ];
+            $valides = 0;
+            $nonConformes = 0;
 
-            // Items non valides (rejetés / en attente / jamais soumis)
-            $nonValides = $totalItems - $valides;
+            foreach ($items as $item) {
+                // 1. Calculer periode_state
+                $state = $item->periode_state; // Utilise l'accessor
+                if (isset($periodeStats[$state])) {
+                    $periodeStats[$state]++;
+                }
+
+                // 2. Récupérer la dernière période avec statut = 1 pour cet item
+                $activePeriode = PeriodeItem::where('item_id', $item->id)
+                    ->where('entreprise_id', $entrepriseId)
+                    ->orderByDesc('debut_periode')
+                    ->first();
+
+                // 3. Récupérer la dernière soumission
+                $lastSub = $item->lastSubmission()->where('entreprise_id', $entrepriseId)->first();
+
+                // 4. Calculer si l'item est VALIDE
+                // Valide = soumission approuvée pendant la période active (statut=1)
+                if ($lastSub && $lastSub->status === 'approuvé') {
+                    $submittedAt = \Carbon\Carbon::parse($lastSub->submitted_at);
+                    $debutPeriode = \Carbon\Carbon::parse($activePeriode->debut_periode);
+
+                    // Vérifier que la soumission a été faite pendant ou après le début de la période active
+                    if ($submittedAt->greaterThanOrEqualTo($debutPeriode)) {
+                        $valides++; // Item valide : soumission correspond à la période active
+                    } else {
+                        // Soumission approuvée mais pour une ancienne période
+                        if (PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId)) {
+                            $nonConformes++; // Nouvelle période active = non conforme
+                        }
+                    }
+                } else {
+                    // 5. Calculer si l'item est NON CONFORME
+                    $hasActivePeriode = PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId);
+
+                    if ($hasActivePeriode) {
+                        if (!$lastSub) {
+                            // Non conforme : période active sans soumission
+                            $nonConformes++;
+                        } elseif ($lastSub->status === 'rejeté') {
+                            // Non conforme : soumission rejetée
+                            $nonConformes++;
+                        }
+                    }
+                }
+            }
 
             $this->domaineStats[] = [
                 'id'          => $domaine->id,
@@ -155,7 +253,8 @@ class ComplianceBoard extends Component
                 // 'icone'       => $domaine->icone ?? 'ti-folder',
                 'total'       => $totalItems,
                 'valides'     => $valides,
-                'non_valides' => $nonValides,
+                'non_conformes' => $nonConformes, // Ajout du nombre de non conformes
+                'periode_stats' => $periodeStats,
             ];
         }
     }
@@ -360,6 +459,20 @@ class ComplianceBoard extends Component
         $items = $query->orderBy('nom_item')->paginate(12);
         $entrepriseId = session('entreprise_id');
 
+        // Pour chaque item de la page, on calcule sa période active et son état de conformité
+        foreach ($items as $item) {
+            // 1) vérifier s'il y a une période de validité active (statut = 1)
+            $item->hasActivePeriode = PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId);
+
+            // 2) récupérer la période active (si besoin des dates)
+            $item->activePeriode = PeriodeItemChecker::getActivePeriod($item->id, $entrepriseId);
+
+            // 3) calculer l'état de conformité pour debugging (optionnel, uniquement en local)
+            if (app()->environment('local')) {
+                $item->debugConformiteStatus = $this->calculateConformiteStatus($item);
+            }
+        }
+
         $categories = DB::table('entreprise_categorie_domaines')
             ->where('entreprise_categorie_domaines.entreprise_id', $entrepriseId)
             ->where('entreprise_categorie_domaines.statut', '1')
@@ -374,6 +487,8 @@ class ComplianceBoard extends Component
                 'categorie_domaines.id',
                 'categorie_domaines.nom_categorie',
             ]);
+
+
 
         return view('livewire.settings.compliance-board', compact('items', 'categories'));
     }

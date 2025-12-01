@@ -19,7 +19,6 @@
             <strong>Email :</strong> {{ $submitter->email_professionnel }}
         </p>
     </div>
-
     <table class="info-table">
         <tr>
             <td>Entreprise</td>

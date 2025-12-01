@@ -14,7 +14,7 @@
                  <small class="fw-medium d-block text-truncate" title="Gestion de Projets"
                      style="font-size:13px">Consolidation</small>
              </a>
-             
+
          </div>
          @foreach ($mesModules['modules'] as $module)
              @if ($module->nom_module === 'Caisses')
@@ -65,6 +65,44 @@
                          </a>
                      </div>
                  @endif
+             @elseif($module->nom_module === 'Audit de conformité')
+                 <div class="col text-center card-hover-zoom">
+                     <a href="{{ route('dashboard', $module->id) }}" class="text-decoration-none text-dark d-block">
+
+                         <div class="d-flex align-items-center justify-content-center mx-auto mb-2 shadow bg-white position-relative"
+                             style="width: 180px;height: 70px; transition: transform 0.3s;border-radius: 5px; overflow:hidden;">
+
+                             {{-- Image --}}
+                             {{-- Texte en haut sur le jaune --}}
+                             @if ($soumissionsSoumises > 0)
+                                 <span class="position-absolute bg-warning rounded px-2"
+                                     style="top: -3px; left: 50%; transform: translateX(-50%);
+                         font-size: 11px; color: #000;">
+                                     {{ $soumissionsSoumises }} en attend
+                                 </span>
+                             @endif
+                             <img src="{{ asset('storage/' . $module->logo) }}" alt="{{ $module->nom_module }}"
+                                 class="img-fluid rounded"
+                                 style="width: 160px;height: 60px; object-fit: contain;border-radius: 5px;">
+
+                             {{-- Texte en bas sur l'orange --}}
+                             @php
+                                 $totalNonConformes = collect($domaineStats)->sum('non_conformes');
+                             @endphp
+
+                             @if ($totalNonConformes > 0)
+                                 <span class="position-absolute bg-danger rounded px-2"
+                                     style="bottom: -3px; left: 50%; transform: translateX(-50%);
+                             font-size: 11px; color: #fff;">
+                                     {{ $totalNonConformes }} non Conf...
+                                 </span>
+                             @endif
+                         </div>
+
+                         <small class="fw-medium d-block text-truncate" style="font-size: 13px"
+                             title="{{ $module->nom_module }}">{{ $module->nom_module }}</small>
+                     </a>
+                 </div>
              @elseif($module->nom_module === 'Agenda')
                  <div class="col text-center  card-hover-zoom">
                      <a href="https://agenda.groupenedco.com/authenticate/{{ Auth::user()->id }}"

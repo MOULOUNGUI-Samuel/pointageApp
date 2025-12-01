@@ -48,11 +48,11 @@ class SubmitForm extends Component
     /** @var array<int, string>  chemins des pièces déjà stockées */
     public array $existingDocs = [];
     // Services
-    protected EmailConformiteService $emailService;
-    public function boot(EmailConformiteService $emailService): void
-    {
-        $this->emailService = $emailService;
-    }
+    // protected EmailConformiteService $emailService;
+    // public function boot(EmailConformiteService $emailService): void
+    // {
+    //     $this->emailService = $emailService;
+    // }
     public function mount(string $itemId, ?string $submissionId = null): void
     {
         $this->entrepriseId = (string) session('entreprise_id');
@@ -248,11 +248,11 @@ class SubmitForm extends Component
             ]);
         }
         // 📧 Envoyer l'email aux validateurs
-        try {
-            $this->emailService->envoyerEmailNewSubmission($submission);
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi email nouvelle soumission', ['error' => $e->getMessage()]);
-        }
+        // try {
+        //     $this->emailService->envoyerEmailNewSubmission($submission);
+        // } catch (\Exception $e) {
+        //     Log::error('Erreur envoi email nouvelle soumission', ['error' => $e->getMessage()]);
+        // }
 
         $this->dispatch('notify', type: 'success', message: 'Déclaration envoyée pour validation.');
         $this->dispatch('settings-submitted', id: $submission->id);

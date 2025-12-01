@@ -10,7 +10,7 @@
                                 <div class="text-muted small mb-1">Total Items</div>
                                 <h3 class="mb-0">{{ $stats['total_items'] }}</h3>
                             </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <div class="border border-primary rounded-circle p-3">
                                 <i class="ti ti-list-check text-primary fs-22"></i>
                             </div>
                         </div>
@@ -26,7 +26,7 @@
                                 <div class="text-muted small mb-1">En date de validité</div>
                                 <h3 class="mb-0">{{ $stats['avec_periode_active'] }}</h3>
                             </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <div class="border border-success rounded-circle p-3">
                                 <i class="ti ti-calendar-check text-success fs-22"></i>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                                 <div class="text-muted small mb-1">En Attente</div>
                                 <h3 class="mb-0 text-warning">{{ $stats['en_attente'] }}</h3>
                             </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <div class="border border-warning rounded-circle p-3">
                                 <i class="ti ti-hourglass-high text-warning fs-22"></i>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                 <div class="text-muted small mb-1">Approuvés</div>
                                 <h3 class="mb-0 text-success">{{ $stats['approuves'] }}</h3>
                             </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <div class="border border-success rounded-circle p-3">
                                 <i class="ti ti-circle-check text-success fs-22"></i>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                                 <div class="text-muted small mb-1">Rejetés</div>
                                 <h3 class="mb-0 text-danger">{{ $stats['rejetes'] }}</h3>
                             </div>
-                            <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+                            <div class="border border-danger rounded-circle p-3">
                                 <i class="ti ti-circle-x text-danger fs-22"></i>
                             </div>
                         </div>
@@ -117,21 +117,21 @@
                 @if (!empty($domaineStats))
                     <div class="row g-2">
                         @foreach ($domaineStats as $domaine)
-                            <div class="col-md-3 col-lg-3 col-xl-3">
+                            <div class="col-md-4 col-lg-4 col-xl-4">
                                 <div class="domaine-card card border-0 shadow {{ $filterDomaine === $domaine['id'] ? 'border-primary border-3' : '' }}"
                                     wire:click="selectDomaine('{{ $domaine['id'] }}')"
                                     style="cursor: pointer; transition: all 0.3s ease;">
 
-                                    <div class="card-body p-3">
+                                    <div class="card-body">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="d-flex align-items-center gap-2 flex-grow-1">
-                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                                    <i class="ti ti-folder text-primary fs-22"></i>
+                                                <div class="border border-primary bg-primary rounded-circle p-2">
+                                                    <i class="ti ti-folder text-white fs-22"></i>
                                                     {{-- <i class="{{ $domaine['icone'] }} text-primary fs-5"></i> --}}
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-0 small fw-bold text-truncate">
-                                                        {{ $domaine['nom'] }}
+                                                        {{ \Illuminate\Support\Str::limit($domaine['nom'], 25, '...') }}
                                                     </h6>
                                                     <div class="text-muted" style="font-size: 0.75rem;">
                                                         {{ $domaine['total'] }}
@@ -147,29 +147,89 @@
                                             @endif
                                             <div class="d-flex gap-2 ms-3">
                                                 {{-- Items valides (approuvés) --}}
-                                                <div class="flex-fill text-center ">
-                                                    <div class="fw-bold text-primary rounded-circle p-2 bg-success bg-opacity-10 border border-success"
-                                                        width="50" height="50">
-                                                        {{ $domaine['valides'] }}</div>
+                                                <div class="flex-fill text-center" title="Items Conformes">
+                                                    <div class="fw-bold text-success rounded px-2 border border-success"
+                                                        style="display: flex; align-items: center; justify-content: center;">
+
+                                                        <strong
+                                                            class="text-success">{{ $domaine['valides'] }}/{{ $domaine['total'] ?? 0 }}</strong>
+
+                                                    </div>
+                                                    <div class="text-muted mt-1" style="font-size: 0.65rem;">Conforme
+                                                    </div>
                                                 </div>
 
-                                                {{-- Items non valides --}}
-                                                <div class="flex-fill text-center ">
-                                                    <div class="fw-bold text-danger p-2 rounded-circle bg-danger bg-opacity-10 border border-danger"
-                                                        width="50" height="50"><span
-                                                            style="color: red">{{ $domaine['non_valides'] }}</span>
+                                                {{-- Items non conformes --}}
+                                                <div class="flex-fill text-center"
+                                                    title="Items non conformes (action requise)">
+                                                    <div class="fw-bold text-danger px-2 rounded border border-danger"
+                                                        style="display: flex; align-items: center; justify-content: center;">
+                                                        <strong
+                                                            class="text-danger">{{ $domaine['non_conformes'] ?? 0 }}/{{ $domaine['total'] ?? 0 }}</strong>
+                                                    </div>
+                                                    <div class="text-muted mt-1" style="font-size: 0.65rem;">Non conf.
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
 
+                                        {{-- Statistiques par période_state --}}
+                                        <div class="pt-2">
+                                            <div class="d-flex flex-wrap gap-2">
+
+                                                @php
+                                                    $periodeIcons = [
+                                                        'active' => [
+                                                            'icon' => 'ti-circle-check',
+                                                            'color' => 'success',
+                                                            'label' => 'Active',
+                                                        ],
+                                                        'upcoming' => [
+                                                            'icon' => 'ti-calendar-event',
+                                                            'color' => 'info',
+                                                            'label' => 'À venir',
+                                                        ],
+                                                        'expired' => [
+                                                            'icon' => 'ti-alert-circle',
+                                                            'color' => 'warning',
+                                                            'label' => 'Expirée',
+                                                        ],
+                                                        'disabled' => [
+                                                            'icon' => 'ti-lock',
+                                                            'color' => 'primary',
+                                                            'label' => 'Clôturée',
+                                                        ],
+                                                        'none' => [
+                                                            'icon' => 'ti-calendar-off',
+                                                            'color' => 'muted',
+                                                            'label' => 'Aucune',
+                                                        ],
+                                                    ];
+                                                @endphp
+
+                                                @foreach ($periodeIcons as $state => $config)
+                                                    @if (($domaine['periode_stats'][$state] ?? 0) > 0)
+                                                        <div class="badge bg-{{ $config['color'] }}-subtle text-{{ $config['color'] }} border border-{{ $config['color'] }}"
+                                                            style="font-size: 0.7rem;" title="{{ $config['label'] }}">
+                                                            <i class="ti {{ $config['icon'] }} me-1"></i>
+                                                            {{ $domaine['periode_stats'][$state] }}/{{ $domaine['total'] }}
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+
                                         {{-- Barre de progression --}}
                                         <div class="mt-2">
                                             @php
                                                 $pourcentage =
                                                     $domaine['total'] > 0
-                                                        ? round(($domaine['valides'] / $domaine['total']) * 100)
+                                                        ? round(
+                                                            (($domaine['valides'] > 0 ? $domaine['valides'] : 0) /
+                                                                $domaine['total']) *
+                                                                100,
+                                                        )
                                                         : 0;
                                             @endphp
                                             <div class="progress" style="height: 4px;">
@@ -291,26 +351,38 @@
                     $fmt = fn($d) => \Illuminate\Support\Carbon::parse($d)->format('d/m/Y');
                 @endphp
                 @php
-                    if ($lastSub) {
-                        $submittedAt = \Illuminate\Support\Carbon::parse($lastSub->submitted_at)->format('d/m/Y H:i');
+                    // Calcul de la couleur de bordure selon la logique de conformité
+                    $borderColor = '#6c757d'; // gris par défaut
 
-                        $borderColor = match ($lastSub->status) {
-                            'approuvé' => '#28a745', // vert
-                            'rejeté' => '#dc3545', // rouge
-                            'soumis' => '#ffc107', // jaune
-                            default => '#6c757d', // gris
-                        };
+                    if ($lastSub) {
+                        // Règle métier : Si période active ET statut approuvé → NON CONFORME (rouge)
+                        if ($item->hasActivePeriode && $lastSub->status === 'approuvé') {
+                            $borderColor = '#dc3545'; // rouge - non conforme
+                        } else {
+                            // Sinon, couleur selon le statut réel
+                            $borderColor = match ($lastSub->status) {
+                                'approuvé' => '#28a745', // vert - approuvé
+                                'rejeté' => '#dc3545', // rouge - rejeté
+                                'soumis' => '#ffc107', // jaune - en attente
+                                default => '#6c757d', // gris - autre
+                            };
+                        }
                     } else {
-                        $borderColor = '#6c757d'; // couleur par défaut si pas de soumission
-                        $submittedAt = null;
+                        // Pas de soumission
+                        if ($item->hasActivePeriode) {
+                            // Période active sans soumission → NON CONFORME (rouge)
+                            $borderColor = '#dc3545';
+                        } else {
+                            // Pas de période active, pas de soumission → gris neutre
+                            $borderColor = '#6c757d';
+                        }
                     }
                 @endphp
-
 
                 <div class="col-12">
                     <div class="card border-0 shadow-sm hover-shadow transition">
                         <div class="card-body rounded"
-                            style="border-left: 10px solid {{ $borderColor }};cursor:pointer">
+                            style="border-left: 10px solid {{ $borderColor }}; cursor:pointer">
                             <div class="d-flex flex-column flex-xl-row align-items-stretch gap-3">
 
                                 {{-- ================= COL 1 : Infos item ================= --}}
@@ -344,7 +416,7 @@
                                 {{-- ================= COL 2 : Période + dernière soumission ================= --}}
                                 <div class="flex-grow-1 flex-xl-grow-0" style="min-width: 260px;">
                                     {{-- État de période (reprend exactement tes blocs) --}}
-                                    @if ($state === 'active')
+                                    @if ($state === 'active' || $periode)
                                         <div
                                             class="d-flex align-items-center gap-2 mb-2 p-2 rounded-3 bg-success bg-opacity-10 border border-success-subtle">
                                             <i class="ti ti-calendar-check text-success"></i>
@@ -398,62 +470,132 @@
                                         </div>
                                     @endif
 
-                                    {{-- Statut dernière soumission (inchangé, juste déplacé) --}}
-                                    @if ($lastSub)
-                                        @php
-                                            $submittedAt = \Illuminate\Support\Carbon::parse(
+                                    {{-- Statut dernière soumission --}}
+                                    @php
+                                        // Logique centralisée pour déterminer le statut de conformité
+                                        $conformiteStatus = null;
+                                        $conformiteLabel = '';
+                                        $conformiteIcon = '';
+                                        $conformiteBadgeClass = '';
+                                        $submittedAtFormatted = null;
+
+                                        if ($lastSub) {
+                                            $submittedAtFormatted = \Illuminate\Support\Carbon::parse(
                                                 $lastSub->submitted_at,
                                             )->format('d/m/Y H:i');
-                                        @endphp
-                                        <div class="mb-0">
+
+                                            // Règle métier principale :
+                                            // Si période active ET statut approuvé → item est NON CONFORME (car période a changé)
+                                            if ($item->hasActivePeriode && $lastSub->status === 'approuvé') {
+                                                $conformiteStatus = 'non_conforme';
+                                                $conformiteLabel = 'Non conforme';
+                                                $conformiteIcon = 'ti-circle-x';
+                                                $conformiteBadgeClass = 'bg-danger-subtle text-danger';
+                                            }
+                                            // Sinon, on suit le statut réel de la soumission
+                                            else {
+                                                switch ($lastSub->status) {
+                                                    case 'approuvé':
+                                                        $conformiteStatus = 'approuve';
+                                                        $conformiteLabel = 'Approuvé';
+                                                        $conformiteIcon = 'ti-circle-check';
+                                                        $conformiteBadgeClass = 'bg-success-subtle text-success';
+                                                        break;
+                                                    case 'rejeté':
+                                                        $conformiteStatus = 'rejete';
+                                                        $conformiteLabel = 'Rejeté';
+                                                        $conformiteIcon = 'ti-circle-x';
+                                                        $conformiteBadgeClass = 'bg-danger-subtle text-danger';
+                                                        break;
+                                                    case 'soumis':
+                                                        $conformiteStatus = 'en_attente';
+                                                        $conformiteLabel = 'En attente';
+                                                        $conformiteIcon = 'ti-hourglass-high';
+                                                        $conformiteBadgeClass = 'bg-warning-subtle text-warning';
+                                                        break;
+                                                }
+                                            }
+                                        } else {
+                                            // Pas de soumission
+                                            if ($item->hasActivePeriode) {
+                                                // Période active sans soumission = NON CONFORME
+                                                $conformiteStatus = 'non_conforme';
+                                                $conformiteLabel = 'Non conforme';
+                                                $conformiteIcon = 'ti-circle-x';
+                                                $conformiteBadgeClass = 'bg-danger-subtle text-danger';
+                                            } else {
+                                                // Pas de période active, pas de soumission = état neutre
+                                                $conformiteStatus = 'aucune';
+                                                $conformiteLabel = 'Aucune soumission';
+                                                $conformiteIcon = 'ti-file-off';
+                                                $conformiteBadgeClass = 'bg-light text-muted';
+                                            }
+                                        }
+                                    @endphp
+
+                                    {{-- Affichage unifié du statut --}}
+                                    <div class="mb-0">
+                                        @if ($lastSub)
+                                            {{-- Avec soumission : afficher les détails --}}
                                             <div class="d-flex align-items-center justify-content-between mb-1">
                                                 <span class="small text-muted">Dernière soumission</span>
-                                                @if ($lastSub->status === 'approuvé')
-                                                    <span class="badge bg-success-subtle text-success border">
-                                                        <i class="ti ti-circle-check me-1"></i>Approuvé
-                                                    </span>
-                                                @elseif ($lastSub->status === 'rejeté')
-                                                    <span class="badge bg-danger-subtle text-danger border">
-                                                        <i class="ti ti-circle-x me-1"></i>Rejeté
-                                                    </span>
-                                                @elseif ($lastSub->status === 'soumis')
-                                                    <span class="badge bg-warning-subtle text-warning border">
-                                                        <i class="ti ti-hourglass-high me-1"></i>En attente
-                                                    </span>
-                                                @endif
+                                                <span class="badge {{ $conformiteBadgeClass }} border">
+                                                    <i
+                                                        class="ti {{ $conformiteIcon }} me-1"></i>{{ $conformiteLabel }}
+                                                </span>
                                             </div>
-                                            <div class="small text-muted">{{ $submittedAt }}</div>
-                                        </div>
-                                    @else
-                                        <div class="mt-1 p-2 rounded-3 bg-light border border-dashed">
-                                            <div class="small text-muted text-center">
-                                                <i class="ti ti-file-off me-1"></i> Aucune soumission
-                                            </div>
-                                        </div>
-                                    @endif
+                                            <div class="small text-muted">{{ $submittedAtFormatted }}</div>
+                                        @else
+                                            {{-- Sans soumission --}}
+                                            @if ($conformiteStatus === 'non_conforme')
+                                                <div
+                                                    class="p-2 rounded-3 bg-danger bg-opacity-10 border border-danger">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <i class="ti {{ $conformiteIcon }} text-danger"></i>
+                                                        <span
+                                                            class="small fw-semibold text-danger">{{ $conformiteLabel }}</span>
+                                                    </div>
+                                                    <div class="small text-muted mt-1">Période active sans soumission
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="p-2 rounded-3 bg-light border border-dashed">
+                                                    <div class="small text-muted text-center">
+                                                        <i
+                                                            class="ti {{ $conformiteIcon }} me-1"></i>{{ $conformiteLabel }}
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
 
                                 {{-- ================= COL 3 : Actions ================= --}}
                                 <div class="d-flex flex-column justify-content-between align-items-end gap-2"
                                     style="min-width: 230px;">
 
-                                    {{-- Actions (même logique, juste regroupées verticalement) --}}
+                                    {{-- Actions selon periode_state et rôle --}}
                                     <div class="d-flex flex-wrap justify-content-end gap-2 w-100">
-                                        @if ($state === 'active')
-                                            @if (auth()->user()->role?->nom !== 'ValideAudit' && auth()->user()->role?->nom !== 'SuperAdmin')
+
+                                        {{-- ========== UTILISATEUR STANDARD (non Admin) ========== --}}
+                                        @if (auth()->user()->role?->nom !== 'ValideAudit' && auth()->user()->role?->nom !== 'SuperAdmin')
+                                            @if ($state === 'active' || $state === 'upcoming' || $periode)
+                                                {{-- Période active OU à venir : utilisateur PEUT agir --}}
+
                                                 @if ($lastSub && $lastSub->status === 'soumis')
+                                                    {{-- Soumission en attente : bouton MODIFIER --}}
                                                     <button class="btn btn-sm btn-warning flex-fill"
                                                         data-bs-toggle="modal" data-bs-target="#submitModal"
                                                         wire:click="openSubmitModal('{{ $item->id }}', '{{ $lastSub->id }}')">
                                                         <i class="ti ti-edit me-1"></i>Modifier
                                                     </button>
-
                                                     <button class="btn btn-sm btn-outline-secondary"
                                                         wire:click="$dispatch('open-submit-modal2', { itemId: '{{ $item->id }}', submissionId: '{{ $lastSub->id }}' })">
                                                         <i class="ti ti-sparkles me-1"></i>Modifier IA
                                                     </button>
                                                 @elseif ($lastSub && $lastSub->status === 'rejeté')
-                                                    <button class="btn btn-sm btn-primary flex-fill"
+                                                    {{-- Soumission rejetée : bouton RESOUMETTRE --}}
+                                                    <button class="btn btn-sm btn-danger flex-fill"
                                                         data-bs-toggle="modal" data-bs-target="#submitModal"
                                                         wire:click="openSubmitModal('{{ $item->id }}')">
                                                         <i class="ti ti-refresh me-1"></i>Resoumettre
@@ -463,6 +605,12 @@
                                                         <i class="ti ti-sparkles me-1"></i>Resoumettre IA
                                                     </button>
                                                 @else
+                                                    {{--
+                                                        Cas :
+                                                        - Aucune soumission OU
+                                                        - Soumission approuvée (nouvelle période active)
+                                                        → bouton SOUMETTRE
+                                                    --}}
                                                     <button class="btn btn-sm btn-primary flex-fill"
                                                         data-bs-toggle="modal" data-bs-target="#submitModal"
                                                         wire:click="openSubmitModal('{{ $item->id }}')">
@@ -473,46 +621,43 @@
                                                         <i class="ti ti-sparkles me-1"></i>Soumettre IA
                                                     </button>
                                                 @endif
-                                            @endif
-
-                                            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
-                                                <button class="btn btn-sm btn-outline-secondary"
-                                                    data-bs-toggle="modal" data-bs-target="#periodesModal"
-                                                    wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
-                                                    <i class="ti ti-calendar-event me-1"></i>Période
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-info"
-                                                    wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })">
-                                                    <i class="ti ti-sparkles me-1"></i>Période IA
-                                                </button>
-                                            @endif
-                                        @else
-                                            <button class="btn btn-sm btn-secondary flex-fill" disabled>
-                                                <i class="ti ti-lock me-1"></i>
-                                                @if ($state === 'expired')
-                                                    Période expirée
-                                                @elseif($state === 'disabled')
-                                                    Période clôturée
-                                                @elseif($state === 'upcoming')
-                                                    Pas encore ouverte
-                                                @else
-                                                    Pas de période
-                                                @endif
-                                            </button>
-
-                                            @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
-                                                <button class="btn btn-sm btn-outline-secondary"
-                                                    data-bs-toggle="modal" data-bs-target="#periodesModal"
-                                                    wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
-                                                    <i class="ti ti-calendar-event me-1"></i>Période
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-info"
-                                                    wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })">
-                                                    <i class="ti ti-sparkles me-1"></i>Période IA
+                                            @else
+                                                {{-- Période PAS active ET pas à venir : bouton désactivé --}}
+                                                <button class="btn btn-sm btn-secondary flex-fill" disabled>
+                                                    <i class="ti ti-lock me-1"></i>
+                                                    @if ($state === 'expired')
+                                                        Période expirée
+                                                    @elseif($state === 'disabled')
+                                                        Période clôturée
+                                                    @elseif($state === 'none')
+                                                        Pas de période
+                                                    @else
+                                                        Indisponible
+                                                    @endif
                                                 </button>
                                             @endif
                                         @endif
 
+                                        {{-- ========== ADMIN (ValideAudit / SuperAdmin) ========== --}}
+                                        @if (auth()->user()->role?->nom === 'ValideAudit' || auth()->user()->role?->SuperAdmin)
+                                            {{-- Admin peut TOUJOURS gérer les périodes --}}
+                                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                                data-bs-target="#periodesModal"
+                                                wire:click="$dispatch('open-periode-manager', { id: '{{ $item->id }}' })">
+                                                <i class="ti ti-calendar-event me-1"></i>
+                                                @if ($state === 'none')
+                                                    Définir période
+                                                @else
+                                                    Gérer période
+                                                @endif
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info"
+                                                wire:click="$dispatch('modal-periode-manager', { id: '{{ $item->id }}' })">
+                                                <i class="ti ti-sparkles me-1"></i>Période IA
+                                            </button>
+                                        @endif
+
+                                        {{-- ========== BOUTON HISTORIQUE (tous) ========== --}}
                                         <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                             data-bs-target="#historyModal"
                                             wire:click="openHistoryModal('{{ $item->id }}')">

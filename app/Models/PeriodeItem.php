@@ -25,11 +25,16 @@ class PeriodeItem extends Model
         'debut_periode',
         'fin_periode',
         'statut', // '1' actif, '0' inactif/clos
+        'auto_renew', // Renouvellement automatique
+        'renew_duration_value', // Durée de renouvellement (valeur)
+        'renew_duration_unit', // Unité (days, months, years)
     ];
 
     protected $casts = [
         'debut_periode' => 'date',
         'fin_periode'   => 'date',
+        'auto_renew' => 'boolean',
+        'renew_duration_value' => 'integer',
     ];
 
     protected static function boot()
@@ -41,11 +46,26 @@ class PeriodeItem extends Model
     }
 
     // ---------- Relations ----------
-    public function user_add(): BelongsTo     { return $this->belongsTo(User::class, 'user_add_id'); }
-    public function item(): BelongsTo         { return $this->belongsTo(Item::class, 'item_id'); }
-    public function entreprise(): BelongsTo   { return $this->belongsTo(Entreprise::class, 'entreprise_id'); }
-    public function soumissions(): HasMany    { return $this->hasMany(ConformitySubmission::class, 'periode_item_id'); }
-    public function notifications(): HasMany  { return $this->hasMany(NotificationConformite::class, 'periode_item_id'); }
+    public function user_add(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_add_id');
+    }
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+    public function entreprise(): BelongsTo
+    {
+        return $this->belongsTo(Entreprise::class, 'entreprise_id');
+    }
+    public function soumissions(): HasMany
+    {
+        return $this->hasMany(ConformitySubmission::class, 'periode_item_id');
+    }
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(NotificationConformite::class, 'periode_item_id');
+    }
 
     // ---------- Accessors utiles ----------
     /** Indique si la période couvre aujourd’hui et statut = '1' */
@@ -62,15 +82,15 @@ class PeriodeItem extends Model
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('statut', '1')
-                 ->whereDate('debut_periode', '<=', now())
-                 ->whereDate('fin_periode',   '>=', now());
+            ->whereDate('debut_periode', '<=', now())
+            ->whereDate('fin_periode',   '>=', now());
     }
 
     /** Expirées (statut '1' mais fin passée) */
     public function scopeExpired(Builder $q): Builder
     {
         return $q->where('statut', '1')
-                 ->whereDate('fin_periode', '<', now());
+            ->whereDate('fin_periode', '<', now());
     }
 
     /** Filtre entreprise */
@@ -109,4 +129,6 @@ class PeriodeItem extends Model
     {
         return now()->diffInDays($this->fin_periode, false);
     }
+
+   
 }

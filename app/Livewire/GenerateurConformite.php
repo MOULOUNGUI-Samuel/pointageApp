@@ -113,14 +113,22 @@ class GenerateurConformite extends Component
             $this->isGenerating = false;
         }
     }
-
+    public $varier_types = false;
     private function buildPrompt()
     {
+        $varier_types = $this->varier_types 
+        ? "Variez les types d'items (file, liste, checkbox, texte) de manière équilibrée selon les besoins."
+        : "Par défaut, PRIORISEZ le type 'file' pour au moins 90% des items";
         return <<<PROMPT
-AGISSEZ comme un architecte de conformité et un expert en modélisation de données JSON. Votre objectif est de générer un fichier JSON complet et auto-suffisant représentant un catalogue de conformité pour un domaine métier donné.
+VOUS ÊTES un expert en conformité, audit interne, contrôle de gestion, gouvernance administrative et droit du travail, spécialisé en :
+
+- LÉGISLATION GABONAISE : Code du travail, CNSS, CNAMGS, fiscalité, sécurité, environnement, obligations administratives
+- RÉFÉRENTIEL OHADA : Acte uniforme sur le droit comptable (SYSCOHADA), Acte uniforme sur les sociétés commerciales, Acte uniforme sur les sûretés, Acte uniforme sur les procédures collectives, obligations de gestion d'entreprise et tenue documentaire
 
 DOMAINE À MODÉLISER : {$this->nom_domaine}
 DESCRIPTION DU DOMAINE : {$this->description_domaine}
+
+OBJECTIF : Générer un fichier JSON complet et auto-suffisant représentant un catalogue de conformité pour le domaine donné, en identifiant toutes les catégories réglementaires pertinentes selon la législation gabonaise, les actes uniformes OHADA et les pratiques administratives obligatoires.
 
 EXIGENCES STRUCTURELLES DU LIVRABLE (Format JSON strict) :
 
@@ -130,49 +138,102 @@ EXIGENCES STRUCTURELLES DU LIVRABLE (Format JSON strict) :
      - description : description du domaine
      - categories : tableau d'objets représentant les catégories de conformité
 
-2. Catégories (minimum 6) :
+2. Catégories (minimum 4) :
    - Chaque objet dans le tableau categories doit contenir :
-     - nom_categorie : libellé de la catégorie
+     - nom_categorie : libellé de la catégorie (opérationnel et exploitable par un auditeur)
      - code_categorie : identifiant de la catégorie (constitué de la première lettre de chaque mot du nom de la catégorie en majuscules)
-     - description : description de la catégorie
+     - description : description de la catégorie couvrant le champ réglementaire applicable
      - items : tableau d'objets représentant les exigences de conformité
 
-3. Items (minimum 8 par catégorie) :
+3. Items (minimum 6 par catégorie) :
    - Chaque objet dans le tableau items doit inclure les champs suivants :
-     - nom_item : libellé de l'exigence
-     - description : description de l'exigence
-     - type : type de l'item ('liste', 'checkbox', 'texte', ou 'file')
+     - nom_item : formulé comme une question claire, brève et explicite
+     - description : explication synthétique avec la référence au texte ou principe juridique (gabonais et/ou OHADA)
+     - type : type de l'item ('file', 'liste', 'checkbox', ou 'texte')
      - options : si le type est 'liste' ou 'checkbox', proposer un tableau d'objets avec les clés 'label' et 'value'
      - statut : toujours "1"
 
+RÈGLE IMPORTANTE SUR LES TYPES :
+ {$varier_types}
+- Le type "file" doit être utilisé pour tous les items nécessitant une preuve documentaire (contrats, attestations, déclarations, certificats, rapports, factures, etc.)
+- N'utilisez les types "liste", "checkbox" ou "texte" QUE lorsque le contexte l'exige absolument (choix multiples, état binaire, commentaire libre)
+- Si aucune instruction contraire n'est donnée, générez majoritairement des items de type "file"
+
 CONTRAINTES DE SORTIE :
-- Le fichier JSON doit être complet, auto-suffisant et conforme à la structure ci-dessus.
-- Aucun texte explicatif, commentaire ou introduction ne doit précéder ou suivre le bloc JSON.
-- Générez uniquement le JSON brut.
+- Le fichier JSON doit être complet, auto-suffisant et conforme à la structure ci-dessus
+- Aucun texte explicatif, commentaire ou introduction ne doit précéder ou suivre le bloc JSON
+- Générez uniquement le JSON brut
+- Les catégories doivent couvrir l'ensemble du champ réglementaire du domaine
+- Les observations doivent être concises avec le cadre légal applicable
 
 EXEMPLE DE STRUCTURE ATTENDUE :
 {
   "nom_domaine": "Ressources Humaines",
-  "description": "Gestion de la conformité RH",
+  "description": "Gestion de la conformité RH selon la législation gabonaise et OHADA",
   "categories": [
     {
-      "nom_categorie": "Contrats de Travail",
-      "code_categorie": "CDT",
-      "description": "Gestion des contrats",
+      "nom_categorie": "Dossiers du Personnel",
+      "code_categorie": "DDP",
+      "description": "Gestion documentaire des salariés conformément au Code du travail gabonais",
       "items": [
         {
-          "nom_item": "Type de contrat",
-          "description": "Vérifier le type de contrat",
-          "type": "liste",
-          "options": [
-            {"label": "CDI", "value": "cdi"},
-            {"label": "CDD", "value": "cdd"}
-          ],
+          "nom_item": "Le dossier de chaque salarié contient-il un contrat de travail signé ?",
+          "description": "Conformément au Code du travail gabonais, tout salarié doit disposer d'un contrat de travail écrit signé par les deux parties.",
+          "type": "file",
           "statut": "1"
         },
         {
-          "nom_item": "Contrat signé",
-          "description": "Télécharger le contrat de travail signé",
+          "nom_item": "Les fiches de paie sont-elles archivées pour chaque salarié ?",
+          "description": "Selon le Code du travail, l'employeur doit conserver les bulletins de paie pendant 5 ans minimum.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Les attestations de visite médicale d'embauche sont-elles disponibles ?",
+          "description": "Le Code du travail gabonais impose une visite médicale avant toute embauche.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Les déclarations d'embauche ont-elles été transmises à l'inspection du travail ?",
+          "description": "Toute embauche doit être déclarée à l'inspection du travail dans les 8 jours.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Le registre du personnel est-il à jour et disponible ?",
+          "description": "Selon le Code du travail, tout employeur doit tenir un registre du personnel actualisé.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Les dossiers contiennent-ils les pièces d'identité des salariés ?",
+          "description": "Les pièces d'identité sont obligatoires pour constituer un dossier administratif complet.",
+          "type": "file",
+          "statut": "1"
+        }
+      ]
+    },
+    {
+      "nom_categorie": "Obligations Fiscales et Sociales",
+      "code_categorie": "OFS",
+      "description": "Respect des obligations fiscales selon la législation gabonaise",
+      "items": [
+        {
+          "nom_item": "Les déclarations de retenues à la source (ITS) sont-elles disponibles ?",
+          "description": "Le Code Général des Impôts gabonais impose à l'employeur de déclarer et reverser mensuellement l'impôt sur traitement et salaire.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Les bordereaux CNSS sont-ils transmis et archivés ?",
+          "description": "Selon le Code de la Sécurité Sociale, les déclarations mensuelles CNSS sont obligatoires.",
+          "type": "file",
+          "statut": "1"
+        },
+        {
+          "nom_item": "Les attestations de paiement CNAMGS sont-elles disponibles ?",
+          "description": "La CNAMGS exige des attestations de cotisation pour la couverture maladie obligatoire.",
           "type": "file",
           "statut": "1"
         }
@@ -180,6 +241,8 @@ EXEMPLE DE STRUCTURE ATTENDUE :
     }
   ]
 }
+
+GÉNÉREZ MAINTENANT LE JSON COMPLET SELON CES SPÉCIFICATIONS.
 PROMPT;
     }
 

@@ -18,12 +18,12 @@ class ReviewForm extends Component
     public bool $showConfirmApprove = false;
     public bool $showConfirmReject = false;
     // Services
-    protected EmailConformiteService $emailService;
+    // protected EmailConformiteService $emailService;
 
-    public function boot(EmailConformiteService $emailService): void
-    {
-        $this->emailService = $emailService;
-    }
+    // public function boot(EmailConformiteService $emailService): void
+    // {
+    //     $this->emailService = $emailService;
+    // }
 
     public function mount(?string $submissionId = null): void
     {
@@ -113,11 +113,11 @@ class ReviewForm extends Component
             }
 
             // 3) 📧 Envoyer l'email de validation
-            try {
-                $this->emailService->envoyerEmailSubmissionApproved($s);
-            } catch (\Exception $e) {
-                Log::error('Erreur envoi email approbation', ['error' => $e->getMessage()]);
-            }
+            // try {
+            //     $this->emailService->envoyerEmailSubmissionApproved($s);
+            // } catch (\Exception $e) {
+            //     Log::error('Erreur envoi email approbation', ['error' => $e->getMessage()]);
+            // }
         });
 
         $this->dispatch('notify', type: 'success', message: 'Déclaration approuvée et période désactivée.');
@@ -180,16 +180,16 @@ class ReviewForm extends Component
         }
 
         // 3) 📧 Envoyer l'email de refus
-        try {
-            $this->emailService->envoyerEmailSubmissionRejected($s);
+        // try {
+        //     $this->emailService->envoyerEmailSubmissionRejected($s);
 
-            // Envoyer aussi un email pour la nouvelle période si créée
-            if ($nouvellePeriode) {
-                $this->emailService->envoyerEmailPeriodeCreated($nouvellePeriode);
-            }
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi email rejet', ['error' => $e->getMessage()]);
-        }
+        //     // Envoyer aussi un email pour la nouvelle période si créée
+        //     if ($nouvellePeriode) {
+        //         $this->emailService->envoyerEmailPeriodeCreated($nouvellePeriode);
+        //     }
+        // } catch (\Exception $e) {
+        //     Log::error('Erreur envoi email rejet', ['error' => $e->getMessage()]);
+        // }
         $this->dispatch('notify', type: 'success', message: 'Déclaration rejetée. L\'entreprise peut soumettre une correction.');
         // return redirect()->route('conformite.review', $s->id);
     }

@@ -35,8 +35,15 @@ class Kernel extends ConsoleKernel
             ->weeklyOn(0, '00:00')
             ->timezone('Africa/Libreville');
 
-            // Exécute la commande tous les jours à une heure précise (ex: 2h du matin)
+        // Exécute la commande tous les jours à une heure précise (ex: 2h du matin)
         $schedule->command('attendance:check-daily')->dailyAt('02:00');
+
+        // Renouvellement automatique des périodes expirées
+        // Exécuté tous les jours à 01:00
+        $schedule->command('periodes:renew-expired')
+            ->dailyAt('01:00')
+            ->timezone('Africa/Libreville')
+            ->emailOutputOnFailure(config('mail.admin_email'));
     }
 
     /**

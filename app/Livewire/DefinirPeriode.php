@@ -201,11 +201,11 @@ class DefinirPeriode extends Component
 
             // 📧 Email de nouvelle période
           
-                try {
-                    $this->emailService->envoyerEmailPeriodeCreated($periode);
-                } catch (\Exception $e) {
-                    Log::error('Erreur envoi email période créée', ['error' => $e->getMessage()]);
-                }
+                // try {
+                //     $this->emailService->envoyerEmailPeriodeCreated($periode);
+                // } catch (\Exception $e) {
+                //     Log::error('Erreur envoi email période créée', ['error' => $e->getMessage()]);
+                // }
 
             $this->successMessage = sprintf(
                 'Période créée avec succès ! Du %s au %s (%s)',
