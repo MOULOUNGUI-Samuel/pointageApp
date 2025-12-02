@@ -13,6 +13,7 @@ class PeriodeItemChecker
     public static function getActivePeriod(string $itemId, string $entrepriseId): ?PeriodeItem
     {
         return PeriodeItem::query()
+            ->with('item')
             ->forItem($itemId)         // scope forItem($q, $itemId)
             ->forEntreprise($entrepriseId) // scope forEntreprise($q, $entrepriseId)
             ->where('statut', '1')                // scope active() : statut = '1' + dates
@@ -26,6 +27,7 @@ class PeriodeItemChecker
     public static function hasActivePeriod(string $itemId, string $entrepriseId): bool
     {
         return PeriodeItem::query()
+            ->with('item')
             ->forItem($itemId)
             ->forEntreprise($entrepriseId)
             ->where('statut', '1')

@@ -11,6 +11,7 @@ use App\Models\Item;
 use App\Services\EmailConformiteService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PeriodesManager extends Component
 {
@@ -115,88 +116,97 @@ class PeriodesManager extends Component
         return true;
     }
 
-    public function save(): void
-    {
-        $this->validate();
-        if (!$this->passesUniqueness()) return;
+   public function save(): void
+{
+    $this->validate();
+    if (!$this->passesUniqueness()) return;
 
-        if (PeriodeItem::hasActive($this->itemId, $this->entrepriseId)) {
-            $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item.');
-        }
-        if ($this->isEditing && $this->selectedId) {
-            $p = PeriodeItem::where('item_id', $this->itemId)
-                ->where('entreprise_id', $this->entrepriseId)
-                ->findOrFail($this->selectedId);
+    // Empêcher une 2e période active quand on crée
+    if (PeriodeItem::hasActive($this->itemId, $this->entrepriseId) && !$this->isEditing) {
+        $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item.');
+        return;
+    }
 
-            $p->update([
-                'debut_periode'  => $this->debut_periode,
-                'fin_periode'    => $this->fin_periode,
-                'statut'         => $this->statut,
-                'user_update_id' => Auth::id(),
-            ]);
+    if ($this->isEditing && $this->selectedId) {
+        // ========= MODE EDIT =========
+        $p = PeriodeItem::where('item_id', $this->itemId)
+            ->where('entreprise_id', $this->entrepriseId)
+            ->findOrFail($this->selectedId);
 
-            // 📧 Email si modification ou réactivation
-            try {
-                $ancienStatut = $p->statut;
-                if ($ancienStatut === '0' && $this->statut === '1') {
-                    // Réactivation
-                    $this->emailService->envoyerEmailPeriodeCreated($p);
-                } else {
-                    // Simple modification
-                    $changes = [];
-                    if ($p->wasChanged('debut_periode')) $changes['Date de début'] = 'Modifiée';
-                    if ($p->wasChanged('fin_periode')) $changes['Date de fin'] = 'Modifiée';
-                    if (!empty($changes)) {
-                        $this->emailService->envoyerEmailPeriodeModified($p, $changes);
-                    }
-                }
-            } catch (\Exception $e) {
-                Log::error('Erreur envoi email période modifiée', ['error' => $e->getMessage()]);
-            }
+        $ancienStatut = (string) $p->statut;
 
-            $this->dispatch('notify', type: 'success', message: 'Période mise à jour.');
-            // Rafraîchir le compliance-board
-            $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
-            // Event Livewire pour prévenir le parent / autres composants
-            $this->dispatch('periode-creee', id: $p->id);
-            // Event pour rafraîchir le board parent
-            $this->dispatch('wizard-config-reload');
-        } else {
-            // Vérifier qu'il n'y a pas déjà une période active
-            if (PeriodeItem::hasActive($this->itemId, $this->entrepriseId)) {
-                $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item.');
+        $p->update([
+            'debut_periode'  => $this->debut_periode,
+            'fin_periode'    => $this->fin_periode,
+            'statut'         => $this->statut,
+            'user_update_id' => Auth::id(),
+        ]);
+
+        // (emails commentés)
+
+        $this->dispatch('notify', type: 'success', message: 'Période mise à jour.');
+        $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
+        $this->dispatch('periode-creee', id: $p->id);
+        $this->dispatch('wizard-config-reload');
+
+    } else {
+        // ========= MODE CRÉATION =========
+
+        // 🔒 CONTRÔLE CHRONOLOGIE : la nouvelle période doit commencer APRÈS la dernière
+        $last = PeriodeItem::where('item_id', $this->itemId)
+            ->where('entreprise_id', $this->entrepriseId)
+            ->orderByDesc('fin_periode')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($last) {
+            $newStart = Carbon::parse($this->debut_periode)->startOfDay();
+            $lastEnd  = Carbon::parse($last->fin_periode)->endOfDay();
+
+            if ($newStart->lte($lastEnd)) {
+                // On ajoute une erreur sur le champ + une notification
+                $this->addError(
+                    'debut_periode',
+                    'La nouvelle période doit commencer après la fin de la dernière période (' . $lastEnd->format('d/m/Y') . ').'
+                );
+
+                $this->dispatch(
+                    'notify',
+                    type: 'error',
+                    message: 'La date de début doit être postérieure à la dernière période (fin : ' . $lastEnd->format('d/m/Y') . ').'
+                );
+
                 return;
             }
-
-            $p = PeriodeItem::create([
-                'item_id'        => $this->itemId,
-                'entreprise_id'  => $this->entrepriseId,
-                'debut_periode'  => $this->debut_periode,
-                'fin_periode'    => $this->fin_periode,
-                'statut'         => $this->statut,
-                'user_add_id'    => Auth::id(),
-            ]);
-
-            // 📧 Email de nouvelle période
-            if ($this->statut === '1') {
-
-                try {
-                    $this->emailService->envoyerEmailPeriodeCreated($p);
-                } catch (\Exception $e) {
-                    Log::error('Erreur envoi email période créée', ['error' => $e->getMessage()]);
-                }
-            }
-            $this->dispatch('notify', type: 'success', message: 'Période créée.');
-            // Rafraîchir le compliance-board
-            $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
         }
 
-        $this->openForm();
-        $this->resetPage();
+        // On re-vérifie l’actif pour être tranquille
+        if (PeriodeItem::hasActive($this->itemId, $this->entrepriseId)) {
+            $this->dispatch('notify', type: 'error', message: 'Une période active existe déjà pour cet item.');
+            return;
+        }
 
-        $this->dispatch('periodes-updated', id: $this->itemId);
-        $this->dispatch('wizard-config-reload');
+        $p = PeriodeItem::create([
+            'item_id'        => $this->itemId,
+            'entreprise_id'  => $this->entrepriseId,
+            'debut_periode'  => $this->debut_periode,
+            'fin_periode'    => $this->fin_periode,
+            'statut'         => $this->statut,
+            'user_add_id'    => Auth::id(),
+        ]);
+
+        // (emails commentés)
+
+        $this->dispatch('notify', type: 'success', message: 'Période créée.');
+        $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
     }
+
+    $this->openForm();
+    $this->resetPage();
+
+    $this->dispatch('periodes-updated', id: $this->itemId);
+    $this->dispatch('wizard-config-reload');
+}
 
     public function cancel(string $id): void
     {
@@ -210,16 +220,25 @@ class PeriodesManager extends Component
         }
 
         $p->update($data);
-        // 📧 Email d'annulation
+
+        // 📧 ENVOI D’EMAIL DESACTIVE (annulation)
+        /*
         try {
-            $this->emailService->envoyerEmailPeriodeCanceled($p, 'Période annulée par l\'auditeur');
+            $this->emailService->envoyerEmailPeriodeCanceled(
+                $p,
+                'Période annulée par l\'auditeur'
+            );
         } catch (\Exception $e) {
-            Log::error('Erreur envoi email période annulée', ['error' => $e->getMessage()]);
+            Log::error('Erreur envoi email période annulée', [
+                'periode_id' => $p->id,
+                'error'      => $e->getMessage(),
+            ]);
         }
+        */
+
         session()->flash('success', 'Période annulée.');
         $this->dispatch('periodes-updated', id: $this->itemId);
         $this->dispatch('wizard-config-reload');
-        // Rafraîchir le compliance-board
         $this->dispatch('wizard-config-reload')->to('settings.compliance-board');
     }
 

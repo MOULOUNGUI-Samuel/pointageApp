@@ -90,10 +90,15 @@ class Item extends Model
         return $this->hasOne(ConformitySubmission::class, 'item_id')
             ->latestOfMany('submitted_at');
     }
-    /** Dernière période (pour l’entreprise courante), toutes statuts confondus */
+
+    /** Dernière période (pour une entreprise donnée), tous statuts confondus */
     public function lastPeriodeFor(?string $entrepriseId = null)
     {
         $entrepriseId ??= (string) session('entreprise_id');
+        if (!$entrepriseId) {
+            return null;
+        }
+
         return $this->periodes()
             ->where('entreprise_id', $entrepriseId)
             ->orderByDesc('fin_periode')
@@ -101,16 +106,20 @@ class Item extends Model
             ->first();
     }
 
-    /** Accessor: $item->lastPeriode  */
+    /** Accessor: $item->lastPeriode (pour l’entreprise en session) */
     public function getLastPeriodeAttribute()
     {
         return $this->lastPeriodeFor();
     }
 
-    /** Accessor: $item->periodeActive (strictement “statut=1” ET dates couvrent aujourd’hui) */
+    /** Accessor: $item->periodeActive (statut=1, dates couvrant aujourd’hui, pour l’entreprise en session) */
     public function getPeriodeActiveAttribute()
     {
         $entrepriseId = (string) session('entreprise_id');
+        if (!$entrepriseId) {
+            return null;
+        }
+
         return $this->periodes()
             ->where('entreprise_id', $entrepriseId)
             ->where('statut', '1')
@@ -121,28 +130,48 @@ class Item extends Model
     }
 
     /**
-     * Accessor: $item->periode_state
-     *  - 'active'   : statut=1 et aujourd’hui ∈ [début, fin]
-     *  - 'expired'  : statut=1 mais fin < aujourd’hui
-     *  - 'disabled' : statut != 1 (période clôturée manuellement)
-     *  - 'none'     : aucune période
-     *  (+ 'upcoming' si début > aujourd’hui et statut=1)
+     * Renvoie l’état de période pour UNE entreprise donnée.
      */
-    public function getPeriodeStateAttribute(): string
+    public function periodeStateFor(?string $entrepriseId = null): string
     {
-        $p = $this->lastPeriode;
-        if (!$p) return 'none';
-
-        if ($p->statut !== '1') return 'disabled';
+        $p = $this->lastPeriodeFor($entrepriseId);
+        if (!$p) {
+            return 'none';
+        }
 
         $today = now()->startOfDay();
         $debut = \Illuminate\Support\Carbon::parse($p->debut_periode)->startOfDay();
         $fin   = \Illuminate\Support\Carbon::parse($p->fin_periode)->endOfDay();
 
-        if ($today->betweenIncluded($debut, $fin)) return 'active';
-        if ($today->lt($debut))                    return 'upcoming';
-        return 'expired';
+        if ($p->statut === '1') {
+            if ($today->betweenIncluded($debut, $fin)) {
+                return 'active';
+            }
+
+            if ($today->lt($debut)) {
+                return 'upcoming';
+            }
+
+            return 'expired';
+        }
+
+        // statut != 1
+        if ($today->gt($fin)) {
+            return 'disabled';
+        }
+
+        return 'none';
     }
+
+    /**
+     * Accessor: $item->periode_state
+     * → se base sur l’entreprise en session.
+     */
+    public function getPeriodeStateAttribute(): string
+    {
+        return $this->periodeStateFor(); // = entreprise en session
+    }
+
 
     public function getLastSubmissionAttribute()
     {
