@@ -3,7 +3,7 @@
     @php use Illuminate\Support\Facades\Storage; @endphp
 
     {{-- Flash succès --}}
-    
+
 
     {{-- ÉTAT : en attente d’un submissionId (au premier affichage avant l’event) --}}
     @if (empty($submission))
@@ -26,12 +26,13 @@
                                 <i class="ti ti-upload me-1"></i>
                                 Soumis le {{ $submission->submitted_at?->format('d/m/Y à H:i') }}
                             </div>
-                            @if ($submission->submitter)
+                            @if ($submission->submittedBy)
                                 <div class="mb-1">
                                     <i class="ti ti-user me-1"></i>
-                                    Par {{ $submission->submitter->nom }} {{ $submission->submitter->prenom }}
-                                    @if ($submission->submitter->email)
-                                        <span class="text-muted">({{ $submission->submitter->email }})</span>
+                                    Par {{ $submission->submittedBy->nom }} {{ $submission->submittedBy->prenom }}
+                                    @if ($submission->submittedBy->email_professionnel)
+                                        <span
+                                            class="text-muted">({{ $submission->submittedBy->email_professionnel }})</span>
                                     @endif
                                 </div>
                             @endif
@@ -108,7 +109,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <div class="fw-semibold mb-1">
-                                {{ $submission->reviewer->nom ?? '—' }} {{ $submission->reviewer->prenom ?? '' }}
+                                {{ $submission->submittedBy->nom ?? '—' }} {{ $submission->submittedBy->prenom ?? '' }}
                             </div>
                             <div class="small text-muted mb-2">
                                 {{ $submission->reviewed_at?->format('d/m/Y à H:i') }}

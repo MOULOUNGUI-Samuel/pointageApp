@@ -73,7 +73,8 @@ class SubmitForm extends Component
             ->first();
 
         if (!$p) {
-            abort(403, 'Aucune période active pour cet item.');
+            $this->dispatch('notify', type: 'error', message: 'Vous devez être dans la période définie pour soumettre.');
+            return;
         }
 
         $this->periodeId = $p->id;

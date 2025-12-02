@@ -31,6 +31,7 @@ class ComplianceBoard extends Component
     // Stats
     public array $stats = [];
     public array $domaineStats = []; // NOUVEAU : Stats par domaine
+    public array $statsGlobales = []; // NOUVEAU : Stats globales
 
     // Modals state
     public ?string $selectedItemForSubmit = null;
@@ -60,13 +61,13 @@ class ComplianceBoard extends Component
 
             return [
                 'status' => $lastSub->status,
-                'label' => match($lastSub->status) {
+                'label' => match ($lastSub->status) {
                     'approuvé' => 'Approuvé',
                     'rejeté' => 'Rejeté',
                     'soumis' => 'En attente',
                     default => 'Inconnu',
                 },
-                'color' => match($lastSub->status) {
+                'color' => match ($lastSub->status) {
                     'approuvé' => 'vert',
                     'rejeté' => 'rouge',
                     'soumis' => 'jaune',
@@ -170,6 +171,8 @@ class ComplianceBoard extends Component
 
         $this->domaineStats = [];
 
+        $globalValides       = 0;
+        $globalNonConformes  = 0;
         /** @var object{ id:string, nom_domaine:string, icone:?string } $domaine */
         foreach ($domaines as $domaine) {
 
@@ -256,7 +259,15 @@ class ComplianceBoard extends Component
                 'non_conformes' => $nonConformes, // Ajout du nombre de non conformes
                 'periode_stats' => $periodeStats,
             ];
+            // 👉 On cumule ici
+            $globalValides      += $valides;
+            $globalNonConformes += $nonConformes;
         }
+        // Après la boucle, tu stockes ça où tu veux :
+        $this->statsGlobales = [
+            'valides'       => $globalValides,
+            'non_conformes' => $globalNonConformes,
+        ];
     }
 
     /**

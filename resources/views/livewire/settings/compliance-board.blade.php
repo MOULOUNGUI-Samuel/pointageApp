@@ -18,7 +18,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
@@ -32,14 +32,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted small mb-1">En Attente</div>
+                                <div class="text-muted small mb-1">Total en attente</div>
                                 <h3 class="mb-0 text-warning">{{ $stats['en_attente'] }}</h3>
                             </div>
                             <div class="border border-warning rounded-circle p-3">
@@ -50,13 +50,13 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted small mb-1">Approuvés</div>
-                                <h3 class="mb-0 text-success">{{ $stats['approuves'] }}</h3>
+                                <div class="text-muted small mb-1">Total Conformes</div>
+                                <h3 class="mb-0 text-success">{{ $statsGlobales['valides'] }}</h3>
                             </div>
                             <div class="border border-success rounded-circle p-3">
                                 <i class="ti ti-circle-check text-success fs-22"></i>
@@ -66,13 +66,13 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted small mb-1">Rejetés</div>
-                                <h3 class="mb-0 text-danger">{{ $stats['rejetes'] }}</h3>
+                                <div class="text-muted small mb-1">Total Non Conformes</div>
+                                <h3 class="mb-0 text-danger">{{ $statsGlobales['non_conformes'] }}</h3>
                             </div>
                             <div class="border border-danger rounded-circle p-3">
                                 <i class="ti ti-circle-x text-danger fs-22"></i>
@@ -391,7 +391,7 @@
                                     <div class="d-flex align-items-start justify-content-between mb-2">
                                         <div class="flex-grow-1">
                                             <h4 class="mb-1 fw-bold text-truncate">
-                                                {{ \Illuminate\Support\Str::limit($item->nom_item, 60) }}
+                                                {{ \Illuminate\Support\Str::limit($item->nom_item, 120) }}
                                             </h4>
                                             <div class="text-muted small" style="font-size: 18px">
                                                 <i class="ti ti-folder me-1"></i>
@@ -408,7 +408,7 @@
                                     {{-- Description --}}
                                     @if ($item->description)
                                         <p class="small text-muted mb-0" style="font-size: 16px">
-                                            {{ \Illuminate\Support\Str::limit($item->description, 120) }}
+                                            {{ \Illuminate\Support\Str::limit($item->description, 150) }}
                                         </p>
                                     @endif
                                 </div>
@@ -579,7 +579,7 @@
 
                                         {{-- ========== UTILISATEUR STANDARD (non Admin) ========== --}}
                                         @if (auth()->user()->role?->nom !== 'ValideAudit' && auth()->user()->role?->nom !== 'SuperAdmin')
-                                            @if ($state === 'active' || $state === 'upcoming' || $periode)
+                                            @if ($state === 'active' || $periode)
                                                 {{-- Période active OU à venir : utilisateur PEUT agir --}}
 
                                                 @if ($lastSub && $lastSub->status === 'soumis')
@@ -632,7 +632,7 @@
                                                     @elseif($state === 'none')
                                                         Pas de période
                                                     @else
-                                                        Indisponible
+                                                        En attente de la période de soumission
                                                     @endif
                                                 </button>
                                             @endif

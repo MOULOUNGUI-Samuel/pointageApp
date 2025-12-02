@@ -180,7 +180,7 @@
                                                 <div class="mt-2 p-2 rounded-3 bg-light border">
                                                     <div class="fw-semibold small mb-1">Notes :</div>
                                                     <div class="small text-muted">
-                                                        {{ Str::limit($sub->reviewer_notes, 80) }}
+                                                        {{ Str::limit($sub->reviewer_notes, 150) }}
                                                     </div>
                                                 </div>
                                             @endif
@@ -218,7 +218,7 @@
                                             @if ($ans->kind === 'texte')
                                                 <span class="badge bg-light text-dark border">
                                                     <i class="ti ti-text-size me-1"></i>
-                                                    {{ Str::limit($ans->value_text, 30) }}
+                                                    {{ Str::limit($ans->value_text, 150) }}
                                                 </span>
                                             @elseif($ans->kind === 'documents')
                                                 <div class="btn-group btn-group-sm">

@@ -164,7 +164,7 @@
                                             <div class="col-md-6">
                                                 <h6 class="mb-2">{{ $sub->item->nom_item }}</h6>
                                                 <div class="small text-muted">
-                                                    <div><i class="ti ti-building me-1"></i>{{ $sub->entreprise->nom }}
+                                                    <div><i class="ti ti-building me-1"></i>{{ $sub->entreprise->nom_entreprise }}
                                                     </div>
                                                     <div><i class="ti ti-user me-1"></i>{{ $sub->submittedBy->nom }}
                                                         {{ $sub->submittedBy->prenom }}</div>
