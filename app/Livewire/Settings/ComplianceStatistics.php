@@ -8,6 +8,7 @@ use App\Models\ConformitySubmission;
 use App\Models\Domaine;
 use App\Models\CategorieDommaine;
 use Illuminate\Support\Facades\DB;
+use App\Services\PeriodeItemChecker; // adapte le namespace si besoin
 use Livewire\Component;
 use Carbon\Carbon;
 
@@ -61,157 +62,225 @@ class ComplianceStatistics extends Component
         if ($itemIds->isEmpty()) {
             $this->globalStats = [
                 'total_criteres' => 0,
-                'evalues' => 0,
-                'conformes' => 0,
-                'non_conformes' => 0,
-                'en_attente' => 0,
-                'score_global' => 0,
-                'statut' => 'Insuffisant',
+                'evalues'        => 0,
+                'conformes'      => 0,
+                'non_conformes'  => 0,
+                'en_attente'     => 0,
+                'non_evalues'    => 0,
+                'score_global'   => 0,
+                'statut'         => 'Insuffisant',
             ];
             return;
         }
 
-        // Total des critères (items)
-        $totalCriteres = $itemIds->count();
+        $items = Item::whereIn('id', $itemIds)->get();
 
-        // Critères évalués (ont au moins une soumission)
-        $evalues = ConformitySubmission::whereIn('item_id', $itemIds)
-            ->where('entreprise_id', $this->entrepriseId)
-            ->distinct('item_id')
-            ->count('item_id');
+        $totalCriteres  = $items->count();
+        $evalues        = 0;
+        $conformes      = 0;
+        $nonConformes   = 0;
+        $enAttente      = 0;
 
-        // Conformes (dernière soumission approuvée)
-        $conformes = 0;
-        foreach ($itemIds as $itemId) {
-            $lastSub = ConformitySubmission::where('item_id', $itemId)
-                ->where('entreprise_id', $this->entrepriseId)
-                ->latest('submitted_at')
-                ->first();
+        foreach ($items as $item) {
+            $status = $this->computeItemStatus($item);
 
-            if ($lastSub && $lastSub->status === 'approuvé') {
+            if ($status['has_submission']) {
+                $evalues++;
+            }
+            if ($status['conforme']) {
                 $conformes++;
             }
-        }
-
-        // Non conformes (dernière soumission rejetée)
-        $nonConformes = 0;
-        foreach ($itemIds as $itemId) {
-            $lastSub = ConformitySubmission::where('item_id', $itemId)
-                ->where('entreprise_id', $this->entrepriseId)
-                ->latest('submitted_at')
-                ->first();
-
-            if ($lastSub && $lastSub->status === 'rejeté') {
+            if ($status['non_conforme']) {
                 $nonConformes++;
+            }
+            if ($status['en_attente']) {
+                $enAttente++;
             }
         }
 
-        // En attente
-        $enAttente = ConformitySubmission::whereIn('item_id', $itemIds)
-            ->where('entreprise_id', $this->entrepriseId)
-            ->where('status', 'soumis')
-            ->whereIn('id', function ($query) use ($itemIds) {
-                $query->select(DB::raw('MAX(id)'))
-                    ->from('conformity_submissions')
-                    ->whereIn('item_id', $itemIds)
-                    ->where('entreprise_id', $this->entrepriseId)
-                    ->groupBy('item_id');
-            })
-            ->count();
-
-        // Score global (% de conformes sur total)
+        $nonEvalues  = $totalCriteres - $evalues;
         $scoreGlobal = $totalCriteres > 0
             ? round(($conformes / $totalCriteres) * 100)
             : 0;
 
-        // Statut
         $statut = match (true) {
             $scoreGlobal >= 80 => 'Excellent',
             $scoreGlobal >= 60 => 'Bon',
             $scoreGlobal >= 40 => 'Moyen',
             $scoreGlobal >= 20 => 'Faible',
-            default => 'Insuffisant'
+            default             => 'Insuffisant',
         };
 
         $this->globalStats = [
             'total_criteres' => $totalCriteres,
-            'evalues' => $evalues,
-            'conformes' => $conformes,
-            'non_conformes' => $nonConformes,
-            'en_attente' => $enAttente,
-            'non_evalues' => $totalCriteres - $evalues,
-            'score_global' => $scoreGlobal,
-            'statut' => $statut,
+            'evalues'        => $evalues,
+            'conformes'      => $conformes,      // = "valides" selon ta logique
+            'non_conformes'  => $nonConformes,
+            'en_attente'     => $enAttente,
+            'non_evalues'    => $nonEvalues,
+            'score_global'   => $scoreGlobal,
+            'statut'         => $statut,
+        ];
+    }
+
+    /**
+     * Retourne le statut de conformité d'un item pour l'entreprise courante,
+     * en appliquant la même logique que dans le board (périodes + soumissions).
+     */
+    private function computeItemStatus(Item $item): array
+    {
+        $entrepriseId = $this->entrepriseId;
+
+        // State période (utilise ton accessor et la méthode periodeStateFor)
+        $periodeState = $item->periodeStateFor($entrepriseId);
+
+        // Dernière soumission pour cette entreprise
+        $lastSub = ConformitySubmission::where('item_id', $item->id)
+            ->where('entreprise_id', $entrepriseId)
+            ->latest('submitted_at')
+            ->first();
+
+        $hasSubmission = (bool) $lastSub;
+
+        // Y a-t-il une période active ?
+        $hasActivePeriode = PeriodeItemChecker::hasActivePeriod($item->id, $entrepriseId);
+
+        $isConforme     = false;
+        $isNonConforme  = false;
+        $isEnAttente    = false;
+
+        if ($lastSub) {
+            if ($lastSub->status === 'soumis') {
+                $isEnAttente = true;
+            }
+
+            if ($lastSub->status === 'approuvé') {
+                // Dernière période (de référence) pour cet item / entreprise
+                $activePeriode = PeriodeItem::where('item_id', $item->id)
+                    ->where('entreprise_id', $entrepriseId)
+                    ->orderByDesc('debut_periode')
+                    ->first();
+
+                if ($activePeriode) {
+                    $submittedAt  = Carbon::parse($lastSub->submitted_at);
+                    $debutPeriode = Carbon::parse($activePeriode->debut_periode);
+
+                    // ✅ Soumission approuvée pendant OU après le début de la période de référence
+                    if ($submittedAt->greaterThanOrEqualTo($debutPeriode)) {
+                        $isConforme = true;
+                    } elseif ($hasActivePeriode) {
+                        // ✅ Soumission approuvée pour une ancienne période alors qu'il y a une nouvelle période active
+                        $isNonConforme = true;
+                    }
+                } else {
+                    // Aucun enregistrement de période → on considère conforme par défaut
+                    $isConforme = true;
+                }
+            } elseif ($hasActivePeriode && $lastSub->status === 'rejeté') {
+                // Période active + dernière soumission rejetée ⇒ non conforme
+                $isNonConforme = true;
+            }
+        } else {
+            // Aucune soumission
+            if ($hasActivePeriode) {
+                // Période active sans soumission ⇒ non conforme
+                $isNonConforme = true;
+            }
+        }
+
+        return [
+            'periode_state'  => $periodeState,
+            'has_submission' => $hasSubmission,
+            'conforme'       => $isConforme,
+            'non_conforme'   => $isNonConforme,
+            'en_attente'     => $isEnAttente,
         ];
     }
 
     /**
      * Statistiques par domaine
      */
-    private function loadDomaineStats(): void
-    {
-        /** @var \Illuminate\Support\Collection<string, object> $domaines */
-        $domaines = DB::table('entreprise_domaines')
-            ->where('entreprise_id', $this->entrepriseId)
-            ->where('entreprise_domaines.statut', '1')
-            ->join('domaines', 'domaines.id', '=', 'entreprise_domaines.domaine_id')
-            ->select('domaines.id', 'domaines.nom_domaine')
-            ->orderBy('domaines.nom_domaine')
-            ->get();
+   private function loadDomaineStats(): void
+{
+    /** @var \Illuminate\Support\Collection<string, object> $domaines */
+    $domaines = DB::table('entreprise_domaines')
+        ->where('entreprise_id', $this->entrepriseId)
+        ->where('entreprise_domaines.statut', '1')
+        ->join('domaines', 'domaines.id', '=', 'entreprise_domaines.domaine_id')
+        ->select('domaines.id', 'domaines.nom_domaine')
+        ->orderBy('domaines.nom_domaine')
+        ->get();
 
-        $this->domaineStats = [];
+    $this->domaineStats = [];
 
-        /** @var object{ id:string, nom_domaine:string, icone:?string } $domaine */
-        foreach ($domaines as $domaine) {
-            $itemIds = $this->getItemIdsByDomaine($domaine->id);
+    /** @var object{ id:string, nom_domaine:string } $domaine */
+    foreach ($domaines as $domaine) {
+        $itemIds = $this->getItemIdsByDomaine($domaine->id);
 
-            if ($itemIds->isEmpty()) {
-                continue;
-            }
-
-            $total = $itemIds->count();
-            $evalues = 0;
-            $conformes = 0;
-            $nonConformes = 0;
-
-            foreach ($itemIds as $itemId) {
-                $lastSub = ConformitySubmission::where('item_id', $itemId)
-                    ->where('entreprise_id', $this->entrepriseId)
-                    ->latest('submitted_at')
-                    ->first();
-
-                if ($lastSub) {
-                    $evalues++;
-                    if ($lastSub->status === 'approuvé') {
-                        $conformes++;
-                    } elseif ($lastSub->status === 'rejeté') {
-                        $nonConformes++;
-                    }
-                }
-            }
-
-            $score = $total > 0 ? round(($conformes / $total) * 100) : 0;
-
-            $statut = match (true) {
-                $score >= 80 => 'Excellent',
-                $score >= 60 => 'Bon',
-                $score >= 40 => 'Moyen',
-                $score >= 20 => 'Faible',
-                default => 'Insuffisant'
-            };
-
-            $this->domaineStats[] = [
-                'id' => $domaine->id,
-                'nom' => $domaine->nom_domaine,
-                'total' => $total,
-                'evalues' => $evalues,
-                'conformes' => $conformes,
-                'non_conformes' => $nonConformes,
-                'score' => $score,
-                'statut' => $statut,
-            ];
+        if ($itemIds->isEmpty()) {
+            continue;
         }
+
+        $items = Item::whereIn('id', $itemIds)->get();
+
+        $total        = $items->count();
+        $evalues      = 0;
+        $conformes    = 0;
+        $nonConformes = 0;
+
+        // Optionnel : stats par état de période pour ce domaine
+        $periodeStats = [
+            'active'   => 0,
+            'upcoming' => 0,
+            'expired'  => 0,
+            'disabled' => 0,
+            'none'     => 0,
+        ];
+
+        foreach ($items as $item) {
+            $status = $this->computeItemStatus($item);
+
+            // Période_state (pour badges / graphs)
+            $state = $status['periode_state'];
+            if (isset($periodeStats[$state])) {
+                $periodeStats[$state]++;
+            }
+
+            if ($status['has_submission']) {
+                $evalues++;
+            }
+            if ($status['conforme']) {
+                $conformes++;
+            }
+            if ($status['non_conforme']) {
+                $nonConformes++;
+            }
+        }
+
+        $score = $total > 0 ? round(($conformes / $total) * 100) : 0;
+
+        $statut = match (true) {
+            $score >= 80 => 'Excellent',
+            $score >= 60 => 'Bon',
+            $score >= 40 => 'Moyen',
+            $score >= 20 => 'Faible',
+            default       => 'Insuffisant',
+        };
+
+        $this->domaineStats[] = [
+            'id'             => $domaine->id,
+            'nom'            => $domaine->nom_domaine,
+            'total'          => $total,
+            'evalues'        => $evalues,
+            'conformes'      => $conformes,      // = valides
+            'non_conformes'  => $nonConformes,
+            'score'          => $score,
+            'statut'         => $statut,
+            'periode_stats'  => $periodeStats,   // si tu veux les utiliser dans des graphs
+        ];
     }
+}
+
 
     /**
      * Statistiques par catégorie

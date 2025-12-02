@@ -46,50 +46,65 @@
                 <div class="card-body text-center d-flex align-items-center">
                     <div class="me-3">
                         <div class="position-relative d-inline-block">
+                            @php
+                                $scoreGlobal = $globalStats['score_global'] ?? 0;
+                            @endphp
                             <svg width="120" height="120" class="mx-auto">
                                 <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef"
                                     stroke-width="10" />
                                 <circle cx="60" cy="60" r="50" fill="none"
-                                    stroke="{{ $globalStats['score_global'] >= 80 ? '#28a745' : ($globalStats['score_global'] >= 60 ? '#ffc107' : '#dc3545') }}"
+                                    stroke="{{ $scoreGlobal >= 80 ? '#28a745' : ($scoreGlobal >= 60 ? '#ffc107' : '#dc3545') }}"
                                     stroke-width="10"
-                                    stroke-dasharray="{{ (314 * $globalStats['score_global']) / 100 }} 314"
+                                    stroke-dasharray="{{ (314 * $scoreGlobal) / 100 }} 314"
                                     transform="rotate(-90 60 60)" />
                             </svg>
                             <div class="position-absolute top-50 start-50 translate-middle">
-                                <h1 class="mb-0" style="font-size: 2.5rem;">{{ $globalStats['score_global'] }}%</h1>
+                                <h1 class="mb-0" style="font-size: 2.5rem;">{{ $scoreGlobal }}%</h1>
                             </div>
                         </div>
                     </div>
                     <div class="">
                         <h5 class="mb-1">Score Global</h5>
                         <span
-                            class="badge bg-{{ $globalStats['score_global'] >= 80 ? 'success' : ($globalStats['score_global'] >= 60 ? 'warning' : 'danger') }}">
-                            {{ $globalStats['statut'] }}
+                            class="badge bg-{{ $scoreGlobal >= 80 ? 'success' : ($scoreGlobal >= 60 ? 'warning' : 'danger') }}">
+                            {{ $globalStats['statut'] ?? 'Insuffisant' }}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
+        {{-- Critères totaux --}}
         <div class="col-md-3">
             <div class="card border-0 shadow">
                 <div class="card-body">
+                    @php
+                        $totalCriteres = $globalStats['total_criteres'] ?? 0;
+                        $evalues = $globalStats['evalues'] ?? 0;
+                        $conformes = $globalStats['conformes'] ?? 0;
+                        $nonConformes = $globalStats['non_conformes'] ?? 0;
+                        $enAttente = $globalStats['en_attente'] ?? 0;
+                        $nonEvalues = $globalStats['non_evalues'] ?? max($totalCriteres - $evalues, 0);
+                    @endphp
+
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <div class="bg-primary bg-opacity-10 rounded-circle p-3">
                             <i class="ti ti-list-check text-primary" style="font-size: 18px"></i>
                         </div>
-                        <h2 class="mb-0">{{ $globalStats['total_criteres'] }}</h2>
+                        <h2 class="mb-0">{{ $totalCriteres }}</h2>
                     </div>
                     <h6 class="text-muted mb-2">Critères Totaux</h6>
                     <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
                     </div>
                     <div class="mt-2 small text-muted">
-                        <i class="ti ti-eye me-1"></i>{{ $globalStats['evalues'] }} évalués
+                        <i class="ti ti-eye me-1"></i>{{ $evalues }} évalués
                     </div>
                 </div>
             </div>
         </div>
 
+        {{-- Conformes --}}
         <div class="col-md-3">
             <div class="card border-0 shadow">
                 <div class="card-body">
@@ -97,22 +112,23 @@
                         <div class="bg-success bg-opacity-10 rounded-circle p-3">
                             <i class="ti ti-circle-check text-success" style="font-size: 18px"></i>
                         </div>
-                        <h2 class="mb-0 text-success">{{ $globalStats['conformes'] }}</h2>
+                        <h2 class="mb-0 text-success">{{ $conformes }}</h2>
                     </div>
                     <h6 class="text-muted mb-2">Conformes</h6>
                     <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-success" role="progressbar"
-                            style="width: {{ $globalStats['total_criteres'] > 0 ? ($globalStats['conformes'] / $globalStats['total_criteres']) * 100 : 0 }}%">
+                            style="width: {{ $totalCriteres > 0 ? ($conformes / $totalCriteres) * 100 : 0 }}%">
                         </div>
                     </div>
                     <div class="mt-2 small text-muted">
-                        {{ $globalStats['total_criteres'] > 0 ? round(($globalStats['conformes'] / $globalStats['total_criteres']) * 100, 1) : 0 }}%
+                        {{ $totalCriteres > 0 ? round(($conformes / $totalCriteres) * 100, 1) : 0 }}%
                         du total
                     </div>
                 </div>
             </div>
         </div>
 
+        {{-- Non conformes --}}
         <div class="col-md-3">
             <div class="card border-0 shadow">
                 <div class="card-body">
@@ -120,16 +136,16 @@
                         <div class="bg-danger bg-opacity-10 rounded-circle p-3">
                             <i class="ti ti-alert-triangle text-danger " style="font-size: 18px"></i>
                         </div>
-                        <h2 class="mb-0 text-danger">{{ $globalStats['non_conformes'] }}</h2>
+                        <h2 class="mb-0 text-danger">{{ $nonConformes }}</h2>
                     </div>
                     <h6 class="text-muted mb-2">Non Conformes</h6>
                     <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-danger" role="progressbar"
-                            style="width: {{ $globalStats['total_criteres'] > 0 ? ($globalStats['non_conformes'] / $globalStats['total_criteres']) * 100 : 0 }}%">
+                            style="width: {{ $totalCriteres > 0 ? ($nonConformes / $totalCriteres) * 100 : 0 }}%">
                         </div>
                     </div>
                     <div class="mt-2 small text-muted">
-                        {{ $globalStats['total_criteres'] > 0 ? round(($globalStats['non_conformes'] / $globalStats['total_criteres']) * 100, 1) : 0 }}%
+                        {{ $totalCriteres > 0 ? round(($nonConformes / $totalCriteres) * 100, 1) : 0 }}%
                         du total
                     </div>
                 </div>
@@ -156,6 +172,9 @@
 
         {{-- Répartition par statut --}}
         <div class="col-lg-5">
+            @php
+                $enAttente = $globalStats['en_attente'] ?? 0;
+            @endphp
             <div class="card border-0 shadow">
                 <div class="card-header bg-white border-bottom">
                     <h5 class="mb-0">
@@ -173,19 +192,19 @@
                             <div class="mr-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="small"><span class="badge bg-success"></span> Conformes</span>
-                                    <strong>{{ $globalStats['conformes'] }}</strong>
+                                    <strong>{{ $conformes }}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="small"><span class="badge bg-danger"></span> Non Conformes</span>
-                                    <strong>{{ $globalStats['non_conformes'] }}</strong>
+                                    <strong>{{ $nonConformes }}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="small"><span class="badge bg-warning"></span> En Attente</span>
-                                    <strong>{{ $globalStats['en_attente'] }}</strong>
+                                    <strong>{{ $enAttente }}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="small"><span class="badge bg-secondary"></span> Non Évalués</span>
-                                    <strong>{{ $globalStats['non_evalues'] ?? 0 }}</strong>
+                                    <strong>{{ $nonEvalues }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -273,11 +292,17 @@
 
     {{-- Indicateurs de Performance --}}
     <div class="row g-3 mb-4">
+        @php
+            $avgValidationTime = $performanceStats['avg_validation_time'] ?? 0;
+            $tauxApprobation = $performanceStats['taux_approbation'] ?? 0;
+            $avgResoumissions = $performanceStats['avg_resoumissions'] ?? 0;
+        @endphp
+
         <div class="col-md-4">
             <div class="card border-0 shadow h-100">
                 <div class="card-body text-center">
                     <i class="ti ti-clock text-primary fs-1 mb-3"></i>
-                    <h2 class="mb-1">{{ $performanceStats['avg_validation_time'] }}h</h2>
+                    <h2 class="mb-1">{{ $avgValidationTime }}h</h2>
                     <p class="text-muted mb-0">Temps Moyen de Validation</p>
                 </div>
             </div>
@@ -287,7 +312,7 @@
             <div class="card border-0 shadow h-100">
                 <div class="card-body text-center">
                     <i class="ti ti-checkbox text-success fs-1 mb-3"></i>
-                    <h2 class="mb-1">{{ $performanceStats['taux_approbation'] }}%</h2>
+                    <h2 class="mb-1">{{ $tauxApprobation }}%</h2>
                     <p class="text-muted mb-0">Taux d'Approbation</p>
                 </div>
             </div>
@@ -297,7 +322,7 @@
             <div class="card border-0 shadow h-100">
                 <div class="card-body text-center">
                     <i class="ti ti-refresh text-warning fs-1 mb-3"></i>
-                    <h2 class="mb-1">{{ $performanceStats['avg_resoumissions'] }}</h2>
+                    <h2 class="mb-1">{{ $avgResoumissions }}</h2>
                     <p class="text-muted mb-0">Moyenne de Resoumissions</p>
                 </div>
             </div>

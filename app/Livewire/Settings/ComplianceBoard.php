@@ -147,8 +147,6 @@ class ComplianceBoard extends Component
                 ->whereDate('fin_periode', '>=', $today)
                 ->distinct('item_id')->count('item_id'),
             'en_attente'          => (clone $baseSub)->where('status', 'soumis')->count(),
-            'approuves'           => (clone $baseSub)->where('status', 'approuvé')->count(),
-            'rejetes'             => (clone $baseSub)->where('status', 'rejeté')->count(),
         ];
     }
 
@@ -159,7 +157,7 @@ class ComplianceBoard extends Component
     {
         $entrepriseId = session('entreprise_id');
 
-    // Récupérer les domaines de l'entreprise
+     // Récupérer les domaines de l'entreprise
         /** @var \Illuminate\Support\Collection<string, object> $domaines */
         $domaines = DB::table('entreprise_domaines')
             ->where('entreprise_id', $entrepriseId)
