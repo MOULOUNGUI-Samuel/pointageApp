@@ -250,11 +250,14 @@ class ContractService
 
     /**
      * Vérifier et mettre à jour automatiquement les contrats expirés
+     * et suspendre les contrats des utilisateurs inactifs
      */
     public function checkAndUpdateExpiredContracts(string $entrepriseId): int
     {
-        $expiredContracts = $this->getExpiredContracts($entrepriseId);
         $count = 0;
+
+        // 1. Terminer les contrats expirés
+        $expiredContracts = $this->getExpiredContracts($entrepriseId);
 
         foreach ($expiredContracts as $contract) {
             $contract->marquerCommeTermine();
@@ -270,6 +273,37 @@ class ContractService
                     ],
                 ],
                 'comment' => 'Terminé automatiquement (date de fin dépassée)',
+                'modified_by' => $contract->user_id, // Système
+            ]);
+            $count++;
+        }
+
+        // 2. Suspendre les contrats des utilisateurs inactifs (statu_user = 0)
+        $inactiveUserContracts = Contract::where('entreprise_id', $entrepriseId)
+            ->where('statut', ContractStatus::ACTIF->value)
+            ->whereHas('user', function ($query) {
+                $query->where('statu_user', 0);
+            })
+            ->with('user')
+            ->get();
+
+        foreach ($inactiveUserContracts as $contract) {
+            $previousStatus = $contract->statut;
+            $contract->statut = ContractStatus::SUSPENDU->value;
+            $contract->save();
+
+            ContractHistory::create([
+                'contract_id' => $contract->id,
+                'user_id' => $contract->user_id,
+                'entreprise_id' => $contract->entreprise_id,
+                'action' => 'suspended',
+                'changes' => [
+                    'statut' => [
+                        'before' => $previousStatus,
+                        'after' => ContractStatus::SUSPENDU->value,
+                    ],
+                ],
+                'comment' => 'Suspendu automatiquement (utilisateur inactif)',
                 'modified_by' => $contract->user_id, // Système
             ]);
             $count++;

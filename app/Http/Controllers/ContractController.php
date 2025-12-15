@@ -21,7 +21,7 @@ class ContractController extends Controller
     public function index()
     {
         // Vérifier et mettre à jour automatiquement les contrats expirés
-        $entrepriseId = auth()->user()->entreprise_id;
+        $entrepriseId = session('entreprise_id');
         $expiredCount = $this->contractService->checkAndUpdateExpiredContracts($entrepriseId);
 
         // Message optionnel si des contrats ont été mis à jour
