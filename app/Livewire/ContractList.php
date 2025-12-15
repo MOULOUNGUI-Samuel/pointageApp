@@ -27,7 +27,7 @@ class ContractList extends Component
     public function mount($userId = null, $entrepriseId = null, $showAll = false)
     {
         $this->userId = $userId;
-        $this->entrepriseId = $entrepriseId ?? auth()->user()->entreprise_id;
+        $this->entrepriseId = $entrepriseId ?? session('entreprise_id');
         $this->showAll = $showAll;
     }
 

@@ -15,7 +15,7 @@ class ContractStats extends Component
 
     public function mount($entrepriseId = null)
     {
-        $this->entrepriseId = $entrepriseId ?? auth()->user()->entreprise_id;
+        $this->entrepriseId = $entrepriseId ?? session('entreprise_id');
     }
 
     public function render()

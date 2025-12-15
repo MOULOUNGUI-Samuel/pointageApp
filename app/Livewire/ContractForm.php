@@ -52,7 +52,7 @@ class ContractForm extends Component
 
     public function mount($contractId = null, $userId = null)
     {
-        $this->entrepriseId = auth()->user()->entreprise_id;
+        $this->entrepriseId = session('entreprise_id');
 
         // Charger les utilisateurs de l'entreprise
         $this->users = User::where('entreprise_id', $this->entrepriseId)

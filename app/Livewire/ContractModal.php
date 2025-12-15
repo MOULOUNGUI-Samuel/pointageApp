@@ -68,7 +68,7 @@ class ContractModal extends Component
 
     public function mount()
     {
-        $this->entrepriseId = auth()->user()->entreprise_id;
+        $this->entrepriseId = session('entreprise_id');
         $this->loadUsers();
     }
 
