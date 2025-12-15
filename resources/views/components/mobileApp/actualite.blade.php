@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Mirrored from pixner.net/html/readease/main-demo/search-page.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 13 Oct 2025 09:25:56 GMT -->
-
+<html lang="fr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

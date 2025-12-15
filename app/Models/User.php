@@ -192,6 +192,22 @@ class User extends Authenticatable
         return $this->hasMany(NotificationConformite::class, 'user_id');
     }
 
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class)->orderBy('date_debut', 'desc');
+    }
+
+    public function activeContract()
+    {
+        return $this->hasOne(Contract::class)
+            ->where('statut', 'actif')
+            ->latest('date_debut');
+    }
+
+    public function contractHistories(): HasMany
+    {
+        return $this->hasMany(ContractHistory::class);
+    }
 
     /**
      * Méthodes utiles

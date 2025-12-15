@@ -31,7 +31,8 @@
                                 <li><a href="{{ route('yodirh.utilisateurs') }}"
                                         class="{{ request()->routeIs('yodirh.utilisateurs','modif_affiche_utilisateur','yodirh.formulaire_utilisateurs') ? 'active' : '' }}">
                                         Dossiers des employés</a></li>
-                                <li><a href="#">Contrats de travail</a></li>
+                                <li><a href="{{ route('contracts.index') }}"
+                                        class="{{ request()->routeIs('contracts.*') ? 'active' : '' }}">Contrats de travail</a></li>
                                 <li><a href="{{ route('liste_presence') }}"
                                         class="{{ request()->routeIs('liste_presence','Suivi_profil') ? 'active' : '' }}">Suivi de pointages</a></li>
                                         
