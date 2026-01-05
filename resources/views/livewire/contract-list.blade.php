@@ -200,6 +200,12 @@
                                                     <i class="ti ti-refresh me-2"></i> Renouveler
                                                 </a>
                                             @endif
+                                            <div class="dropdown-divider"></div>
+                                            <a href="javascript:void(0);" class="dropdown-item text-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteContractModal"
+                                                wire:click="$set('contractToDelete', '{{ $contract->id }}')">
+                                                <i class="ti ti-trash me-2"></i> Supprimer
+                                            </a>
                                         </div>
                                     </div>
                                 </td>
@@ -218,6 +224,40 @@
 
             <div class="mt-3">
                 {{ $contracts->links() }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale de confirmation de suppression -->
+    <div class="modal fade" id="deleteContractModal" tabindex="-1" aria-labelledby="deleteContractModalLabel"
+        aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-top">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title text-white" id="deleteContractModalLabel">
+                        <i class="ti ti-alert-triangle me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-3">
+                        <i class="ti ti-trash text-danger" style="font-size: 4rem;"></i>
+                        <h5 class="mt-3">Êtes-vous sûr de vouloir supprimer ce contrat ?</h5>
+                        <p class="text-muted">
+                            Cette action est <strong>irréversible</strong>. Toutes les données liées à ce contrat seront
+                            définitivement supprimées.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>Annuler
+                    </button>
+                    <button type="button" class="btn btn-danger" wire:click="confirmDelete" data-bs-dismiss="modal">
+                        <i class="ti ti-trash me-1"></i>Supprimer définitivement
+                    </button>
+                </div>
             </div>
         </div>
     </div>

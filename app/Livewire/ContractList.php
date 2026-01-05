@@ -18,6 +18,7 @@ class ContractList extends Component
     public $search = '';
     public $statutFilter = '';
     public $typeContratFilter = '';
+    public $contractToDelete = null;
 
     protected $listeners = [
         'contractCreated' => '$refresh',
@@ -96,5 +97,36 @@ class ContractList extends Component
     public function updatingTypeContratFilter()
     {
         $this->resetPage();
+    }
+
+    public function confirmDelete()
+    {
+        if (!$this->contractToDelete) {
+            return;
+        }
+
+        try {
+            $contract = Contract::findOrFail($this->contractToDelete);
+
+            // Vérifier les permissions
+            if ($contract->entreprise_id !== $this->entrepriseId) {
+                session()->flash('error', 'Vous n\'avez pas la permission de supprimer ce contrat.');
+                return;
+            }
+
+            // Supprimer le contrat
+            $contract->delete();
+
+            session()->flash('success', 'Le contrat a été supprimé avec succès.');
+
+            // Réinitialiser
+            $this->contractToDelete = null;
+
+            // Rafraîchir la liste
+            $this->resetPage();
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Une erreur est survenue lors de la suppression du contrat.');
+        }
     }
 }
