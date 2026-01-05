@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ConformitySubmission;
 use App\Services\ContractService;
+
 class DashboardRHController extends Controller
 {
     protected $contractService;
@@ -48,19 +49,19 @@ class DashboardRHController extends Controller
         }
         $entreprise_id = session('entreprise_id');
 
-        if(session('module_nom')=='Audit de conformité'){
+        if (session('module_nom') == 'Audit de conformité') {
             // Compter les soumissions "en attente" (scope enAttente) pour CETTE entreprise
             $pendingCount = ConformitySubmission::where('entreprise_id', $entreprise_id)
-            ->enAttente()
-            ->count();
-        }else{
-            $pendingCount=null;
+                ->enAttente()
+                ->count();
+        } else {
+            $pendingCount = null;
         }
         $entreprises = Entreprise::All();
         $modules = Module::All();
         $services = Service::where('entreprise_id', $entreprise_id)->get();
         $categories = CategorieProfessionnelle::where('entreprise_id', $entreprise_id)->get();
-        
+
         $deuxSemainesPlusTard = now()->addWeeks(2)->endOfDay();
 
         // Récupérer les utilisateurs avec contrats arrivant à terme dans 2 semaines
@@ -70,46 +71,51 @@ class DashboardRHController extends Controller
                 $query->where(function ($q) use ($deuxSemainesPlusTard) {
                     // Contrats expirant dans les 2 prochaines semaines (actifs)
                     $q->where('statut', 'actif')
-                      ->whereNotNull('date_fin')
-                      ->whereBetween('date_fin', [now()->startOfDay(), $deuxSemainesPlusTard]);
+                        ->whereNotNull('date_fin')
+                        ->whereBetween('date_fin', [now()->startOfDay(), $deuxSemainesPlusTard]);
                 })->orWhere(function ($q) {
                     // Contrats déjà expirés mais toujours actifs
                     $q->where('statut', 'actif')
-                      ->whereNotNull('date_fin')
-                      ->where('date_fin', '<', now()->startOfDay());
+                        ->whereNotNull('date_fin')
+                        ->where('date_fin', '<', now()->startOfDay());
                 })->orWhere(function ($q) {
                     // Contrats terminés récemment (dans les 30 derniers jours)
                     $q->where('statut', 'termine')
-                      ->whereNotNull('date_fin')
-                      ->where('date_fin', '>=', now()->subDays(30));
+                        ->whereNotNull('date_fin')
+                        ->where('date_fin', '>=', now()->subDays(30));
                 });
             })
             ->with(['contracts' => function ($query) use ($deuxSemainesPlusTard) {
                 $query->where(function ($q) use ($deuxSemainesPlusTard) {
                     $q->where('statut', 'actif')
-                      ->whereNotNull('date_fin')
-                      ->whereBetween('date_fin', [now()->startOfDay(), $deuxSemainesPlusTard]);
+                        ->whereNotNull('date_fin')
+                        ->whereBetween('date_fin', [now()->startOfDay(), $deuxSemainesPlusTard]);
                 })->orWhere(function ($q) {
                     $q->where('statut', 'actif')
-                      ->whereNotNull('date_fin')
-                      ->where('date_fin', '<', now()->startOfDay());
+                        ->whereNotNull('date_fin')
+                        ->where('date_fin', '<', now()->startOfDay());
                 })->orWhere(function ($q) {
                     $q->where('statut', 'termine')
-                      ->whereNotNull('date_fin')
-                      ->where('date_fin', '>=', now()->subDays(30));
+                        ->whereNotNull('date_fin')
+                        ->where('date_fin', '>=', now()->subDays(30));
                 })
-                ->orderBy('date_fin', 'desc')
-                ->select('id', 'user_id', 'date_debut', 'date_fin', 'type_contrat', 'statut');
+                    ->orderBy('date_fin', 'desc')
+                    ->select('id', 'user_id', 'date_debut', 'date_fin', 'type_contrat', 'statut');
             }])
             ->get()
             ->map(function ($user) {
                 if ($user->contracts->isNotEmpty()) {
-                    $contract = $user->contracts->first();
-                    $user->jours_restant = now()->diffInDays($contract->date_fin, false);
-                    $user->date_fin_contrat = $contract->date_fin;
-                    $user->est_expire = $contract->date_fin < now();
-                    $user->est_termine = $contract->statut === 'termine';
-                    $user->contract_actuel = $contract;
+                    $contract = $user->contracts()
+                        ->orderByDesc('date_fin')
+                        ->first();
+
+                    if ($contract) {
+                        $user->jours_restant = now()->diffInDays($contract->date_fin, false);
+                        $user->date_fin_contrat = $contract->date_fin;
+                        $user->est_expire = $contract->date_fin < now();
+                        $user->est_termine = $contract->statut === 'termine';
+                        $user->contract_actuel = $contract;
+                    }
                 }
                 return $user;
             });
@@ -151,7 +157,7 @@ class DashboardRHController extends Controller
             'Contrats actifs' => $total > 0 ? 90 : 0,
             'Contrats inactifs' => $total > 0 ? 10 : 0,
         ];
-// Vérifier et mettre à jour automatiquement les contrats expirés
+        // Vérifier et mettre à jour automatiquement les contrats expirés
         $entrepriseId = auth()->user()->entreprise_id;
         $expiredCount = $this->contractService->checkAndUpdateExpiredContracts($entrepriseId);
 
@@ -175,7 +181,7 @@ class DashboardRHController extends Controller
     }
 
     public function change_entreprise($entreprise_id)
-    { 
+    {
         session()->put('entreprise_id', $entreprise_id);
         $entreprise = Entreprise::find($entreprise_id);
         session()->put('entreprise_nom', $entreprise->nom_entreprise);
