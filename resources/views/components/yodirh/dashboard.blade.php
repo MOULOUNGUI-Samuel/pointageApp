@@ -325,8 +325,8 @@
                                                 <h6 class="fs-medium text-truncate mb-1"><a
                                                         href="javscript:void(0);">{{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}</a>
                                                 </h6>
-                                                <p class="fs-13">Date fin contrat :
-                                                    {{ \Carbon\Carbon::parse($contract->date_fin)->format('d M Y') }}
+                                                <p class="fs-13">Début contrat :
+                                                    {{ \Carbon\Carbon::parse($contract->date_debut)->format('d M Y') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -334,8 +334,8 @@
                                             <h6
                                                 class="mb-1 {{ $periodeContrat == "Aujourd'hui" || $periodeContrat == 'Expiré' ? 'text-danger' : 'text-warning' }}">
                                                 {{ $periodeContrat }}</h6>
-                                            <p class="fs-13">Date d'embauche :
-                                                {{ \Carbon\Carbon::parse($dateFinContrat->date_embauche)->format('d M Y') }}
+                                            <p class="fs-13">Fin contrat :
+                                                {{ \Carbon\Carbon::parse($contract->date_fin)->format('d M Y') }}
                                             </p>
                                         </div>
                                     </div>
