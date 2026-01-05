@@ -274,11 +274,12 @@
                     @if (count($utilisateursFinContrats) > 0)
                         @foreach ($utilisateursFinContrats as $dateFinContrat)
                             @php
-                                $dateFin = \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat);
+                                $contract = $dateFinContrat->contracts()->orderByDesc('date_fin')->first();
+                                $dateFin = \Carbon\Carbon::parse($contract->date_fin);
                                 $dateActuelle = \Carbon\Carbon::now();
                                 $joursRestants = $dateActuelle->startOfDay()->diffInDays($dateFin->startOfDay(), false);
                                 $dateFinContrat->jours_restants = $joursRestants;
-                                $dateFinContrat->contrat = $dateFin->format('d/m/Y');
+                                $dateFinContrat->contracts = $dateFin->format('d/m/Y');
 
                                 if ($joursRestants < 0) {
                                     $periodeContrat = 'Expiré';
@@ -310,6 +311,8 @@
                                     }
                                 }
                             @endphp
+                            @if ($joursRestants <15)
+                                
                             <div class="absent-item">
                                 <div>
                                     <div class="d-sm-flex justify-content-between flex-wrap mb-3">
@@ -323,7 +326,7 @@
                                                         href="javscript:void(0);">{{ \Illuminate\Support\Str::limit($dateFinContrat->nom . ' ' . $dateFinContrat->prenom, 30, '...') }}</a>
                                                 </h6>
                                                 <p class="fs-13">Date fin contrat :
-                                                    {{ \Carbon\Carbon::parse($dateFinContrat->date_fin_contrat)->format('d M Y') }}
+                                                    {{ \Carbon\Carbon::parse($contract->date_fin)->format('d M Y') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -338,6 +341,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         @endforeach
                     @else
                         <div class="d-flex flex-column justify-content-center align-items-center" style="height: 200px;">
@@ -403,7 +407,7 @@
             </div>
         </div>
     </div>
-   
+
     <script>
         const chartData = {
             series: @json([$pourcentages['conges'], $pourcentages['actifs'], $pourcentages['inactifs']]),
